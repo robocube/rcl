@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{747944E4-26ED-4A68-BDEF-E35550E67530}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>RCL.Kernel</RootNamespace>
+    <AssemblyName>RCL.Kernel</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <ItemGroup>
+    <Compile Include="modules\Binary.cs" />
+    <Compile Include="modules\Eval.cs" />
+    <Compile Include="modules\Format.cs" />
+    <Compile Include="modules\Parse.cs" />
+    <Compile Include="types\RCBlock.cs" />
+    <Compile Include="types\RCNative.cs" />
+    <Compile Include="types\RCOperator.cs" />
+    <Compile Include="types\RCReference.cs" />
+    <Compile Include="RCActivator.cs" />
+    <Compile Include="RCRunner.cs" />
+    <Compile Include="RCBot.cs" />
+    <Compile Include="types\RCCube.cs" />
+    <Compile Include="RCClosure.cs" />
+    <Compile Include="RCFormat.cs" />
+    <Compile Include="parser\CSVParser.cs" />
+    <Compile Include="parser\CubeParser.cs" />
+    <Compile Include="parser\JSONParser.cs" />
+    <Compile Include="parser\RCLParser.cs" />
+    <Compile Include="parser\XMLParser.cs" />
+    <Compile Include="lexer\BlockToken.cs" />
+    <Compile Include="lexer\BooleanToken.cs" />
+    <Compile Include="lexer\ColumnDataToken.cs" />
+    <Compile Include="lexer\ContentToken.cs" />
+    <Compile Include="lexer\CubeToken.cs" />
+    <Compile Include="lexer\EmptyVectorToken.cs" />
+    <Compile Include="lexer\EvaluatorToken.cs" />
+    <Compile Include="lexer\IncrToken.cs" />
+    <Compile Include="lexer\JunkToken.cs" />
+    <Compile Include="lexer\KeywordToken.cs" />
+    <Compile Include="lexer\LiteralToken.cs" />
+    <Compile Include="lexer\NameToken.cs" />
+    <Compile Include="lexer\NullToken.cs" />
+    <Compile Include="lexer\NumberToken.cs" />
+    <Compile Include="lexer\ParenToken.cs" />
+    <Compile Include="lexer\ReferenceToken.cs" />
+    <Compile Include="lexer\SeparatorToken.cs" />
+    <Compile Include="lexer\SpacerToken.cs" />
+    <Compile Include="lexer\StringToken.cs" />
+    <Compile Include="lexer\SymbolToken.cs" />
+    <Compile Include="lexer\TimeToken.cs" />
+    <Compile Include="lexer\WhitespaceToken.cs" />
+    <Compile Include="lexer\XMLBracketToken.cs" />
+    <Compile Include="lexer\XMLContentToken.cs" />
+    <Compile Include="RCToken.cs" />
+    <Compile Include="RCTokenType.cs" />
+    <Compile Include="RCLexer.cs" />
+    <Compile Include="RCParser.cs" />
+    <Compile Include="RCValue.cs" />
+    <Compile Include="RCVector.cs" />
+    <Compile Include="types\RCBoolean.cs" />
+    <Compile Include="types\RCByte.cs" />
+    <Compile Include="types\RCDecimal.cs" />
+    <Compile Include="types\RCDouble.cs" />
+    <Compile Include="types\RCIncr.cs" />
+    <Compile Include="types\RCLong.cs" />
+    <Compile Include="types\RCString.cs" />
+    <Compile Include="types\RCSymbol.cs" />
+    <Compile Include="types\RCTime.cs" />
+    <Compile Include="RCVectorBase.cs" />
+    <Compile Include="RCArray.cs" />
+    <Compile Include="RCSymbolScalar.cs" />
+    <Compile Include="RCTimeScalar.cs" />
+    <Compile Include="cube\BlockWriter.cs" />
+    <Compile Include="cube\CountRecord.cs" />
+    <Compile Include="cube\Filler.cs" />
+    <Compile Include="cube\Formatter.cs" />
+    <Compile Include="cube\ReadCounter.cs" />
+    <Compile Include="cube\Reader.cs" />
+    <Compile Include="cube\ReadSpec.cs" />
+    <Compile Include="cube\SpecRecord.cs" />
+    <Compile Include="cube\WhereIndicator.cs" />
+    <Compile Include="cube\WhereLocator.cs" />
+    <Compile Include="cube\Writer.cs" />
+    <Compile Include="cube\Visitor.cs" />
+    <Compile Include="cube\Satisfy.cs" />
+    <Compile Include="cube\Column.cs" />
+    <Compile Include="cube\ColumnBase.cs" />
+    <Compile Include="cube\Timeline.cs" />
+    <Compile Include="RCVerb.cs" />
+    <Compile Include="RCModule.cs" />
+    <Compile Include="RCExtension.cs" />
+    <Compile Include="modules\Fiber.cs" />
+    <Compile Include="RCLog.cs" />
+    <Compile Include="RCOutput.cs" />
+    <Compile Include="RCLogger.cs" />
+    <Compile Include="RCException.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="types\" />
+    <Folder Include="modules\" />
+    <Folder Include="lexer\" />
+    <Folder Include="parser\" />
+    <Folder Include="cube\" />
+  </ItemGroup>
+  <ProjectExtensions>
+    <MonoDevelop>
+      <Properties>
+        <Policies>
+          <TextStylePolicy TabWidth="2" IndentWidth="2" NoTabsAfterNonTabs="True" inheritsSet="VisualStudio" inheritsScope="text/plain" scope="text/plain" />
+          <VersionControlPolicy inheritsSet="Mono" />
+          <CSharpFormattingPolicy IndentSwitchBody="True" AnonymousMethodBraceStyle="NextLine" PropertyBraceStyle="NextLine" PropertyGetBraceStyle="NextLine" PropertySetBraceStyle="NextLine" EventBraceStyle="NextLine" EventAddBraceStyle="NextLine" EventRemoveBraceStyle="NextLine" StatementBraceStyle="NextLine" ElseNewLinePlacement="NewLine" CatchNewLinePlacement="NewLine" FinallyNewLinePlacement="NewLine" WhileNewLinePlacement="NewLine" EmbeddedStatementPlacement="DoNotCare" BeforeIndexerDeclarationBracket="False" AfterDelegateDeclarationParameterComma="True" BeforeSizeOfParentheses="True" BeforeTypeOfParentheses="True" SpacesBeforeBrackets="False" SpacesAfterTypecast="True" AlignToFirstMethodCallArgument="True" inheritsSet="Mono" inheritsScope="text/x-csharp" scope="text/x-csharp" />
+          <NameConventionPolicy>
+            <Rules>
+              <NamingRule Name="Namespaces" AffectedEntity="Namespace" VisibilityMask="VisibilityMask" NamingStyle="PascalCase" IncludeInstanceMembers="True" IncludeStaticEntities="True" />
+              <NamingRule Name="Types" AffectedEntity="Class, Struct, Enum, Delegate" VisibilityMask="VisibilityMask" NamingStyle="PascalCase" IncludeInstanceMembers="True" IncludeStaticEntities="True" />
+              <NamingRule Name="Interfaces" AffectedEntity="Interface" VisibilityMask="VisibilityMask" NamingStyle="PascalCase" IncludeInstanceMembers="True" IncludeStaticEntities="True">
+                <RequiredPrefixes>
+                  <String>I</String>
+                </RequiredPrefixes>
+              </NamingRule>
+              <NamingRule Name="Attributes" AffectedEntity="CustomAttributes" VisibilityMask="VisibilityMask" NamingStyle="PascalCase" IncludeInstanceMembers="True" IncludeStaticEntities="True">
+                <RequiredSuffixes>
+                  <String>Attribute</String>
+                </RequiredSuffixes>
+              </NamingRule>
+              <NamingRule Name="Event Arguments" AffectedEntity="CustomEventArgs" VisibilityMask="VisibilityMask" NamingStyle="PascalCase" IncludeInstanceMembers="True" IncludeStaticEntities="True">
+                <RequiredSuffixes>
+                  <String>EventArgs</String>
+                </RequiredSuffixes>
+              </NamingRule>
+              <NamingRule Name="Exceptions" AffectedEntity="CustomExceptions" VisibilityMask="VisibilityMask" NamingStyle="PascalCase" IncludeInstanceMembers="True" IncludeStaticEntities="True">
+                <RequiredSuffixes>
+                  <String>Exception</String>
+                </RequiredSuffixes>
+              </NamingRule>
+              <NamingRule Name="Methods" AffectedEntity="Methods" VisibilityMask="VisibilityMask" NamingStyle="PascalCase" IncludeInstanceMembers="True" IncludeStaticEntities="True" />
+              <NamingRule Name="Static Readonly Fields" AffectedEntity="ReadonlyField" VisibilityMask="Internal, Protected, Public" NamingStyle="PascalCase" IncludeInstanceMembers="False" IncludeStaticEntities="True" />
+              <NamingRule Name="Fields (Non Private)" AffectedEntity="Field" VisibilityMask="Internal, Protected, Public" NamingStyle="PascalCase" IncludeInstanceMembers="True" IncludeStaticEntities="True" />
+              <NamingRule Name="ReadOnly Fields (Non Private)" AffectedEntity="ReadonlyField" VisibilityMask="Internal, Protected, Public" NamingStyle="PascalCase" IncludeInstanceMembers="True" IncludeStaticEntities="False" />
+              <NamingRule Name="Fields (Private)" AffectedEntity="Field, ReadonlyField" VisibilityMask="Private" NamingStyle="CamelCase" IncludeInstanceMembers="True" IncludeStaticEntities="False">
+                <AllowedPrefixes>
+                  <String>_</String>
+                  <String>m_</String>
+                </AllowedPrefixes>
+              </NamingRule>
+              <NamingRule Name="Static Fields (Private)" AffectedEntity="Field" VisibilityMask="Private" NamingStyle="CamelCase" IncludeInstanceMembers="False" IncludeStaticEntities="True" />
+              <NamingRule Name="ReadOnly Fields (Private)" AffectedEntity="ReadonlyField" VisibilityMask="Private" NamingStyle="CamelCase" IncludeInstanceMembers="True" IncludeStaticEntities="False">
+                <AllowedPrefixes>
+                  <String>_</String>
+                  <String>m_</String>
+                </AllowedPrefixes>
+              </NamingRule>
+              <NamingRule Name="Constant Fields" AffectedEntity="ConstantField" VisibilityMask="VisibilityMask" NamingStyle="PascalCase" IncludeInstanceMembers="True" IncludeStaticEntities="True" />
+              <NamingRule Name="Properties" AffectedEntity="Property" VisibilityMask="VisibilityMask" NamingStyle="PascalCase" IncludeInstanceMembers="True" IncludeStaticEntities="True" />
+              <NamingRule Name="Events" AffectedEntity="Event" VisibilityMask="VisibilityMask" NamingStyle="PascalCase" IncludeInstanceMembers="True" IncludeStaticEntities="True" />
+              <NamingRule Name="Enum Members" AffectedEntity="EnumMember" VisibilityMask="VisibilityMask" NamingStyle="PascalCase" IncludeInstanceMembers="True" IncludeStaticEntities="True" />
+              <NamingRule Name="Parameters" AffectedEntity="Parameter" VisibilityMask="VisibilityMask" NamingStyle="CamelCase" IncludeInstanceMembers="True" IncludeStaticEntities="True" />
+              <NamingRule Name="Type Parameters" AffectedEntity="TypeParameter" VisibilityMask="VisibilityMask" NamingStyle="PascalCase" IncludeInstanceMembers="True" IncludeStaticEntities="True">
+                <RequiredPrefixes>
+                  <String>T</String>
+                </RequiredPrefixes>
+              </NamingRule>
+            </Rules>
+          </NameConventionPolicy>
+          <TextStylePolicy FileWidth="120" NoTabsAfterNonTabs="True" inheritsSet="VisualStudio" inheritsScope="text/plain" scope="text/x-fsharp" />
+          <TextStylePolicy TabWidth="2" IndentWidth="2" NoTabsAfterNonTabs="True" inheritsSet="VisualStudio" inheritsScope="text/plain" scope="text/x-csharp" />
+          <FSharpFormattingPolicy scope="text/x-fsharp">
+            <DefaultFormat IndentOnTryWith="False" ReorderOpenDeclaration="False" SpaceAfterComma="True" SpaceAfterSemicolon="True" SpaceAroundDelimiter="True" SpaceBeforeArgument="True" SpaceBeforeColon="True" />
+          </FSharpFormattingPolicy>
+        </Policies>
+      </Properties>
+    </MonoDevelop>
+  </ProjectExtensions>
+</Project>
