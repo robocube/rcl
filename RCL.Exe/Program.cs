@@ -24,7 +24,9 @@ namespace RCL.Exe
       RCBlock arguments = RCRunner.CreateArgs (argv);
       string output = ((RCString) arguments.Get ("output"))[0];
       string program = ((RCString) arguments.Get ("program"))[0];
+      string action = ((RCString) arguments.Get ("action"))[0];
       bool batch = arguments.Get ("batch", null) != null;
+      bool exit = arguments.Get ("exit", null) != null;
 
       string prompt = "RCL>";
       LineEditor editor = new LineEditor ("RCL");
@@ -45,12 +47,36 @@ namespace RCL.Exe
       //editor.AutoCompleteEvent = new LineEditor.AutoCompleteHandler (AutoComplete);
       if (program != "")
       {
-        RCValue result = runner.Rep (Alias ("fepl " + program, runner, consoleLog, arguments));
-        //What to do with the result in this case?
-        if (result != null && outputEnum != RCOutput.Clean)
+        int status = 0;
+        try
         {
-          string text = result.Format (RCFormat.Pretty);
-          Console.Out.WriteLine (text);
+          string file = File.ReadAllText (program, Encoding.UTF8);
+          bool fragment;
+          RCValue code = runner.Peek (file, out fragment);
+          RCValue result = runner.Rep (code);
+          if (result != null && outputEnum != RCOutput.Clean)
+          {
+            string text = result.Format (RCFormat.Pretty);
+            Console.Out.WriteLine (text);
+          }
+          RCValue actionResult = runner.Rep (string.Format ("{0} #", action));
+          if (action != null && outputEnum != RCOutput.Clean)
+          {
+            string text = actionResult.Format (RCFormat.Pretty);
+            Console.Out.WriteLine (text);
+          }
+        }
+        catch (Exception ex)
+        {
+          Console.Out.WriteLine (ex.ToString ());
+          status = 1;
+        }
+        finally
+        {
+          if (exit)
+          {
+            Environment.Exit (status);
+          }
         }
       }
 

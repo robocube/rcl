@@ -366,6 +366,11 @@ namespace RCL.Kernel
     {
       RCClosure closure = new RCClosure (m_bots[0], program);
       RCValue result = Run (closure);
+      RCBlock state = result as RCBlock;
+      if (state != null)
+      {
+        m_state = state;
+      }
       return result;
     }
 
