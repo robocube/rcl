@@ -85,6 +85,12 @@ namespace RCL.Kernel
         program = new RCString ("");
         args = new RCBlock (args, "program", ":", program);
       }
+      RCString action = (RCString) args.Get ("action", null);
+      if (action == null)
+      {
+        action = new RCString ("");
+        args = new RCBlock (args, "action", ":", action);
+      }
       RCBoolean console = (RCBoolean) args.Get ("console", null);
       if (console == null)
       {
@@ -132,7 +138,13 @@ namespace RCL.Kernel
       if (program == null)
         return null;
 
-      RCClosure closure = new RCClosure (m_bots[0], program);
+      RCBlock wrapper = new RCBlock (RCBlock.Empty, "", "<-", program);
+      RCClosure parent = new RCClosure (
+        m_bots[0], 0, null, null, wrapper, null, m_state, 0);
+      RCClosure closure = new RCClosure (
+        parent, m_bots[0], program, null, RCBlock.Empty, 0);
+      
+      //RCClosure closure = new RCClosure (m_bots[0], program);
       RCValue result = Run (closure);
       return result;
     }
@@ -364,8 +376,11 @@ namespace RCL.Kernel
 
     public RCValue Rep (RCValue program)
     {
-      RCClosure closure = new RCClosure (m_bots[0], program);
-      RCValue result = Run (closure);
+      
+      //RCValue result = Run (child);
+
+      //RCClosure closure = new RCClosure (m_bots[0], program);
+      RCValue result = Run (program);
       RCBlock state = result as RCBlock;
       if (state != null)
       {

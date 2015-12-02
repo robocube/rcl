@@ -1355,6 +1355,12 @@ namespace RCL.Test
                  "0.00199999999999996 0.00199800199800196 0.000998003992015947 0.000999000999000978 0.000999999999999979");
     }
 
+    [Test]
+    public void TestLastValueInRootPosition ()
+    {
+      DoEvalTest ("{a:1 b:2 c:$a + $b f:{<-$c}}", "{a:1 b:2 c:3 f:{<-$c}}");
+    }
+
     RCRunner runner = new RCRunner (RCActivator.Default, new RCLog (new RCL.Core.Output ()), 1, RCRunner.CreateArgs ());
 
     public void DoEvalTest (string code, string expected)

@@ -51,19 +51,16 @@ namespace RCL.Exe
         try
         {
           string file = File.ReadAllText (program, Encoding.UTF8);
-          bool fragment;
-          RCValue code = runner.Peek (file, out fragment);
-          RCValue result = runner.Rep (code);
-          if (result != null && outputEnum != RCOutput.Clean)
+          RCValue code = runner.Read (file);
+          runner.Rep (code);
+          if (action != "")
           {
-            string text = result.Format (RCFormat.Pretty);
-            Console.Out.WriteLine (text);
-          }
-          RCValue actionResult = runner.Rep (string.Format ("{0} #", action));
-          if (action != null && outputEnum != RCOutput.Clean)
-          {
-            string text = actionResult.Format (RCFormat.Pretty);
-            Console.Out.WriteLine (text);
+            RCValue result = runner.Rep (string.Format ("{0} #", action));
+            if (outputEnum != RCOutput.Clean)
+            {
+              string text = result.Format (RCFormat.Pretty);
+              Console.Out.WriteLine (text);
+            }
           }
         }
         catch (Exception ex)

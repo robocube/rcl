@@ -1,7 +1,7 @@
-/Users/brian/zombie/legacy/RCL.Core/obj/Debug/.NETFramework,Version=v4.5.AssemblyAttribute.cs
-/Users/brian/zombie/legacy/RCL.Core/bin/Debug/RCL.Core.dll.mdb
-/Users/brian/zombie/legacy/RCL.Core/bin/Debug/RCL.Core.dll
-/Users/brian/zombie/legacy/RCL.Core/obj/Debug/RCL.Core.dll
-/Users/brian/zombie/legacy/RCL.Core/obj/Debug/RCL.Core.dll.mdb
-/Users/brian/zombie/legacy/RCL.Core/bin/Debug/RCL.Kernel.dll
-/Users/brian/zombie/legacy/RCL.Core/bin/Debug/RCL.Kernel.dll.mdb
+/Users/brian/zombie/rcl/RCL.Core/obj/Debug/.NETFramework,Version=v4.5.AssemblyAttribute.cs
+/Users/brian/zombie/rcl/RCL.Core/bin/Debug/RCL.Core.dll.mdb
+/Users/brian/zombie/rcl/RCL.Core/bin/Debug/RCL.Core.dll
+/Users/brian/zombie/rcl/RCL.Core/obj/Debug/RCL.Core.dll
+/Users/brian/zombie/rcl/RCL.Core/obj/Debug/RCL.Core.dll.mdb
+/Users/brian/zombie/rcl/RCL.Core/bin/Debug/RCL.Kernel.dll
+/Users/brian/zombie/rcl/RCL.Core/bin/Debug/RCL.Kernel.dll.mdb

@@ -91,6 +91,7 @@ namespace RCL.Kernel
       if (block.Count == 0)
       {
         DoYield (runner, closure, block);
+
       }
       else
       {
@@ -121,6 +122,8 @@ namespace RCL.Kernel
         }
         else
         {
+          //I need something different to happen when we are at the top level already.
+          //Or maybe I need to inject a wrapper closure when I do Rep this way?
           if ((closure.Index < block.Count - 1)  ||
               (closure.Parent != null))
           {
