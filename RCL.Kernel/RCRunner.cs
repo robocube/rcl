@@ -106,7 +106,7 @@ namespace RCL.Kernel
       RCString output = (RCString) args.Get ("output", null);
       if (output == null)
       {
-        output = new RCString ("multi");
+        output = new RCString ("full");
         args = new RCBlock (args, "output", ":", output);
       }
       return args;
