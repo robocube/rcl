@@ -156,7 +156,7 @@ namespace RCL.Test
       RCRunner runner = new RCRunner ();
       for (int i = 0; i < 5; ++i)
       {
-        runner.Rep ("p:startx \"mono rcl.exe output:clean\"");
+        runner.Rep ("p:startx \"mono rcl.exe --output=clean\"");
         runner.Rep ("$p writex \"exit 0\"");
         runner.Rep ("waitx $p");
       }
@@ -169,7 +169,7 @@ namespace RCL.Test
       for (int i = 0; i < 5; ++i)
       {
         runner.Rep ("\"exit.o2\" save #pretty format {:exit 0}");
-        runner.Rep ("p:startx \"mono rcl.exe output:clean program:exit.o2\"");
+        runner.Rep ("p:startx \"mono rcl.exe --output=clean --program=exit.o2\"");
         runner.Rep ("waitx $p");
         runner.Rep ("exec \"rm exit.o2\"");
       }
@@ -179,7 +179,7 @@ namespace RCL.Test
     public void TestCdWithQuotes ()
     {
       RCRunner runner = new RCRunner ();
-      runner.Rep ("p:startx \"mono rcl.exe output:clean\"");
+      runner.Rep ("p:startx \"mono rcl.exe --output=clean\"");
       runner.Rep ("$p writex \"pwd\"");
       RCString pwdBefore = (RCString) runner.Rep ("\"\\n\" readx $p");
       runner.Rep ("$p writex \"cd \\\"..\\\"\"");
