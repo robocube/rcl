@@ -7,7 +7,6 @@ using System.Diagnostics;
 using System.Collections.Generic;
 using System.Net;
 using Mono.Terminal;
-using Mono.Options;
 using RCL.Kernel;
 using RCL.Core;
 
