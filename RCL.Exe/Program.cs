@@ -39,8 +39,12 @@ namespace RCL.Exe
 
       if (!batch && outputEnum != RCOutput.Clean)
       {
+        Console.WriteLine ();
         PrintCopyright ();
-        Console.Out.WriteLine ("arguments:{0}", arguments.Format (RCFormat.Pretty));
+        Console.WriteLine ();
+        Console.WriteLine ("Options:");
+        Console.WriteLine (arguments.Format (RCFormat.Pretty));
+        Console.WriteLine ();
       }
       string line = "";
       //editor.AutoCompleteEvent = new LineEditor.AutoCompleteHandler (AutoComplete);
