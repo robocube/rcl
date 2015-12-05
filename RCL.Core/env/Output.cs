@@ -51,7 +51,7 @@ namespace RCL.Core
       m_output.WriteLine ("({0}) {1}", type, line);
     }
 
-    protected static string TimeFormat = "yyyy.MM.dd HH:mm:ss.ffffff";
+    protected static string TimeFormat = "yyyy.MM.dd HH:mm:ss.fffffff";
     public override void Record (RCRunner runner, RCClosure closure,
                                  string type, long instance, string state, object info)
     {
