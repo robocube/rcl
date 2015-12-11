@@ -2,5 +2,7 @@ bin/
 obj/
 .vscode/
 RCL.userprefs
-.test.xml
+gauntlet_results.rcl
+nunit_results.xml
+
 
