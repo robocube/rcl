@@ -280,19 +280,71 @@ namespace RCL.Core
       }
     }
 
+    [RCVerb ("httpsend")]
+    public void EvalHttpSend (
+      RCRunner runner, RCClosure closure, RCLong left, RCByte right)
+    {
+      try
+      {
+        //Maybe we should send multiple here?
+        DoHttpSend (runner, closure, left, right.ToArray ());
+      }
+      catch (Exception ex)
+      {
+        throw;
+      }
+    }
+
+    protected void DoHttpSend (
+      RCRunner runner, RCClosure closure, RCLong left, byte[] payload)
+    {
+      RCBlock result = RCBlock.Empty;
+      int total = 0;
+      try
+      {
+        for (int i = 0; i < left.Count; ++i)
+        {
+          RequestInfo info;
+          lock (m_lock)
+          {
+            info = m_contexts [(int)left [i]];
+          }
+          try
+          {
+            byte[] buffer = new byte[1024 * 16];
+            MemoryStream stream = new MemoryStream (payload);
+            int nbytes;
+            while ((nbytes = stream.Read (buffer, 0, buffer.Length)) > 0)
+            {
+              info.Context.Response.OutputStream.Write (buffer, 0, nbytes);
+              total += nbytes;
+            }
+            result = CreateLogEntry (info, left[i], total);
+          }
+          catch (Exception ex)
+          {
+            runner.Report (closure, ex);
+            result = CreateLogEntry (info, left[i], 0);
+          }
+          finally
+          {
+            info.Context.Response.Close ();
+            runner.Log.RecordDoc (runner, closure, "http", left [i], "send", result);
+          }
+        }
+      }
+      catch (Exception ex)
+      {
+        runner.Report (closure, ex);
+      }
+      runner.Yield (closure, result);
+    }
+
     protected void DoHttpSend (
       RCRunner runner, RCClosure closure, RCLong left, string message)
     {
       RCBlock result = RCBlock.Empty;
       int total = 0;
-      //http://en.wikipedia.org/wiki/Common_Log_Format
-      //string ip = "";
-      //string user = "";
-      //string resource = "";
-      //string timestamp = "";
-      //string httpversion = "";
-      //string status = "";
-      //string byteString = "";
       try
       {
         for (int i = 0; i < left.Count; ++i)
@@ -313,51 +365,16 @@ namespace RCL.Core
               info.Context.Response.OutputStream.Write (buffer, 0, nbytes);
               total += nbytes;
             }
-            //Pretty much everything we need to do.
-            //http://en.wikipedia.org/wiki/Common_Log_Format
-            //ip = info.Context.Request.UserHostAddress;
-            //user = info.Context.User != null ? info.Context.User.Identity.Name : "";
-            //resource = string.Format ("{0} {1} HTTP/{2}", 
-            //                          info.Context.Request.HttpMethod, 
-            //                          info.Context.Request.Url.LocalPath, 
-            //                          info.Context.Request.ProtocolVersion.ToString ());
-            //timestamp = string.Format ("[{0:dd/MMM/yyyy:hh:mm:ss zzz}]", now);
-            //httpversion = info.Context.Request.ProtocolVersion.ToString ();
-            //status = info.Context.Response.StatusCode.ToString ();
-            //byteString = total.ToString ();
-            result = CreateLogEntry (info, left[i], 0);
+            result = CreateLogEntry (info, left[i], total);
           }
           catch (Exception ex)
           {
             runner.Report (closure, ex);
-            /*
-            ip = info.Context.Request.UserHostAddress;
-            user = info.Context.User != null ? info.Context.User.Identity.Name : "";
-            resource = string.Format ("{0} {1} HTTP/{2}", 
-                                      info.Context.Request.HttpMethod, 
-                                      info.Context.Request.Url.LocalPath, 
-                                      info.Context.Request.ProtocolVersion.ToString ());
-            timestamp = string.Format ("[{0:dd/MMM/yyyy:hh:mm:ss zzz}]", now);
-            httpversion = info.Context.Request.ProtocolVersion.ToString ();
-            status = info.Context.Response.StatusCode.ToString ();
-            byteString = total.ToString ();
-            */
             result = CreateLogEntry (info, left[i], 0);
           }
           finally
           {
             info.Context.Response.Close ();
-            
-            /*
-            result = new RCBlock (result, "id", ":", new RCString (left.ToString ()));
-            result = new RCBlock (result, "ip", ":", new RCString (ip));
-            result = new RCBlock (result, "user", ":", new RCString (user));
-            result = new RCBlock (result, "resource", ":", new RCString (resource));
-            result = new RCBlock (result, "timestamp", ":", new RCString (timestamp));
-            result = new RCBlock (result, "httpversion", ":", new RCString (httpversion));
-            result = new RCBlock (result, "status", ":", new RCString (status));
-            result = new RCBlock (result, "size", ":", new RCString (byteString));
-            */
             runner.Log.RecordDoc (runner, closure, "http", left [i], "send", result);
           }
         }

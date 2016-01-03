@@ -19,7 +19,7 @@ namespace RCL.Core
       //I want to change this to split lines.
       runner.Yield (closure, new RCString (code));
     }
-
+      
     protected long m_handle = -1;
     [RCVerb ("save")]
     public void EvalSave (RCRunner runner, RCClosure closure, RCString left, RCString right)
@@ -69,6 +69,27 @@ namespace RCL.Core
           writer.Write (lines[lines.Length - 1]);
         }
       }
+    }
+
+    [RCVerb ("loadbin")]
+    public void EvalLoadbin (
+      RCRunner runner, RCClosure closure, RCString right)
+    {
+      byte[] bytes = File.ReadAllBytes (right[0]);
+      //I want to change this to split lines.
+      runner.Yield (closure, new RCByte (bytes));
+    }
+
+    [RCVerb ("savebin")]
+    public void EvalSavebin (RCRunner runner, RCClosure closure, RCString left, RCByte right)
+    {
+      //BRIAN READ THIS WHEN YOU GET BACK HERE.
+      //Should not be doing sync io like this.
+      //The least I can do is use a thread pool thread.
+      File.WriteAllBytes (left[0], right.ToArray ());
+      runner.Log.RecordDoc (runner, closure,
+                            "save", Interlocked.Increment (ref m_handle), left[0], right);
+      runner.Yield (closure, new RCString (left[0]));
     }
 
     [RCVerb ("delete")]

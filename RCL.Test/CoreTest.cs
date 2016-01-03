@@ -1644,6 +1644,12 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestSavebinLoadbinDelete ()
+    {
+      DoTest ("{x:parse loadbin \"file\" savebin binary {a:1.0 b:2.0 c:3.0} :delete \"file\" <-$x}", "{a:1.0 b:2.0 c:3.0}");
+    }
+
+    [Test]
     public void TestTryFail ()
     {
       DoTest ("try {<-900 fail \"fail with status 900\"}", "{status:900 data:\"fail with status 900\"}");
