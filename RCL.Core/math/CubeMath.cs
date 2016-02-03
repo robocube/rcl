@@ -1250,7 +1250,14 @@ namespace RCL.Core
         for (int j = 0; j < column.Count; ++j)
         {
           object val = column.BoxCell (j);
-          rightSyms[j] = new RCSymbolScalar (rightSyms[j], val);
+          if (val.GetType () != typeof (RCSymbolScalar))
+          {
+            rightSyms[j] = new RCSymbolScalar (null, val);
+          }
+          else
+          {
+            rightSyms[j] = (RCSymbolScalar) val;
+          }
         }
       }
       RCSymbolScalar[] leftSyms = new RCSymbolScalar[left.Count];
@@ -1263,7 +1270,14 @@ namespace RCL.Core
         for (int j = 0; j < column.Count; ++j)
         {
           object val = column.BoxCell (j);
-          leftSyms[j] = new RCSymbolScalar (leftSyms[j], val);
+          if (val.GetType () != typeof (RCSymbolScalar))
+          {
+            leftSyms[j] = new RCSymbolScalar (null, val);
+          }
+          else
+          {
+            leftSyms[j] = (RCSymbolScalar) val;
+          }
         }
       }
       for (int i = 0; i < leftSyms.Length; ++i)

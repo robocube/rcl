@@ -2084,6 +2084,12 @@ namespace RCL.Test
       DoTest ("[S|x #a 0 #b 1 #c 1 #d 2] join [x y 2 20 3 30 1 10 0 0]", "[S|x y #a 0 0 #b 1 10 #c 1 10 #d 2 20]");
     }
 
+    [Test]
+    public void TestJoin3 ()
+    {
+      DoTest ("[S|k # # #0 #g #0,0 #g,0 #1 #i #1,0 #i,0] join [k src #g,0 #r,0 #i,0 #g,r,0]", "[S|k src # # -- #0 #g -- #0,0 #g,0 #r,0 #1 #i -- #1,0 #i,0 #g,r,0]");
+    }
+      
     //[Test]
     //public void TestBang4 ()
     //{
