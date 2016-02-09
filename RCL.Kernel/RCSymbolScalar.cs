@@ -18,7 +18,7 @@ namespace RCL.Kernel
     public readonly RCSymbolScalar Previous;
     public readonly RCVectorBase Type;
     public readonly object Key;
-    public readonly long Count;
+    public readonly long Length;
     protected readonly string m_string;
 
     protected RCSymbolScalar ()
@@ -86,14 +86,14 @@ namespace RCL.Kernel
       Type = RCVectorBase.EmptyOf (Key.GetType ());
       if (Previous == RCSymbolScalar.Empty)
       {
-        Count = 1;
+        Length = 1;
         string part = Type.Shorthand (Key);
         string prefix = part.Length > 0 && part[0] == '#' ? "" : "#";
         m_string = prefix + part + Type.Suffix;
       }
       else
       {
-        Count = previous.Count + 1;
+        Length = previous.Length + 1;
         m_string = previous.ToString () + "," + 
           Type.Shorthand (Key) + Type.Suffix;
       }
@@ -101,7 +101,7 @@ namespace RCL.Kernel
 
     public object[] ToArray ()
     {
-      object[] result = new object[Count];
+      object[] result = new object[Length];
       RCSymbolScalar current = this;
       for(int i = 0; i < result.Length; ++i)
       {
@@ -114,7 +114,7 @@ namespace RCL.Kernel
 
     public object Part (long p)
     {
-      long i = Count - 1;
+      long i = Length - 1;
       RCSymbolScalar current = this;
       while (i > p)
       {

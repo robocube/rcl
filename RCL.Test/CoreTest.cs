@@ -737,6 +737,8 @@ namespace RCL.Test
     //Length for strings
     [Test]
     public void TestLengthS () { DoTest ("length \"aaa\" \"bb\" \"a\" \"\"", "3 2 1 0"); }
+    [Test]
+    public void TestLengthY () { DoTest ("length # #a #aaa #a,b #a,b,c", "0 1 1 2 3"); }
 
     //Repeat
     [Test]
@@ -1398,7 +1400,6 @@ namespace RCL.Test
     //The defining characteristic of sweach is that it takes a bunch of code blocks on the right
     //and evaluates the correct ones based on the argument on the left.  Other than that it is much
     //like from.
-
     //Switch is like sweach except that you promise to only have one element on the left
     //and gives you a single value back rather than a block of results.
     [Test]
@@ -1409,10 +1410,10 @@ namespace RCL.Test
     public void TestSwitchLK0() { DoTest("-1 switch {:1+2 :1+3}", "4"); }
     [Test]
     public void TestSwitchLK1() { DoTest("0 switch {:1+2}", "3"); }
+
     [Test]
-    public void TestSwitchLK2() { DoTest("-1 switch {:1+2}", "{}"); }
+    public void TestSwitchLK2() { DoTest("-1 switch {:1+2}", "3"); }
     [Test]
-    [Ignore]
     public void TestSwitchLK3() { DoTest("2 switch {:0 :1 :2 :3}", "2"); }
     [Test]
     public void TestSwitchXK() { DoTest("\\x00 switch {:1+2}", "3"); }

@@ -715,8 +715,8 @@ namespace RCL.Core
         for (int i = 0; i < rdata.Count; ++i)
         {
           RCSymbolScalar scalar = right.Axis.SymbolAt (rindex[i]);
-          int level = (int) scalar.Count;
-          int count = (int) scalar.Count;
+          int level = (int) scalar.Length;
+          int count = (int) scalar.Length;
           while (scalar != null)
           {
             SeqState<S,O> state;

@@ -686,6 +686,9 @@ namespace RCL.Core
     [Primitive ("length", Profile.Monadic)]
     public static long Length (string r) { return r.Length; }
 
+    [Primitive ("length", Profile.Monadic)]
+    public static long Length (RCSymbolScalar r) { return r.Length; }
+
     [Primitive ("long", Profile.Monadic)]
     public static long Long (long r) { return r; }
 

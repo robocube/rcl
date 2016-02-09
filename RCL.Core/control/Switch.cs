@@ -41,8 +41,9 @@ namespace RCL.Core
       //What on earth was I thinking... we need to make this work.
       Picker<long> picker = delegate (long val)
       {
-        long i = val < 0 ? 1 : 0;
-        return i >= right.Count ? RCBlock.Empty : right.Get (i);
+        //long i = val < 0 ? 1 : 0;
+        //return i >= right.Count ? RCBlock.Empty : right.Get (i);
+        return right.Get (val);
       };
       DoSwitch<long> (runner, closure, left, right, picker);
     }
@@ -53,7 +54,7 @@ namespace RCL.Core
     {
       Picker<RCSymbolScalar> picker = delegate (RCSymbolScalar val)
       {
-        if (val.Count > 1)
+        if (val.Length > 1)
         {
           throw new Exception (
             "switch only supports block lookups using tuples of count 1.  But this could change.");

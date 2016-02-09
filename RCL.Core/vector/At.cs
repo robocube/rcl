@@ -607,7 +607,7 @@ namespace RCL.Core
       for (int i = 0; i < right.Count; ++i)
       {
         //O(n) lookup, kinda sucky.
-        if (right[i].Count > 1) 
+        if (right[i].Length > 1) 
           throw new Exception("at only supports block lookups using tuples of count 1.  But this could change.");
         RCBlock next = left.GetName ((string)right[i].Key);
         result = new RCBlock (result, next.Name, next.Evaluator, next.Value);

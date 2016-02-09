@@ -166,7 +166,7 @@ namespace RCL.Kernel
       WriteScalarInt (result, unique.Count);
       for (int i = 0; i < unique.Count; ++i)
       {
-        int length = (int) unique[i].Count;
+        int length = (int) unique[i].Length;
         WriteScalarInt (result, length);
         data[i].ToByte (result);
       }
@@ -184,7 +184,7 @@ namespace RCL.Kernel
       //I am considering rewriting RCSymbolScalar so that it stores all of its
       //data as an array of bytes.  Then the ToByte operation would just
       //return the internal representation.
-      for (int i = 0; i < scalar.Count; ++i)
+      for (int i = 0; i < scalar.Length; ++i)
       {
         object part = scalar.Part (i);
         char type = RCVectorBase.EmptyOf (part.GetType ()).TypeCode;
