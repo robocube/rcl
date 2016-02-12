@@ -163,6 +163,35 @@ namespace RCL.Core
       runner.Yield (closure, new RCString (result));
     }
 
+    [RCVerb ("splitw")]
+    public  void EvalSplitw (RCRunner runner,
+                             RCClosure closure,
+                             RCString left,
+                             RCString right)
+    {
+      RCArray<string> result = new RCArray<string> ();
+      for (int i = 0; i < right.Count; ++i)
+      {
+        int start = 0;
+        int end;
+        while (true)
+        {
+          end = right[i].IndexOf (left[0], start);
+          if (end >= 0)
+          {
+            result.Write (right[i].Substring (start, end - start));
+            start = end + left[0].Length;
+          }
+          else
+          {
+            result.Write (right[i].Substring (start));
+            break;
+          }
+        }
+      }
+      runner.Yield (closure, new RCString (result));
+    }
+
     [RCVerb ("pad")]
     public void EvalPad (RCRunner runner,
                          RCClosure closure,

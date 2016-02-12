@@ -1072,6 +1072,16 @@ namespace RCL.Test
     [Test]
     public void TestFromKY() { DoTest ("#y from {x:0 y:1 z:2}", "{y:1}"); }
 
+    [Test]
+    public void TestFirst() { DoTest ("first {:0 :1 :2}", "0"); }
+    [Test]
+    public void TestLast() { DoTest ("last {:0 :1 :2}", "2"); }
+    [Test]
+    public void TestUnwrap() { DoTest ("unwrap {:0}", "0"); }
+    [Test]
+    [ExpectedException]
+    public void TestUnwrapEx() { DoTest ("unwrap {:0 :1 :2}", ""); }
+
     //Oh no! What if find doesn't find anything.  How do I represent the result?
     //I have been avoiding this problem for a while... Let's think...
     //How about ~l ~d ~s, ok. That's not bad.
@@ -1552,6 +1562,10 @@ namespace RCL.Test
     public void TestDelimit() { DoTest ("\",\" delimit \"x\" \"y\" \"z\"", "\"x,y,z\""); }
     [Test]
     public void TestSplit () { DoTest ("\",:\" split \"x,y,z\" \"a:b:c\"", "\"x\" \"y\" \"z\" \"a\" \"b\" \"c\""); }
+    [Test]
+    public void TestSplitw0 () { DoTest ("\"  \" splitw \"x  y z\"", "\"x\" \"y z\""); }
+    [Test]
+    public void TestSplitw1 () { DoTest ("\"  \" splitw \"  x  y z\"", "\"\" \"x\" \"y z\""); }
     [Test]
     public void TestSlice0() { DoTest ("\":\" slice \"a:b\" \"c:d\" \"e:f\"", "{:\"a\" \"c\" \"e\" :\"b\" \"d\" \"f\"}"); }
     [Test]

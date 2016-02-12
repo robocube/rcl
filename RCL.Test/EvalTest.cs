@@ -1327,7 +1327,20 @@ namespace RCL.Test
       DoEvalTest ("{t:[?\n  a\n  b[! $R.x !]c\n  d\n?] c:{x:\"\\nx\"} <-t $c}", "\"a\\nb\\nxc\\nd\\n\"");
     }
 
-      
+    /*
+    [Test]
+    public void TestStringTemplateCoercion ()
+    {
+      DoEvalTest ("{t:[?\n  a\n  b\n  c\n?] <-string $t}", "a\\nb\\nc\\n");
+    }
+    */
+
+    [Test]
+    public void TestBlockTemplateCoercion ()
+    {
+      DoEvalTest ("{t:[?\n  a\n  b\n  c\n?] <-block $t}", "{:\"a\\nb\\nc\\n\"}");
+    }
+
     [Test]
     [Ignore]
     public void TestServer ()

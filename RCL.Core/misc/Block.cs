@@ -179,6 +179,19 @@ namespace RCL.Core
       runner.Yield (closure, new RCSymbol (CoerceBlock<RCSymbolScalar> (right)));
     }
 
+    [RCVerb ("block")]
+    public void EvalBlock (
+      RCRunner runner, RCClosure closure, RCTemplate right)
+    {
+      RCBlock result = RCBlock.Empty;
+      for (int i = 0; i < right.Count - 1; ++i)
+      {
+        RCBlock current = right.GetName (i);
+        result = new RCBlock (result, current.Name, current.Evaluator, current.Value);
+      }
+      runner.Yield (closure, result);
+    }
+
     protected virtual RCArray<T> CoerceBlock<T> (RCBlock right)
     {
       RCArray<T> result = new RCArray<T>();
