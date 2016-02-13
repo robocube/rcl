@@ -102,6 +102,7 @@
     <Compile Include="net\TcpHttpClient.cs" />
     <Compile Include="net\HttpClient.cs" />
     <Compile Include="vector\Alternate.cs" />
+    <Compile Include="env\FileEvents.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

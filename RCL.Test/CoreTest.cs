@@ -1671,6 +1671,12 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestWatchf ()
+    {
+      DoTest ("{h:exec \"mkdir test\" :cd \"test\" fsw:watchf pwd {} :exec \"touch foo\" create:waitf $fsw :\"foo\" save \"bar\" update:waitf $fsw :exec \"rm foo\" delete:waitf $fsw :cd \"..\" :exec \"rmdir test\" <-eval {create:#event #name from last $create update:#event #name from last $update delete:#event #name from last $delete}}", "{create:{event:\"created\" name:\"foo\"} update:{event:\"changed\" name:\"foo\"} delete:{event:\"deleted\" name:\"foo\"}}");
+    }
+
+    [Test]
     public void TestTryFailAssert ()
     {
       DoTest ("#status from try {<-#x assert #y}", "{status:1}");
