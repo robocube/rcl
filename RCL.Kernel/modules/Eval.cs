@@ -4,7 +4,7 @@ using System.Text;
 
 namespace RCL.Kernel
 {
-  public class Eval
+  public class Eval : RCOperator
   {
     [RCVerb ("eval")]
     public void EvalEval (RCRunner runner, RCClosure closure, RCBlock right)
@@ -16,6 +16,21 @@ namespace RCL.Kernel
                                         RCBlock.Empty, 
                                         0);
       DoEval (runner, parent, right);
+    }
+     
+    //This higher order thingy needs to go away it makes no sense.
+    public override bool IsHigherOrder ()
+    {
+      return true;
+    }
+
+    public override bool IsLastCall (RCClosure closure, RCClosure arg)
+    {
+      if (arg == null)
+        return base.IsLastCall (closure, arg);
+      if (!base.IsLastCall (closure, arg))
+        return false;
+      return arg.Code.IsBeforeLastCall (arg);
     }
 
     //Kicks off evaluation for an operator and its arguments.
@@ -114,7 +129,7 @@ namespace RCL.Kernel
                                                      closure.Bot,
                                                      current.Value,
                                                      closure.Left,
-                                                     null, 0));
+                                                     closure.Result, 0));
         }
         else if (current.Evaluator.Return)
         {

@@ -66,14 +66,26 @@ namespace RCL.Core
       }
     }
 
-    public void Read (RCRunner runner, RCClosure closure, RCSymbol symbol, ReadSpec spec)
+    [RCVerb ("select")]
+    public void EvalSelect (
+      RCRunner runner, RCClosure closure, RCSymbol left, RCCube right)
+    {
+      RCLong args = new RCLong (0, 0);
+      ReadCounter counter = new ReadCounter ();
+      ReadSpec spec = new ReadSpec (left, args, 0, false);
+      RCCube result = right.Read (spec, counter, true, right.Count);
+      runner.Yield (closure, result);
+    }
+
+    public void Read (
+      RCRunner runner, RCClosure closure, RCSymbol symbol, ReadSpec spec)
     {
       lock (m_readWriteLock)
       {
-        Section s = GetSection (symbol);
-        Satisfy canSatisfy = s.m_counter.CanSatisfy (spec);
-        RCCube result = s.m_blackboard.Read (spec,
-                                             s.m_counter, true, s.m_blackboard.Count);
+        Section section = GetSection (symbol);
+        Satisfy canSatisfy = section.m_counter.CanSatisfy (spec);
+        RCCube result = section.m_blackboard.Read (spec,
+                                             section.m_counter, true, section.m_blackboard.Count);
 
         if (spec.SymbolUnlimited)
         {
@@ -95,7 +107,7 @@ namespace RCL.Core
             {
               throw new Exception ();
             }
-            s.m_readWaiters.Enqueue (symbol, closure);
+            section.m_readWaiters.Enqueue (symbol, closure);
           }
         }
         else
@@ -114,7 +126,7 @@ namespace RCL.Core
             {
               throw new Exception ();
             }
-            s.m_readWaiters.Enqueue (symbol, closure);
+            section.m_readWaiters.Enqueue (symbol, closure);
           }
         }
       }

@@ -281,7 +281,7 @@ namespace RCL.Core
         {
           if (exitCode != 0)
           {
-            m_state.Runner.Finish (m_state.Closure,
+            m_state.Runner.Finish (waiters[i].Closure,
                                    new Exception ("Non-zero exit status"), exitCode);
           }
           else

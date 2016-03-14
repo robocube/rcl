@@ -74,10 +74,12 @@ namespace RCL.Kernel
         return base.ToString ();
       }
       else
-
       {
-        return string.Format ("{0}\n--------------------------------------------------------------------------------\n{1}",
-                                Message, Exception.GetBaseException ().ToString ());
+        
+        return string.Format ("{0}\n--------------------------------------------------------------------------------\n{1}\n--------------------------------------------------------------------------------\n{2}",
+                              Message, 
+                              Exception.GetBaseException ().ToString (),
+                              Closure.ToString ());
       }
     }
   }

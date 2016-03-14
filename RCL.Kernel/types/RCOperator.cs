@@ -176,6 +176,26 @@ namespace RCL.Kernel
     {
       RCL.Kernel.Binary.WriteOperator (result, this);
     }
+
+    public override void Cubify (RCCube target, Stack<object> names)
+    {
+      if (this.Left != null)
+      {
+        names.Push ("L");
+        this.Left.Cubify (target, names);
+        names.Pop ();
+      }
+
+      names.Push ("R");
+      this.Right.Cubify (target, names);
+      names.Pop ();
+
+      object[] array = names.ToArray ();
+      System.Array.Reverse (array);
+      RCSymbolScalar symbol = RCSymbolScalar.From (array);
+      target.WriteCell ("o", symbol, Name);
+      target.Write (symbol);
+    }
   }
 
   /// <summary>

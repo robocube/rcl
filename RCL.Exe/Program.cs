@@ -47,7 +47,6 @@ namespace RCL.Exe
         Console.WriteLine ();
       }
       string line = "";
-      //editor.AutoCompleteEvent = new LineEditor.AutoCompleteHandler (AutoComplete);
       if (program != "")
       {
         int status = 0;
@@ -65,6 +64,11 @@ namespace RCL.Exe
               Console.Out.WriteLine (text);
             }
           }
+        }
+        catch (ThreadAbortException)
+        {
+          status = runner.ExitStatus ();
+          Environment.Exit (status);
         }
         catch (Exception ex)
         {
@@ -156,6 +160,7 @@ namespace RCL.Exe
       string program = "";
       string action = "";
       string output = "full";
+      RCBlock custom = RCBlock.Empty;
       for (int i = 0; i < argv.Length; ++i)
       {
         string[] kv = argv[i].Split ('=');
@@ -174,7 +179,7 @@ namespace RCL.Exe
             }
             else
             {
-              Usage ("Unknown option '" + option + "'");
+              custom = new RCBlock (custom, option, ":", RCBoolean.True);
             }
           }
           else if (kv[0].StartsWith ("-"))
@@ -229,7 +234,7 @@ namespace RCL.Exe
             }
             else
             {
-              Usage ("Unknown option '" + option + "'");
+              custom = new RCBlock (custom, option, ":", new RCString (kv[1]));
             }
           }
           else Usage ("Named options start with --");
@@ -241,6 +246,11 @@ namespace RCL.Exe
       result = new RCBlock (result, "output", ":", new RCString (output));
       result = new RCBlock (result, "batch", ":", new RCBoolean (batch));
       result = new RCBlock (result, "exit", ":", new RCBoolean (exit));
+      for (int i = 0; i < custom.Count; ++i)
+      {
+        RCBlock name = custom.GetName (i);
+        result = new RCBlock (result, name.Name, ":", name.Value);
+      }
       return result;
     }
 

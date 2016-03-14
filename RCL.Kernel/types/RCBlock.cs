@@ -296,5 +296,23 @@ namespace RCL.Kernel
     {
       Binary.WriteBlock (result, this);
     }
+
+    public override void Cubify (RCCube target, Stack<object> names)
+    {
+      for (int i = 0; i < this.Count; ++i)
+      {
+        RCBlock child = this.GetName (i);
+        if (child.Name == "")
+        {
+          names.Push ((long) i);
+        }
+        else
+        {
+          names.Push (child.Name);
+        }
+        child.Value.Cubify (target, names);
+        names.Pop ();
+      }
+    }
   }
 }

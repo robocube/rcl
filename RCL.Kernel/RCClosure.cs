@@ -140,27 +140,28 @@ namespace RCL.Kernel
       ToString (builder, 0);
       return builder.ToString ();
     }
-
+      
     protected void ToString (StringBuilder builder, int indent)
     {
-      RCOperator op = Code as RCOperator;
-      if (op != null)
+      RCClosure closure = this;
+      while (closure != null)
       {
-        builder.Append (op.Name);
-        builder.Append (" ");
-        Result.Format (builder, RCFormat.Pretty, indent + 1);
-      }
-      else
-      {
-        Code.Format (builder, RCFormat.Pretty, indent + 1);
-        builder.Append (" ");
-        Result.Format (builder, RCFormat.Pretty, indent + 2);
-      }
-
-      if (Parent != null)
-      {
-        builder.Append (" --> ");
-        Result.Format (builder, RCFormat.Pretty, indent + 1);
+        RCOperator op = closure.Code as RCOperator;
+        if (op != null)
+        {
+          builder.Append (op.Name);
+          builder.AppendLine ();
+          closure.Result.Format (builder, RCFormat.Pretty, indent);
+          builder.AppendLine ();
+        }
+        else
+        {
+          closure.Code.Format (builder, RCFormat.Pretty, indent);
+          builder.AppendLine ();
+          closure.Result.Format (builder, RCFormat.Pretty, indent);
+          builder.AppendLine ();
+        }
+        closure = closure.Parent;
       }
     }
   }

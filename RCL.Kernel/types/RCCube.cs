@@ -456,6 +456,11 @@ namespace RCL.Kernel
       get { return "cube"; }
     }
 
+    public override bool IsCube
+    {
+      get { return true; }
+    }
+
     public override void ToByte (RCArray<byte> result)
     {
       //Timeline

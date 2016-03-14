@@ -376,10 +376,6 @@ namespace RCL.Kernel
 
     public RCValue Rep (RCValue program)
     {
-      
-      //RCValue result = Run (child);
-
-      //RCClosure closure = new RCClosure (m_bots[0], program);
       RCValue result = Run (program);
       RCBlock state = result as RCBlock;
       if (state != null)
@@ -398,7 +394,6 @@ namespace RCL.Kernel
       {
         return null;
       }
-
       RCBlock variable = peek as RCBlock;
       if (variable != null && fragment)
       {

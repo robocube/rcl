@@ -6,8 +6,6 @@ using System.Text;
 
 namespace RCL.Kernel
 {
-  
-
   public abstract class RCValue
   {
     protected bool m_lock = false;
@@ -31,6 +29,16 @@ namespace RCL.Kernel
     }
 
     public virtual bool IsBlock
+    {
+      get { return false; }
+    }
+
+    public virtual bool IsCube
+    {
+      get { return false; }
+    }
+
+    public virtual bool IsVector
     {
       get { return false; }
     }
@@ -157,6 +165,8 @@ namespace RCL.Kernel
     {
       m_lock = true;
     }
+
+    public virtual void Cubify (RCCube target, Stack<object> names) {}
 
     public bool IsLocked { get { return m_lock; } }
     public abstract string TypeName { get; }

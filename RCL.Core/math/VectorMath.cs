@@ -354,7 +354,8 @@ namespace RCL.Core
     public void EvalSymbolString (
       RCRunner runner, RCClosure closure, RCString right)
     {
-      RCLexer lexer = new RCLexer (new RCArray<RCTokenType> (RCTokenType.Number, RCTokenType.Boolean, RCTokenType.Symbol, RCTokenType.Name));
+      RCLexer lexer = new RCLexer (new RCArray<RCTokenType> (
+        RCTokenType.Number, RCTokenType.Boolean, RCTokenType.Symbol, RCTokenType.Name));
       RCArray<RCSymbolScalar> result = new RCArray<RCSymbolScalar> (right.Count);
       for (int i = 0; i < right.Count; ++i)
       {
@@ -362,6 +363,30 @@ namespace RCL.Core
         result.Write (symbol);
       }
       runner.Yield (closure, new RCSymbol (result));
+    }
+
+    [RCVerb ("reference")]
+    public void EvalReferenceString (
+      RCRunner runner, RCClosure closure, RCString right)
+    {
+      runner.Yield (closure, new RCLReference (right.ToArray ()));
+    }
+
+    [RCVerb ("reference")]
+    public void EvalReferenceString (
+      RCRunner runner, RCClosure closure, RCSymbol right)
+    {
+      if (right.Count != 1)
+      {
+        throw new Exception ("Only one symbol allowed in the right argument.");
+      }
+      object[] parts = right[0].ToArray ();
+      string[] strings = new string[parts.Length];
+      for (int i = 0; i < strings.Length; ++i)
+      {
+        strings[i] = parts[i].ToString ();
+      }
+      runner.Yield (closure, new RCLReference (strings));
     }
       
     [RCVerb ("in")]

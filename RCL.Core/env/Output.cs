@@ -27,7 +27,7 @@ namespace RCL.Core
       }
     }
 
-    protected RCOutput m_level = RCOutput.Multi;
+    protected RCOutput m_level = RCOutput.Full;
     public void SetVerbosity (RCOutput level)
     {
       m_level = level;

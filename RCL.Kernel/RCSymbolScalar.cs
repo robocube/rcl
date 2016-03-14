@@ -20,6 +20,7 @@ namespace RCL.Kernel
     public readonly object Key;
     public readonly long Length;
     protected readonly string m_string;
+    protected readonly bool m_leadingStar = false;
 
     protected RCSymbolScalar ()
     {
@@ -97,6 +98,10 @@ namespace RCL.Kernel
         m_string = previous.ToString () + "," + 
           Type.Shorthand (Key) + Type.Suffix;
       }
+      if (Previous.Key.Equals ("*"))
+      {
+        m_leadingStar = true;
+      }
     }
 
     public object[] ToArray ()
@@ -126,7 +131,30 @@ namespace RCL.Kernel
 
     public bool IsConcreteOf (RCSymbolScalar scalar)
     {
-      return m_string.Length > scalar.m_string.Length && m_string.StartsWith (scalar.m_string);
+      bool trailing = m_string.Length > scalar.m_string.Length && m_string.StartsWith (scalar.m_string);
+      //if (!m_leadingStar) return trailing;
+
+      RCSymbolScalar concrete = this;
+      RCSymbolScalar @abstract = scalar;
+
+      while (concrete.Length > @abstract.Length)
+      {
+        concrete = concrete.Previous;
+      }
+
+      while (@abstract != null)
+      {
+        if (!@abstract.Key.Equals ("*"))
+        {
+          if (!@abstract.Key.Equals (concrete.Key))
+          {
+            return false;
+          }
+        }
+        concrete = concrete.Previous;
+        @abstract = @abstract.Previous;
+      }
+      return true;
     }
 
     public override string ToString ()

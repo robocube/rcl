@@ -121,9 +121,15 @@ namespace RCL.Kernel
       {
         m_start = start;
       }
+      RCSymbolScalar current = scalar;
+      while (current != null)
+      {
+        m_records[current] = record;
+        current = current.Previous;
+      }
       //What happens if you pass multiple identical symbols? boom!
       //Jan 4 2015 - we really need a test for that!
-      m_records[record.symbol] = record;
+      //m_records[record.symbol] = record;
     }
   
     public SpecRecord Get (RCSymbolScalar scalar)
@@ -134,7 +140,6 @@ namespace RCL.Kernel
       {
         return m_records[RCSymbolScalar.Empty];
       }
-
       RCSymbolScalar current = scalar;
       while (current != null)
       {
@@ -142,7 +147,7 @@ namespace RCL.Kernel
         //if you have multiple symbols in the same heirarchy within the same spec.
         if (m_records.TryGetValue (current, out result) &&
             result.count < result.limit &&
-            (!result.Concrete || current == scalar))
+            ((current == scalar) || (!result.Concrete && scalar.IsConcreteOf (result.original))))
         {
           return result;
         }

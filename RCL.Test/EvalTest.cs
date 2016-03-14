@@ -369,31 +369,49 @@ namespace RCL.Test
     }
 
     [Test]
-    public void TestNestedSwitch0()
+    public void TestSwitchAndEval ()
+    {
+      DoEvalTest ("true switch {:{x:1 <-eval {<-$x + 1}}}", "2");
+    }
+
+    [Test]
+    public void TestSwitchAndEval1 ()
+    {
+      DoEvalTest ("{f:{x:1 k:eval {x:$x + 1} <-$k} <-true switch {:f #}}", "{x:2}");
+    }
+
+    [Test]
+    public void TestSwitchAndEval2 ()
+    {
+      DoEvalTest ("{f:{x:1 <-eval {x:$x + 1}} <-true switch {:f #}}", "{x:2}");
+    }
+
+    [Test]
+    public void TestNestedSwitch ()
     {
       DoEvalTest("{f:{<-true switch {:$L - $R}} <-13 f 9}", "4");
     }
 
     [Test]
-    public void TestNestedSwitch1()
+    public void TestNestedSwitch1 ()
     {
       DoEvalTest("{f:{<-true switch {:true switch {:$L - $R}}} <-13 f 9}", "4");
     }
 
     [Test]
-    public void TestNestedSwitch2()
+    public void TestNestedSwitch2 ()
     {
       DoEvalTest("{f:{<-true switch {:true switch {:true switch {:true switch {:$L - $R}}}}} <-13 f 9}", "4");
     }
 
     [Test]
-    public void TestSwitchInTake()
+    public void TestSwitchInTake ()
     {
       DoEvalTest("{<-#lock take {<-true switch {:0 :1}}}", "0");
     }
 
     [Test]
-    public void TestEach()
+    public void TestEach ()
     {
       //This test requires that operators will send closure Index values greater
       //than two back to the EvalOperator method.
@@ -401,37 +419,43 @@ namespace RCL.Test
     }
 
     [Test]
-    public void TestEachWithParent()
+    public void TestEachWithParent ()
     {
       DoEvalTest ("{x:{<-1 + $R} each 0 to 4 <-long $x}", "1 2 3 4 5");
     }
 
     [Test]
-    public void TestEachWithParentOfLast()
+    public void TestEachWithParentOfLast ()
     {
       DoEvalTest ("{loop:{:#x write {i:++} <-($L < $R) switch {:($L + 1) loop $R :$L}} f:long {<-fiber {<-0 loop 9}} each 0 to 4 :#x dispatch 25 :#x dispatch 25 <-0}", "0");
     }
 
     [Test]
-    public void TestEachWithMultipleStatementsVector()
+    public void TestEachWithMultipleStatementsVector ()
     {
       DoEvalTest ("long {a:$R + 1 <-$a + 2} each 0 to 2", "3 4 5");
     }
 
     [Test]
-    public void TestEachWithMultipleStatementsBlock()
+    public void TestEachWithMultipleStatementsBlock ()
     {
       DoEvalTest ("long {a:$R + 1 <-$a + 2} each {:0 :1 :2}", "3 4 5");
     }
 
     [Test]
-    public void TestRInEval()
+    public void TestEachWithBlock ()
+    {
+      DoEvalTest ("{<-$R + 1} each {a:1 b:2 c:3}", "{a:2 b:3 c:4}");
+    }
+
+    [Test]
+    public void TestRInEval ()
     {
       DoEvalTest ("{<-eval {x:$R}} 0", "{x:0}");
     }
 
     [Test]
-    public void TestEmptyEval()
+    public void TestEmptyEval ()
     {
       DoEvalTest ("count eval {}", "0");
     }
@@ -1054,6 +1078,64 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestSelect ()
+    {
+      string ustring = "[S|x y z #a 1 10 100 #b 2 20 200 #c 3 30 300]";
+      DoEvalTest (string.Format ("#a select {0}", ustring), "[G|S|x y z 0 #a 1 10 100]", RCFormat.Default);
+      DoEvalTest (string.Format ("#b select {0}", ustring), "[G|S|x y z 1 #b 2 20 200]", RCFormat.Default);
+      DoEvalTest (string.Format ("#c select {0}", ustring), "[G|S|x y z 2 #c 3 30 300]", RCFormat.Default);
+      DoEvalTest (string.Format ("#* select {0}", ustring), "[G|S|x y z 0 #a 1 10 100 1 #b 2 20 200 2 #c 3 30 300]", RCFormat.Default);
+      DoEvalTest (string.Format ("#a #b select {0}", ustring), "[G|S|x y z 0 #a 1 10 100 1 #b 2 20 200]", RCFormat.Default);
+      DoEvalTest (string.Format ("#c #b select {0}", ustring), "[G|S|x y z 1 #b 2 20 200 2 #c 3 30 300]", RCFormat.Default);
+
+      string vstring = "[S|x y z #a,x 1 10 100 #a,y 2 20 200 #b,z 3 30 300]";
+      DoEvalTest (string.Format ("#a select {0}", vstring), "[]", RCFormat.Default);
+      DoEvalTest (string.Format ("#a,* select {0}", vstring), "[G|S|x y z 0 #a,x 1 10 100 1 #a,y 2 20 200]", RCFormat.Default);
+      DoEvalTest (string.Format ("#b,* select {0}", vstring), "[G|S|x y z 2 #b,z 3 30 300]", RCFormat.Default);
+      DoEvalTest (string.Format ("#b,z select {0}", vstring), "[G|S|x y z 2 #b,z 3 30 300]", RCFormat.Default);
+      DoEvalTest (string.Format ("#a,x select {0}", vstring), "[G|S|x y z 0 #a,x 1 10 100]", RCFormat.Default);
+      DoEvalTest (string.Format ("#a,x #b,z select {0}", vstring), "[G|S|x y z 0 #a,x 1 10 100 2 #b,z 3 30 300]", RCFormat.Default);
+      DoEvalTest (string.Format ("#a,* #b,z select {0}", vstring), "[G|S|x y z 0 #a,x 1 10 100 1 #a,y 2 20 200 2 #b,z 3 30 300]", RCFormat.Default);
+  
+      DoEvalTest (string.Format ("#b,z select {0}", vstring), "[G|S|x y z 2 #b,z 3 30 300]", RCFormat.Default);
+      DoEvalTest (string.Format ("#b,* select {0}", vstring), "[G|S|x y z 2 #b,z 3 30 300]", RCFormat.Default);
+      DoEvalTest (string.Format ("#b select {0}", vstring), "[]", RCFormat.Default);
+      DoEvalTest (string.Format ("#b,* select {0}", vstring), "[G|S|x y z 2 #b,z 3 30 300]", RCFormat.Default);
+
+      string wstring = "[S|x y z #1,a 1 10 100 #1,b 2 20 200 #2,c 3 30 300]";
+      DoEvalTest (string.Format ("#1,a select {0}", wstring), "[G|S|x y z 0 #1,a 1 10 100]", RCFormat.Default);
+      DoEvalTest (string.Format ("#1,b select {0}", wstring), "[G|S|x y z 1 #1,b 2 20 200]", RCFormat.Default);
+      DoEvalTest (string.Format ("#2,c select {0}", wstring), "[G|S|x y z 2 #2,c 3 30 300]", RCFormat.Default);
+      DoEvalTest (string.Format ("#1,c select {0}", wstring), "[]", RCFormat.Default);
+      DoEvalTest (string.Format ("#2,* select {0}", wstring), "[G|S|x y z 2 #2,c 3 30 300]", RCFormat.Default);
+      DoEvalTest (string.Format ("#3,* select {0}", wstring), "[]", RCFormat.Default);
+
+      string xstring = "[S|x y z #1,a,0 1 10 100 #1,b,0 2 20 200 #2,c,0 3 30 300]";
+      DoEvalTest (string.Format ("#3,* select {0}", xstring), "[]", RCFormat.Default);
+      DoEvalTest (string.Format ("#2,* select {0}", xstring), "[G|S|x y z 2 #2,c,0 3 30 300]", RCFormat.Default);
+      DoEvalTest (string.Format ("#1,* select {0}", xstring), "[G|S|x y z 0 #1,a,0 1 10 100 1 #1,b,0 2 20 200]", RCFormat.Default);
+      DoEvalTest (string.Format ("#1,a,* select {0}", xstring), "[G|S|x y z 0 #1,a,0 1 10 100]", RCFormat.Default);
+      DoEvalTest (string.Format ("#2,b,* select {0}", xstring), "[]", RCFormat.Default);
+      DoEvalTest (string.Format ("#1,b,* select {0}", xstring), "[G|S|x y z 1 #1,b,0 2 20 200]", RCFormat.Default);
+    }
+
+    [Test]
+    public void TestLeadingStars ()
+    {
+      string ustring = "[S|x y z #1,a,0 1 10 100 #1,b,0 2 20 200 #2,b,0 3 30 300]";
+      //DoEvalTest (string.Format ("", ustring), "", RCFormat.Default);
+      DoEvalTest (string.Format ("#1,*,0 select {0}", ustring), "[G|S|x y z 0 #1,a,0 1 10 100 1 #1,b,0 2 20 200]", RCFormat.Default);
+      DoEvalTest (string.Format ("#*,*,0 select {0}", ustring), "[G|S|x y z 0 #1,a,0 1 10 100 1 #1,b,0 2 20 200 2 #2,b,0 3 30 300]", RCFormat.Default);
+    }
+
+    [Test]
+    public void TestLeadingStars1 ()
+    {
+      string ustring = "[S|x y z #1,a,0 1 10 100 #1,b,0 2 20 200 #2,b,0 3 30 300]";
+      DoEvalTest (string.Format ("#*,b,* select {0}", ustring), "[G|S|x y z 1 #1,b,0 2 20 200 2 #2,b,0 3 30 300]", RCFormat.Default);
+    }
+
+    [Test]
     public void TestBot ()
     {
       DoEvalTest ("{b0:bot {:#x write {i:++} <-wait 0} b1:bot {:#y write {i:++} <-wait 0} :(first #x from dump $b0) assert [S|i #x 0] :(first #y from dump $b1) assert [S|i #y 0] <-0}", "0");
@@ -1372,6 +1454,13 @@ namespace RCL.Test
     public void TestLastValueInRootPosition ()
     {
       DoEvalTest ("{a:1 b:2 c:$a + $b f:{<-$c}}", "{a:1 b:2 c:3 f:{<-$c}}");
+    }
+
+    [Test]
+    public void TestSelfExecWithExit ()
+    {
+      DoEvalTest ("\"exit.rcl\" save #pretty format {go:exit 1}", "\"exit.rcl\"");
+      DoEvalTest ("unwrap #status from try {<-exec \"mono --debug rcl.exe exit.rcl go\"}", "1");
     }
 
     RCRunner runner = new RCRunner (RCActivator.Default, new RCLog (new RCL.Core.Output ()), 1, RCRunner.CreateArgs ());

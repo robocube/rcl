@@ -137,6 +137,20 @@ namespace RCL.Kernel
       start += length;
       return new RCArray<T> (result);
     }
+
+    public override void Cubify (RCCube target, Stack<object> names)
+    {
+      object[] array = names.ToArray ();
+      System.Array.Reverse (array);
+      RCSymbolScalar symbol = RCSymbolScalar.From (array);
+      for (int i = 0; i < Count; ++i)
+      {
+        T val = this[i];
+        RCSymbolScalar symboli = new RCSymbolScalar (symbol, (long) i);
+        target.WriteCell (this.TypeCode.ToString (), symboli, val);
+        target.Write (0, symboli);
+      }
+    }
       
     public class RCVectorEnumerator<T> : IEnumerator<T>
     {

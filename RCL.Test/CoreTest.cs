@@ -707,6 +707,11 @@ namespace RCL.Test
     [Test]
     public void TestTimespanTU () { DoTest ("timespan [x 1979.09.04 12:34:56.7891011]", "[x 722695.12:34:56.7891011]"); }
 
+    [Test]
+    public void TestReferenceS () { DoTest ("reference \"x\" \"y\" \"z\"", "$x.y.z"); }
+    [Test]
+    public void TestReferenceY () { DoTest ("reference #x,y,z", "$x.y.z"); }
+
     //Count for blocks and vectors
     [Test]
     public void TestCountK0() { DoTest("count {}", "0"); }
@@ -1671,6 +1676,7 @@ namespace RCL.Test
     }
 
     [Test]
+    [Ignore ("This test fails to expose the bugs in watchf all the time. Need a better test then implement buffer fixes.")]
     public void TestWatchf ()
     {
       DoTest ("{h:exec \"mkdir test\" :cd \"test\" fsw:watchf pwd {} :exec \"touch foo\" create:waitf $fsw :\"foo\" save \"bar\" update:waitf $fsw :exec \"rm foo\" delete:waitf $fsw :cd \"..\" :exec \"rmdir test\" <-eval {create:#event #name from last $create update:#event #name from last $update delete:#event #name from last $delete}}", "{create:{event:\"created\" name:\"foo\"} update:{event:\"changed\" name:\"foo\"} delete:{event:\"deleted\" name:\"foo\"}}");
@@ -2090,7 +2096,21 @@ namespace RCL.Test
     }
 
     [Test]
-    [Ignore]
+    [Ignore ("There some issue spawning a bash shell under the debugger env. Would like to know why.")]
+    public void TestExec1 ()
+    {
+      DoTest ("{sh:startx \"sh\" :$sh writex \"exit 1\" <-try {<-waitx $sh}}", "{status:1 data:~s}");
+    }
+
+    [Test]
+    [Ignore ("There some issue spawning a bash shell under the debugger env. Would like to know why.")]
+    public void TestExec2 ()
+    {
+      DoTest ("{sh:startx \"sh\" :$sh writex \"set\\\\nmkdir foo\" <-try {<-waitx $sh}}", "{status:1 data:~s}");
+    }
+
+    [Test]
+    [Ignore ("Ditto for unix commands like ls and rm")]
     public void TestExec ()
     {
       DoTest ("{:try {<-exec \"rm foo/bar\"} :try {<-exec \"rmdir foo\"} <-0}", "0");

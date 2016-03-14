@@ -2071,5 +2071,16 @@ namespace RCL.Core
         names.Pop ();
       }
     }
+
+    [RCVerb ("cubify")]
+    public void EvalCubify (
+      RCRunner runner, RCClosure closure, RCBlock right)
+    {
+      RCCube target = new RCCube (new RCArray<string> ("S"));
+      target.ReserveColumn ("o");
+      Stack<object> names = new Stack<object> ();
+      right.Cubify (target, names);
+      runner.Yield (closure, target);
+    }
   }
 }

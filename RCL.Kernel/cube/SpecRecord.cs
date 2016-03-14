@@ -9,18 +9,31 @@ namespace RCL.Kernel
   {
     public SpecRecord (RCSymbolScalar scalar)
     {
-      if (scalar.Key.Equals ("*"))
+      original = scalar;
+      RCSymbolScalar current = scalar;
+      while (current != null)
       {
-        Concrete = false;
-        scalar = scalar.Previous;
+        if (current.Key.Equals ("*"))
+        {
+          Concrete = false;
+          scalar = current.Previous;
+          if (current.Length < scalar.Length)
+          {
+            LeadingStar = true;
+          }
+        }
+        current = current.Previous;
       }
       symbol = scalar;
     }
 
     //If false, it means read symbols under this one.
     public readonly bool Concrete = true;
+    //True if symbol contains a leading star.
+    public readonly bool LeadingStar = false;
     //The symbol being tracked.
     public RCSymbolScalar symbol;
+    public RCSymbolScalar original;
     //True for dispatch and false for regular reads.
     public bool ignoreDispatchedRows;
     //The number of records accumulated so far.

@@ -102,29 +102,51 @@ namespace RCL.Core
       RCRunner runner, RCClosure tail, RCClosure previous, RCValue result)
     {
       if (previous.Index < 2)
+      {
         return base.Next (runner, tail, previous, result);
-      
+      }
+
       RCValue right = previous.Result.Get ("1");
+      string name = "";
+      RCBlock rightk = right as RCBlock;
+      if (rightk != null)
+      {
+        RCBlock namek = rightk.GetName (previous.Index - 2);
+        name = namek.Name;
+      }
       if (previous.Index == 2)
       {
-        RCBlock output = new RCBlock (null, "", ":", result);
-        RCClosure parent = new RCClosure (
-          previous.Parent, previous.Bot, previous.Code, previous.Left,
-          output, previous.Index + 1);
-        return new RCClosure (
-          parent, previous.Bot, previous.Code, previous.Left,
-          previous.Result, previous.Index + 1);
+        RCBlock output = new RCBlock (null, name, ":", result);
+        RCClosure parent = new RCClosure (previous.Parent, 
+                                          previous.Bot, 
+                                          previous.Code, 
+                                          previous.Left,
+                                          output, 
+                                          previous.Index + 1);
+        return new RCClosure (parent, 
+                              previous.Bot, 
+                              previous.Code, 
+                              previous.Left,
+                              previous.Result,
+                              previous.Index + 1);
       }
       else if (right != null && previous.Index < right.Count + 2)
       {
-        RCBlock output = new RCBlock (
-          previous.Parent.Result, "", ":", result);
-        RCClosure parent = new RCClosure (
-          previous.Parent.Parent, previous.Bot, previous.Code, previous.Left,
-          output, previous.Index + 1);
-        return new RCClosure (
-          parent, previous.Bot, previous.Code, previous.Left,
-          previous.Result, previous.Index + 1);
+        RCBlock output = new RCBlock (previous.Parent.Result, 
+                                      name, ":", result);
+        
+        RCClosure parent = new RCClosure (previous.Parent.Parent, 
+                                          previous.Bot, 
+                                          previous.Code, 
+                                          previous.Left,
+                                          output, 
+                                          previous.Index + 1);
+        return new RCClosure (parent, 
+                              previous.Bot, 
+                              previous.Code, 
+                              previous.Left,
+                              previous.Result, 
+                              previous.Index + 1);
       }
       else
       {

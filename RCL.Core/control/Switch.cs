@@ -78,6 +78,7 @@ namespace RCL.Core
         RCValue code = picker (left[i]);
         RCClosure child = new RCClosure (
           closure, closure.Bot, code, closure.Left, RCBlock.Empty, 0);
+        //Prior-Authorization number. 866-310-3666
         code.Eval (runner, child);
       }
       else
