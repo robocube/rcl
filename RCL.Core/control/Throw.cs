@@ -15,7 +15,7 @@ namespace RCL.Core
       {
         if (!right[i])
         {
-          throw new Exception ("Element " + i.ToString () + " was false");
+          throw new RCException (closure, RCErrors.Assert, "Element " + i.ToString () + " was false");
         }
       }
       runner.Yield (closure, new RCBoolean (true));
@@ -26,8 +26,8 @@ namespace RCL.Core
     {
       if (!left.Equals (right))
       {
-        throw new Exception ("Expected: " + right.ToString () +
-                             ", Actual: " + left.ToString ());
+        throw new RCException (closure, RCErrors.Assert, "Expected: " + right.ToString () +
+                                                         ", Actual: " + left.ToString ());
       }
       runner.Yield (closure, new RCBoolean (true));
     }
@@ -35,7 +35,7 @@ namespace RCL.Core
     [RCVerb ("fail")]
     public void EvalFail (RCRunner runner, RCClosure closure, RCLong left, RCString right)
     {
-      runner.Finish (closure, new Exception (right[0]), left[0]);
+      runner.Finish (closure, new RCException (closure, RCErrors.Custom, right[0]), left[0]);
     }
   }
 }

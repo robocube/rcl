@@ -40,13 +40,26 @@ namespace RCL.Core
     [RCVerb ("open")]
     public void EvalOpen (RCRunner runner, RCClosure closure, RCSymbol right)
     {
+      EvalOpen (runner, closure, new RCLong (5000), right);
+    }
+
+    [RCVerb ("open")]
+    public void EvalOpen (RCRunner runner, RCClosure closure, RCLong left, RCSymbol right)
+    {
       //Implementing multiple would require some annoying scatter gather logic.
       //Plus what if one fails out of the list?
       if (right.Count != 1)
+      {
         throw new Exception ("open takes exactly one protocol,host,[port]");
+      }
+      if (left.Count != 1)
+      {
+        throw new Exception ("open takes a single timeout value");
+      }
 
       RCSymbolScalar symbol = right[0];
       string protocol = (string) symbol.Part (0);
+      int timeout = (int) left[0];
       //string host = (string) symbol[1];
       //long port = -1;
       //if (symbol.Length > 2)
@@ -59,7 +72,7 @@ namespace RCL.Core
       }
       else if (protocol.Equals ("tcp"))
       {
-        client = new TcpClient (handle, symbol, new TcpProtocol ());
+        client = new TcpClient (handle, symbol, new TcpProtocol (), timeout);
       }
       else if (protocol.Equals ("udp"))
       {
@@ -76,6 +89,13 @@ namespace RCL.Core
       }
       closure.Bot.Put (handle, client);
       client.Open (runner, closure);
+    }
+
+    [RCVerb ("listen")]
+    public void EvalListen (RCRunner runner, RCClosure closure, RCLong right)
+    {
+      RCSymbolScalar symbol = new RCSymbolScalar (new RCSymbolScalar (null, "tcp"), right[0]);
+      EvalListen (runner, closure, new RCSymbol(symbol));
     }
 
     [RCVerb ("listen")]
@@ -121,6 +141,7 @@ namespace RCL.Core
       }
       Client client = (Client) closure.Bot.Get (right[0]);
       client.Close (runner, closure);
+      runner.Yield (closure, right);
     }
 
     [RCVerb ("send")]

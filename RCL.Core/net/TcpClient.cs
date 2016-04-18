@@ -23,8 +23,10 @@ namespace RCL.Core
     protected TcpOutBox m_outbox;
     protected int m_cid = 0;
     protected Tcp.Protocol m_protocol;
+    protected int m_timeout;
+    protected Timer m_timeoutTimer;
 
-    public TcpClient (long handle, RCSymbolScalar symbol, Tcp.Protocol protocol)
+    public TcpClient (long handle, RCSymbolScalar symbol, Tcp.Protocol protocol, int timeout)
     {
       m_protocol = protocol;
       m_handle = handle;
@@ -33,6 +35,8 @@ namespace RCL.Core
       m_inbox = new TcpReceiveBox ();
       m_outbox = new TcpOutBox ();
       m_buffer = new TcpMessageBuffer ();
+      m_timeout = timeout;
+      m_timeoutTimer = null;
     }
 
     public string Host
@@ -73,10 +77,38 @@ namespace RCL.Core
       m_socket = new Socket (
         address.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
       IPEndPoint end = new IPEndPoint (address, (int) m_port);
-      m_socket.BeginConnect (
-        end,
-        new AsyncCallback (ConnectCompleted),
-        new RCAsyncState (state.Runner, state.Closure, i));
+      RCAsyncState statei = new RCAsyncState (state.Runner, state.Closure, i);
+      m_socket.BeginConnect (end, new AsyncCallback (ConnectCompleted), statei);
+      m_timeoutTimer = new Timer (CheckConnect, statei, m_timeout, Timeout.Infinite);
+    }
+
+    protected void CheckConnect (object obj)
+    {
+      RCAsyncState state = (RCAsyncState) obj;
+      try
+      {
+        if (!m_socket.Connected)
+        {
+          m_socket.Close ();
+          int i = (int) state.Other;
+          if (i >= m_ip.AddressList.Length - 1)
+          {
+            state.Runner.Finish (state.Closure, 
+                                 new RCException (state.Closure, 
+                                                  RCErrors.Timeout, 
+                                                  "Giving up after timeout."), 1);
+          }
+          else
+          {
+            m_socket.Close ();
+            TryAddress (state, i + 1);
+          }
+        }
+      }
+      catch (Exception ex)
+      {
+        state.Runner.Report (state.Closure, ex);
+      }
     }
 
     protected void ConnectCompleted (IAsyncResult result)

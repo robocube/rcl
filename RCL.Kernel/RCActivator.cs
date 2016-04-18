@@ -271,17 +271,25 @@ namespace RCL.Kernel
         }
         else throw RCException.Overload (closure, name, right);
       }
-      catch (TargetInvocationException ex)
+      catch (TargetInvocationException tiex)
       {
         //At least this way I can know which method the exception came from.
         //Maybe change this to RCRuntimeException.
         //throw new Exception (
         //  "An exception was thrown by the operator implementation:" +
         //    "(" + name + " " + r.ToString () + ")");
-        throw new RCException (
-          closure, ex,
-          "An exception was thrown by the operator (" +
-          name + " " + right.ToString () + ")");
+        Exception ex = tiex.GetBaseException ();
+        RCException rcex = ex as RCException;
+        if (rcex != null)
+        {
+          throw rcex;
+        }
+        else
+        {
+          throw new RCException (closure, tiex, RCErrors.Native, 
+                                 "An exception was thrown by the operator (" +
+                                 name + " " + right.ToString () + ")");
+        }
       }
     }
 
@@ -319,15 +327,24 @@ namespace RCL.Kernel
         }
         else throw RCException.Overload (closure, name, left, right);
       }
-      catch (TargetInvocationException ex)
+      catch (TargetInvocationException tiex)
       {
+        Exception ex = tiex.GetBaseException ();
+        RCException rcex = ex as RCException;
+        if (rcex != null)
+        {
+          throw rcex;
+        }
+        else
+        {
+          throw new RCException (closure, tiex, RCErrors.Native, 
+                                 "An exception was thrown by the operator ("
+                                 + left.ToString () + " " + name + " " + right.ToString () + ")");
+        }
         //throw;
         //At least this way I can know which method the exception came from.
         //Maybe change this to RCRuntimeException.
         //throw new Exception ("An exception was thrown by the operator implementation:" + overload.ToString (), ex);
-        throw new RCException (closure, ex, 
-                                      "An exception was thrown by the operator ("
-                                      + left.ToString () + " " + name + " " + right.ToString () + ")");
       }
     }
 

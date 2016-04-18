@@ -63,10 +63,10 @@ namespace RCL.Core
       {
         return;
       }
-      else if (m_editor != null && closure.Bot.Id == 0 && instance == 0 && type == "fiber")
-      {
-        return;
-      }
+      //else if (m_editor != null && closure.Bot.Id == 0 && instance == 0 && type == "fiber")
+      //{
+      //  return;
+      //}
       else if (m_level == RCOutput.Single)
       {
         string time = DateTime.UtcNow.ToString (TimeFormat);
@@ -84,6 +84,12 @@ namespace RCL.Core
       {
         string message = CreateMessage (info);
         m_output.WriteLine (message);
+      }
+      else if (m_level == RCOutput.Test)
+      {
+        string message = IndentMessage (CreateMessage (info));
+        m_output.WriteLine ("{0} {1} {2} {3} {4} {5}", 
+                            closure.Bot.Id, closure.Fiber, type, instance, state, message);
       }
       else if (m_level == RCOutput.Trace)
       {
@@ -124,6 +130,12 @@ namespace RCL.Core
         string message = CreateMessage (info);
         m_output.WriteLine (message);
       }
+      else if (m_level == RCOutput.Test)
+      {
+        string message = IndentMessage (CreateMessage (info));
+        m_output.WriteLine ("{0} {1} {2} {3} {4} {5}", 
+                            closure.Bot.Id, closure.Fiber, type, instance, state, message);
+      }
       else if (m_level == RCOutput.Trace)
       {
         throw new NotImplementedException ();
@@ -149,6 +161,10 @@ namespace RCL.Core
       else if (info is RCCube)
       {
         message = ((RCValue) info).Format (RCFormat.Pretty);
+      }
+      else if (info is RCException && m_level == RCOutput.Test)
+      {
+        message = ((RCException) info).ToTestString ();
       }
       else if (info is RCString)
       {

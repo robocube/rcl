@@ -988,7 +988,7 @@ namespace RCL.Core
         closure, Invoke (closure, op.Name, (RCVectorBase) left, right));
     }
 
-    [RCVerb ("in")]
+    [RCVerb ("in")] [RCVerb ("like")]
     public void EvalRightContextual (
       RCRunner runner, RCClosure closure, RCCube left, object right)
     {
@@ -1175,6 +1175,11 @@ namespace RCL.Core
     public void EvalWhere (
       RCRunner runner, RCClosure closure, RCCube left, RCCube right)
     {
+      if (right.Columns.Count == 0)
+      {
+        runner.Yield (closure, RCCube.Empty);
+        return;
+      }
       Column<bool> wherecol = (Column<bool>) right.GetColumn (0);
       if (left.Axis.ColCount == 0)
       {

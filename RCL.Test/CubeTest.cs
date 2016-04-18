@@ -1949,8 +1949,15 @@ namespace RCL.Test
     [Test]
     public void TestWhere8 ()
     {
-      //Do not remove dups while wring to the result.
+      //Do not remove dups while writing to the result.
       DoTest ("{u:[E|S|x 0 #a 0 1 #a 0] <-$u where $u.S == #a}", "[E|S|x 0 #a 0 1 #a 0]");
+    }
+
+    [Test]
+    public void TestWhere9 ()
+    {
+      //18007130744
+      DoTest ("[] where []", "[]");
     }
 
     [Test]

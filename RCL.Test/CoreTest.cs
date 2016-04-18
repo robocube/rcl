@@ -1607,6 +1607,18 @@ namespace RCL.Test
     public void TestCutleft () { DoTest ("0 1 2 cutleft \"abcdef\" \"ghijkl\" \"mnopqr\"", "\"\" \"g\" \"mn\""); }
     [Test]
     public void TestCutleft1 () { DoTest ("0 -1 -2 cutleft \"abcdef\" \"ghijkl\" \"mnopqr\"", "\"\" \"ghijk\" \"mnop\""); }
+    [Test]
+    public void TestLike1 () { DoTest ("\"foobar\" \"foobaz\" \"foo\" \"fazbar\" like \"foo*\"", "true true true false"); }
+    [Test]
+    public void TestLike2 () { DoTest ("\"foobar\" \"fazbar\" \"bar\" \"foobaz\" like \"*bar\"", "true true true false"); }
+    [Test]
+    public void TestLike3 () { DoTest ("\"foozbar\" \"foolsbar\" \"foobar\" \"foobaz\" like \"foo*bar\"", "true true true false"); }
+    [Test]
+    public void TestLike1U () { DoTest ("[x \"foobar\" \"foobaz\" \"foo\" \"fazbar\"] like \"foo*\"", "[x true true true false]"); }
+    [Test]
+    public void TestLike2U () { DoTest ("[S|x #a \"foobar\" #b \"fazbar\" #c \"bar\" #d \"foobaz\"] like \"*bar\"", "[S|x #a true #b true #c true #d false]"); }
+    [Test]
+    public void TestLike3U () { DoTest ("[x \"foozbar\" \"foolsbar\" \"foobar\" \"foobaz\"] like \"foo*bar\"", "[x true true true false]"); }
 
     //Block
     [Test]
@@ -1672,7 +1684,7 @@ namespace RCL.Test
     [Test]
     public void TestTryFail ()
     {
-      DoTest ("try {<-900 fail \"fail with status 900\"}", "{status:900 data:\"fail with status 900\"}");
+      DoTest ("try {<-900 fail \"fail with status 900\"}", "{status:900 data:\"<<Custom>>\"}");
     }
 
     [Test]
@@ -1759,7 +1771,7 @@ namespace RCL.Test
     [Test]
     public void TestTryAssert ()
     {
-      DoTest ("try {<-assert false}", "{status:1 data:\"An exception was thrown by the operator (assert false)\"}");
+      DoTest ("try {<-assert false}", "{status:1 data:\"<<Assert>>\"}");
     }
 
     [Test]

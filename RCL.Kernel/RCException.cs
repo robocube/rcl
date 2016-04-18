@@ -13,7 +13,7 @@ namespace RCL.Kernel
       string message = "Operator " + op.Name +
         " can not receive arguments of type " + right.TypeName + ".";
       message += "(" + right.ToString () + ")";
-      return new RCException (closure, message);
+      return new RCException (closure, RCErrors.Type, message);
     }
 
     public static RCException Overload (
@@ -23,7 +23,7 @@ namespace RCL.Kernel
         " can not receive arguments of type " +
         left.TypeName + " and " + right.TypeName + ".";
       message += "(" + left.ToString () + "," + right.ToString () + ")";
-      return new RCException (closure, message);
+      return new RCException (closure, RCErrors.Type, message);
     }
 
     public static RCException Overload (
@@ -32,7 +32,7 @@ namespace RCL.Kernel
       string message = "Operator " + op +
         " can not receive arguments of type " + right.GetType ().Name + ".";
       message += "(" + right.ToString () + ")";
-      return new RCException (closure, message);
+      return new RCException (closure, RCErrors.Type, message);
     }
 
     public static RCException Overload (
@@ -42,29 +42,32 @@ namespace RCL.Kernel
         " can not receive arguments of type " +
         left.GetType ().Name + " and " + right.GetType ().Name + ".";
       message += "(" + left.ToString () + "," + right.ToString () + ")";
-      return new RCException (closure, message);
+      return new RCException (closure, RCErrors.Type, message);
     }
 
     public static RCException LockViolation (RCClosure closure)
     {
       return new RCException (
-        closure, "Attempted to mutate a value after it was locked.");
+        closure, RCErrors.Lock, "Attempted to mutate a value after it was locked.");
     }
 
     public readonly RCClosure Closure;
     public readonly TargetInvocationException Exception;
+    public readonly RCErrors Error;
 
-    public RCException (RCClosure closure, string message)
+    public RCException (RCClosure closure, RCErrors error, string message)
       : base (message)
     {
       Closure = closure;
+      Error = error;
     }
 
-    public RCException (RCClosure closure, TargetInvocationException ex, string message)
+    public RCException (RCClosure closure, TargetInvocationException ex, RCErrors error, string message)
       : base (message)
     {
       Closure = closure;
       Exception = ex;
+      Error = error;
     }
 
     public override string ToString ()
@@ -75,12 +78,16 @@ namespace RCL.Kernel
       }
       else
       {
-        
         return string.Format ("{0}\n--------------------------------------------------------------------------------\n{1}\n--------------------------------------------------------------------------------\n{2}",
                               Message, 
                               Exception.GetBaseException ().ToString (),
                               Closure.ToString ());
       }
+    }
+
+    public string ToTestString ()
+    {
+      return string.Format ("<<{0}>>", Error.ToString ());
     }
   }
 }

@@ -389,7 +389,7 @@ namespace RCL.Core
       runner.Yield (closure, new RCLReference (strings));
     }
       
-    [RCVerb ("in")]
+    [RCVerb ("in")] [RCVerb ("like")]
     public void EvalRightContextual (
       RCRunner runner, RCClosure closure, object left, object right)
     {

@@ -33,19 +33,28 @@ namespace RCL.Exe
       LineEditor editor = new LineEditor ("RCL");
       Output consoleLog = new Output (editor);
       RCOutput outputEnum = (RCOutput) Enum.Parse (typeof (RCOutput), output, true);
+      bool copyright = !batch && outputEnum != RCOutput.Clean && outputEnum != RCOutput.Test;
+      bool options = !batch && outputEnum != RCOutput.Clean && outputEnum != RCOutput.Test;
       consoleLog.SetVerbosity (outputEnum);
       RCLog log = new RCLog (consoleLog);
       RCRunner runner = new RCRunner (RCActivator.Default, log, 1, arguments);
 
-      if (!batch && outputEnum != RCOutput.Clean)
+      if (copyright)
       {
         Console.WriteLine ();
         PrintCopyright ();
+      }
+      if (options)
+      {
         Console.WriteLine ();
         Console.WriteLine ("Options:");
         Console.WriteLine (arguments.Format (RCFormat.Pretty));
+      }
+      if (options || copyright)
+      {
         Console.WriteLine ();
       }
+
       string line = "";
       if (program != "")
       {

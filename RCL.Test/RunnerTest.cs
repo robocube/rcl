@@ -189,7 +189,7 @@ namespace RCL.Test
     public void TestTryError ()
     {
       RCRunner runner = new RCRunner ();
-      Assert.AreEqual ("{status:1 data:\"An exception was thrown by the operator (assert false)\"}", runner.Rep ("try {<-assert false}").ToString ());
+      Assert.AreEqual ("{status:1 data:\"<<Assert>>\"}", runner.Rep ("try {<-assert false}").ToString ());
     }
 
     [Test]

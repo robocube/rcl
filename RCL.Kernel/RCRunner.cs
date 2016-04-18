@@ -291,7 +291,7 @@ namespace RCL.Kernel
           {
             try
             {
-              Console.Out.Write (next);
+              Log.Record (this, next, "fiber", next.Fiber, "exception", userex);
               Kill (next.Bot.Id, next.Fiber, userex, 1);
             }
             catch (Exception sysex)

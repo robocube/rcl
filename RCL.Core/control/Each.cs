@@ -68,6 +68,11 @@ namespace RCL.Core
     public void EvalEach (
       RCRunner runner, RCClosure closure, RCBlock left, RCBlock right)
     {
+      if (right.Count == 0)
+      {
+        runner.Yield (closure, right);
+        return;
+      }
       long i = closure.Index - 2;
       if (i < right.Count)
       {
@@ -84,6 +89,11 @@ namespace RCL.Core
     protected virtual void DoEach<T> (
       RCRunner runner, RCClosure closure, RCBlock left, RCVector<T> right)
     {
+      if (right.Count == 0)
+      {
+        runner.Yield (closure, RCBlock.Empty);
+        return;
+      }
       int i = closure.Index - 2;
       if (i < right.Count)
       {

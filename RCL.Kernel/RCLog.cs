@@ -37,7 +37,7 @@ namespace RCL.Kernel
       }
     }
 
-    [Conditional ("TRACE")]
+    //[Conditional ("TRACE")]
     public virtual void Record (
       RCRunner runner, RCClosure closure, string type, long instance, string state, object info)
     {
@@ -55,7 +55,7 @@ namespace RCL.Kernel
       }
     }
 
-    [Conditional ("TRACE")]
+    //[Conditional ("TRACE")]
     public virtual void RecordDoc (
       RCRunner runner, RCClosure closure, string type, long instance, string state, object info)
     {

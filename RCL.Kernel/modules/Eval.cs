@@ -337,7 +337,7 @@ namespace RCL.Kernel
       {
         throw new RCException (
           //Delimit thing is annoying.
-          closure, "Unable to resolve name " + RCLReference.Delimit (name, "."));
+          closure, RCErrors.Name, "Unable to resolve name " + RCLReference.Delimit (name, "."));
       }
       return val;
     }

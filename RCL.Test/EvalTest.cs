@@ -419,6 +419,18 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestEachEmptyK ()
+    {
+      DoEvalTest ("{<-$R} each {}", "{}");
+    }
+
+    [Test]
+    public void TestEachEmptyL ()
+    {
+      DoEvalTest ("{<-$R} each ~l", "{}");
+    }
+
+    [Test]
     public void TestEachWithParent ()
     {
       DoEvalTest ("{x:{<-1 + $R} each 0 to 4 <-long $x}", "1 2 3 4 5");

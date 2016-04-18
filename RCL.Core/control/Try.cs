@@ -23,7 +23,17 @@ namespace RCL.Core
       //Handle method on all of the parents in the stack until it gets to
       //one that returns a closure to eval next.
       RCBlock wrapper = new RCBlock ("status", ":", new RCLong (status));
-      wrapper = new RCBlock (wrapper, "data", ":", new RCString (exception.Message));
+      RCException rcex = exception as RCException;
+      string message;
+      if (rcex != null)
+      {
+        message = rcex.ToTestString ();
+      }
+      else
+      {
+        message = exception.Message;
+      }
+      wrapper = new RCBlock (wrapper, "data", ":", new RCString (message));
       result = wrapper;
       return base.Next (runner, closure, closure, result);
     }

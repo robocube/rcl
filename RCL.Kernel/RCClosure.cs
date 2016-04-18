@@ -150,15 +150,24 @@ namespace RCL.Kernel
         if (op != null)
         {
           builder.Append (op.Name);
-          builder.AppendLine ();
-          closure.Result.Format (builder, RCFormat.Pretty, indent);
+          builder.Append (" ");
+          closure.Result.Format (builder, RCFormat.Default, indent);
           builder.AppendLine ();
         }
-        else
+
+        RCBlock block = closure.Code as RCBlock;
+        if (block != null)
         {
-          closure.Code.Format (builder, RCFormat.Pretty, indent);
-          builder.AppendLine ();
-          closure.Result.Format (builder, RCFormat.Pretty, indent);
+          RCBlock line = block.GetName (closure.Index);
+          if (line.Name != "")
+          {
+            builder.AppendFormat ("{0} @ ({1}) ", line.Name, closure.Index);
+            closure.Result.Format (builder, RCFormat.Default, indent);
+          }
+          else
+          {
+            builder.AppendFormat ("{0}", "program...");
+          }
           builder.AppendLine ();
         }
         closure = closure.Parent;

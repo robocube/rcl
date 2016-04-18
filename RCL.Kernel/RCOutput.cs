@@ -9,5 +9,6 @@ namespace RCL.Kernel
     Full   = 3,  //Output all available info from console events.
     Clean  = 4,  //Output exactly what is written with print and nothing else.
     Trace  = 5,  //Output a full trace of the evaluation process. Not implemented.
+    Test   = 6,  //Output suitable for test purposes. No timestamps, long messages.
   }
 }

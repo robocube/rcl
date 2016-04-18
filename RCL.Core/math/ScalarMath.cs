@@ -1175,5 +1175,38 @@ namespace RCL.Core
     [Primitive ("in", Profile.Contextual)]
     public static bool Contains (ContainsContext<RCTimeScalar> c, RCTimeScalar r)
     { return c.values.Contains (r); }
+
+    public class LikeContext<T> : Context<T>
+    {
+      public string[] m_parts;
+      public override void Init (RCArray<T> right)
+      {
+        m_parts = right[0].ToString ().Split ('*');
+      }
+    }
+
+    [Primitive ("like", Profile.Contextual)]
+    public static bool Like (LikeContext<string> c, string r)
+    {
+      int start = 0;
+      int part = 0;
+      while (start < r.Length && part < c.m_parts.Length)
+      {
+        if (c.m_parts[part] != "")
+        {
+          int index = r.IndexOf (c.m_parts[part], start);
+          if (index >= 0)
+          {
+            start += c.m_parts[part].Length;
+          }
+          else
+          {
+            return false;
+          }
+        }
+        ++part;
+      }
+      return true;
+    }
   }
 }
