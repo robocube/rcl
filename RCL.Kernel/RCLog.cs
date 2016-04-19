@@ -8,6 +8,7 @@ namespace RCL.Kernel
   {
     protected Dictionary<string, List<RCLogger>> m_loggers = new Dictionary<string, List<RCLogger>> ();
     protected List<RCLogger> m_wild = new List<RCLogger> ();
+    protected object m_lock = new object ();
 
     public RCLog (params RCLogger[] loggers)
     {
@@ -41,17 +42,20 @@ namespace RCL.Kernel
     public virtual void Record (
       RCRunner runner, RCClosure closure, string type, long instance, string state, object info)
     {
-      List<RCLogger> typeList;
-      if (m_loggers.TryGetValue (type, out typeList))
+      lock (m_lock)
       {
-        for (int i = 0; i < typeList.Count; ++i)
+        List<RCLogger> typeList;
+        if (m_loggers.TryGetValue (type, out typeList))
         {
-          typeList[i].Record (runner, closure, type, instance, state, info);
+          for (int i = 0; i < typeList.Count; ++i)
+          {
+            typeList[i].Record (runner, closure, type, instance, state, info);
+          }
         }
-      }
-      for (int i = 0; i < m_wild.Count; ++i)
-      {
-        m_wild[i].Record (runner, closure, type, instance, state, info);
+        for (int i = 0; i < m_wild.Count; ++i)
+        {
+          m_wild[i].Record (runner, closure, type, instance, state, info);
+        }
       }
     }
 
@@ -59,60 +63,59 @@ namespace RCL.Kernel
     public virtual void RecordDoc (
       RCRunner runner, RCClosure closure, string type, long instance, string state, object info)
     {
-      List<RCLogger> typeList;
-      if (m_loggers.TryGetValue (type, out typeList))
+      lock (m_lock)
       {
-        for (int i = 0; i < typeList.Count; ++i)
+        List<RCLogger> typeList;
+        if (m_loggers.TryGetValue (type, out typeList))
         {
-          typeList[i].RecordDoc (runner, closure, type, instance, state, info);
+          for (int i = 0; i < typeList.Count; ++i)
+          {
+            typeList[i].RecordDoc (runner, closure, type, instance, state, info);
+          }
         }
-      }
-      for (int i = 0; i < m_wild.Count; ++i)
-      {
-        m_wild[i].RecordDoc (runner, closure, type, instance, state, info);
+        for (int i = 0; i < m_wild.Count; ++i)
+        {
+          m_wild[i].RecordDoc (runner, closure, type, instance, state, info);
+        }
       }
     }
 
     public virtual void Write (string type, string message)
     {
-      List<RCLogger> typeList;
-      if (m_loggers.TryGetValue (type, out typeList))
+      lock (m_lock)
       {
-        for (int i = 0; i < typeList.Count; ++i)
+        List<RCLogger> typeList;
+        if (m_loggers.TryGetValue (type, out typeList))
         {
-          typeList[i].Write (type, message);
+          for (int i = 0; i < typeList.Count; ++i)
+          {
+            typeList[i].Write (type, message);
+          }
         }
-      }
-      for (int i = 0; i < m_wild.Count; ++i)
-      {
-        m_wild[i].Write (type, message);
+        for (int i = 0; i < m_wild.Count; ++i)
+        {
+          m_wild[i].Write (type, message);
+        }
       }
     }
 
     public virtual void WriteLine (string type, string line)
     {
-      List<RCLogger> typeList;
-      if (m_loggers.TryGetValue (type, out typeList))
+      lock (m_lock)
       {
-        for (int i = 0; i < typeList.Count; ++i)
+        List<RCLogger> typeList;
+        if (m_loggers.TryGetValue (type, out typeList))
         {
-          typeList[i].WriteLine (type, line);
+          for (int i = 0; i < typeList.Count; ++i)
+          {
+            typeList[i].WriteLine (type, line);
+          }
+        }
+        for (int i = 0; i < m_wild.Count; ++i)
+        {
+          m_wild[i].WriteLine (type, line);
         }
       }
-      for (int i = 0; i < m_wild.Count; ++i)
-      {
-        m_wild[i].WriteLine (type, line);
-      }
     }
-
-    /*
-    public virtual void Output (RCOutput output)
-    {
-      foreach (KeyValuePair< kv in m_loggers)
-      {
-
-      }
-    }
-    */
   }
 }
