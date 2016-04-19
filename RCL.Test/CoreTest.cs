@@ -1688,6 +1688,12 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestTryFail1 ()
+    {
+      DoTest ("try {<-fail \"rando failure message\"}", "{status:7 data:\"<<Custom>>\"}");
+    }
+
+    [Test]
     [Ignore ("This test fails to expose the bugs in watchf all the time. Need a better test then implement buffer fixes.")]
     public void TestWatchf ()
     {

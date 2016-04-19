@@ -32,10 +32,21 @@ namespace RCL.Core
       runner.Yield (closure, new RCBoolean (true));
     }
 
+
     [RCVerb ("fail")]
     public void EvalFail (RCRunner runner, RCClosure closure, RCLong left, RCString right)
     {
-      runner.Finish (closure, new RCException (closure, RCErrors.Custom, right[0]), left[0]);
+      runner.Finish (closure, 
+                     new RCException (closure, RCErrors.Custom, right[0]), 
+                     left[0]);
+    }
+
+    [RCVerb ("fail")]
+    public void EvalFail (RCRunner runner, RCClosure closure, RCString right)
+    {
+      runner.Finish (closure, 
+                     new RCException (closure, RCErrors.Custom, right[0]), 
+                     (int) RCErrors.Custom);
     }
   }
 }
