@@ -51,6 +51,7 @@
     <Compile Include="EvalTest.cs" />
     <Compile Include="LexTest.cs" />
     <Compile Include="CoreTest.cs" />
+    <Compile Include="DiffMatchPatchTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
