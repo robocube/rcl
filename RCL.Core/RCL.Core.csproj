@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -80,6 +80,7 @@
     <Compile Include="env\Now.cs" />
     <Compile Include="net\Tcp.cs" />
     <Compile Include="misc\Atom.cs" />
+    <Compile Include="misc\DiffMatchPatch.cs" />
     <Compile Include="misc\Chart.cs" />
     <Compile Include="misc\Tree.cs" />
     <Compile Include="misc\Block.cs" />
@@ -103,7 +104,7 @@
     <Compile Include="net\HttpClient.cs" />
     <Compile Include="vector\Alternate.cs" />
     <Compile Include="env\FileEvents.cs" />
-    <Compile Include="misc\DiffMatchPatch.cs" />
+    <Compile Include="misc\Text.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

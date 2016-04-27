@@ -2114,6 +2114,36 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestCompare0 ()
+    {
+      DoTest ("\"aaa\\n\" compare \"bbb\\n\"", "[op old new \"DELETE\" \"aaa\" -- \"INSERT\" -- \"bbb\" \"EQUAL\" \"\\n\" \"\\n\"]");
+    }
+
+    [Test]
+    public void TestCompare1 ()
+    {
+      DoTest ("\"aba\" compare \"abc\"", "[op old new \"EQUAL\" \"ab\" \"ab\" \"DELETE\" \"a\" -- \"INSERT\" -- \"c\"]");
+    }
+
+    [Test]
+    public void TestCompare2 ()
+    {
+      DoTest ("\"a\nx\nb\n\" compare \"a\nb\nc\n\"", "[op old new \"EQUAL\" \"a\\n\" \"a\\n\" \"DELETE\" \"x\\n\" -- \"EQUAL\" \"b\\n\" \"b\\n\" \"INSERT\" -- \"c\\n\"]");
+    }
+
+    [Test]
+    public void TestCompare3 ()
+    {
+      DoTest ("\"aaa\nddd\n\" compare \"aaa\nbbb\nccc\nddd\n\"", "[op old new \"EQUAL\" \"aaa\\n\" \"aaa\\n\" \"INSERT\" -- \"bbb\\n\" \"INSERT\" -- \"ccc\\n\" \"EQUAL\" \"ddd\\n\" \"ddd\\n\"]");
+    }
+
+    [Test]
+    public void TestCompare4 ()
+    {
+      DoTest ("\"aaa\\nbbb\\nccc\\nddd\\n\" compare \"aaa\\nddd\\n\"", "[op old new \"EQUAL\" \"aaa\\n\" \"aaa\\n\" \"DELETE\" \"bbb\\n\" -- \"DELETE\" \"ccc\\n\" -- \"EQUAL\" \"ddd\\n\" \"ddd\\n\"]");
+    }
+
+    [Test]
     [Ignore ("There some issue spawning a bash shell under the debugger env. Would like to know why.")]
     public void TestExec1 ()
     {

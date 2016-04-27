@@ -364,8 +364,10 @@ namespace RCL.Core
     }
 
     [RCVerb ("delimit")]
-    public void EvalDelimit (
-                             RCRunner runner, RCClosure closure, RCString left, RCString right)
+    public void EvalDelimit (RCRunner runner,
+                             RCClosure closure,
+                             RCString left,
+                             RCString right)
     {
       StringBuilder result = new StringBuilder ();
       for (int i = 0; i < right.Count; ++i)

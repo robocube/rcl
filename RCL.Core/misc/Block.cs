@@ -192,6 +192,21 @@ namespace RCL.Core
       runner.Yield (closure, result);
     }
 
+    [RCVerb ("template")]
+    public void EvalTemplate (
+      RCRunner runner, RCClosure closure, RCString right)
+    {
+      if (right.Count > 1)
+      {
+        throw new RCException (closure, 
+                               RCErrors.Count, 
+                               "template only takes a single string (use & first).");
+      }
+      bool multiline = right[0].IndexOf ('\n') > -1;
+      RCBlock def = new RCBlock ("", ":", right);
+      runner.Yield (closure, new RCTemplate (def, 1, multiline));
+    }
+
     protected virtual RCArray<T> CoerceBlock<T> (RCBlock right)
     {
       RCArray<T> result = new RCArray<T>();

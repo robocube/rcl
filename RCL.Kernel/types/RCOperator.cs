@@ -273,7 +273,12 @@ namespace RCL.Kernel
 
     public override void Format (StringBuilder builder, RCFormat args, int level)
     {
-      RCL.Kernel.Format.DoFormat (this, builder, args, level);
+      RCFormat format = new RCFormat (args.Syntax, "  ", 
+                                      args.Newline, args.Delimeter, 
+                                      args.RowDelimeter, args.Align, 
+                                      args.Showt, args.Level, 
+                                      args.ParsableScalars);
+      RCL.Kernel.Format.DoFormat (this, builder, format, level);
     }
 
     public override string TypeName { get { return "template"; } }

@@ -1430,9 +1430,27 @@ namespace RCL.Test
     */
 
     [Test]
-    public void TestBlockTemplateCoercion ()
+    public void TestTemplateToBlockCoercion ()
     {
       DoEvalTest ("{t:[?\n  a\n  b\n  c\n?] <-block $t}", "{:\"a\\nb\\nc\\n\"}");
+    }
+
+    [Test]
+    public void TestStringTemplateCoercion ()
+    {
+      DoEvalTest ("template \"foo bar baz\"", "[?foo bar baz?]");
+    }
+
+    [Test]
+    public void TestStringTemplateCoercionMulti ()
+    {
+      DoEvalTest ("template \"foo\nbar\nbaz\n\"", "[?\n  foo\n  bar\n  baz\n?]");
+    }
+
+    [Test]
+    public void TestFormatTemplate ()
+    {
+      DoEvalTest ("format [?\n  foo\n  bar\n  baz\n?]", "\"[?\\n  foo\\n  bar\\n  baz\\n?]\"");
     }
 
     [Test]
