@@ -703,18 +703,24 @@ namespace RCL.Test
     public void TestTemplateMultiline ()
     {
       DoParserTest ("[?\n  line number one\n  line number two\n  line number three\n?]",
-                    "[?\nline number one\nline number two\nline number three\n?]");
+                    "[?\n  line number one\n  line number two\n  line number three\n?]");
       DoParserTest ("    [?\n    line number one\n    line number two\n    line number three\n  ?]",
-                    "[?\nline number one\nline number two\nline number three\n?]");
-/*
-[?
-  <html>
-    [!head {}!]
-    [!body {}!]
-  </html>
-?]
-*/
-      DoParserTest ("[?\n  <html>\n    [!head {}!]\n    [!body {}!]\n  </html>\n?]", "[?\n<html>\n  [!head {}!]\n  [!body {}!]\n</html>\n?]");
+                    "[?\n  line number one\n  line number two\n  line number three\n?]");
+    }
+
+    [Test]
+    public void TestTemplateMultiline1 ()
+    {
+      /*
+      [?
+        <html>
+          [!head {}!]
+          [!body {}!]
+        </html>
+      ?]
+      */
+      DoParserTest ("[?\n  <html>\n    [!head {}!]\n    [!body {}!]\n  </html>\n?]", 
+                    "[?\n  <html>\n    [!head {}!]\n    [!body {}!]\n  </html>\n?]");
     }
 
     [Test]
@@ -722,9 +728,9 @@ namespace RCL.Test
     {
       //When CRLFs are involved strip them out in the parser.
       DoParserTest ("[?\r\n  line number one\r\n  line number two\r\n  line number three\r\n?]",
-                    "[?\nline number one\nline number two\nline number three\n?]");
+                    "[?\n  line number one\n  line number two\n  line number three\n?]");
       DoParserTest ("    [?\r\n    line number one\r\n    line number two\r\n    line number three\r\n  ?]",
-                    "[?\nline number one\nline number two\nline number three\n?]");
+                    "[?\n  line number one\n  line number two\n  line number three\n?]");
 /*
 [?
   <html>
@@ -734,7 +740,7 @@ namespace RCL.Test
 ?]
 */
       DoParserTest ("[?\r\n  <html>\r\n    [!head {}!]\r\n    [!body {}!]\r\n  </html>\r\n?]",
-                    "[?\n<html>\n  [!head {}!]\n  [!body {}!]\n</html>\n?]");
+                    "[?\n  <html>\n    [!head {}!]\n    [!body {}!]\n  </html>\n?]");
     }
 
     [Test]
@@ -747,7 +753,8 @@ namespace RCL.Test
   </html>
 ?]
 */
-      DoParserTest ("[?\n  <html>\n    <h1>[!string $R!]</h1>\n  </html>\n?]", "[?\n<html>\n  <h1>[!string $R!]</h1>\n</html>\n?]");
+      DoParserTest ("[?\n  <html>\n    <h1>[!string $R!]</h1>\n  </html>\n?]", 
+                    "[?\n  <html>\n    <h1>[!string $R!]</h1>\n  </html>\n?]");
     }
 
     [Test]
@@ -761,53 +768,57 @@ namespace RCL.Test
 ?]
 */
       DoParserTest ("[?\n  first line\n  this [!$R.is!] the [!$R.middle!] line\n  last line\n?]",
-                    "[?\nfirst line\nthis [!$R.is!] the [!$R.middle!] line\nlast line\n?]");
+                    "[?\n  first line\n  this [!$R.is!] the [!$R.middle!] line\n  last line\n?]");
     }
 
     [Test]
     public void TestTemplateWithStringArray ()
     {
-      DoParserTest ("[?\na\n          [!\"w\" \"x\" \"y\" \"z\"!]\n?]");
+      DoParserTest ("[?\na\n          [!\"w\" \"x\" \"y\" \"z\"!]\n?]",
+                    "[?\n  a\n            [!\"w\" \"x\" \"y\" \"z\"!]\n?]");
     }
 
     [Test]
     public void TestTemplateWithLongArray ()
     {
-      DoParserTest ("[?\na\n          [!1 2 3 4 5!]\n?]");
+      DoParserTest ("[?\na\n          [!1 2 3 4 5!]\n?]", "[?\n  a\n            [!1 2 3 4 5!]\n?]");
     }
 
     [Test]
     public void TestTemplateMultilineMultipleCodeSections0 ()
     {
-      DoParserTest ("[?\n[!\"a\" \"b\" \"c\"!][!\"x\" \"y\" \"z\"!]\n?]");
+      DoParserTest ("[?\n[!\"a\" \"b\" \"c\"!][!\"x\" \"y\" \"z\"!]\n?]",
+                    "[?\n  [!\"a\" \"b\" \"c\"!][!\"x\" \"y\" \"z\"!]\n?]");
     }
 
     [Test]
     public void TestTemplateMultilineMultipleCodeSections1 ()
     {
-      //When parsing templates the parser strips white chars before the least indented line.
-      DoParserTest ("[?\n  [!\"a\" \"b\" \"c\"!][!\"x\" \"y\" \"z\"!]\n?]", "[?\n[!\"a\" \"b\" \"c\"!][!\"x\" \"y\" \"z\"!]\n?]");
+      DoParserTest ("[?\n  [!\"a\" \"b\" \"c\"!][!\"x\" \"y\" \"z\"!]\n?]", 
+                    "[?\n  [!\"a\" \"b\" \"c\"!][!\"x\" \"y\" \"z\"!]\n?]");
     }
 
     [Test]
     public void TestTemplateMultilineMultipleCodeSections2 ()
     {
-      //Another example. Two spaces are removed from each line because the least indented line has 2 spaces.
-      DoParserTest ("[?\n  [!\"a\" \"b\" \"c\"!]\n    [!\"d\" \"e\" \"f\"!]\n      [!\"g\" \"h\" \"i\"!]?]", "[?\n[!\"a\" \"b\" \"c\"!]\n  [!\"d\" \"e\" \"f\"!]\n    [!\"g\" \"h\" \"i\"!]?]");
+      DoParserTest ("[?\n  [!\"a\" \"b\" \"c\"!]\n    [!\"d\" \"e\" \"f\"!]\n      [!\"g\" \"h\" \"i\"!]?]", 
+                    "[?\n  [!\"a\" \"b\" \"c\"!]\n    [!\"d\" \"e\" \"f\"!]\n      [!\"g\" \"h\" \"i\"!]?]");
     }
 
     [Test]
     public void TestTemplateMultilineMultipleCodeSections3 ()
     {
       //Now make sure that when there are multiple code sections per line, that everything still works.
-      DoParserTest ("[?\n  [!\"a\"!] [!\"b\" \"c\"!]\n    [!\"d\" \"e\"!] [!\"f\"!]\n      [!\"g\"!] [!\"h\"!] [!\"i\"!]?]", "[?\n[!\"a\"!] [!\"b\" \"c\"!]\n  [!\"d\" \"e\"!] [!\"f\"!]\n    [!\"g\"!] [!\"h\"!] [!\"i\"!]?]");
+      DoParserTest ("[?\n  [!\"a\"!] [!\"b\" \"c\"!]\n    [!\"d\" \"e\"!] [!\"f\"!]\n      [!\"g\"!] [!\"h\"!] [!\"i\"!]?]", 
+                    "[?\n  [!\"a\"!] [!\"b\" \"c\"!]\n    [!\"d\" \"e\"!] [!\"f\"!]\n      [!\"g\"!] [!\"h\"!] [!\"i\"!]?]");
     }
 
     [Test]
     public void TestTemplateMultilineMultipleCodeSections4 ()
     {
       //One code section per line, multiple lines.
-      DoParserTest ("[?\n  [!\"a\" \"b\" \"c\"!]\n  [!\"x\" \"y\" \"z\"!]\n?]", "[?\n[!\"a\" \"b\" \"c\"!]\n[!\"x\" \"y\" \"z\"!]\n?]");
+      DoParserTest ("[?\n  [!\"a\" \"b\" \"c\"!]\n  [!\"x\" \"y\" \"z\"!]\n?]", 
+                    "[?\n  [!\"a\" \"b\" \"c\"!]\n  [!\"x\" \"y\" \"z\"!]\n?]");
     }
 
     [Test]

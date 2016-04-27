@@ -145,12 +145,15 @@ namespace RCL.Kernel
       builder.Append ('?', template.EscapeCount);
       //Use AppendLine not args.Newline, because the newline is signficant
       //  and needs to be there no matter what.  Otherwise when we parse it again
+      ++level;
       if (template.Multiline)
       {
         builder.Append ("\n");
+        for (int tab = 0; tab < level; ++tab)
+        {
+          builder.Append (args.Indent);
+        }
       }
-
-      ++level;
       for (int i = 0; i < template.Count - 1; ++i)
       {
         RCValue child = template.Get (i);
@@ -165,10 +168,15 @@ namespace RCL.Kernel
             {
               if (str[j][end] == '\n')
               {
-                for (int tab = 0; tab < level; ++tab)
-                  builder.Append (args.Indent);
                 string line = str[j].Substring (start, end - start);
                 builder.AppendLine (line);
+                if (i < template.Count - 2 || end < str[j].Length - 1)
+                {
+                  for (int tab = 0; tab < level; ++tab)
+                  {
+                    builder.Append (args.Indent);
+                  }
+                }
                 start = end + 1;
               }
               else if (end == str[j].Length - 1)
@@ -180,15 +188,45 @@ namespace RCL.Kernel
         }
         else
         {
+          if (template.Multiline)
+          {
+            //for (int tab = 0; tab < level; ++tab)
+            //{
+            //  builder.Append (args.Indent);
+            //}
+            /*
+            int k = builder.Length - 1;
+            while (k >= 0)
+            {
+              if (builder[k] == '\n')
+              {
+                for (int tab = 0; tab < level; ++tab)
+                {
+                  builder.Append (args.Indent);
+                }
+                break;
+              }
+              else if (builder[k] != ' ')
+              {
+                break;
+              }
+              --k;
+            }
+            */
+          }
           builder.Append ("[");
           builder.Append ('!', template.EscapeCount);
-          child.Format (builder, args, level);
+          RCFormat newArgs = new RCFormat (
+            args.Syntax, "", args.Newline, 
+            args.Delimeter, args.RowDelimeter, 
+            args.Align, args.Showt, 
+            args.Level, args.ParsableScalars);
+          child.Format (builder, newArgs, level);
           builder.Append ('!', template.EscapeCount);
           builder.Append ("]");
         }
       }
       --level;
-
       if (template.Multiline)
       {
         for (int tab = 0; tab < level; ++tab)

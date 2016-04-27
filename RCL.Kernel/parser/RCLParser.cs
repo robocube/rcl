@@ -42,7 +42,9 @@ namespace RCL.Kernel
     public RCLParser (RCActivator activator)
     {
       if (activator == null)
+      {
         throw new ArgumentNullException ("activator");
+      }
       m_activator = activator;
       m_lefts.Push (new Stack<RCValue> ());
       m_operators.Push (new Stack<RCValue> ());
@@ -534,14 +536,12 @@ namespace RCL.Kernel
             }
             else
             {
-              final = new RCBlock (
-                                   final, current.Name, current.Evaluator, new RCString (builder.ToString ()));
+              final = new RCBlock (final, current.Name, current.Evaluator, new RCString (builder.ToString ()));
             }
           }
           else
           {
-            final = new RCBlock (
-                                 final, current.Name, current.Evaluator, current.Value);
+            final = new RCBlock (final, current.Name, current.Evaluator, current.Value);
           }
         }
         m_result = new RCTemplate (final, escapeCount, true);
