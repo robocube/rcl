@@ -74,7 +74,7 @@ namespace RCL.Kernel
     {
       if (Exception == null)
       {
-        return base.ToString ();
+        return string.Format ("<<{0},{1}>>", Error, Message);
       }
       else
       {

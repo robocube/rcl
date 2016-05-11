@@ -113,7 +113,7 @@ namespace RCL.Test
     public void TestForConflictingResults ()
     {
       RCRunner runner = new RCRunner (RCActivator.Default,
-                                      new RCLog (new RCL.Core.Output ()), 1, RCRunner.CreateArgs ());
+                                      new RCLog (new RCL.Core.Output ()), 1, RCRunner.GetOptions ());
       Assert.AreEqual ("{status:0 data:5}", 
                        RepString (runner, "first #r from eval {serve:{b:bot {<-try {<-eval {<-2 + 3}}} f1:fiber {r:wait $b <-$r} <-wait $f1} r:wait fiber {<-serve #}}"));
     }
@@ -182,13 +182,13 @@ namespace RCL.Test
       RCRunner runner = new RCRunner ();
       runner.Rep ("\"exit.o2\" save #pretty format {:exit 1}");
       runner.Rep ("p:startx \"mono rcl.exe --output=clean --program=exit.o2\"");
-      Assert.AreEqual ("{status:1 data:\"Non-zero exit status\"}", runner.Rep ("try {<-waitx $p}").ToString ());
+      Assert.AreEqual ("{status:1 data:\"<<Exec,exit status 1>>\"}", runner.Rep ("try {<-waitx $p}").ToString ());
     }
 
     [Test]
     public void TestTryError ()
     {
-      RCRunner runner = new RCRunner ();
+      RCRunner runner = new RCRunner (RCRunner.GetOptions ("--output=test"));
       Assert.AreEqual ("{status:1 data:\"<<Assert>>\"}", runner.Rep ("try {<-assert false}").ToString ());
     }
 

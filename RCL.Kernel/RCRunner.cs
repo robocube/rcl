@@ -16,6 +16,7 @@ namespace RCL.Kernel
     //But it's possible that could change at some point.
 
     public readonly RCBlock Arguments;
+    public readonly RCOutput OutputOption;
     public readonly RCActivator Activator;
     public readonly RCLog Log;
 
@@ -42,11 +43,139 @@ namespace RCL.Kernel
     protected AutoResetEvent m_done = new AutoResetEvent (false);
     protected Thread m_ctorThread;
 
-    public RCRunner () : this (RCActivator.Default, new RCLog (), 1, CreateArgs ()) {}
+    public static RCBlock GetOptions (params string[] argv)
+    {
+      bool exit = false;
+      bool batch = false;
+      string program = "";
+      string action = "";
+      string output = "full";
+      RCBlock custom = RCBlock.Empty;
+      for (int i = 0; i < argv.Length; ++i)
+      {
+        string[] kv = argv[i].Split ('=');
+        if (kv.Length == 1)
+        {
+          if (kv[0].StartsWith ("--"))
+          {
+            string option = kv[0].Substring (2);
+            if (option.Equals ("exit"))
+            {
+              exit = true;
+            }
+            else if (option.Equals ("batch"))
+            {
+              batch = true;
+            }
+            else
+            {
+              custom = new RCBlock (custom, option, ":", RCBoolean.True);
+            }
+          }
+          else if (kv[0].StartsWith ("-"))
+          {
+            for (int j = 1; j < kv[0].Length; ++j)
+            {
+              char c;
+              switch (c = kv[0][j])
+              {
+                case 'x': 
+                  exit = true;
+                  break;
+                case 'b':
+                  batch = true;
+                  break;
+                default :
+                  Usage ("Unknown option '" + kv[0][j] + "'");
+                  break;
+              }
+            }
+          }
+          else
+          {
+            //do position.
+            if (program == "")
+            {
+              program = kv[0];
+            }
+            else
+            {
+              action = kv[0];
+            }
+          }
+        }
+        else
+        {
+          //do named arguments.
+          if (kv[0].StartsWith ("--"))
+          {
+            string option = kv[0].Substring (2);
+            if (option.Equals ("program"))
+            {
+              program = kv[1];
+            }
+            else if (option.Equals ("action"))
+            {
+              action = kv[1];
+            }
+            else if (option.Equals ("output"))
+            {
+              output = kv[1];
+            }
+            else
+            {
+              custom = new RCBlock (custom, option, ":", new RCString (kv[1]));
+            }
+          }
+          else Usage ("Named options start with --");
+        }
+      }
+      RCBlock result = RCBlock.Empty;
+      result = new RCBlock (result, "program", ":", new RCString (program));
+      result = new RCBlock (result, "action", ":", new RCString (action));
+      result = new RCBlock (result, "output", ":", new RCString (output));
+      result = new RCBlock (result, "batch", ":", new RCBoolean (batch));
+      result = new RCBlock (result, "exit", ":", new RCBoolean (exit));
+      for (int i = 0; i < custom.Count; ++i)
+      {
+        RCBlock name = custom.GetName (i);
+        result = new RCBlock (result, name.Name, ":", name.Value);
+      }
+      return result;
+    }
 
+    static void PrintCopyright ()
+    {
+      Version version = System.Reflection.Assembly.GetEntryAssembly().GetName().Version;
+      Console.Out.WriteLine ("RCL Version {0}", version.ToString ());
+      Console.Out.WriteLine ("  Copyright (C) 2007-2015 Brian M. Andersen");
+      Console.Out.WriteLine ("  Copyright (C) 2015-2016 Robocube Corporation");
+    }
+
+    static void Usage (string message)
+    {
+      PrintCopyright ();
+      Console.WriteLine ();
+      Console.WriteLine ("Usage: rcl [OPTIONS] program action");
+      Console.WriteLine ("  {0}", message);
+      Console.WriteLine ();
+      Console.WriteLine ("Options:");
+      Console.WriteLine ("  --program         Program file to run on startup");
+      Console.WriteLine ("  --action          Operator within program to eval on launch");
+      Console.WriteLine ("  --output          Output format [full|multi|single|clean|none]");
+      Console.WriteLine ("  --batch, -b       Non-interactive console (use when reading from standard input)");
+      Console.WriteLine ("  --exit, -x        Exit after completion of action");
+      Console.WriteLine ();
+      Environment.Exit (1);
+    }
+
+    public RCRunner () : this (RCActivator.Default, new RCLog (), 1, GetOptions ()) {}
+    public RCRunner (RCBlock options) : this (RCActivator.Default, new RCLog (), 1, options) {}
     public RCRunner (RCActivator activator, RCLog log, long workers, RCBlock arguments)
     {
       Arguments = arguments;
+      RCString output = (RCString) Arguments.Get ("output");
+      OutputOption = (RCOutput) Enum.Parse (typeof (RCOutput), output[0], true);
       Activator = activator;
       Log = log;
       m_ctorThread = Thread.CurrentThread;
@@ -62,56 +191,6 @@ namespace RCL.Kernel
         worker.Start ();
       }
     }
-
-    public static RCBlock CreateArgs (params string[] argv)
-    {
-      RCBlock args = RCBlock.Empty;
-      for (int i = 0; i < argv.Length; ++i)
-      {
-        string[] kv = argv[i].Split (':');
-        if (kv.Length == 1)
-        {
-          args = new RCBlock (args, kv[0], ":", RCBoolean.True);
-        }
-        else
-        {
-          args = new RCBlock (args, kv[0], ":", new RCString (kv[1]));
-        }
-      }
-
-      RCString program = (RCString) args.Get ("program", null);
-      if (program == null)
-      {
-        program = new RCString ("");
-        args = new RCBlock (args, "program", ":", program);
-      }
-      RCString action = (RCString) args.Get ("action", null);
-      if (action == null)
-      {
-        action = new RCString ("");
-        args = new RCBlock (args, "action", ":", action);
-      }
-      RCBoolean console = (RCBoolean) args.Get ("console", null);
-      if (console == null)
-      {
-        console = RCBoolean.True;
-        args = new RCBlock (args, "console", ":", console);
-      }
-      //RCBoolean blackboard = (RCBoolean) args.Get ("blackboard", null);
-      //if (blackboard == null)
-      //{
-      //  blackboard = RCBoolean.True;
-      //  args = new RCBlock (args, "blackboard", ":", blackboard);
-      //}
-      RCString output = (RCString) args.Get ("output", null);
-      if (output == null)
-      {
-        output = new RCString ("full");
-        args = new RCBlock (args, "output", ":", output);
-      }
-      return args;
-    }
-
     public void Start (RCValue program)
     {
       if (program == null)
@@ -279,6 +358,7 @@ namespace RCL.Kernel
           prev = next;
           next = Assign ();
         }
+
         else break;
 
         while (next != null)

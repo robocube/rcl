@@ -44,7 +44,7 @@ namespace RCL.Core
     [RCVerb ("compare")]
     public void EvalCompare (RCRunner runner, RCClosure closure, RCString left, RCString right)
     {
-      runner.Yield (closure, Compare (left[0], right[0], true));
+      runner.Yield (closure, CompareNew (left[0], right[0], true));
     }
 
     protected RCCube Compare (string left, string right, bool breakLines)
@@ -57,18 +57,20 @@ namespace RCL.Core
       int end = 0;
       for (int i = 0; i < patch.Count; ++i)
       {
+        //int hunkStart = start;
         for (int j = 0; j < patch[i].diffs.Count; ++j)
         {
           Operation op = patch[i].diffs[j].operation;
           string text = patch[i].diffs[j].text;
           if (op == Operation.EQUAL)
           {
-            end = left.IndexOf (text, start) + text.Length;
+            end = left.IndexOf (text, start);
             if (end < 0)
             {
               throw new Exception (
-                "cannot find string \"" + text + "\"");
+                "cannot find string \"" + text + "\" after position " + start + " in \"" + left + "\"");
             }
+            end += text.Length;
             string section = left.Substring (start, (end - start));
             start = end; // + text.Length;
             string[] lines = section.Split ('\n');
@@ -95,6 +97,9 @@ namespace RCL.Core
           }
           else if (op == Operation.INSERT)
           {
+            //start = Math.Max (0, start - text.Length);
+            //end = start;
+            //end = start;
             if (breakLines)
             {
               string[] lines = text.Split ('\n');
@@ -162,6 +167,101 @@ namespace RCL.Core
       return result;
     }
 
+    protected RCCube CompareNew (string left, string right, bool breakLines)
+    {
+      diff_match_patch dmp = new diff_match_patch ();
+      List<Diff> diffs = dmp.diff_main (left, right, true);
+      RCCube result = new RCCube (new RCArray<string> ());
+      int start = 0;
+      int end = 0;
+      for (int i = 0; i < diffs.Count; ++i)
+      {
+        Operation op = diffs[i].operation;
+        string text = diffs[i].text;
+        if (op == Operation.EQUAL)
+        {
+          int match = left.IndexOf (text, start);
+          if (match < 0)
+          {      
+            throw new Exception (
+              "cannot find string \"" + text + "\" after position " + start + " in \"" + left + "\"");
+          }
+          end = match + text.Length;
+          string section = left.Substring (start, end - start);
+          start = end;
+          string[] lines = section.Split ('\n');
+          if (breakLines && lines.Length > 1)
+          {
+            for (int k = 0; k < lines.Length; ++k)
+            {
+              if (!(k == lines.Length - 1 && lines[k] == ""))
+              {
+                result.WriteCell ("op", null, op.ToString ());
+                result.WriteCell ("old", null, lines[k] + "\n");
+                result.WriteCell ("new", null, lines[k] + "\n");
+                result.Axis.Write (null);
+              }
+            }
+          }
+          else
+          {
+            result.WriteCell ("op", null, op.ToString ());
+            result.WriteCell ("old", null, section); 
+            result.WriteCell ("new", null, section); 
+            result.Axis.Write (null);
+          }
+        }
+        else if (op == Operation.INSERT)
+        {
+          string section = text;
+          string[] lines = section.Split ('\n');
+          if (breakLines && lines.Length > 1)
+          {
+            for (int k = 0; k < lines.Length; ++k)
+            {
+              if (!(k == lines.Length - 1 && lines[k] == ""))
+              {
+                result.WriteCell ("op", null, op.ToString ());
+                result.WriteCell ("new", null, lines[k] + "\n");
+                result.Axis.Write (null);
+              }
+            }
+          }
+          else
+          {
+            result.WriteCell ("op", null, op.ToString ());
+            result.WriteCell ("new", null, section); 
+            result.Axis.Write (null);
+          }
+        }
+        else if (op == Operation.DELETE)
+        {
+          start += text.Length;
+          string section = text;
+          string[] lines = section.Split ('\n');
+          if (breakLines && lines.Length > 1)
+          {
+            for (int k = 0; k < lines.Length; ++k)
+            {
+              if (!(k == lines.Length - 1 && lines[k] == ""))
+              {
+                result.WriteCell ("op", null, op.ToString ());
+                result.WriteCell ("old", null, lines[k] + "\n");
+                result.Axis.Write (null);
+              }
+            }
+          }
+          else
+          {
+            result.WriteCell ("op", null, op.ToString ());
+            result.WriteCell ("old", null, section); 
+            result.Axis.Write (null);
+          }
+        }
+      }
+      return result;
+    }
+
     [RCVerb ("diff1")]
     public void EvalDiff1 (RCRunner runner, RCClosure closure, RCString left, RCString right)
     {
@@ -189,6 +289,5 @@ namespace RCL.Core
       string result = dmp.diff_prettyHtml (diffs);
       runner.Yield (closure, new RCString (result));
     }
-
   }
 }

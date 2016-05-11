@@ -16,8 +16,11 @@ namespace RCL.Core
                   new RCClosure (closure, closure.Bot, right, closure.Left, RCBlock.Empty, 0));
     }
 
-    public override RCClosure Handle (
-      RCRunner runner, RCClosure closure, Exception exception, long status, out RCValue result)
+    public override RCClosure Handle (RCRunner runner, 
+                                      RCClosure closure, 
+                                      Exception exception, 
+                                      long status, 
+                                      out RCValue result)
     {
       //When the runner finds out about an exception it will try to call this
       //Handle method on all of the parents in the stack until it gets to
@@ -27,19 +30,29 @@ namespace RCL.Core
       string message;
       if (rcex != null)
       {
-        message = rcex.ToTestString ();
+        if (runner.OutputOption == RCOutput.Test) 
+        {
+          message = rcex.ToTestString ();
+        } 
+        else
+        {
+          message = rcex.ToString ();
+        }
       }
       else
       {
         message = exception.Message;
       }
+      //RCBlock report = new RCBlock ("", ":", new RCString (message));
+      //wrapper = new RCBlock (wrapper, "data", ":", new RCTemplate (report, 1, true));
       wrapper = new RCBlock (wrapper, "data", ":", new RCString (message));
       result = wrapper;
       return base.Next (runner, closure, closure, result);
     }
 
-    public override RCClosure Next (
-      RCRunner runner, RCClosure tail, RCClosure previous, RCValue result)
+    public override RCClosure Next (RCRunner runner, 
+		                            RCClosure tail, 
+		                            RCClosure previous, RCValue result)
     {
       if (previous.Index == 1)
       {

@@ -10,7 +10,7 @@ namespace RCL.Test
     //We could have operators that yield strings and in the 
     //end you just traverse the document and cat all the strings
     //together.
-    protected RCRunner runner = new RCRunner (RCActivator.Default, new RCLog (new RCL.Core.Output ()), 1, RCRunner.CreateArgs ());
+    protected RCRunner runner = new RCRunner (RCActivator.Default, new RCLog (new RCL.Core.Output ()), 1, RCRunner.GetOptions ("--output=test"));
     public void DoTest (string code, string expected)
     {
       try
@@ -2141,6 +2141,18 @@ namespace RCL.Test
     public void TestCompare4 ()
     {
       DoTest ("\"aaa\\nbbb\\nccc\\nddd\\n\" compare \"aaa\\nddd\\n\"", "[op old new \"EQUAL\" \"aaa\\n\" \"aaa\\n\" \"DELETE\" \"bbb\\n\" -- \"DELETE\" \"ccc\\n\" -- \"EQUAL\" \"ddd\\n\" \"ddd\\n\"]");
+    }
+
+    [Test]
+    public void TestCompare5 ()
+    {
+      DoTest ("\"aaaaaaaa0\" compare \"1aaaaaaaa2\"", "[op new old \"INSERT\" \"1\" -- \"EQUAL\" \"aaaaaaaa\" \"aaaaaaaa\" \"DELETE\" -- \"0\" \"INSERT\" \"2\" --]");
+    }
+
+    [Test]
+    public void TestCompare6 ()
+    {
+      DoTest ("\"aaaaaaaa0\" compare \"aaaaaaaa2\"", "[op old new \"EQUAL\" \"aaaaaaaa\" \"aaaaaaaa\" \"DELETE\" \"0\" -- \"INSERT\" -- \"2\"]");
     }
 
     [Test]

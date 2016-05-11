@@ -11,5 +11,6 @@ namespace RCL.Kernel
     Assert  = 5,  //Explicit assertion failed.
     Native  = 6,  //Unintentional operator exception.
     Custom  = 7,  //Custom status created with fail.
+    Exec    = 8   //Non-zero exit status on external process.
   }
 }

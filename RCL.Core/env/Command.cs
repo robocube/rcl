@@ -245,8 +245,9 @@ namespace RCL.Core
     }
 
     [RCVerb ("exit")]
-    public void EvalExit (
-      RCRunner runner, RCClosure closure, RCLong right)
+    public void EvalExit (RCRunner runner, 
+                          RCClosure closure, 
+                          RCLong right)
     {
       runner.Log.RecordDoc (runner, closure, "runner", 0, "exit", right);
       runner.Exit ((int) right[0]);
@@ -265,5 +266,22 @@ namespace RCL.Core
       //runner.Yield (closure, right);
     }
     */
+
+    private static RCBlock m_options = null;
+    public static void SetOptions (RCBlock options)
+    {
+      if (m_options != null)
+      {
+        throw new Exception ("Set options called more than once.");
+      }
+      m_options = options;
+    }
+
+    public void EvalOption (RCRunner runner, 
+                            RCClosure closure, 
+                            RCString right)
+    {
+      runner.Yield (closure, m_options.Get (right[0]));
+    }
   }
 }
