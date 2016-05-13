@@ -92,6 +92,10 @@ namespace RCL.Exe
           }
         }
       }
+      else if (exit)
+      {
+        Environment.Exit (0);
+      }
 
       while (true)
       {
