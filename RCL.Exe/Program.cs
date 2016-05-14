@@ -28,6 +28,7 @@ namespace RCL.Exe
       string action = ((RCString) arguments.Get ("action"))[0];
       bool batch = ((RCBoolean) arguments.Get ("batch"))[0];
       bool exit = ((RCBoolean) arguments.Get ("exit"))[0];
+      bool showVersion = ((RCBoolean) arguments.Get ("version"))[0];
 
       string prompt = "RCL>";
       LineEditor editor = new LineEditor ("RCL");
@@ -35,10 +36,16 @@ namespace RCL.Exe
       RCOutput outputEnum = (RCOutput) Enum.Parse (typeof (RCOutput), output, true);
       bool copyright = !batch && outputEnum != RCOutput.Clean && outputEnum != RCOutput.Test;
       bool options = !batch && outputEnum != RCOutput.Clean && outputEnum != RCOutput.Test;
+      bool version = showVersion || (!batch && outputEnum != RCOutput.Clean && outputEnum != RCOutput.Test);
       consoleLog.SetVerbosity (outputEnum);
       RCLog log = new RCLog (consoleLog);
       RCRunner runner = new RCRunner (RCActivator.Default, log, 1, arguments);
 
+      if (version)
+      {
+        //Console.WriteLine ();
+        PrintVersion ();
+      }
       if (copyright)
       {
         Console.WriteLine ();
@@ -158,18 +165,23 @@ namespace RCL.Exe
       return 0;
     }
 
-    static void PrintCopyright ()
+    static void PrintVersion ()
     {
       Version version = System.Reflection.Assembly.GetEntryAssembly().GetName().Version;
-      Console.Out.WriteLine ("RCL Version {0}", version.ToString ());
-      Console.Out.WriteLine ("  Copyright (C) 2007-2015 Brian M. Andersen");
-      Console.Out.WriteLine ("  Copyright (C) 2015-2016 Robocube Corporation");
+      Console.Out.WriteLine ("Robocube Language {0}", version.ToString ());
+    }
+
+    static void PrintCopyright ()
+    {
+      Console.Out.WriteLine ("Copyright (C) 2007-2015 Brian M. Andersen");
+      Console.Out.WriteLine ("Copyright (C) 2015-2016 Robocube Corporation");
     }
 
     static RCBlock GetOptions (string[] argv)
     {
       bool exit = false;
       bool batch = false;
+      bool version = false;
       string program = "";
       string action = "";
       string output = "full";
@@ -190,6 +202,11 @@ namespace RCL.Exe
             {
               batch = true;
             }
+            else if (option.Equals ("version"))
+            {
+              //This option forces the version to display no matter what.
+              version = true;
+            }
             else
             {
               custom = new RCBlock (custom, option, ":", RCBoolean.True);
@@ -207,6 +224,9 @@ namespace RCL.Exe
                   break;
                 case 'b':
                   batch = true;
+                  break;
+                case 'v':
+                  version = true;
                   break;
                 default :
                   Usage ("Unknown option '" + kv[0][j] + "'");
@@ -259,6 +279,7 @@ namespace RCL.Exe
       result = new RCBlock (result, "output", ":", new RCString (output));
       result = new RCBlock (result, "batch", ":", new RCBoolean (batch));
       result = new RCBlock (result, "exit", ":", new RCBoolean (exit));
+      result = new RCBlock (result, "version", ":", new RCBoolean (version));
       for (int i = 0; i < custom.Count; ++i)
       {
         RCBlock name = custom.GetName (i);
@@ -280,6 +301,7 @@ namespace RCL.Exe
       Console.WriteLine ("  --output          Output format [full|multi|single|clean|none]");
       Console.WriteLine ("  --batch, -b       Non-interactive console (use when reading from standard input)");
       Console.WriteLine ("  --exit, -x        Exit after completion of action");
+      Console.WriteLine ("  --version, -v     Force printing of version on start");
       Console.WriteLine ();
       Environment.Exit (1);
     }
