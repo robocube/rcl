@@ -170,5 +170,6 @@ namespace RCL.Kernel
 
     public bool IsLocked { get { return m_lock; } }
     public abstract string TypeName { get; }
+    public abstract char TypeCode { get; }
   }
 }

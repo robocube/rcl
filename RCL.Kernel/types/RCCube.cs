@@ -456,6 +456,11 @@ namespace RCL.Kernel
       get { return "cube"; }
     }
 
+    public override char TypeCode
+    {
+      get { return 'u'; }
+    }
+
     public override bool IsCube
     {
       get { return true; }

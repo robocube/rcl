@@ -194,6 +194,25 @@ namespace RCL.Core
 
     [RCVerb ("template")]
     public void EvalTemplate (
+      RCRunner runner, RCClosure closure, RCLong left, RCString right)
+    {
+      if (right.Count > 1)
+      {
+        throw new RCException (closure, 
+                               RCErrors.Count, 
+                               "template only takes a single string (use & first).");
+      }
+      if (left.Count != 1)
+      {
+        throw new RCException (closure, 
+                               RCErrors.Count, 
+                               "escapeCount can only contain a single number");
+      }
+      runner.Yield (closure, CreateTemplate (right, left[0]));
+    }
+
+    [RCVerb ("template")]
+    public void EvalTemplate (
       RCRunner runner, RCClosure closure, RCString right)
     {
       if (right.Count > 1)
@@ -202,9 +221,14 @@ namespace RCL.Core
                                RCErrors.Count, 
                                "template only takes a single string (use & first).");
       }
+      runner.Yield (closure, CreateTemplate (right, 1));
+    }
+
+    protected RCTemplate CreateTemplate (RCString right, long escapeCount)
+    {
       bool multiline = right[0].IndexOf ('\n') > -1;
       RCBlock def = new RCBlock ("", ":", right);
-      runner.Yield (closure, new RCTemplate (def, 1, multiline));
+      return new RCTemplate (def, (int) escapeCount, multiline);
     }
 
     protected virtual RCArray<T> CoerceBlock<T> (RCBlock right)

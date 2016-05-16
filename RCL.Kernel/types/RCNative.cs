@@ -26,5 +26,10 @@ namespace RCL.Kernel
     {
       get { return "native"; }
     }
+
+    public override char TypeCode
+    {
+      get { return 'v'; }
+    }
   }
 }

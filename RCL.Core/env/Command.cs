@@ -187,6 +187,17 @@ namespace RCL.Core
       runner.Yield (closure, new RCString (result));
     }
 
+    [RCVerb ("setenv")]
+    public void EvalSetenv (
+      RCRunner runner, RCClosure closure, RCString left, RCString right)
+    {
+      for (int i = 0; i < left.Count; ++i)
+      {
+        Environment.SetEnvironmentVariable (left[i], right[i]);
+      }
+      runner.Yield (closure, left);
+    }
+
     public class Print
     {
       [RCVerb ("print")]

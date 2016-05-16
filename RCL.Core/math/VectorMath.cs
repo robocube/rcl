@@ -328,6 +328,22 @@ namespace RCL.Core
         closure, op.Name, (RCVectorBase) right));
     }
 
+    [RCVerb ("typecode")]
+    public void EvalTypecode (
+      RCRunner runner, RCClosure closure, object right)
+    {
+      RCValue val = (RCValue) right;
+      runner.Yield (closure, new RCString (val.TypeCode.ToString ()));
+    }
+
+    [RCVerb ("typename")]
+    public void EvalTypename (
+      RCRunner runner, RCClosure closure, object right)
+    {
+      RCValue val = (RCValue) right;
+      runner.Yield (closure, new RCString (val.TypeName.ToString ()));
+    }
+
     [RCVerb ("map")] [RCVerb ("replace")] [RCVerb ("part")] [RCVerb ("fill")]
     public void EvalContextual (
       RCRunner runner, RCClosure closure, object left, object right)

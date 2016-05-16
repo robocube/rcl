@@ -21,8 +21,26 @@ namespace RCL.Exe
 
     static int Main (string[] argv)
     {
-      //RCBlock arguments = RCRunner.CreateArgs (argv);
-      RCBlock arguments = GetOptions (argv);
+      string flags = Environment.GetEnvironmentVariable ("RCL_FLAGS");
+      RCBlock arguments;
+      if (flags != null)
+      {
+        string[] flagsv = flags.Split (' ');
+        string[] newArgv = new string [argv.Length + flagsv.Length];
+        for (int i = 0; i < argv.Length; ++i)
+        {
+          newArgv[i] = argv[i];
+        }
+        for (int i = 0; i < flagsv.Length; ++i)
+        {
+          newArgv[argv.Length + i] = flagsv[i];
+        }
+        arguments = GetOptions (newArgv);
+      }
+      else
+      {
+        arguments = GetOptions (argv); 
+      }
       string output = ((RCString) arguments.Get ("output"))[0];
       string program = ((RCString) arguments.Get ("program"))[0];
       string action = ((RCString) arguments.Get ("action"))[0];
@@ -205,6 +223,7 @@ namespace RCL.Exe
             else if (option.Equals ("version"))
             {
               //This option forces the version to display no matter what.
+              //Useful when you need to check the version number from a test.
               version = true;
             }
             else

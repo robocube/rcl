@@ -178,6 +178,7 @@ namespace RCL.Core
 
         m_process = new Process ();
         m_process.StartInfo = new ProcessStartInfo (m_program, m_arguments);
+        //m_process.
         m_process.EnableRaisingEvents = true;
         m_process.StartInfo.CreateNoWindow = true;
         m_process.StartInfo.UseShellExecute = false;

@@ -1448,6 +1448,12 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestStringTemplateEscaped ()
+    {
+      DoEvalTest ("2 template \"foo\nbar\nbaz\n\"", "[??\n  foo\n  bar\n  baz\n??]");
+    }
+
+    [Test]
     public void TestFormatTemplate ()
     {
       DoEvalTest ("format [?\n  foo\n  bar\n  baz\n?]", "\"[?\\n  foo\\n  bar\\n  baz\\n?]\"");

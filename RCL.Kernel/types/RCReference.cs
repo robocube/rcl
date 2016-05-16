@@ -54,6 +54,11 @@ namespace RCL.Kernel
       get { return "reference"; }
     }
 
+    public override char TypeCode
+    {
+      get { return 'r'; }
+    }
+
     public override void Eval (RCRunner runner, RCClosure closure)
     {
       RCL.Kernel.Eval.DoEval (runner, closure, this);

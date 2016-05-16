@@ -102,6 +102,11 @@ namespace RCL.Kernel
       get { return "block"; }
     }
 
+    public override char TypeCode
+    {
+      get { return 'k'; }
+    }
+
     public RCBlock GetName (string name)
     {
       RCBlock current = this;

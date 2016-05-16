@@ -102,6 +102,11 @@ namespace RCL.Kernel
       get { return true; }
     }
 
+    public override char TypeCode
+    {
+      get { return 'o'; }
+    }
+
     public override bool ArgumentEval
     {
       get { return true; }

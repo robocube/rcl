@@ -1643,6 +1643,48 @@ namespace RCL.Test
     [Test]
     public void TestFlipK1 () { DoTest ("flip {:{x:1 y:5 z:9} :{x:2 y:6 z:10} :{x:3 y:7 z:11} :{x:4 y:8 z:12}}", "{x:1 2 3 4 y:5 6 7 8 z:9 10 11 12}"); }
 
+    [Test]
+    public void TestTypecodeL () { DoTest ("typecode 1 2 3", "\"l\""); }
+    [Test]
+    public void TestTypecodeD () { DoTest ("typecode 1.0 2.0 3.0", "\"d\""); }
+    [Test]
+    public void TestTypecodeM () { DoTest ("typecode 1.0 2.0 3.0m", "\"m\""); }
+    [Test]
+    public void TestTypecodeY () { DoTest ("typecode #a #b #c", "\"y\""); }
+    [Test]
+    public void TestTypecodeB () { DoTest ("typecode true false true", "\"b\""); }
+    [Test]
+    public void TestTypecodeX () { DoTest ("typecode \\x00 \\x01 \\x02", "\"x\""); }
+    [Test]
+    public void TestTypecodeS () { DoTest ("typecode \"a\" \"b\" \"c\"", "\"s\""); }
+    [Test]
+    public void TestTypecodeT () { DoTest ("typecode 2016.05.16 2016.05.17 2016.05.18", "\"t\""); }
+    [Test]
+    public void TestTypecodeU () { DoTest ("typecode [x 0 1 2]", "\"u\""); }
+    [Test]
+    public void TestTypecodeK () { DoTest ("typecode {a:1 b:2 c:3}", "\"k\""); }
+
+    [Test]
+    public void TestTypenameL () { DoTest ("typename 1 2 3", "\"long\""); }
+    [Test]
+    public void TestTypenameD () { DoTest ("typename 1.0 2.0 3.0", "\"double\""); }
+    [Test]
+    public void TestTypenameM () { DoTest ("typename 1.0 2.0 3.0m", "\"decimal\""); }
+    [Test]
+    public void TestTypenameY () { DoTest ("typename #a #b #c", "\"symbol\""); }
+    [Test]
+    public void TestTypenameB () { DoTest ("typename true false true", "\"boolean\""); }
+    [Test]
+    public void TestTypenameX () { DoTest ("typename \\x00 \\x01 \\x02", "\"byte\""); }
+    [Test]
+    public void TestTypenameS () { DoTest ("typename \"a\" \"b\" \"c\"", "\"string\""); }
+    [Test]
+    public void TestTypenameT () { DoTest ("typename 2016.05.16 2016.05.17 2016.05.18", "\"time\""); }
+    [Test]
+    public void TestTypenameU () { DoTest ("typename [x 0 1 2]", "\"cube\""); }
+    [Test]
+    public void TestTypenameK () { DoTest ("typename {a:1 b:2 c:3}", "\"block\""); }
+
   }
 
   [TestFixture]
