@@ -285,7 +285,8 @@ namespace RCL.Core
             m_state.Runner.Finish (waiters[i].Closure,
                                    new RCException (waiters[i].Closure, 
                                                     RCErrors.Exec, 
-                                                    "exit status " + exitCode), 
+                                                    "exit status " + exitCode, 
+                                                    result), 
                                    exitCode);
           }
           else
@@ -300,7 +301,8 @@ namespace RCL.Core
             m_state.Runner.Finish (m_state.Closure,
                                    new RCException (m_state.Closure, 
                                                     RCErrors.Exec, 
-                                                    "exit status " + exitCode), 
+                                                    "exit status " + exitCode,
+                                                   result), 
                                    exitCode);
           }
           else

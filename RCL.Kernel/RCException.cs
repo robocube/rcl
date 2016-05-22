@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Text;
 using System.Reflection;
 
 namespace RCL.Kernel
@@ -54,12 +55,21 @@ namespace RCL.Kernel
     public readonly RCClosure Closure;
     public readonly TargetInvocationException Exception;
     public readonly RCErrors Error;
+    public readonly RCString Output;
 
     public RCException (RCClosure closure, RCErrors error, string message)
       : base (message)
     {
       Closure = closure;
       Error = error;
+    }
+
+    public RCException (RCClosure closure, RCErrors error, string message, RCString output)
+      : base (message)
+    {
+      Closure = closure;
+      Error = error;
+      Output = output;
     }
 
     public RCException (RCClosure closure, TargetInvocationException ex, RCErrors error, string message)
@@ -74,7 +84,17 @@ namespace RCL.Kernel
     {
       if (Exception == null)
       {
-        return string.Format ("<<{0},{1}>>", Error, Message);
+        StringBuilder builder = new StringBuilder ();
+        if (Output != null)
+        {
+          for (int i = 0; i < Output.Count; ++i)
+          {
+            builder.AppendLine (Output[i]);
+          }
+        }
+        builder.AppendFormat ("<<{0},{1}>>", Error, Message);
+        return builder.ToString ();
+        //return string.Format ("<<{0},{1}>>", Error, Message);
       }
       else
       {

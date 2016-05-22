@@ -100,6 +100,13 @@ namespace RCL.Core
     public override void RecordDoc (RCRunner runner, RCClosure closure,
                                     string type, long instance, string state, object info)
     {
+      long bot = 0;
+      long fiber = 0;
+      if (closure != null)
+      {
+        bot = closure.Bot.Id;
+        fiber = closure.Fiber;
+      }
       if (m_output == null)
       {
         return;
@@ -108,7 +115,7 @@ namespace RCL.Core
       {
         return;
       }
-      else if (m_editor != null && closure.Bot.Id == 0 && type == "fiber" && instance == 0)
+      else if (m_editor != null && bot == 0 && type == "fiber" && instance == 0)
       {
         return;
       }
@@ -116,14 +123,14 @@ namespace RCL.Core
       {
         string time = DateTime.UtcNow.ToString (TimeFormat);
         m_output.WriteLine ("{0} {1} {2} {3} {4} {5} {6}",
-                            time, closure.Bot.Id, closure.Fiber, type, instance, state, info.ToString ());
+                            time, bot, fiber, type, instance, state, info.ToString ());
       }
       else if (m_level == RCOutput.Multi || m_level == RCOutput.Full)
       {
         string time = DateTime.UtcNow.ToString (TimeFormat);
         string message = IndentMessage (CreateMessage (info));
         m_output.WriteLine ("{0} {1} {2} {3} {4} {5} {6}",
-                            time, closure.Bot.Id, closure.Fiber, type, instance, state, message);
+                            time, bot, fiber, type, instance, state, message);
       }
       else if (m_level == RCOutput.Clean && type == "print")
       {
@@ -134,7 +141,7 @@ namespace RCL.Core
       {
         string message = IndentMessage (CreateMessage (info));
         m_output.WriteLine ("{0} {1} {2} {3} {4} {5}", 
-                            closure.Bot.Id, closure.Fiber, type, instance, state, message);
+                            bot, fiber, type, instance, state, message);
       }
       else if (m_level == RCOutput.Trace)
       {

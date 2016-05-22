@@ -39,7 +39,7 @@ namespace RCL.Exe
       }
       else
       {
-        arguments = GetOptions (argv); 
+        arguments = GetOptions (argv);
       }
       string output = ((RCString) arguments.Get ("output"))[0];
       string program = ((RCString) arguments.Get ("program"))[0];
@@ -98,10 +98,18 @@ namespace RCL.Exe
               Console.Out.WriteLine (text);
             }
           }
+          if (!exit)
+          {
+            ManualResetEvent mre = new ManualResetEvent (false);
+            mre.WaitOne ();
+            //Thread.Sleep (int.MaxValue);
+          }
+          return 0;
         }
         catch (ThreadAbortException)
         {
           status = runner.ExitStatus ();
+          //runner.Log.RecordDoc (runner, null, "runner", 0, "exit", status);
           Environment.Exit (status);
         }
         catch (Exception ex)
@@ -113,12 +121,14 @@ namespace RCL.Exe
         {
           if (exit)
           {
+            //runner.Log.RecordDoc (runner, null, "runner", 0, "exit", status);
             Environment.Exit (status);
           }
         }
       }
-      else if (exit)
+      else if (exit && !batch)
       {
+        //runner.Log.RecordDoc (runner, null, "runner", 0, "exit", 0);
         Environment.Exit (0);
       }
 
@@ -131,6 +141,7 @@ namespace RCL.Exe
             StringBuilder text = new StringBuilder ();
             while (true)
             {
+              //line = editor.Edit ("", "");
               line = Console.ReadLine ();
               if (line == null)
               {
@@ -141,11 +152,14 @@ namespace RCL.Exe
             bool fragment;
             RCValue code = runner.Peek (text.ToString (), out fragment);
             RCValue result = runner.Rep (code);
-            if (result != null) // && outputEnum != RCOutput.Clean)
+            if (result != null)
             {
               Console.Out.WriteLine (result.Format (RCFormat.Pretty));
             }
-            break;
+            if (exit)
+            {
+              Environment.Exit (0);
+            }
           }
           else
           {
@@ -162,7 +176,7 @@ namespace RCL.Exe
               string trimmed = line.TrimStart (' ').TrimEnd (' ');
               line = Alias (trimmed, runner, consoleLog, arguments);
               RCValue result = runner.Rep (line);
-              if (result != null) // && outputEnum != RCOutput.Clean)
+              if (result != null)
               {
                 Console.Out.WriteLine (result.Format (RCFormat.Pretty));
               }
@@ -173,6 +187,7 @@ namespace RCL.Exe
         catch (ThreadAbortException)
         {
           int status = runner.ExitStatus ();
+          //runner.Log.RecordDoc (runner, null, "runner", 0, "exit", status);
           Environment.Exit (status);
         }
         catch (Exception ex)
@@ -180,6 +195,8 @@ namespace RCL.Exe
           Console.Out.WriteLine (ex.ToString ());
         }
       }
+      //Environment.Exit (0);
+      //Console.Out.WriteLine ("returning 0");
       return 0;
     }
 
