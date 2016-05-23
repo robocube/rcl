@@ -157,9 +157,19 @@ namespace RCL.Test
       RCRunner runner = new RCRunner ();
       for (int i = 0; i < 5; ++i)
       {
-        runner.Rep ("p:startx \"mono rcl.exe --output=clean\"");
+        runner.Rep ("p:startx \"mono rcl.exe --output=clean --nokeys\"");
         runner.Rep ("$p writex \"exit 0\"");
         runner.Rep ("waitx $p");
+      }
+    }
+
+    [Test]
+    public void TestExitFromShellRemoteEval ()
+    {
+      RCRunner runner = new RCRunner ();
+      for (int i = 0; i < 5; ++i)
+      {
+        runner.Rep ("eval {p:startx \"mono rcl.exe --output=clean --nokeys\" :$p writex \"exit 0\" :waitx $p}");
       }
     }
 
@@ -170,7 +180,7 @@ namespace RCL.Test
       for (int i = 0; i < 5; ++i)
       {
         runner.Rep ("\"exit.o2\" save #pretty format {:exit 0}");
-        runner.Rep ("p:startx \"mono rcl.exe --output=clean --program=exit.o2\"");
+        runner.Rep ("p:startx \"mono rcl.exe --output=clean --nokeys --program=exit.o2\"");
         runner.Rep ("waitx $p");
         runner.Rep ("exec \"rm exit.o2\"");
       }
@@ -181,7 +191,7 @@ namespace RCL.Test
     {
       RCRunner runner = new RCRunner ();
       runner.Rep ("\"exit.o2\" save #pretty format {:exit 1}");
-      runner.Rep ("p:startx \"mono rcl.exe --output=clean --program=exit.o2\"");
+      runner.Rep ("p:startx \"mono rcl.exe --output=clean --nokeys --program=exit.o2\"");
       Assert.AreEqual ("{status:1 data:\"<<Exec,exit status 1>>\"}", runner.Rep ("try {<-waitx $p}").ToString ());
     }
 
@@ -196,7 +206,7 @@ namespace RCL.Test
     public void TestMultipleCustomOptions ()
     {
       RCRunner runner = new RCRunner ();
-      runner.Rep ("p:startx \"mono rcl.exe --output=clean --custom1=one --custom2\"");
+      runner.Rep ("p:startx \"mono rcl.exe --output=clean --nokeys --custom1=one --custom2\"");
       runner.Rep ("$p writex \"argument \\\"custom1\\\"\"");
       RCString custom1 = (RCString) runner.Rep ("\"\\n\" readx $p");
       runner.Rep ("$p writex \"argument \\\"custom2\\\"\"");
@@ -211,7 +221,7 @@ namespace RCL.Test
     public void TestCdWithQuotes ()
     {
       RCRunner runner = new RCRunner ();
-      runner.Rep ("p:startx \"mono rcl.exe --output=clean\"");
+      runner.Rep ("p:startx \"mono rcl.exe --output=clean --nokeys\"");
       runner.Rep ("$p writex \"pwd\"");
       RCString pwdBefore = (RCString) runner.Rep ("\"\\n\" readx $p");
       runner.Rep ("$p writex \"cd \\\"..\\\"\"");

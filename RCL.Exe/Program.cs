@@ -46,6 +46,7 @@ namespace RCL.Exe
       string action = ((RCString) arguments.Get ("action"))[0];
       bool batch = ((RCBoolean) arguments.Get ("batch"))[0];
       bool exit = ((RCBoolean) arguments.Get ("exit"))[0];
+      bool nokeys = ((RCBoolean) arguments.Get ("nokeys"))[0];
       bool showVersion = ((RCBoolean) arguments.Get ("version"))[0];
 
       string prompt = "RCL>";
@@ -61,7 +62,6 @@ namespace RCL.Exe
 
       if (version)
       {
-        //Console.WriteLine ();
         PrintVersion ();
       }
       if (copyright)
@@ -98,18 +98,22 @@ namespace RCL.Exe
               Console.Out.WriteLine (text);
             }
           }
-          if (!exit)
+          if (batch && !exit)
           {
-            ManualResetEvent mre = new ManualResetEvent (false);
-            mre.WaitOne ();
-            //Thread.Sleep (int.MaxValue);
+            Thread.Sleep (Timeout.Infinite);
+            //ManualResetEvent mre = new ManualResetEvent (false);
+            //mre.WaitOne ();
           }
-          return 0;
+          if (batch)
+          {
+            //Thread.Sleep (Timeout.Infinite);
+            return 0;
+          }
+          //otherwise go on and keep listening for further commands.
         }
         catch (ThreadAbortException)
         {
           status = runner.ExitStatus ();
-          //runner.Log.RecordDoc (runner, null, "runner", 0, "exit", status);
           Environment.Exit (status);
         }
         catch (Exception ex)
@@ -121,14 +125,12 @@ namespace RCL.Exe
         {
           if (exit)
           {
-            //runner.Log.RecordDoc (runner, null, "runner", 0, "exit", status);
             Environment.Exit (status);
           }
         }
       }
       else if (exit && !batch)
       {
-        //runner.Log.RecordDoc (runner, null, "runner", 0, "exit", 0);
         Environment.Exit (0);
       }
 
@@ -141,7 +143,6 @@ namespace RCL.Exe
             StringBuilder text = new StringBuilder ();
             while (true)
             {
-              //line = editor.Edit ("", "");
               line = Console.ReadLine ();
               if (line == null)
               {
@@ -163,7 +164,7 @@ namespace RCL.Exe
           }
           else
           {
-            if (outputEnum == RCOutput.Clean)
+            if (nokeys)
             {
               line = Console.ReadLine ();
             }
@@ -187,7 +188,6 @@ namespace RCL.Exe
         catch (ThreadAbortException)
         {
           int status = runner.ExitStatus ();
-          //runner.Log.RecordDoc (runner, null, "runner", 0, "exit", status);
           Environment.Exit (status);
         }
         catch (Exception ex)
@@ -195,8 +195,6 @@ namespace RCL.Exe
           Console.Out.WriteLine (ex.ToString ());
         }
       }
-      //Environment.Exit (0);
-      //Console.Out.WriteLine ("returning 0");
       return 0;
     }
 
@@ -216,6 +214,7 @@ namespace RCL.Exe
     {
       bool exit = false;
       bool batch = false;
+      bool nokeys = false;
       bool version = false;
       string program = "";
       string action = "";
@@ -236,6 +235,10 @@ namespace RCL.Exe
             else if (option.Equals ("batch"))
             {
               batch = true;
+            }
+            else if (option.Equals ("nokeys"))
+            {
+              nokeys = true;
             }
             else if (option.Equals ("version"))
             {
@@ -260,6 +263,9 @@ namespace RCL.Exe
                   break;
                 case 'b':
                   batch = true;
+                  break;
+                case 'k':
+                  nokeys = true;
                   break;
                 case 'v':
                   version = true;
@@ -314,6 +320,7 @@ namespace RCL.Exe
       result = new RCBlock (result, "action", ":", new RCString (action));
       result = new RCBlock (result, "output", ":", new RCString (output));
       result = new RCBlock (result, "batch", ":", new RCBoolean (batch));
+      result = new RCBlock (result, "nokeys", ":", new RCBoolean (nokeys));
       result = new RCBlock (result, "exit", ":", new RCBoolean (exit));
       result = new RCBlock (result, "version", ":", new RCBoolean (version));
       for (int i = 0; i < custom.Count; ++i)
