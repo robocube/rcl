@@ -21,13 +21,25 @@ namespace RCL.Kernel
       RCParser parser = null;
       string which = left[0].Part (0).ToString ();
       if (which.Equals ("csv"))
+      {
         parser = new CSVParser ();
+      }
       else if (which.Equals ("xml"))
+      {
         parser = new XMLParser ();
+      }
       else if (which.Equals ("json"))
+      {
         parser = new JSONParser ();
-      else if (which.Equals ("o2"))
+      }
+      else if (which.Equals ("rcl"))
+      {
         parser = new RCLParser (runner.Activator);
+      }
+      else if (which.Equals ("log"))
+      {
+        parser = new LogParser ();
+      }
       else throw new Exception ("Unknown parser: " + which);
 
       runner.Yield (closure, DoParse (parser, right));

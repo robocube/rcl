@@ -189,11 +189,77 @@ namespace RCL.Core
           end = match + text.Length;
           string section = left.Substring (start, end - start);
           start = end;
-          string[] lines = section.Split ('\n');
+
+          if (breakLines)
+          {
+            int lineStart = 0;
+            while (true)
+            {
+              int lineEnd = section.IndexOf ('\n', lineStart);
+              if (lineEnd >= 0)
+              {
+                result.WriteCell ("op", null, op.ToString ());
+                string line = section.Substring (lineStart, 1 + (lineEnd - lineStart));
+                result.WriteCell ("old", null, line);
+                result.WriteCell ("new", null, line);
+                result.Axis.Write (null);
+                lineStart = lineEnd + 1;
+              }
+              else if (lineStart < section.Length)
+              {
+                result.WriteCell ("op", null, op.ToString ());
+                string rest = section.Substring (lineStart, section.Length - lineStart);
+                result.WriteCell ("old", null, rest);
+                result.WriteCell ("new", null, rest);
+                result.Axis.Write (null);
+                break;
+              }
+              else break;
+            }
+          }
+          else
+          {
+            result.WriteCell ("op", null, op.ToString ());
+            result.WriteCell ("old", null, section); 
+            result.WriteCell ("new", null, section); 
+            result.Axis.Write (null);
+          }
+
+          //string[] lines = section.Split ('\n');
+          //if (lines.Length > 1 && section.Length == 1) continue;
+          /*
           if (breakLines && lines.Length > 1)
           {
             for (int k = 0; k < lines.Length; ++k)
             {
+              if (k < lines.Length - 1)
+              {
+                result.WriteCell ("op", null, op.ToString ());
+                result.WriteCell ("old", null, lines[k] + "\n");
+                result.WriteCell ("new", null, lines[k] + "\n");
+                result.Axis.Write (null);
+              }
+              else if (lines[k] != "")
+              {
+                result.WriteCell ("op", null, op.ToString ());
+                result.WriteCell ("old", null, lines[k]);
+                result.WriteCell ("new", null, lines[k]);
+                result.Axis.Write (null);
+              }
+              else
+              {
+                result.WriteCell ("op", null, op.ToString ());
+                result.WriteCell ("old", null, "\n");
+                result.WriteCell ("new", null, "\n");
+                result.Axis.Write (null);
+              }
+              if (lines[k] == "")
+              {
+                result.WriteCell ("op", null, op.ToString ());
+                result.WriteCell ("old", null, "\n");
+                result.WriteCell ("new", null, "\n");
+                result.Axis.Write (null);
+              }
               if (!(k == lines.Length - 1 && lines[k] == ""))
               {
                 result.WriteCell ("op", null, op.ToString ());
@@ -210,6 +276,7 @@ namespace RCL.Core
             result.WriteCell ("new", null, section); 
             result.Axis.Write (null);
           }
+          */
         }
         else if (op == Operation.INSERT)
         {

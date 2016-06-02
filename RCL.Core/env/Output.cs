@@ -75,10 +75,11 @@ namespace RCL.Core
       }
       else if (m_level == RCOutput.Multi || m_level == RCOutput.Full)
       {
-        string time = DateTime.UtcNow.ToString (TimeFormat);
-        string message = IndentMessage (CreateMessage (info));
-        m_output.WriteLine ("{0} {1} {2} {3} {4} {5} {6}",
-                            time, closure.Bot.Id, closure.Fiber, type, instance, state, message);
+        bool singleLine;
+        string message = IndentMessage (CreateMessage (info), out singleLine);
+        string optionalSpace = (singleLine && message.Length > 0) ? ":" : "";
+        m_output.WriteLine ("{0} {1} {2} {3} {4}{5}{6}", 
+                            closure.Bot.Id, closure.Fiber, type, instance, state, optionalSpace, message);        
       }
       else if (m_level == RCOutput.Clean && type == "print")
       {
@@ -87,9 +88,11 @@ namespace RCL.Core
       }
       else if (m_level == RCOutput.Test)
       {
-        string message = IndentMessage (CreateMessage (info));
-        m_output.WriteLine ("{0} {1} {2} {3} {4} {5}", 
-                            closure.Bot.Id, closure.Fiber, type, instance, state, message);
+        bool singleLine;
+        string message = IndentMessage (CreateMessage (info), out singleLine);
+        string optionalSpace = (singleLine && message.Length > 0) ? ":" : "";
+        m_output.WriteLine ("{0} {1} {2} {3} {4}{5}{6}", 
+                            closure.Bot.Id, closure.Fiber, type, instance, state, optionalSpace, message);        
       }
       else if (m_level == RCOutput.Trace)
       {
@@ -128,9 +131,11 @@ namespace RCL.Core
       else if (m_level == RCOutput.Multi || m_level == RCOutput.Full)
       {
         string time = DateTime.UtcNow.ToString (TimeFormat);
-        string message = IndentMessage (CreateMessage (info));
-        m_output.WriteLine ("{0} {1} {2} {3} {4} {5} {6}",
-                            time, bot, fiber, type, instance, state, message);
+        bool singleLine;
+        string message = IndentMessage (CreateMessage (info), out singleLine);
+        string optionalSpace = (singleLine && message.Length > 0) ? ":" : "";
+        m_output.WriteLine ("{0} {1} {2} {3} {4} {5}{6}{7}",
+                            time, bot, fiber, type, instance, state, optionalSpace, message);
       }
       else if (m_level == RCOutput.Clean && type == "print")
       {
@@ -139,9 +144,11 @@ namespace RCL.Core
       }
       else if (m_level == RCOutput.Test)
       {
-        string message = IndentMessage (CreateMessage (info));
-        m_output.WriteLine ("{0} {1} {2} {3} {4} {5}", 
-                            bot, fiber, type, instance, state, message);
+        bool singleLine;
+        string message = IndentMessage (CreateMessage (info), out singleLine);
+        string optionalSpace = (singleLine && message.Length > 0) ? ":" : "";
+        m_output.WriteLine ("{0} {1} {2} {3} {4}{5}{6}", 
+                            closure.Bot.Id, closure.Fiber, type, instance, state, optionalSpace, message);        
       }
       else if (m_level == RCOutput.Trace)
       {
@@ -194,14 +201,16 @@ namespace RCL.Core
       return message;
     }
 
-    protected string IndentMessage (string message)
+    protected string IndentMessage (string message, out bool singleLine)
     {
       string[] lines = message.Split ('\n', '\r');
       int chars = 0;
       if (lines.Length == 1)
       {
+        singleLine = true;
         return lines[0];
       }
+      singleLine = false;
       StringBuilder output = new StringBuilder ();
       output.AppendLine ();
       for (int i = 0; i < lines.Length; ++i)

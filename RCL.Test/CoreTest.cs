@@ -1922,7 +1922,7 @@ namespace RCL.Test
     [Test]
     public void TestParseDefault ()
     {
-      DoTest ("#o2 parse \"{a:1 b:2.0 c:\\\"3\\\"}\"", "{a:1 b:2.0 c:\"3\"}");
+      DoTest ("#rcl parse \"{a:1 b:2.0 c:\\\"3\\\"}\"", "{a:1 b:2.0 c:\"3\"}");
       DoTest ("parse \"{a:1 b:2.0 c:\\\"3\\\"}\"", "{a:1 b:2.0 c:\"3\"}");
     }
 
@@ -2195,6 +2195,12 @@ namespace RCL.Test
     public void TestCompare6 ()
     {
       DoTest ("\"aaaaaaaa0\" compare \"aaaaaaaa2\"", "[op old new \"EQUAL\" \"aaaaaaaa\" \"aaaaaaaa\" \"DELETE\" \"0\" -- \"INSERT\" -- \"2\"]");
+    }
+
+    [Test]
+    public void TestCompare7 ()
+    {
+      DoTest ("\"[?\n  first line\n  second line\n\" compare \"[?\n  first line \n  second line\n\"", "[op old new \"EQUAL\" \"[?\\n\" \"[?\\n\" \"EQUAL\" \"  first line\" \"  first line\" \"INSERT\" -- \" \" \"EQUAL\" \"\\n\" \"\\n\" \"EQUAL\" \"  second line\\n\" \"  second line\\n\"]");
     }
 
     [Test]

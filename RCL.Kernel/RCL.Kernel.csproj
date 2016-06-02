@@ -124,6 +124,8 @@
     <Compile Include="RCLogger.cs" />
     <Compile Include="RCException.cs" />
     <Compile Include="RCErrors.cs" />
+    <Compile Include="parser\LogParser.cs" />
+    <Compile Include="lexer\LogContentToken.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

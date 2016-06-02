@@ -127,7 +127,14 @@ namespace RCL.Kernel
 
     //For XML Files only.
     public static readonly RCTokenType XmlBracket = new XMLBracketToken ();
+    
     public static readonly RCTokenType XmlContent = new XMLContentToken ();
+
+    //For RCL log files only.
+    //public static readonly RCTokenType LogContent = new LogContentToken ();
+    public static readonly RCTokenType LogEntryHeader = new LogEntryHeader ();
+    public static readonly RCTokenType LogEntryMessage = new LogEntryMessage ();
+    public static readonly RCTokenType LogEntryDocument = new LogEntryDocument ();
 
     /// <summary>
     /// Is this the right spot for a visitor? not really sure...

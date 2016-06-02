@@ -182,7 +182,8 @@ namespace RCL.Core
                                          m_openState.Closure, 
                                          "socket",
                                          m_handle,
-                                         "closed", "");
+                                         "closed",
+                                         "");
         }
       }
     }

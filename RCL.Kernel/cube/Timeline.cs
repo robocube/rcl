@@ -177,6 +177,11 @@ namespace RCL.Kernel
       get { return Colset.Count > 0; }
     }
 
+    public void Write ()
+    {
+      ++m_count;
+    }
+
     public void Write (RCSymbolScalar s)
     {
       Write (-1, -1, new RCTimeScalar (new DateTime (0), RCTimeType.Timestamp), s);

@@ -39,7 +39,9 @@ namespace RCL.Kernel
           }
         }
         if (token == null)
+        {
           throw new Exception ("unable to lex:" + input);
+        }
       }
     }
 
