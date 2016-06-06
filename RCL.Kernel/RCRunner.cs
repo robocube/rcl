@@ -9,14 +9,210 @@ using System.Collections.Generic;
 
 namespace RCL.Kernel
 {
+  public class RCLArgv
+  {
+    public readonly RCBlock Options;
+    public readonly RCString Arguments;
+    public readonly bool Exit;
+    public readonly bool Batch;
+    public readonly bool Nokeys;
+    public readonly bool Version;
+    public readonly string Program;
+    public readonly string Action;
+    public readonly string Output;
+    public readonly RCOutput OutputEnum;
+
+    public RCLArgv (params string[] argv)
+    {
+      Exit = false;
+      Batch = false;
+      Nokeys = false;
+      Version = false;
+      Program = "";
+      Action = "";
+      Output = "full";
+      RCBlock custom = RCBlock.Empty;
+      List<string> arguments = new List<string> ();
+      for (int i = 0; i < argv.Length; ++i)
+      {
+        string[] kv = argv[i].Split ('=');
+        if (kv.Length == 1)
+        {
+          if (kv[0].StartsWith ("--"))
+          {
+            string option = kv[0].Substring (2);
+            if (option.Equals ("exit"))
+            {
+              Exit = true;
+            }
+            else if (option.Equals ("batch"))
+            {
+              Batch = true;
+            }
+            else if (option.Equals ("nokeys"))
+            {
+              Nokeys = true;
+            }
+            else if (option.Equals ("version"))
+            {
+              //This option forces the version to display no matter what.
+              //Useful when you need to check the version number from a test.
+              Version = true;
+            }
+            else
+            {
+              custom = new RCBlock (custom, option, ":", RCBoolean.True);
+            }
+          }
+          else if (kv[0].StartsWith ("-"))
+          {
+            for (int j = 1; j < kv[0].Length; ++j)
+            {
+              char c;
+              switch (c = kv[0][j])
+              {
+                case 'x': 
+                  Exit = true;
+                  break;
+                case 'b':
+                  Batch = true;
+                  break;
+                case 'k':
+                  Nokeys = true;
+                  break;
+                case 'v':
+                  Version = true;
+                  break;
+                default :
+                  Usage ("Unknown option '" + kv[0][j] + "'");
+                  break;
+              }
+            }
+          }
+          else
+          {
+            //do position.
+            arguments.Add (kv[0]);
+            /*
+            if (Program == "")
+            {
+              Program = kv[0];
+            }
+            else
+            {
+              Action = kv[0];
+            }
+            */
+          }
+        }
+        else
+        {
+          //do named arguments.
+          if (kv[0].StartsWith ("--"))
+          {
+            string option = kv[0].Substring (2);
+            if (option.Equals ("program"))
+            {
+              Program = kv[1];
+            }
+            else if (option.Equals ("action"))
+            {
+              Action = kv[1];
+            }
+            else if (option.Equals ("output"))
+            {
+              Output = kv[1];
+            }
+            else
+            {
+              custom = new RCBlock (custom, option, ":", new RCString (kv[1]));
+            }
+          }
+          else Usage ("Named options start with --");
+        }
+      }
+      Arguments = new RCString (arguments.ToArray ());
+      Options = RCBlock.Empty;
+      Options = new RCBlock (Options, "program", ":", new RCString (Program));
+      Options = new RCBlock (Options, "action", ":", new RCString (Action));
+      Options = new RCBlock (Options, "output", ":", new RCString (Output));
+      Options = new RCBlock (Options, "batch", ":", new RCBoolean (Batch));
+      Options = new RCBlock (Options, "nokeys", ":", new RCBoolean (Nokeys));
+      Options = new RCBlock (Options, "exit", ":", new RCBoolean (Exit));
+      Options = new RCBlock (Options, "version", ":", new RCBoolean (Version));
+      OutputEnum = (RCOutput) Enum.Parse (typeof (RCOutput), Output, true);
+      for (int i = 0; i < custom.Count; ++i)
+      {
+        RCBlock name = custom.GetName (i);
+        Options = new RCBlock (Options, name.Name, ":", name.Value);
+      }
+    }
+    
+    static void Usage (string message)
+    {
+      PrintCopyright ();
+      Console.WriteLine ();
+      Console.WriteLine ("Usage: rcl [OPTIONS] program action");
+      Console.WriteLine ("  {0}", message);
+      Console.WriteLine ();
+      Console.WriteLine ("Options:");
+      Console.WriteLine ("  --program         Program file to run on startup");
+      Console.WriteLine ("  --action          Operator within program to eval on launch");
+      Console.WriteLine ("  --output          Output format [full|multi|single|clean|none]");
+      Console.WriteLine ("  --batch, -b       Non-interactive console (use when reading from standard input)");
+      Console.WriteLine ("  --exit, -x        Exit after completion of action");
+      Console.WriteLine ("  --version, -v     Force printing of version on start");
+      Console.WriteLine ();
+      Environment.Exit (1);
+    }
+    
+    public void PrintStartup ()
+    {
+      bool copyright = !Batch && OutputEnum != RCOutput.Clean && OutputEnum != RCOutput.Test;
+      bool options = !Batch && OutputEnum != RCOutput.Clean && OutputEnum != RCOutput.Test;
+      bool version = Version || (!Batch && OutputEnum != RCOutput.Clean && OutputEnum != RCOutput.Test);
+      
+      if (version)
+      {
+        PrintVersion ();
+      }
+      if (copyright)
+      {
+        Console.WriteLine ();
+        PrintCopyright ();
+      }
+      if (options)
+      {
+        Console.WriteLine ();
+        Console.WriteLine ("Options:");
+        Console.WriteLine (Options.Format (RCFormat.Pretty));
+      }
+      if (options || copyright)
+      {
+        Console.WriteLine ();
+      }
+    }
+
+    protected static void PrintVersion ()
+    {
+      Version version = System.Reflection.Assembly.GetEntryAssembly().GetName().Version;
+      Console.Out.WriteLine ("Robocube Language {0}", version.ToString ());
+    }
+
+    protected static void PrintCopyright ()
+    {
+      Console.Out.WriteLine ("Copyright (C) 2007-2015 Brian M. Andersen");
+      Console.Out.WriteLine ("Copyright (C) 2015-2016 Robocube Corporation");
+    }
+  }
+
   public class RCRunner
   {
     //I made this public because parse wants it.
     //It's fine because there are no mutating methods on RCActivator.
     //But it's possible that could change at some point.
 
-    public readonly RCBlock Arguments;
-    public readonly RCOutput OutputOption;
+    public readonly RCLArgv Argv;
     public readonly RCActivator Activator;
     public readonly RCLog Log;
 
@@ -43,140 +239,13 @@ namespace RCL.Kernel
     protected AutoResetEvent m_done = new AutoResetEvent (false);
     protected Thread m_ctorThread;
 
-    public static RCBlock GetOptions (params string[] argv)
+    public RCRunner () : this (RCActivator.Default, new RCLog (), 1, new RCLArgv ()) {}
+    public RCRunner (params string[] options) : this (RCActivator.Default, new RCLog (), 1, new RCLArgv (options)) {}
+    public RCRunner (RCActivator activator, RCLog log, long workers, RCLArgv argv)
     {
-      bool exit = false;
-      bool batch = false;
-      string program = "";
-      string action = "";
-      string output = "full";
-      RCBlock custom = RCBlock.Empty;
-      for (int i = 0; i < argv.Length; ++i)
-      {
-        string[] kv = argv[i].Split ('=');
-        if (kv.Length == 1)
-        {
-          if (kv[0].StartsWith ("--"))
-          {
-            string option = kv[0].Substring (2);
-            if (option.Equals ("exit"))
-            {
-              exit = true;
-            }
-            else if (option.Equals ("batch"))
-            {
-              batch = true;
-            }
-            else
-            {
-              custom = new RCBlock (custom, option, ":", RCBoolean.True);
-            }
-          }
-          else if (kv[0].StartsWith ("-"))
-          {
-            for (int j = 1; j < kv[0].Length; ++j)
-            {
-              char c;
-              switch (c = kv[0][j])
-              {
-                case 'x': 
-                  exit = true;
-                  break;
-                case 'b':
-                  batch = true;
-                  break;
-                default :
-                  Usage ("Unknown option '" + kv[0][j] + "'");
-                  break;
-              }
-            }
-          }
-          else
-          {
-            //do position.
-            if (program == "")
-            {
-              program = kv[0];
-            }
-            else
-            {
-              action = kv[0];
-            }
-          }
-        }
-        else
-        {
-          //do named arguments.
-          if (kv[0].StartsWith ("--"))
-          {
-            string option = kv[0].Substring (2);
-            if (option.Equals ("program"))
-            {
-              program = kv[1];
-            }
-            else if (option.Equals ("action"))
-            {
-              action = kv[1];
-            }
-            else if (option.Equals ("output"))
-            {
-              output = kv[1];
-            }
-            else
-            {
-              custom = new RCBlock (custom, option, ":", new RCString (kv[1]));
-            }
-          }
-          else Usage ("Named options start with --");
-        }
-      }
-      RCBlock result = RCBlock.Empty;
-      result = new RCBlock (result, "program", ":", new RCString (program));
-      result = new RCBlock (result, "action", ":", new RCString (action));
-      result = new RCBlock (result, "output", ":", new RCString (output));
-      result = new RCBlock (result, "batch", ":", new RCBoolean (batch));
-      result = new RCBlock (result, "exit", ":", new RCBoolean (exit));
-      for (int i = 0; i < custom.Count; ++i)
-      {
-        RCBlock name = custom.GetName (i);
-        result = new RCBlock (result, name.Name, ":", name.Value);
-      }
-      return result;
-    }
-
-    static void PrintCopyright ()
-    {
-      Version version = System.Reflection.Assembly.GetEntryAssembly().GetName().Version;
-      Console.Out.WriteLine ("RCL Version {0}", version.ToString ());
-      Console.Out.WriteLine ("  Copyright (C) 2007-2015 Brian M. Andersen");
-      Console.Out.WriteLine ("  Copyright (C) 2015-2016 Robocube Corporation");
-    }
-
-    static void Usage (string message)
-    {
-      PrintCopyright ();
-      Console.WriteLine ();
-      Console.WriteLine ("Usage: rcl [OPTIONS] program action");
-      Console.WriteLine ("  {0}", message);
-      Console.WriteLine ();
-      Console.WriteLine ("Options:");
-      Console.WriteLine ("  --program         Program file to run on startup");
-      Console.WriteLine ("  --action          Operator within program to eval on launch");
-      Console.WriteLine ("  --output          Output format [full|multi|single|clean|none]");
-      Console.WriteLine ("  --batch, -b       Non-interactive console (use when reading from standard input)");
-      Console.WriteLine ("  --exit, -x        Exit after completion of action");
-      Console.WriteLine ();
-      Environment.Exit (1);
-    }
-
-    public RCRunner () : this (RCActivator.Default, new RCLog (), 1, GetOptions ()) {}
-    public RCRunner (RCBlock options) : this (RCActivator.Default, new RCLog (), 1, options) {}
-    public RCRunner (RCActivator activator, RCLog log, long workers, RCBlock arguments)
-    {
-      Arguments = arguments;
-      RCString output = (RCString) Arguments.Get ("output");
-      OutputOption = (RCOutput) Enum.Parse (typeof (RCOutput), output[0], true);
+      Argv = argv;
       Activator = activator;
+      log.SetVerbosity (argv.OutputEnum);
       Log = log;
       m_ctorThread = Thread.CurrentThread;
       m_bots[0] = new RCBot (this, 0);

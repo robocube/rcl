@@ -151,7 +151,7 @@ namespace RCL.Kernel
         {
           builder.Append (op.Name);
           builder.Append (" ");
-          closure.Result.Format (builder, RCFormat.Default, indent);
+          //closure.Result.Format (builder, RCFormat.Default, indent);
           builder.AppendLine ();
         }
 
@@ -161,12 +161,14 @@ namespace RCL.Kernel
           RCBlock line = block.GetName (closure.Index);
           if (line.Name != "")
           {
-            builder.AppendFormat ("{0} @ ({1}) ", line.Name, closure.Index);
-            closure.Result.Format (builder, RCFormat.Default, indent);
+            builder.AppendFormat ("{0} (@ {1}) ", line.Name, closure.Index);
+            //closure.Code.Format (builder, RCFormat.Default, indent);
+            //closure.Result.Format (builder, RCFormat.Default, indent);
           }
           else
           {
-            builder.AppendFormat ("{0}", "program...");
+            //builder.AppendFormat ("{0}", "program...");
+            line.Value.Format (builder, RCFormat.Pretty, indent);
           }
           builder.AppendLine ();
         }

@@ -22,7 +22,7 @@ namespace RCL.Exe
     static int Main (string[] argv)
     {
       string flags = Environment.GetEnvironmentVariable ("RCL_FLAGS");
-      RCBlock arguments;
+      RCLArgv cmd;
       if (flags != null)
       {
         string[] flagsv = flags.Split (' ');
@@ -35,31 +35,35 @@ namespace RCL.Exe
         {
           newArgv[argv.Length + i] = flagsv[i];
         }
-        arguments = GetOptions (newArgv);
+        cmd = new RCLArgv (newArgv);
       }
       else
       {
-        arguments = GetOptions (argv);
+        cmd = new RCLArgv (argv);
       }
-      string output = ((RCString) arguments.Get ("output"))[0];
+      /*
+      string output = argv((RCString) arguments.Get ("output"))[0];
       string program = ((RCString) arguments.Get ("program"))[0];
       string action = ((RCString) arguments.Get ("action"))[0];
       bool batch = ((RCBoolean) arguments.Get ("batch"))[0];
       bool exit = ((RCBoolean) arguments.Get ("exit"))[0];
       bool nokeys = ((RCBoolean) arguments.Get ("nokeys"))[0];
       bool showVersion = ((RCBoolean) arguments.Get ("version"))[0];
+      */
 
       string prompt = "RCL>";
       LineEditor editor = new LineEditor ("RCL");
       Output consoleLog = new Output (editor);
-      RCOutput outputEnum = (RCOutput) Enum.Parse (typeof (RCOutput), output, true);
-      bool copyright = !batch && outputEnum != RCOutput.Clean && outputEnum != RCOutput.Test;
-      bool options = !batch && outputEnum != RCOutput.Clean && outputEnum != RCOutput.Test;
-      bool version = showVersion || (!batch && outputEnum != RCOutput.Clean && outputEnum != RCOutput.Test);
-      consoleLog.SetVerbosity (outputEnum);
+      //RCOutput outputEnum = (RCOutput) Enum.Parse (typeof (RCOutput), output, true);
+      //bool copyright = !batch && outputEnum != RCOutput.Clean && outputEnum != RCOutput.Test;
+      //bool options = !batch && outputEnum != RCOutput.Clean && outputEnum != RCOutput.Test;
+      //bool version = showVersion || (!batch && outputEnum != RCOutput.Clean && outputEnum != RCOutput.Test);
+      //consoleLog.SetVerbosity (cmd.OutputEnum);
       RCLog log = new RCLog (consoleLog);
-      RCRunner runner = new RCRunner (RCActivator.Default, log, 1, arguments);
+      RCRunner runner = new RCRunner (RCActivator.Default, log, 1, cmd);
 
+      cmd.PrintStartup ();
+      /*
       if (version)
       {
         PrintVersion ();
@@ -79,32 +83,33 @@ namespace RCL.Exe
       {
         Console.WriteLine ();
       }
+      */
 
       string line = "";
-      if (program != "")
+      if (cmd.Program != "")
       {
         int status = 0;
         try
         {
-          string file = File.ReadAllText (program, Encoding.UTF8);
+          string file = File.ReadAllText (cmd.Program, Encoding.UTF8);
           RCValue code = runner.Read (file);
           runner.Rep (code);
-          if (action != "")
+          if (cmd.Action != "")
           {
-            RCValue result = runner.Rep (string.Format ("{0} #", action));
-            if (outputEnum != RCOutput.Clean)
+            RCValue result = runner.Rep (string.Format ("{0} #", cmd.Action));
+            if (cmd.OutputEnum != RCOutput.Clean)
             {
               string text = result.Format (RCFormat.Pretty);
               Console.Out.WriteLine (text);
             }
           }
-          if (batch && !exit)
+          if (cmd.Batch && !cmd.Exit)
           {
             Thread.Sleep (Timeout.Infinite);
             //ManualResetEvent mre = new ManualResetEvent (false);
             //mre.WaitOne ();
           }
-          if (batch)
+          if (cmd.Batch)
           {
             //Thread.Sleep (Timeout.Infinite);
             return 0;
@@ -123,13 +128,13 @@ namespace RCL.Exe
         }
         finally
         {
-          if (exit)
+          if (cmd.Exit)
           {
             Environment.Exit (status);
           }
         }
       }
-      else if (exit && !batch)
+      else if (cmd.Exit && !cmd.Batch)
       {
         Environment.Exit (0);
       }
@@ -138,7 +143,7 @@ namespace RCL.Exe
       {
         try
         {
-          if (batch)
+          if (cmd.Batch)
           {
             StringBuilder text = new StringBuilder ();
             while (true)
@@ -157,14 +162,14 @@ namespace RCL.Exe
             {
               Console.Out.WriteLine (result.Format (RCFormat.Pretty));
             }
-            if (exit)
+            if (cmd.Exit)
             {
               Environment.Exit (0);
             }
           }
           else
           {
-            if (nokeys)
+            if (cmd.Nokeys)
             {
               line = Console.ReadLine ();
             }
@@ -175,7 +180,7 @@ namespace RCL.Exe
             if (line != null)
             {
               string trimmed = line.TrimStart (' ').TrimEnd (' ');
-              line = Alias (trimmed, runner, consoleLog, arguments);
+              line = Alias (trimmed, runner, consoleLog, cmd);
               RCValue result = runner.Rep (line);
               if (result != null)
               {
@@ -198,158 +203,7 @@ namespace RCL.Exe
       return 0;
     }
 
-    static void PrintVersion ()
-    {
-      Version version = System.Reflection.Assembly.GetEntryAssembly().GetName().Version;
-      Console.Out.WriteLine ("Robocube Language {0}", version.ToString ());
-    }
-
-    static void PrintCopyright ()
-    {
-      Console.Out.WriteLine ("Copyright (C) 2007-2015 Brian M. Andersen");
-      Console.Out.WriteLine ("Copyright (C) 2015-2016 Robocube Corporation");
-    }
-
-    static RCBlock GetOptions (string[] argv)
-    {
-      bool exit = false;
-      bool batch = false;
-      bool nokeys = false;
-      bool version = false;
-      string program = "";
-      string action = "";
-      string output = "full";
-      RCBlock custom = RCBlock.Empty;
-      for (int i = 0; i < argv.Length; ++i)
-      {
-        string[] kv = argv[i].Split ('=');
-        if (kv.Length == 1)
-        {
-          if (kv[0].StartsWith ("--"))
-          {
-            string option = kv[0].Substring (2);
-            if (option.Equals ("exit"))
-            {
-              exit = true;
-            }
-            else if (option.Equals ("batch"))
-            {
-              batch = true;
-            }
-            else if (option.Equals ("nokeys"))
-            {
-              nokeys = true;
-            }
-            else if (option.Equals ("version"))
-            {
-              //This option forces the version to display no matter what.
-              //Useful when you need to check the version number from a test.
-              version = true;
-            }
-            else
-            {
-              custom = new RCBlock (custom, option, ":", RCBoolean.True);
-            }
-          }
-          else if (kv[0].StartsWith ("-"))
-          {
-            for (int j = 1; j < kv[0].Length; ++j)
-            {
-              char c;
-              switch (c = kv[0][j])
-              {
-                case 'x': 
-                  exit = true;
-                  break;
-                case 'b':
-                  batch = true;
-                  break;
-                case 'k':
-                  nokeys = true;
-                  break;
-                case 'v':
-                  version = true;
-                  break;
-                default :
-                  Usage ("Unknown option '" + kv[0][j] + "'");
-                  break;
-              }
-            }
-          }
-          else
-          {
-            //do position.
-            if (program == "")
-            {
-              program = kv[0];
-            }
-            else
-            {
-              action = kv[0];
-            }
-          }
-        }
-        else
-        {
-          //do named arguments.
-          if (kv[0].StartsWith ("--"))
-          {
-            string option = kv[0].Substring (2);
-            if (option.Equals ("program"))
-            {
-              program = kv[1];
-            }
-            else if (option.Equals ("action"))
-            {
-              action = kv[1];
-            }
-            else if (option.Equals ("output"))
-            {
-              output = kv[1];
-            }
-            else
-            {
-              custom = new RCBlock (custom, option, ":", new RCString (kv[1]));
-            }
-          }
-          else Usage ("Named options start with --");
-        }
-      }
-      RCBlock result = RCBlock.Empty;
-      result = new RCBlock (result, "program", ":", new RCString (program));
-      result = new RCBlock (result, "action", ":", new RCString (action));
-      result = new RCBlock (result, "output", ":", new RCString (output));
-      result = new RCBlock (result, "batch", ":", new RCBoolean (batch));
-      result = new RCBlock (result, "nokeys", ":", new RCBoolean (nokeys));
-      result = new RCBlock (result, "exit", ":", new RCBoolean (exit));
-      result = new RCBlock (result, "version", ":", new RCBoolean (version));
-      for (int i = 0; i < custom.Count; ++i)
-      {
-        RCBlock name = custom.GetName (i);
-        result = new RCBlock (result, name.Name, ":", name.Value);
-      }
-      return result;
-    }
-
-    static void Usage (string message)
-    {
-      PrintCopyright ();
-      Console.WriteLine ();
-      Console.WriteLine ("Usage: rcl [OPTIONS] program action");
-      Console.WriteLine ("  {0}", message);
-      Console.WriteLine ();
-      Console.WriteLine ("Options:");
-      Console.WriteLine ("  --program         Program file to run on startup");
-      Console.WriteLine ("  --action          Operator within program to eval on launch");
-      Console.WriteLine ("  --output          Output format [full|multi|single|clean|none]");
-      Console.WriteLine ("  --batch, -b       Non-interactive console (use when reading from standard input)");
-      Console.WriteLine ("  --exit, -x        Exit after completion of action");
-      Console.WriteLine ("  --version, -v     Force printing of version on start");
-      Console.WriteLine ();
-      Environment.Exit (1);
-    }
-
-    static string Alias (string trimmed, RCRunner runner, Output output, RCBlock arguments)
+    static string Alias (string trimmed, RCRunner runner, Output output, RCLArgv cmd)
     {
       string line = trimmed;
       if (trimmed == "exit")
@@ -391,7 +245,7 @@ namespace RCL.Exe
       else if (trimmed == "help")
       {
         Console.WriteLine ("I am trying to be helpful, these are the command line arguments.");
-        Console.WriteLine (arguments.Format (RCFormat.Pretty));
+        Console.WriteLine (cmd.Options.Format (RCFormat.Pretty));
       }
       else if (trimmed == "begin")
       {

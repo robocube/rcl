@@ -17,6 +17,13 @@ namespace RCL.Kernel
                                         0);
       DoEval (runner, parent, right);
     }
+
+    [RCVerb ("eval")]
+    public void EvalEval (RCRunner runner, RCClosure closure, RCBlock left, RCBlock right)
+    {
+      RCClosure parent = UserOpClosure (closure, right, new RCArray<RCBlock> (left));
+      DoEval (runner, parent, right);
+    }
      
     //This higher order thingy needs to go away it makes no sense.
     public override bool IsHigherOrder ()

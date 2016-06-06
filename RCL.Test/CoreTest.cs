@@ -10,7 +10,7 @@ namespace RCL.Test
     //We could have operators that yield strings and in the 
     //end you just traverse the document and cat all the strings
     //together.
-    protected RCRunner runner = new RCRunner (RCActivator.Default, new RCLog (new RCL.Core.Output ()), 1, RCRunner.GetOptions ("--output=test"));
+    protected RCRunner runner = new RCRunner (RCActivator.Default, new RCLog (), 1, new RCLArgv ("--output=test"));
     public void DoTest (string code, string expected)
     {
       try

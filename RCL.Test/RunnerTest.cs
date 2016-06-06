@@ -113,7 +113,7 @@ namespace RCL.Test
     public void TestForConflictingResults ()
     {
       RCRunner runner = new RCRunner (RCActivator.Default,
-                                      new RCLog (new RCL.Core.Output ()), 1, RCRunner.GetOptions ());
+                                      new RCLog (new RCL.Core.Output ()), 1, new RCLArgv ());
       Assert.AreEqual ("{status:0 data:5}", 
                        RepString (runner, "first #r from eval {serve:{b:bot {<-try {<-eval {<-2 + 3}}} f1:fiber {r:wait $b <-$r} <-wait $f1} r:wait fiber {<-serve #}}"));
     }
@@ -198,7 +198,7 @@ namespace RCL.Test
     [Test]
     public void TestTryError ()
     {
-      RCRunner runner = new RCRunner (RCRunner.GetOptions ("--output=test"));
+      RCRunner runner = new RCRunner ("--output=test");
       Assert.AreEqual ("{status:1 data:\"<<Assert>>\"}", runner.Rep ("try {<-assert false}").ToString ());
     }
 
@@ -207,14 +207,26 @@ namespace RCL.Test
     {
       RCRunner runner = new RCRunner ();
       runner.Rep ("p:startx \"mono rcl.exe --output=clean --nokeys --custom1=one --custom2\"");
-      runner.Rep ("$p writex \"argument \\\"custom1\\\"\"");
+      runner.Rep ("$p writex \"option \\\"custom1\\\"\"");
       RCString custom1 = (RCString) runner.Rep ("\"\\n\" readx $p");
-      runner.Rep ("$p writex \"argument \\\"custom2\\\"\"");
+      runner.Rep ("$p writex \"option \\\"custom2\\\"\"");
       RCString custom2 = (RCString) runner.Rep ("\"\\n\" readx $p");
       runner.Rep ("$p writex \"exit\"");
       runner.Rep ("waitx $p");
       Assert.AreEqual ("\"one\"", custom1[0]);
       Assert.AreEqual ("true", custom2[0]);
+    }
+
+    [Test]
+    public void TestMultipleCustomArguments ()
+    {
+      RCRunner runner = new RCRunner ();
+      runner.Rep ("p:startx \"mono rcl.exe --output=clean first_argument --nokeys --custom1=one second_argument --custom2\"");
+      runner.Rep ("$p writex \"info #arguments\"");
+      RCString result = (RCString) runner.Rep ("\"\\n\" readx $p");
+      runner.Rep ("$p writex \"exit\"");
+      runner.Rep ("waitx $p");
+      Assert.AreEqual ("\"first_argument\" \"second_argument\"", result[0]);
     }
 
     [Test]

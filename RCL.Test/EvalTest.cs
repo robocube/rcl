@@ -197,6 +197,13 @@ namespace RCL.Test
                   "{:\"The duck goes quack\" :\"The pig goes oink\" :\"The chicken goes cluck\"}");
     }
 
+    [Test]
+    public void TestThisContextDynamic ()
+    {
+      DoEvalTest ("{go:{<-\"The \" + $animal + \" goes \" + $sound} duck:{animal:\"duck\" sound:\"quack\"} pig:{animal:\"pig\" sound:\"oink\"} chicken:{animal:\"chicken\" sound:\"cluck\"} <-eval {:$duck eval $go :$pig eval $go :$chicken eval $go}}",
+                  "{:\"The duck goes quack\" :\"The pig goes oink\" :\"The chicken goes cluck\"}");
+    }
+
     //[Test]
 //#if (!__MonoCS__)
     //[ExpectedException(typeof(RCRuntimeException), "Unable to resolve name s.x")]
@@ -1496,10 +1503,10 @@ namespace RCL.Test
     public void TestSelfExecWithExit ()
     {
       DoEvalTest ("\"exit.rcl\" save #pretty format {go:exit 1}", "\"exit.rcl\"");
-      DoEvalTest ("unwrap #status from try {<-exec \"mono --debug rcl.exe exit.rcl go\"}", "1");
+      DoEvalTest ("unwrap #status from try {<-exec \"mono --debug rcl.exe --program=exit.rcl --action=go\"}", "1");
     }
 
-    RCRunner runner = new RCRunner (RCActivator.Default, new RCLog (new RCL.Core.Output ()), 1, RCRunner.GetOptions ());
+    RCRunner runner = new RCRunner (RCActivator.Default, new RCLog (new RCL.Core.Output ()), 1, new RCLArgv ());
 
     public void DoEvalTest (string code, string expected)
     {

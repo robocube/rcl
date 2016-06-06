@@ -215,7 +215,9 @@ namespace RCL.Kernel
     public UserOperator (RCLReference reference)
     {
       if (reference == null)
+      {
         throw new ArgumentNullException ("reference");
+      }
       m_reference = reference;
     }
 

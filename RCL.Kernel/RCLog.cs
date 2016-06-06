@@ -6,6 +6,7 @@ namespace RCL.Kernel
 {
   public class RCLog
   {
+    protected List<RCLogger> m_all = new List<RCLogger> ();
     protected Dictionary<string, List<RCLogger>> m_loggers = new Dictionary<string, List<RCLogger>> ();
     protected List<RCLogger> m_wild = new List<RCLogger> ();
     protected object m_lock = new object ();
@@ -14,6 +15,7 @@ namespace RCL.Kernel
     {
       for (int i = 0; i < loggers.Length; ++i)
       {
+        m_all.Add (loggers[i]);
         //This is to support the idea of making certain loggers optional as you are constructing the RCLog.
         //See Program.cs.
         if (loggers[i] == null) continue;
@@ -34,6 +36,17 @@ namespace RCL.Kernel
             }
             typeList.Add (loggers[i]);
           }
+        }
+      }
+    }
+
+    public void SetVerbosity (RCOutput output)
+    {
+      lock (m_lock)
+      {
+        foreach (RCLogger logger in m_all)
+        {
+          logger.SetVerbosity (output);
         }
       }
     }

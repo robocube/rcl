@@ -139,40 +139,87 @@ namespace RCL.Core
       runner.Yield (closure, new RCString (Environment.CurrentDirectory));
     }
 
-    /*
-    [RCVerb ("output")]
-    public void EvalArgument (
-      RCRunner runner, RCClosure closure, RCSymbol right)
-    {
-      RCOutput level = (RCOutput) Enum.Parse (typeof (RCOutput), right[0], true);
-      runner.Log.Output (level);
-      runner.Yield (closure, right);
-    }
-    */
-
-    [RCVerb ("argument")]
-    public void EvalArgument (
-      RCRunner runner, RCClosure closure, RCString right)
-    {
-      RCValue result = runner.Arguments.Get (right[0]);
-      if (result == null)
-      {
-        throw new Exception ("No argument given:" + right[0]);
-      }
-      runner.Yield (closure, result);
-    }
-
     //Let's call this getarg to be more like getenv
-    [RCVerb ("argument")]
-    public void EvalArgument (
+    [RCVerb ("option")]
+    public void EvalOptions (
       RCRunner runner, RCClosure closure, RCString left, RCString right)
     {
-      RCValue result = runner.Arguments.Get (right[0]);
+      RCValue result = runner.Argv.Options.Get (right[0]);
       if (result == null)
       {
         result = left;
       }
       runner.Yield (closure, result);
+    }
+
+    [RCVerb ("option")]
+    public void EvalOptions (
+      RCRunner runner, RCClosure closure, RCString right)
+    {
+      RCValue result = runner.Argv.Options.Get (right[0]);
+      if (result == null)
+      {
+        throw new Exception ("No such option:" + right[0]);
+      }
+      runner.Yield (closure, result);
+    }
+
+    [RCVerb ("info")]
+    public void EvalInfo (
+      RCRunner runner, RCClosure closure, RCSymbol right)
+    {
+      if (right.Count > 1)
+      {
+        throw new Exception ("info can only provide one value at a time. info #help gives a list of valid values.");
+      }
+      Info (runner, closure, right[0].Part(0).ToString ());
+    }
+
+    [RCVerb ("info")]
+    public void EvalInfo (
+      RCRunner runner, RCClosure closure, RCString right)
+    {
+      if (right.Count > 1)
+      {
+        throw new Exception ("info can only provide one value at a time. info #help gives a list of valid values.");
+      }
+      Info (runner, closure, right[0]);
+    }
+
+    protected void Info (RCRunner runner, RCClosure closure, string value)
+    {
+      if (value == "arguments")
+      {
+        runner.Yield (closure, runner.Argv.Arguments);
+      }
+      else if (value == "options")
+      {
+        runner.Yield (closure, runner.Argv.Options);
+      }
+      else if (value == "directory")
+      {
+        runner.Yield (closure, new RCString (Environment.CurrentDirectory));
+      }
+      else if (value == "drives")
+      {
+        runner.Yield (closure, new RCString (Environment.GetLogicalDrives ()));
+      }
+      else if (value == "host")
+      {
+        runner.Yield (closure, new RCString (Environment.MachineName));
+      }
+      else if (value == "ending")
+      {
+        runner.Yield (closure, new RCString (Environment.NewLine));
+      }
+      else if (value == "os")
+      {
+        runner.Yield (closure, new RCString (Environment.OSVersion.VersionString));
+      }
+      else if (value == "help")
+      {
+        runner.Yield (closure, new RCString ("arguments", "options", "directory", "drives", "host", "end", "os", "help"));
+      }
     }
 
     [RCVerb ("getenv")]
@@ -182,7 +229,29 @@ namespace RCL.Core
       RCArray<string> result = new RCArray<string> (right.Count);
       for (int i = 0; i < right.Count; ++i)
       {
-        result.Write (Environment.GetEnvironmentVariable (right[i]));
+        string variable = Environment.GetEnvironmentVariable (right[i]);
+        if (variable == null)
+        {
+          throw new Exception ("No environment variable set:" + right[i]);
+        }
+        result.Write (variable);
+      }
+      runner.Yield (closure, new RCString (result));
+    }
+
+    [RCVerb ("getenv")]
+    public void EvalGetenv (
+      RCRunner runner, RCClosure closure, RCString left, RCString right)
+    {
+      RCArray<string> result = new RCArray<string> (right.Count);
+      for (int i = 0; i < right.Count; ++i)
+      {
+        string variable = Environment.GetEnvironmentVariable (right[i]);
+        if (variable == null)
+        {
+          variable = left[i];
+        }
+        result.Write (variable);
       }
       runner.Yield (closure, new RCString (result));
     }
