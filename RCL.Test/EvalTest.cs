@@ -474,6 +474,12 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestEachNames ()
+    {
+      DoEvalTest ("{<-$L} each {a:1 b:2 c:3}", "{a:\"a\" b:\"b\" c:\"c\"}");
+    }
+
+    [Test]
     public void TestEmptyEval ()
     {
       DoEvalTest ("count eval {}", "0");

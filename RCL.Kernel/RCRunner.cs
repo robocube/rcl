@@ -20,6 +20,7 @@ namespace RCL.Kernel
     public readonly string Program;
     public readonly string Action;
     public readonly string Output;
+    public readonly string[] Show;
     public readonly RCOutput OutputEnum;
 
     public RCLArgv (params string[] argv)
@@ -31,6 +32,7 @@ namespace RCL.Kernel
       Program = "";
       Action = "";
       Output = "full";
+      Show = new string[] {"*"};
       RCBlock custom = RCBlock.Empty;
       List<string> arguments = new List<string> ();
       for (int i = 0; i < argv.Length; ++i)
@@ -93,16 +95,6 @@ namespace RCL.Kernel
           {
             //do position.
             arguments.Add (kv[0]);
-            /*
-            if (Program == "")
-            {
-              Program = kv[0];
-            }
-            else
-            {
-              Action = kv[0];
-            }
-            */
           }
         }
         else
@@ -123,6 +115,10 @@ namespace RCL.Kernel
             {
               Output = kv[1];
             }
+            else if (option.Equals ("show"))
+            {
+              Show = kv[1].Split (',');
+            }
             else
             {
               custom = new RCBlock (custom, option, ":", new RCString (kv[1]));
@@ -136,6 +132,7 @@ namespace RCL.Kernel
       Options = new RCBlock (Options, "program", ":", new RCString (Program));
       Options = new RCBlock (Options, "action", ":", new RCString (Action));
       Options = new RCBlock (Options, "output", ":", new RCString (Output));
+      Options = new RCBlock (Options, "show", ":", new RCString (Show));
       Options = new RCBlock (Options, "batch", ":", new RCBoolean (Batch));
       Options = new RCBlock (Options, "nokeys", ":", new RCBoolean (Nokeys));
       Options = new RCBlock (Options, "exit", ":", new RCBoolean (Exit));

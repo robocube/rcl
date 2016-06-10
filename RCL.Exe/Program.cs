@@ -41,49 +41,14 @@ namespace RCL.Exe
       {
         cmd = new RCLArgv (argv);
       }
-      /*
-      string output = argv((RCString) arguments.Get ("output"))[0];
-      string program = ((RCString) arguments.Get ("program"))[0];
-      string action = ((RCString) arguments.Get ("action"))[0];
-      bool batch = ((RCBoolean) arguments.Get ("batch"))[0];
-      bool exit = ((RCBoolean) arguments.Get ("exit"))[0];
-      bool nokeys = ((RCBoolean) arguments.Get ("nokeys"))[0];
-      bool showVersion = ((RCBoolean) arguments.Get ("version"))[0];
-      */
 
       string prompt = "RCL>";
       LineEditor editor = new LineEditor ("RCL");
-      Output consoleLog = new Output (editor);
-      //RCOutput outputEnum = (RCOutput) Enum.Parse (typeof (RCOutput), output, true);
-      //bool copyright = !batch && outputEnum != RCOutput.Clean && outputEnum != RCOutput.Test;
-      //bool options = !batch && outputEnum != RCOutput.Clean && outputEnum != RCOutput.Test;
-      //bool version = showVersion || (!batch && outputEnum != RCOutput.Clean && outputEnum != RCOutput.Test);
-      //consoleLog.SetVerbosity (cmd.OutputEnum);
+      Output consoleLog = new Output (editor, cmd.Show);
       RCLog log = new RCLog (consoleLog);
       RCRunner runner = new RCRunner (RCActivator.Default, log, 1, cmd);
 
       cmd.PrintStartup ();
-      /*
-      if (version)
-      {
-        PrintVersion ();
-      }
-      if (copyright)
-      {
-        Console.WriteLine ();
-        PrintCopyright ();
-      }
-      if (options)
-      {
-        Console.WriteLine ();
-        Console.WriteLine ("Options:");
-        Console.WriteLine (arguments.Format (RCFormat.Pretty));
-      }
-      if (options || copyright)
-      {
-        Console.WriteLine ();
-      }
-      */
 
       string line = "";
       if (cmd.Program != "")
@@ -106,12 +71,9 @@ namespace RCL.Exe
           if (cmd.Batch && !cmd.Exit)
           {
             Thread.Sleep (Timeout.Infinite);
-            //ManualResetEvent mre = new ManualResetEvent (false);
-            //mre.WaitOne ();
           }
           if (cmd.Batch)
           {
-            //Thread.Sleep (Timeout.Infinite);
             return 0;
           }
           //otherwise go on and keep listening for further commands.

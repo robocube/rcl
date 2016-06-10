@@ -11,12 +11,15 @@ namespace RCL.Core
   {
     protected Mono.Terminal.LineEditor m_editor;
     protected TextWriter m_output;
+    protected RCArray<string> m_types;
 
-    public Output () : this (null) {}
+    public Output () : this ((Mono.Terminal.LineEditor) null, "*") {}
 
-    public Output (Mono.Terminal.LineEditor editor)
+    public Output (Mono.Terminal.LineEditor editor, 
+                   params string[] whiteList)
     {
       m_editor = editor;
+      m_types = new RCArray<string> (whiteList);
       if (m_editor == null)
       {
         m_output = Console.Error;
@@ -25,6 +28,16 @@ namespace RCL.Core
       {
         m_output = Console.Out;
       }
+    }
+
+    public Output (params string[] whiteList)
+    {
+      m_types = new RCArray<string> (whiteList);
+    }
+
+    public override RCArray<string> Types ()
+    {
+      return m_types;
     }
 
     protected RCOutput m_level = RCOutput.Full;

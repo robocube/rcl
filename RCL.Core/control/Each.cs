@@ -76,7 +76,9 @@ namespace RCL.Core
       long i = closure.Index - 2;
       if (i < right.Count)
       {
-        RCBlock result = new RCBlock ("R", ":", right.Get(i));
+        RCBlock name = right.GetName (i);
+        RCBlock result = new RCBlock ("L", ":", new RCString (name.Name));
+        result = new RCBlock (result, "R", ":", right.Get(i));
         left.Eval (runner, new RCClosure (
           closure, closure.Bot, left, closure.Left, result, 0));
       }
