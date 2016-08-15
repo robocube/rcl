@@ -1,8 +1,8 @@
+.gitignore
 bin/
 obj/
 .vscode/
 RCL.userprefs
 gauntlet_results.rcl
 nunit_results.xml
-
-
+RCL.Core/obj/
