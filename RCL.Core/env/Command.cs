@@ -2,15 +2,47 @@
 using System;
 using System.Text;
 using System.IO;
-using System.Collections.Generic;
 using System.Threading;
-using System.Diagnostics;
 using RCL.Kernel;
 
 namespace RCL.Core
 {
   public class Command
   {
+    [RCVerb ("path")]
+    public void EvalPath (RCRunner runner, RCClosure closure, RCSymbol right)
+    {
+      RCArray<string> result = new RCArray<string> (right.Count);
+      for (int i = 0; i < right.Count; ++i)
+      {
+        result.Write (PathSymbolToString (right[i]));
+      }
+      runner.Yield (closure, new RCString (result));
+    }
+
+    public static string PathSymbolToString (RCSymbolScalar symbol)
+    {
+      object[] parts = symbol.ToArray ();
+      string path = "";
+      string zero = parts[0].ToString ();
+      int startIndex = 0;
+      if (zero == "home")
+      {
+        string home = Environment.GetEnvironmentVariable ("RCL_HOME");
+        if (home == null) 
+        {
+          home = Environment.GetFolderPath (Environment.SpecialFolder.UserProfile);
+        }
+        path += home;
+        startIndex = 1;
+      }
+      //Need to handle windows drive letter.
+      for (int i = startIndex; i < parts.Length; ++i)
+      {
+        path += Path.DirectorySeparatorChar + parts[i].ToString ();
+      }
+      return path;
+    }
     [RCVerb ("load")]
     public void EvalLoad (
       RCRunner runner, RCClosure closure, RCString right)
@@ -19,10 +51,30 @@ namespace RCL.Core
       //I want to change this to split lines.
       runner.Yield (closure, new RCString (code));
     }
-      
+
+    [RCVerb ("load")]
+    public void EvalLoad (RCRunner runner, RCClosure closure, RCSymbol right)
+    {
+      //Need check for windows drive letter
+      string path = PathSymbolToString (right[0]);
+      string code = File.ReadAllText (path, Encoding.UTF8);
+      runner.Yield (closure, new RCString (code));
+    }
+
     protected long m_handle = -1;
     [RCVerb ("save")]
+    public void EvalSave (RCRunner runner, RCClosure closure, RCSymbol left, RCString right)
+    {
+      Save (runner, closure, PathSymbolToString (left[0]), right.ToArray ());
+    }
+      
+    [RCVerb ("save")]
     public void EvalSave (RCRunner runner, RCClosure closure, RCString left, RCString right)
+    {
+      Save (runner, closure, left[0], right.ToArray ());
+    }
+
+    protected void Save (RCRunner runner, RCClosure closure, string path, string[] lines)
     {
       //BRIAN READ THIS WHEN YOU GET BACK HERE.
       //Should not be doing sync io like this.
@@ -41,20 +93,25 @@ namespace RCL.Core
       //Then I could use writeAllLines and readAllLines to get around the terminal line issue.
       //But that would mean changing that parser to interpret string breaks as line breaks.
       //So, not today.
-      WriteAllLinesBetter (left[0], right.ToArray ());
+      WriteAllLinesBetter (path, lines);
 
       runner.Log.RecordDoc (runner, closure,
-                            "save", Interlocked.Increment (ref m_handle), left[0], right);
-      runner.Yield (closure, new RCString (left[0]));
+                            "save", Interlocked.Increment (ref m_handle), path, lines);
+      //ideally this should return a symbol right?
+      runner.Yield (closure, new RCString (path));
     }
 
     //http://stackoverflow.com/questions/11689337/net-file-writealllines-leaves-empty-line-at-the-end-of-file
     public static void WriteAllLinesBetter(string path, params string[] lines)
     {
       if (path == null)
+      {
         throw new ArgumentNullException ("path");
+      }
       if (lines == null)
+      {
         throw new ArgumentNullException ("lines");
+      }
 
       //using (var stream = File.OpenWrite (path))
       using (var stream = File.Open (path, FileMode.Create))

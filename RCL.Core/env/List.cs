@@ -10,13 +10,24 @@ namespace RCL.Core
 {
   public class List
   {
+    protected readonly RCSymbolScalar all = new RCSymbolScalar (null, "all");
+    protected readonly RCSymbolScalar deep = new RCSymbolScalar (null, "deep");
+    protected readonly RCSymbol DefaultLeft = new RCSymbol ();
+
     [RCVerb ("list")]
-    public void EvalList (RCRunner runner, RCClosure closure, RCSymbol right)
+    public void EvalList (RCRunner runner, RCClosure closure, RCSymbol left, RCSymbol right)
     {
+      HashSet<RCSymbolScalar> options = new HashSet<RCSymbolScalar> (left);
       string target = (string) right[0].Part (0);
       if (target == "" || target == "files")
       {
-        ListFiles (runner, closure);
+        ListFilesCube (runner, closure, right[0], options.Contains (all), 
+                                                  options.Contains (deep));
+      }
+      else if (target == "home")
+      {
+        ListFilesCube (runner, closure, right[0], options.Contains (all), 
+                                                  options.Contains (deep));
       }
       else if (target == "fibers")
       {
@@ -37,42 +48,70 @@ namespace RCL.Core
       else throw new Exception ("Unknown target for list: " + target);
     }
 
-    public static void ListFiles (RCRunner runner, RCClosure closure)
+    [RCVerb ("show_special_folders")]
+    public void ShowSpecialFolders (RCRunner runner, RCClosure closure, RCSymbol right)
     {
-      RCArray<string> paths = new RCArray<string> ();
-      RCArray<long> sizes = new RCArray<long> ();
-      RCArray<string> exts = new RCArray<string> ();
-      RCArray<string> createTimes = new RCArray<string> ();
-      RCArray<string> accessTimes = new RCArray<string> ();
-      RCArray<string> writeTimes = new RCArray<string> ();
+      foreach(Environment.SpecialFolder folder in Enum.GetValues(typeof(Environment.SpecialFolder)))
+      {
+        Console.WriteLine(string.Format("{0}\t\t\t{1}", folder.ToString(), Environment.GetFolderPath(folder)));
+      }
+      runner.Yield (closure, right);
+    }
+
+    [RCVerb ("list")]
+    public void EvalList (RCRunner runner, RCClosure closure, RCSymbol right)
+    {
+      EvalList (runner, closure, DefaultLeft, right);
+    }
+
+
+    public static void ListFilesCube (RCRunner runner, 
+                                      RCClosure closure, 
+                                      RCSymbolScalar spec,
+                                      bool all, 
+                                      bool deep)
+    {
+      RCCube result = new RCCube (new RCArray<string> ("S"));
       Queue<string> todo = new Queue<string> ();
-      todo.Enqueue (".");
+      string top = Command.PathSymbolToString (spec);
+      todo.Enqueue (top);
       while (todo.Count > 0)
       {
         string path = todo.Dequeue ();
+        //Needs to be async. LIAR!
         string[] files = Directory.GetFiles (path);
-        for (int i = 0; i < files.Length; ++i) {
-          FileInfo file = new FileInfo (files[i]);
-          paths.Write (files[i]);
-          sizes.Write (file.Length);
-          exts.Write (file.Extension);
-          createTimes.Write (file.LastWriteTime.ToString ());
-          accessTimes.Write (file.LastAccessTime.ToString ());
-          writeTimes.Write (file.LastWriteTime.ToString ());
+        for (int i = 0; i < files.Length; ++i)
+        {
+          FileInfo file = new FileInfo (files [i]);
+          if (all || file.Name[0] != '.')
+          {
+            string [] parts = files[i].Split (Path.DirectorySeparatorChar);
+            RCSymbolScalar symbol = RCSymbolScalar.From (1, parts);
+            result.WriteCell ("size", symbol, file.Length);
+            result.WriteCell ("ext", symbol, file.Extension);
+            result.WriteCell ("access", symbol, new RCTimeScalar (file.LastAccessTime, RCTimeType.Datetime));
+            result.WriteCell ("write", symbol, new RCTimeScalar (file.LastWriteTime, RCTimeType.Datetime));
+            result.Axis.Write (symbol); 
+          }
         }
+        //Needs to be async. CHEATER!
         RCArray<string> dirs = new RCArray<string> (Directory.GetDirectories (path));
-        for (int i = 0; i < dirs.Count; ++i)
-          todo.Enqueue (dirs[i]);
-      }
-      RCBlock result = RCBlock.Empty;
-      if (paths.Count > 0)
-      {
-        result = new RCBlock (result, "path", ":", new RCString (paths));
-        result = new RCBlock (result, "size", ":", new RCLong (sizes));
-        result = new RCBlock (result, "ext", ":", new RCString (exts));
-        result = new RCBlock (result, "create", ":", new RCString (createTimes));
-        result = new RCBlock (result, "access", ":", new RCString (accessTimes));
-        result = new RCBlock (result, "write", ":", new RCString (writeTimes));
+        for (int i = 0; i < dirs.Count; ++i) 
+        {
+          DirectoryInfo dir = new DirectoryInfo (dirs [i]);
+          if (all || dir.Name [0] != '.') 
+          {
+            string [] parts = dirs [i].Split (Path.DirectorySeparatorChar);
+            RCSymbolScalar symbol = RCSymbolScalar.From (1, parts);
+            result.WriteCell ("access", symbol, new RCTimeScalar (dir.LastAccessTime, RCTimeType.Datetime));
+            result.WriteCell ("write", symbol, new RCTimeScalar (dir.LastWriteTime, RCTimeType.Datetime));
+            result.Axis.Write (symbol);
+            if (deep)
+            {
+              todo.Enqueue (dirs [i]);
+            }
+          }
+        }
       }
       runner.Yield (closure, result);
     }

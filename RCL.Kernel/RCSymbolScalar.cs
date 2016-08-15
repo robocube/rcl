@@ -30,8 +30,13 @@ namespace RCL.Kernel
 
     public static RCSymbolScalar From (params object[] key) 
     {
+      return From (0, key);
+    }
+
+    public static RCSymbolScalar From (int startIndex, params object[] key) 
+    {
       RCSymbolScalar prev = null;
-      for (int i = 0; i < key.Length; ++i) 
+      for (int i = startIndex; i < key.Length; ++i) 
       {
         prev = new RCSymbolScalar (prev, key[i]);
       }

@@ -1179,9 +1179,11 @@ namespace RCL.Core
     public class LikeContext<T> : Context<T>
     {
       public string[] m_parts;
+      public string m_expression;
       public override void Init (RCArray<T> right)
       {
-        m_parts = right[0].ToString ().Split ('*');
+        m_expression = right[0].ToString ();
+        m_parts = m_expression.Split ('*');
       }
     }
 
@@ -1190,6 +1192,14 @@ namespace RCL.Core
     {
       int start = 0;
       int part = 0;
+      if (r.Length == 0)
+      {
+        if (c.m_expression == "*" || c.m_expression == "") 
+        {
+          return true;
+        }
+        return false;
+      }
       while (start < r.Length && part < c.m_parts.Length)
       {
         if (c.m_parts[part] != "")

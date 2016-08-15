@@ -1500,6 +1500,24 @@ namespace RCL.Test
     [Test]
     public void TestDifferenceT () { DoTest ("2015.05.27 2015.05.28 2015.05.29 except 2015.05.28 2015.05.29 2015.05.30", "2015.05.27 2015.05.30"); }
 
+    [Test]
+    public void TestInterL () { DoTest ("1 2 3 inter 2 3 4", "2 3"); }
+    [Test]
+    public void TestInterD () { DoTest ("1.0 2.0 3.0 inter 2.0 3.0 4.0", "2.0 3.0"); }
+    [Test]
+    public void TestInterM () { DoTest ("1 2 3m inter 2 3 4m", "2 3m"); }
+    [Test]
+    public void TestInterX () { DoTest ("\\x01 \\x02 \\x03 inter \\x02 \\x03 \\x04", "\\x02 \\x03"); }
+    [Test]
+    public void TestInterB () { DoTest ("true inter false", "~b"); }
+    [Test]
+    public void TestInterS () { DoTest ("\"a\" \"b\" \"c\" inter \"b\" \"c\" \"d\"", "\"b\" \"c\""); }
+    [Test]
+    public void TestInterY () { DoTest ("#a #b #c inter #b #c #d", "#b #c"); }
+    [Test]
+    public void TestInterT () { DoTest ("2015.05.27 2015.05.28 2015.05.29 inter 2015.05.28 2015.05.29 2015.05.30", "2015.05.28 2015.05.29"); }
+
+
     //This looks more like 'in' than 'contains' to me. Is this naming appropriate?
     [Test]
     public void TestInL () { DoTest ("0 1 2 3 4 in 1 3", "false true false true false"); }
@@ -1613,6 +1631,10 @@ namespace RCL.Test
     public void TestLike2 () { DoTest ("\"foobar\" \"fazbar\" \"bar\" \"foobaz\" like \"*bar\"", "true true true false"); }
     [Test]
     public void TestLike3 () { DoTest ("\"foozbar\" \"foolsbar\" \"foobar\" \"foobaz\" like \"foo*bar\"", "true true true false"); }
+    [Test]
+    public void TestLike4 () { DoTest ("\"\" like \"xyz*\"", "false"); }
+    [Test]
+    public void TestLike5 () { DoTest ("\"\" like \"*\"", "true"); }
     [Test]
     public void TestLike1U () { DoTest ("[x \"foobar\" \"foobaz\" \"foo\" \"fazbar\"] like \"foo*\"", "[x true true true false]"); }
     [Test]
