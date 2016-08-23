@@ -37,6 +37,25 @@ namespace RCL.Test
         Assert.Fail (ex.ToString ());
       }
     }
+
+    public void DoTestException (string code, string expectedException)
+    {
+      try
+      {
+        runner.Reset ();
+        RCValue program = runner.Read (code);
+        RCValue result = runner.Run (program);
+        Assert.Fail ("No exception thrown.");
+      }
+      catch (RCException ex)
+      {
+        Assert.AreEqual (expectedException, ex.ToString ());
+      }
+      catch (System.Exception ex)
+      {
+        Assert.Fail (ex.ToString ());
+      }
+    }
   }
 
   /// <summary>
@@ -1484,21 +1503,26 @@ namespace RCL.Test
     public void TestUnionT () { DoTest ("2015.05.27 2015.05.28 2015.05.29 union 2015.05.28 2015.05.29 2015.05.30", "2015.05.27 2015.05.28 2015.05.29 2015.05.30"); }
 
     [Test]
-    public void TestDifferenceL () { DoTest ("1 2 3 except 2 3 4", "1 4"); }
+    public void TestExceptL () { DoTest ("1 2 3 except 2 3 4", "1 4"); }
     [Test]
-    public void TestDifferenceD () { DoTest ("1.0 2.0 3.0 except 2.0 3.0 4.0", "1.0 4.0"); }
+    public void TestExceptD () { DoTest ("1.0 2.0 3.0 except 2.0 3.0 4.0", "1.0 4.0"); }
     [Test]
-    public void TestDifferenceM () { DoTest ("1 2 3m except 2 3 4m", "1 4m"); }
+    public void TestExceptM () { DoTest ("1 2 3m except 2 3 4m", "1 4m"); }
     [Test]
-    public void TestDifferenceX () { DoTest ("\\x01 \\x02 \\x03 except \\x02 \\x03 \\x04", "\\x01 \\x04"); }
+    public void TestExceptX () { DoTest ("\\x01 \\x02 \\x03 except \\x02 \\x03 \\x04", "\\x01 \\x04"); }
     [Test]
-    public void TestDifferenceB () { DoTest ("true except false", "true false"); }
+    public void TestExceptB () { DoTest ("true except false", "true false"); }
     [Test]
-    public void TestDifferenceS () { DoTest ("\"a\" \"b\" \"c\" except \"b\" \"c\" \"d\"", "\"a\" \"d\""); }
+    public void TestExceptS () { DoTest ("\"a\" \"b\" \"c\" except \"b\" \"c\" \"d\"", "\"a\" \"d\""); }
     [Test]
-    public void TestDifferenceY () { DoTest ("#a #b #c except #b #c #d", "#a #d"); }
+    public void TestExceptY () { DoTest ("#a #b #c except #b #c #d", "#a #d"); }
     [Test]
-    public void TestDifferenceT () { DoTest ("2015.05.27 2015.05.28 2015.05.29 except 2015.05.28 2015.05.29 2015.05.30", "2015.05.27 2015.05.30"); }
+    public void TestExceptT () { DoTest ("2015.05.27 2015.05.28 2015.05.29 except 2015.05.28 2015.05.29 2015.05.30", "2015.05.27 2015.05.30"); }
+    [Test]
+    public void TestExceptK () { DoTest ("{a:1 b:2 c:3 d:4} except \"b\" \"c\"", "{a:1 d:4}"); }
+    [Test]
+    [Ignore ("Should work but I want it to do nesting")]
+    public void TestExceptKY () { DoTest ("{a:1 b:2 c:3 d:4} except #b #c", "{a:1 d:4}"); }
 
     [Test]
     public void TestInterL () { DoTest ("1 2 3 inter 2 3 4", "2 3"); }
@@ -1516,6 +1540,11 @@ namespace RCL.Test
     public void TestInterY () { DoTest ("#a #b #c inter #b #c #d", "#b #c"); }
     [Test]
     public void TestInterT () { DoTest ("2015.05.27 2015.05.28 2015.05.29 inter 2015.05.28 2015.05.29 2015.05.30", "2015.05.28 2015.05.29"); }
+    [Test]
+    public void TestInterK () { DoTest ("{a:1 b:2 c:3 d:4} inter \"b\" \"c\"", "{b:2 c:3}"); }
+    [Test]
+    [Ignore ("Should work but I want it to do nesting")]
+    public void TestInterKY () { DoTest ("{a:1 b:2 c:3 d:4} inter #b #c", "{b:2 c:3}"); }
 
 
     //This looks more like 'in' than 'contains' to me. Is this naming appropriate?
@@ -2226,10 +2255,32 @@ namespace RCL.Test
     }
 
     [Test]
-    [Ignore ("There some issue spawning a bash shell under the debugger env. Would like to know why.")]
-    public void TestExec1 ()
+    public void TestGetm ()
     {
-      DoTest ("{sh:startx \"sh\" :$sh writex \"exit 1\" <-try {<-waitx $sh}}", "{status:1 data:~s}");
+      DoTestException ("getm #foo", "<<Varname,No such variable: #foo>>");
+    }
+
+    [Test]
+    public void TestGetm1 ()
+    {
+      DoTest ("{:#foo putm 1 <-getm #foo}", "1");
+    }
+
+    [Test]
+    public void TestGetm2 ()
+    {
+      DoTest ("{:#foo putm 1 :assert hasm #foo :delm #foo :assert not hasm #foo <-0}", "0");
+    }
+
+    [Test]
+    public void TestTryWaitx ()
+    {
+      //This was to expose a race condition in exec.
+      //It would return zero if the process exited before waitx registered.
+      for (int i = 0; i < 10; ++i)
+      {
+        DoTest ("{sh:startx \"bash\" :$sh writex \"exit 1\n\" <-try {<-waitx $sh}}", "{status:1 data:\"<<Exec>>\"}");
+      }
     }
 
     [Test]

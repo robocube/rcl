@@ -424,7 +424,6 @@ namespace RCL.Kernel
           prev = next;
           next = Assign ();
         }
-
         else break;
 
         while (next != null)

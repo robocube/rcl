@@ -62,15 +62,38 @@ namespace RCL.Core
       runner.Yield (closure, new RCTime (DoExcept<RCTimeScalar> (left, right)));
     }
 
+    [RCVerb ("except")]
+    public void EvalExcept (
+      RCRunner runner, RCClosure closure, RCBlock left, RCString right)
+    {
+      RCBlock result = RCBlock.Empty;
+      for (int i = 0; i < left.Count; ++i)
+      {
+        RCBlock name = left.GetName (i);
+        if (!right.Data.Contains (name.Name))
+        {
+          result = new RCBlock (result, 
+                                name.Name, 
+                                name.Evaluator, 
+                                name.Value);
+        }
+      }
+      runner.Yield (closure, result);
+    }
+
     protected RCArray<T> DoExcept<T> (RCVector<T> left, RCVector<T> right)
     {
       HashSet<T> results = new HashSet<T> (left);
       for (int i = 0; i < right.Count; ++i)
       {
         if (results.Contains (right[i]))
+        {
           results.Remove (right[i]);
+        }
         else
+        {
           results.Add (right[i]);
+        }
       }
       T[] array = new T[results.Count];
       results.CopyTo (array);

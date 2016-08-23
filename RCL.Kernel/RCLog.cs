@@ -16,9 +16,12 @@ namespace RCL.Kernel
       for (int i = 0; i < loggers.Length; ++i)
       {
         m_all.Add (loggers[i]);
-        //This is to support the idea of making certain loggers optional as you are constructing the RCLog.
-        //See Program.cs.
-        if (loggers[i] == null) continue;
+        //This is to support the idea of making certain loggers optional 
+        //as you are constructing the RCLog. See Program.cs.
+        if (loggers[i] == null) 
+        {
+          continue;
+        }
         RCArray<string> type = loggers[i].Types ();
         for (int j = 0; j < type.Count; ++j)
         {
@@ -51,14 +54,24 @@ namespace RCL.Kernel
       }
     }
 
-    //[Conditional ("TRACE")]
-    public virtual void Record (
-      RCRunner runner, RCClosure closure, string type, long instance, string state, object info)
+    public virtual void Record (RCRunner runner, 
+                                RCClosure closure, 
+                                string type, 
+                                long instance, 
+                                string state, 
+                                object info)
     {
       lock (m_lock)
       {
         List<RCLogger> typeList;
         if (m_loggers.TryGetValue (type, out typeList))
+        {
+          for (int i = 0; i < typeList.Count; ++i)
+          {
+            typeList[i].Record (runner, closure, type, instance, state, info);
+          }
+        }
+        else if (m_loggers.TryGetValue (type + ":" + state, out typeList))
         {
           for (int i = 0; i < typeList.Count; ++i)
           {
@@ -72,9 +85,12 @@ namespace RCL.Kernel
       }
     }
 
-    //[Conditional ("TRACE")]
-    public virtual void RecordDoc (
-      RCRunner runner, RCClosure closure, string type, long instance, string state, object info)
+    public virtual void RecordDoc (RCRunner runner, 
+                                   RCClosure closure, 
+                                   string type, 
+                                   long instance, 
+                                   string state, 
+                                   object info)
     {
       lock (m_lock)
       {
@@ -86,6 +102,13 @@ namespace RCL.Kernel
             typeList[i].RecordDoc (runner, closure, type, instance, state, info);
           }
         }
+        else if (m_loggers.TryGetValue (type + ":" + state, out typeList))
+        {
+          for (int i = 0; i < typeList.Count; ++i)
+          {
+            typeList[i].Record (runner, closure, type, instance, state, info);
+          }
+        }
         for (int i = 0; i < m_wild.Count; ++i)
         {
           m_wild[i].RecordDoc (runner, closure, type, instance, state, info);
@@ -93,6 +116,7 @@ namespace RCL.Kernel
       }
     }
 
+    /*
     public virtual void Write (string type, string message)
     {
       lock (m_lock)
@@ -130,5 +154,6 @@ namespace RCL.Kernel
         }
       }
     }
+    */
   }
 }

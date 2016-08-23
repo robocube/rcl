@@ -62,6 +62,25 @@ namespace RCL.Core
       runner.Yield (closure, new RCTime (DoInter<RCTimeScalar> (left, right)));
     }
 
+    [RCVerb ("inter")]
+    public void EvalInter (
+      RCRunner runner, RCClosure closure, RCBlock left, RCString right)
+    {
+      RCBlock result = RCBlock.Empty;
+      for (int i = 0; i < left.Count; ++i)
+      {
+        RCBlock name = left.GetName (i);
+        if (right.Data.Contains (name.Name))
+        {
+          result = new RCBlock (result, 
+                                name.Name, 
+                                name.Evaluator, 
+                                name.Value);
+        }
+      }
+      runner.Yield (closure, result);
+    }
+
     protected RCArray<T> DoInter<T> (RCVector<T> left, RCVector<T> right)
     {
       HashSet<T> lhs = new HashSet<T> (left);

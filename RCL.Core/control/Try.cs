@@ -51,8 +51,9 @@ namespace RCL.Core
     }
 
     public override RCClosure Next (RCRunner runner, 
-		                            RCClosure tail, 
-		                            RCClosure previous, RCValue result)
+		                                RCClosure tail, 
+		                                RCClosure previous, 
+                                    RCValue result)
     {
       if (previous.Index == 1)
       {
@@ -74,9 +75,13 @@ namespace RCL.Core
     public override bool IsLastCall (RCClosure closure, RCClosure arg)
     {
       if (arg == null)
+      {
         return base.IsLastCall (closure, arg);
+      }
       if (!base.IsLastCall (closure, arg))
+      {
         return false;
+      }
       return arg.Code.IsBeforeLastCall (arg);
     }
   }

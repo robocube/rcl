@@ -40,7 +40,31 @@ namespace RCL.Core
       {
         Dictionary<RCSymbolScalar, RCValue> store = GetSection (key);
         if (!store.TryGetValue (key[0], out result))
-          result = RCBlock.Empty;
+        {
+          //result = RCBlock.Empty;
+          throw new RCException (closure, 
+                                 RCErrors.Varname, 
+                                 "No such variable: " + key.ToString ());
+        }
+      }
+      runner.Yield (closure, result);
+    }
+
+    [RCVerb ("hasm")]
+    public void Hasm (RCRunner runner, RCClosure closure, RCSymbol key)
+    {
+      RCBoolean result;
+      lock (m_lock)
+      {
+        Dictionary<RCSymbolScalar, RCValue> store = GetSection (key);
+        if (!store.ContainsKey (key[0]))
+        {
+          result = RCBoolean.False;
+        }
+        else
+        {
+          result = RCBoolean.True;
+        }
       }
       runner.Yield (closure, result);
     }
@@ -57,7 +81,9 @@ namespace RCL.Core
         {
           RCValue val;
           if (!store.TryGetValue (key[i], out val))
+          {
             val = RCBlock.Empty;
+          }
           result = new RCBlock (result, "", ":", val);
         }
       }

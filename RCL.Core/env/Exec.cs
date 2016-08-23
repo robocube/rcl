@@ -152,6 +152,7 @@ namespace RCL.Core
       protected bool m_errorDone = false;
       protected bool m_exited = false;
       protected bool m_finished = false;
+      protected long m_exitCode = -1;
       protected string m_program;
       protected string m_arguments;
 
@@ -240,7 +241,21 @@ namespace RCL.Core
         {
           if (m_finished)
           {
-            waiter.Runner.Yield (waiter.Closure, new RCString (m_result));
+            //waiter.Runner.Yield (waiter.Closure, new RCString (m_result));
+            //return;
+            if (m_exitCode != 0)
+            {
+              m_state.Runner.Finish (waiter.Closure,
+                                     new RCException (waiter.Closure, 
+                                                      RCErrors.Exec, 
+                                                      "exit status " + m_exitCode, 
+                                                      new RCString (m_result)), 
+                                     m_exitCode);
+            }
+            else
+            {
+              waiter.Runner.Yield (waiter.Closure, new RCString (m_result));
+            }
             return;
           }
           if (waiter != null)
@@ -252,16 +267,15 @@ namespace RCL.Core
             return;
           }
           exitCode = m_process.ExitCode;
+          m_exitCode = exitCode;
           m_timer.Dispose ();
           m_process.Dispose ();
           waiters = m_waiters.ToArray ();
           m_waiters.Clear ();
           m_finished = true;
         }
-        //RCString result = new RCString (m_result);
         m_state.Runner.Log.RecordDoc (m_state.Runner, m_state.Closure,
                                       "exec", Handle, "done", exitCode);
-
         RCString lines = null;
         lock (this)
         {
@@ -276,7 +290,6 @@ namespace RCL.Core
           m_state.Runner.Log.RecordDoc (m_state.Runner, m_state.Closure,
                                           "exec", Handle, "line", lines);
         }
-
         RCString result = new RCString (m_result);
         for (int i = 0; i < waiters.Length; ++i)
         {

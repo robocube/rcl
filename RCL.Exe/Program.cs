@@ -19,7 +19,7 @@ namespace RCL.Exe
       return new LineEditor.Completion ("RCL>", new string[] {text, text + "foo"});
     }
 
-    static int Main (string[] argv)
+    static void Main (string[] argv)
     {
       string flags = Environment.GetEnvironmentVariable ("RCL_FLAGS");
       RCLArgv cmd;
@@ -74,7 +74,7 @@ namespace RCL.Exe
           }
           if (cmd.Batch)
           {
-            return 0;
+            Environment.Exit (0);
           }
           //otherwise go on and keep listening for further commands.
         }
@@ -162,7 +162,7 @@ namespace RCL.Exe
           Console.Out.WriteLine (ex.ToString ());
         }
       }
-      return 0;
+      Environment.Exit (0);
     }
 
     static string Alias (string trimmed, RCRunner runner, Output output, RCLArgv cmd)
