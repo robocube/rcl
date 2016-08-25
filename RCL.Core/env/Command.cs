@@ -289,7 +289,7 @@ namespace RCL.Core
         string variable = Environment.GetEnvironmentVariable (right[i]);
         if (variable == null)
         {
-          throw new Exception ("No environment variable set:" + right[i]);
+          throw new Exception ("No environment variable set: " + right[i]);
         }
         result.Write (variable);
       }
