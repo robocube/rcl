@@ -24,7 +24,39 @@ namespace RCL.Kernel
       RCClosure parent = UserOpClosure (closure, right, new RCArray<RCBlock> (left));
       DoEval (runner, parent, right);
     }
-     
+
+    [RCVerb ("eval")]
+    public void EvalEval (RCRunner runner, RCClosure closure, RCOperator right)
+    {
+      RCClosure parent = new RCClosure (closure.Parent, 
+                                        closure.Bot, 
+                                        right, 
+                                        closure.Left, 
+                                        RCBlock.Empty, 
+                                        0);
+      DoEval (runner, parent, right);
+    }
+
+    [RCVerb ("eval")]
+    public void EvalEval (RCRunner runner, RCClosure closure, RCBlock left, RCOperator right)
+    {
+      RCClosure parent = UserOpClosure (closure, right, new RCArray<RCBlock> (left));
+      DoEval (runner, parent, right);
+    }
+
+    [RCVerb ("eval")]
+    public void EvalEval (RCRunner runner, RCClosure closure, RCReference right)
+    {
+      DoEval (runner, closure, right);
+    }
+
+    [RCVerb ("eval")]
+    public void EvalEval (RCRunner runner, RCClosure closure, RCBlock left, RCReference right)
+    {
+      RCClosure parent = UserOpClosure (closure, right, new RCArray<RCBlock> (left));
+      DoEval (runner, parent, right);
+    }
+
     //This higher order thingy needs to go away it makes no sense.
     public override bool IsHigherOrder ()
     {
@@ -34,9 +66,13 @@ namespace RCL.Kernel
     public override bool IsLastCall (RCClosure closure, RCClosure arg)
     {
       if (arg == null)
+      {
         return base.IsLastCall (closure, arg);
+      }
       if (!base.IsLastCall (closure, arg))
+      {
         return false;
+      }
       return arg.Code.IsBeforeLastCall (arg);
     }
 
@@ -76,8 +112,13 @@ namespace RCL.Kernel
     {
       if (argument.ArgumentEval)
       {
-        argument.Eval (
-          runner, new RCClosure (closure, closure.Bot, argument, closure.Left, null, 0));
+        argument.Eval (runner, 
+                       new RCClosure (closure, 
+                                      closure.Bot, 
+                                      argument, 
+                                      closure.Left, 
+                                      null, 
+                                      0));
       }
       else
       {
@@ -92,6 +133,14 @@ namespace RCL.Kernel
     {
       RCValue left = closure.Result.Get ("0");
       RCValue right = closure.Result.Get ("1");
+
+      RCValue virtop = Resolve (null, closure, new RCArray<string> (op.Name), null, true);
+      if (virtop != null)
+      {
+        RCClosure parent = UserOpClosure (closure, virtop, null);
+        virtop.Eval (runner, parent);
+        return;
+      }
 
       if (left == null)
       {
@@ -113,7 +162,6 @@ namespace RCL.Kernel
       if (block.Count == 0)
       {
         DoYield (runner, closure, block);
-
       }
       else
       {
@@ -306,7 +354,7 @@ namespace RCL.Kernel
 
     public static void DoEval (RCRunner runner, 
                                RCClosure closure, 
-                               RCLReference reference)
+                               RCReference reference)
     {
       runner.Yield (closure, 
                     Resolve (reference.m_static, closure, reference.Parts, null));
@@ -316,6 +364,15 @@ namespace RCL.Kernel
                                       RCClosure closure, 
                                       RCArray<string> name, 
                                       RCArray<RCBlock> @this)
+    {
+      return Resolve (context, closure, name, @this, false);
+    }
+
+    protected static RCValue Resolve (RCBlock context, 
+                                      RCClosure closure, 
+                                      RCArray<string> name, 
+                                      RCArray<RCBlock> @this,
+                                      bool returnNull)
     {
       if (context != null)
       {
@@ -340,11 +397,11 @@ namespace RCL.Kernel
         }
         parent = parent.Parent;
       }
-      if (val == null)
+      if (val == null && !returnNull)
       {
         throw new RCException (
           //Delimit thing is annoying.
-          closure, RCErrors.Name, "Unable to resolve name " + RCLReference.Delimit (name, "."));
+          closure, RCErrors.Name, "Unable to resolve name " + RCReference.Delimit (name, "."));
       }
       return val;
     }

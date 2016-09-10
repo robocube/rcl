@@ -137,8 +137,6 @@ namespace RCL.Kernel
     public bool IsConcreteOf (RCSymbolScalar scalar)
     {
       bool trailing = m_string.Length > scalar.m_string.Length && m_string.StartsWith (scalar.m_string);
-      //if (!m_leadingStar) return trailing;
-
       RCSymbolScalar concrete = this;
       RCSymbolScalar @abstract = scalar;
 

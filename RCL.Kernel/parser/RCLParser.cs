@@ -241,7 +241,7 @@ namespace RCL.Kernel
       //Any symbol seen before this must be an operator.
       if (m_maybeOperator != null)
       {
-        m_operators.Peek ().Push (new RCLReference (m_maybeOperator));
+        m_operators.Peek ().Push (new RCReference (m_maybeOperator));
         m_lefts.Peek ().Push (m_left);
         m_maybeOperator = null;
         m_left = null;
@@ -697,7 +697,7 @@ namespace RCL.Kernel
       //string[] name = typeAndName[1].Split('.');
   
       //return new RCReference(type, typeAndName[1]);
-      return new RCLReference (typeAndName[1]);
+      return new RCReference (typeAndName[1]);
       //if (type.Length == 0)
       //{
       //  Type realType = InferType(name, m_reference.Text);

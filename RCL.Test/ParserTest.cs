@@ -1,4 +1,4 @@
-﻿
+
 using System;
 using RCL.Kernel;
 using NUnit.Framework;
@@ -859,10 +859,10 @@ namespace RCL.Test
     {
       runner.Reset ();
       RCValue result = runner.Read (code);
-      Console.Out.WriteLine ("code:{0}", code);
-      Console.Out.WriteLine ("expected:{0}", expected);
+      //Console.Out.WriteLine ("code:{0}", code);
+      //Console.Out.WriteLine ("expected:{0}", expected);
       string actual = result.Format (format);
-      Console.Out.WriteLine ("actual:{0}", actual);
+      //Console.Out.WriteLine ("actual:{0}", actual);
       Assert.IsNotNull (actual, "RCParser.Parse result was null");
       Assert.AreEqual (expected, actual);
     }

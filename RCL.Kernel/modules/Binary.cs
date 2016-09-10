@@ -60,7 +60,7 @@ namespace RCL.Kernel
       op.Right.ToByte (result);
     }
 
-    public static void WriteReference (RCArray<byte> result, RCLReference reference)
+    public static void WriteReference (RCArray<byte> result, RCReference reference)
     {
       result.Write ((byte) 'r');
       WriteScalarInt (result, reference.Parts.Count);
@@ -325,7 +325,7 @@ namespace RCL.Kernel
       return activator.New (name, left, right);
     }
 
-    public static RCLReference ReadReference (
+    public static RCReference ReadReference (
       RCActivator activator, RCArray<byte> array, ref int start)
     {
       int count = BitConverter.ToInt32 (array.m_source, start);
@@ -333,7 +333,7 @@ namespace RCL.Kernel
       string[] parts = new string[count];
       for (int i = 0; i < count; ++i)
         parts[i] = ReadScalarString (array, ref start);
-      return new RCLReference (parts);
+      return new RCReference (parts);
     }
 
     public static RCArray<T> ReadVector<T> (RCArray<byte> array, ref int start, int size)

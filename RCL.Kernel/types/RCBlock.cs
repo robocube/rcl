@@ -112,7 +112,9 @@ namespace RCL.Kernel
       RCBlock current = this;
       while (current != null && current.Count > 0)
       {
-        if (current.Name.Equals (name))
+        //The empty block has a null name.
+        //This may not be for the best.
+        if (current.Name != null && current.Name.Equals (name))
           return current;
         current = current.Previous;
       }

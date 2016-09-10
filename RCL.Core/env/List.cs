@@ -19,7 +19,7 @@ namespace RCL.Core
     {
       HashSet<RCSymbolScalar> options = new HashSet<RCSymbolScalar> (left);
       string target = (string) right[0].Part (0);
-      if (target == "" || target == "files")
+      if (target == "" || target == "work")
       {
         ListFilesCube (runner, closure, right[0], options.Contains (all), 
                                                   options.Contains (deep));
@@ -32,10 +32,6 @@ namespace RCL.Core
       else if (target == "fibers")
       {
         ListFibers (runner, closure);
-      }
-      else if (target == "vars")
-      {
-        //ListVars (runner, closure);
       }
       else if (target == "urls")
       {

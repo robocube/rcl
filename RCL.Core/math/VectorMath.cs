@@ -385,7 +385,7 @@ namespace RCL.Core
     public void EvalReferenceString (
       RCRunner runner, RCClosure closure, RCString right)
     {
-      runner.Yield (closure, new RCLReference (right.ToArray ()));
+      runner.Yield (closure, new RCReference (right.ToArray ()));
     }
 
     [RCVerb ("reference")]
@@ -402,7 +402,7 @@ namespace RCL.Core
       {
         strings[i] = parts[i].ToString ();
       }
-      runner.Yield (closure, new RCLReference (strings));
+      runner.Yield (closure, new RCReference (strings));
     }
       
     [RCVerb ("in")] [RCVerb ("like")]

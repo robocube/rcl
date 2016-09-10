@@ -2185,14 +2185,16 @@ namespace RCL.Test
       runner.Reset ();
       RCValue program = runner.Read (code);
       RCValue result = runner.Run (program);
+      /*
       System.Console.Out.WriteLine ("code:");
       System.Console.Out.WriteLine (code);
       System.Console.Out.WriteLine ("expected:");
       System.Console.Out.WriteLine (expected);
       System.Console.Out.WriteLine ("actual:");
+      */
       Assert.IsNotNull (result, "RCRunner.Run result was null");
       string actual = result.Format (args);
-      System.Console.Out.WriteLine (actual);
+      //System.Console.Out.WriteLine (actual);
       Assert.AreEqual (expected, actual);
     }
   }

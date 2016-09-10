@@ -297,7 +297,7 @@ namespace RCL.Core
       }
     }
 
-    protected void DoTree (TreeNode parent, RCLReference right, ref double a, ref double g)
+    protected void DoTree (TreeNode parent, RCReference right, ref double a, ref double g)
     {
       TreeNode child = new TreeNode (parent, null, 0);
       child.n = 1;
@@ -444,7 +444,7 @@ namespace RCL.Core
           parent.children.Write (node);
           continue;
         }
-        RCLReference reference = current.Value as RCLReference;
+        RCReference reference = current.Value as RCReference;
         if (reference != null)
         {
           DoTree (node, reference, ref node.n, ref node.g);

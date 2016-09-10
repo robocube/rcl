@@ -232,7 +232,7 @@ namespace RCL.Core
           new DownloadStringCompletedEventHandler (
             client_DownloadStringCompleted);
         Uri uri = new Uri (left[i] + query);
-        runner.Log.Record (runner, closure,
+        runner.Log.RecordDoc (runner, closure,
                            "httpc", handle, "get", new RCString (left[i]));
         client.DownloadStringAsync (
           uri, new RCAsyncState (runner, closure, handle));
@@ -255,7 +255,7 @@ namespace RCL.Core
         }
         RCString result = new RCString (e.Result);
         long handle = (long) state.Other;
-        state.Runner.Log.Record (state.Runner, state.Closure,
+        state.Runner.Log.RecordDoc (state.Runner, state.Closure,
                                  "httpc", handle, "done", result);
         state.Runner.Yield (state.Closure, result);
       }

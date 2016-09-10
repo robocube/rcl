@@ -161,7 +161,7 @@ namespace RCL.Core
           --col;
           continue;
         }
-        RCLReference reference = current.Value as RCLReference;
+        RCReference reference = current.Value as RCReference;
         if (reference != null)
         {
           ++col;

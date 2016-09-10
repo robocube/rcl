@@ -210,9 +210,9 @@ namespace RCL.Kernel
   /// </summary>
   public class UserOperator : RCOperator
   {
-    protected internal RCLReference m_reference;
+    protected internal RCReference m_reference;
     
-    public UserOperator (RCLReference reference)
+    public UserOperator (RCReference reference)
     {
       if (reference == null)
       {

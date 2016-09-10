@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace RCL.Kernel
@@ -141,7 +142,8 @@ namespace RCL.Kernel
       return builder.ToString ();
     }
       
-    protected void ToString (StringBuilder builder, int indent)
+    /*
+    protected void ToStringOld (StringBuilder builder, int indent)
     {
       RCClosure closure = this;
       while (closure != null)
@@ -173,6 +175,38 @@ namespace RCL.Kernel
           builder.AppendLine ();
         }
         closure = closure.Parent;
+      }
+    }
+    */
+
+    protected void ToString (StringBuilder builder, int indent)
+    {
+      RCClosure closure = this;
+      Stack<string> lines = new Stack<string> ();
+      while (closure != null)
+      { 
+        if (closure.Code != null)
+        {
+          RCOperator op = closure.Code as RCOperator;
+          if (op != null)
+          {
+            lines.Push (string.Format ("-- {0}", op.ToString ()));
+          }
+        }
+        RCBlock result = closure.Result;
+        while (result != null)
+        {
+          if (result.Value != null)
+          {
+            lines.Push (string.Format ("{0}:{1}", result.Name, result.Value.ToString ()));
+          }
+          result = result.Previous;
+        }
+        closure = closure.Parent;
+      }
+      while (lines.Count > 0)
+      {
+        builder.AppendLine (lines.Pop ());
       }
     }
   }

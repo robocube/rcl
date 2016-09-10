@@ -263,8 +263,7 @@ namespace RCL.Core
         int skipFirst = pageNumber * pageSize;
         int stopAfter = pageSize;
 
-        ReadSpec spec = new ReadSpec (symbol,
-                                                    skipFirst, stopAfter);
+        ReadSpec spec = new ReadSpec (symbol, skipFirst, stopAfter);
         RCCube result = s.m_blackboard.Read (spec,
                                              s.m_counter, true, s.m_blackboard.Count);
         runner.Yield (closure, result);
@@ -405,7 +404,7 @@ namespace RCL.Core
         ContinueWaiters (runner, all);
         //I really want to see what was written including G and T and i cols.
         //Not only what was passed in.
-        runner.Log.Record (runner, closure, "board", 0, "write", right);
+        runner.Log.RecordDoc (runner, closure, "board", 0, "write", right);
         runner.Yield (closure, new RCLong (line));
       }
       catch (Exception ex)
@@ -418,7 +417,7 @@ namespace RCL.Core
     public void EvalWrite (RCRunner runner, RCClosure closure, RCSymbol left, RCBlock right)
     {
       long line = Write (runner, left, right);
-      runner.Log.Record (runner, closure, "board", 0, "write", right);
+      runner.Log.RecordDoc (runner, closure, "board", 0, "write", right);
       runner.Yield (closure, new RCLong (line));
     }
 

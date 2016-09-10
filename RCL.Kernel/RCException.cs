@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace RCL.Kernel
 {
-  //I think creating a comprehensive set of exceptions are error messages is appropriate.
+  //I think creating a comprehensive set of exceptions and error messages is appropriate.
   public class RCException : Exception
   {
     public static RCException Overload (
@@ -57,14 +57,19 @@ namespace RCL.Kernel
     public readonly RCErrors Error;
     public readonly RCString Output;
 
-    public RCException (RCClosure closure, RCErrors error, string message)
+    public RCException (RCClosure closure,
+                        RCErrors error,
+                        string message)
       : base (message)
     {
       Closure = closure;
       Error = error;
     }
 
-    public RCException (RCClosure closure, RCErrors error, string message, RCString output)
+    public RCException (RCClosure closure, 
+                        RCErrors error,
+                        string message,
+                        RCString output)
       : base (message)
     {
       Closure = closure;
@@ -72,7 +77,10 @@ namespace RCL.Kernel
       Output = output;
     }
 
-    public RCException (RCClosure closure, TargetInvocationException ex, RCErrors error, string message)
+    public RCException (RCClosure closure, 
+                        TargetInvocationException ex,
+                        RCErrors error,
+                        string message)
       : base (message)
     {
       Closure = closure;
@@ -94,14 +102,14 @@ namespace RCL.Kernel
         }
         builder.AppendFormat ("<<{0},{1}>>", Error, Message);
         return builder.ToString ();
-        //return string.Format ("<<{0},{1}>>", Error, Message);
       }
       else
       {
-        return string.Format ("{0}\n--------------------------------------------------------------------------------\n{1}\n--------------------------------------------------------------------------------\n{2}",
-                              Message, 
+        return string.Format ("{3}\n{0}{3}\n{1}\n{3}\n{2}\n{3}",
+                              Closure.ToString (),
+                              Message,
                               Exception.GetBaseException ().ToString (),
-                              Closure.ToString ());
+                              new String ('-', 80));
       }
     }
 

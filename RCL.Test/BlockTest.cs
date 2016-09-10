@@ -164,7 +164,7 @@ namespace RCL.Test
       RCBlock px = new RCBlock (pos, "px", ":",
                                 new RCDouble (10.01, 10.02, 10.01));
       RCBlock ccy = new RCBlock (px, "ccy", ":",
-                                 r.New ("*", new RCLReference ("pos"), new RCLReference ("px")));
+                                 r.New ("*", new RCReference ("pos"), new RCReference ("px")));
 
       RCValue val = r.Run (ccy);
       RCBlock obj = val as RCBlock;
@@ -193,9 +193,9 @@ namespace RCL.Test
       
       RCBlock bbo = new RCBlock (null, "bbo", ":", ap);
       RCBlock sprd = new RCBlock (bbo, "sprd", ":",
-                                  r.New ("-", new RCLReference ("bbo.ap"), new RCLReference ("bbo.bp")));
+                                  r.New ("-", new RCReference ("bbo.ap"), new RCReference ("bbo.bp")));
       RCBlock sprdpch = new RCBlock (sprd, "sprdbps", "<-",
-                                     r.New ("/", new RCLReference ("sprd"), new RCLReference ("bbo.bp")));
+                                     r.New ("/", new RCReference ("sprd"), new RCReference ("bbo.bp")));
 
       RCValue val = r.Run (sprdpch);
       RCVector<double> v = val as RCVector<double>;

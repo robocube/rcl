@@ -18,13 +18,15 @@ namespace RCL.Test
         runner.Reset ();
         RCValue program = runner.Read (code);
         RCValue result = runner.Run (program);
+        /*
         System.Console.Out.WriteLine ("code:");
         System.Console.Out.WriteLine (code);
         System.Console.Out.WriteLine ("expected:");
         System.Console.Out.WriteLine (expected);
         System.Console.Out.WriteLine ("actual:");
+        */
         Assert.IsNotNull (result, "RCRunner.Run result was null");
-        System.Console.Out.WriteLine (result.ToString ());
+        //System.Console.Out.WriteLine (result.ToString ());
         Assert.AreEqual (expected, result.ToString ());
       }
       catch (RCException ex)
@@ -1607,7 +1609,69 @@ namespace RCL.Test
     public void TestFillT () { DoTest ("00:00 fill 08:00 00:00 00:00 09:00 00:00 00:00 10:00 00:00 00:00", "08:00 08:00 08:00 09:00 09:00 09:00 10:00 10:00 10:00"); }
     //Eval
 
-    //Thru
+    //Range
+    [Test]
+    public void TestRangeL () { DoTest ("3 range 1 2 3 4 5 6", "4 5 6"); }
+    [Test]
+    public void TestRangeL1 () { DoTest ("1 4 range 1 2 3 4 5 6", "2 3 4 5"); }
+    [Test]
+    public void TestRangeL2 () { DoTest ("0 1 3 5 range 1 2 3 4 5 6", "1 2 4 5 6"); }
+    [Test]
+    public void TestRangeL3 () { DoTest ("0 1 2 5 range 1 2 3 4 5 6", "1 2 3 4 5 6"); }
+
+    [Test]
+    public void TestRangeD () { DoTest ("3 range 1.0 2.0 3.0 4.0 5.0 6.0", "4.0 5.0 6.0"); }
+    [Test]
+    public void TestRangeD1 () { DoTest ("1 4 range 1.0 2.0 3.0 4.0 5.0 6.0", "2.0 3.0 4.0 5.0"); }
+    [Test]
+    public void TestRangeD2 () { DoTest ("0 1 3 5 range 1.0 2.0 3.0 4.0 5.0 6.0", "1.0 2.0 4.0 5.0 6.0"); }
+    [Test]
+    public void TestRangeD3 () { DoTest ("0 1 2 5 range 1.0 2.0 3.0 4.0 5.0 6.0", "1.0 2.0 3.0 4.0 5.0 6.0"); }
+
+    [Test]
+    public void TestRangeM () { DoTest ("3 range 1 2 3 4 5 6m", "4 5 6m"); }
+    [Test]
+    public void TestRangeM1 () { DoTest ("1 4 range 1 2 3 4 5 6m", "2 3 4 5m"); }
+    [Test]
+    public void TestRangeM2 () { DoTest ("0 1 3 5 range 1 2 3 4 5 6m", "1 2 4 5 6m"); }
+    [Test]
+    public void TestRangeM3 () { DoTest ("0 1 2 5 range 1 2 3 4 5 6m", "1 2 3 4 5 6m"); }
+
+    [Test]
+    public void TestRangeY () { DoTest ("3 range #1 #2 #3 #4 #5 #6", "#4 #5 #6"); }
+    [Test]
+    public void TestRangeY1 () { DoTest ("1 4 range #1 #2 #3 #4 #5 #6", "#2 #3 #4 #5"); }
+    [Test]
+    public void TestRangeY2 () { DoTest ("0 1 3 5 range #1 #2 #3 #4 #5 #6", "#1 #2 #4 #5 #6"); }
+    [Test]
+    public void TestRangeY3 () { DoTest ("0 1 2 5 range #1 #2 #3 #4 #5 #6", "#1 #2 #3 #4 #5 #6"); }
+
+    [Test]
+    public void TestRangeS () { DoTest ("3 range \"1\" \"2\" \"3\" \"4\" \"5\" \"6\"", "\"4\" \"5\" \"6\""); }
+    [Test]
+    public void TestRangeS1 () { DoTest ("1 4 range \"1\" \"2\" \"3\" \"4\" \"5\" \"6\"", "\"2\" \"3\" \"4\" \"5\""); }
+    [Test]
+    public void TestRangeS2 () { DoTest ("0 1 3 5 range \"1\" \"2\" \"3\" \"4\" \"5\" \"6\"", "\"1\" \"2\" \"4\" \"5\" \"6\""); }
+    [Test]
+    public void TestRangeS3 () { DoTest ("0 1 2 5 range \"1\" \"2\" \"3\" \"4\" \"5\" \"6\"", "\"1\" \"2\" \"3\" \"4\" \"5\" \"6\""); }
+
+    [Test]
+    public void TestRangeX () { DoTest ("3 range \\x01 \\x02 \\x03 \\x04 \\x05 \\x06", "\\x04 \\x05 \\x06"); }
+    [Test]
+    public void TestRangeX1 () { DoTest ("1 4 range \\x01 \\x02 \\x03 \\x04 \\x05 \\x06", "\\x02 \\x03 \\x04 \\x05"); }
+    [Test]
+    public void TestRangeX2 () { DoTest ("0 1 3 5 range \\x01 \\x02 \\x03 \\x04 \\x05 \\x06", "\\x01 \\x02 \\x04 \\x05 \\x06"); }
+    [Test]
+    public void TestRangeX3 () { DoTest ("0 1 2 5 range \\x01 \\x02 \\x03 \\x04 \\x05 \\x06", "\\x01 \\x02 \\x03 \\x04 \\x05 \\x06"); }
+
+    [Test]
+    public void TestRangeT () { DoTest ("3 range 00:01 00:02 00:03 00:04 00:05 00:06", "00:04 00:05 00:06"); }
+    [Test]
+    public void TestRangeT1 () { DoTest ("1 4 range 00:01 00:02 00:03 00:04 00:05 00:06", "00:02 00:03 00:04 00:05"); }
+    [Test]
+    public void TestRangeT2 () { DoTest ("0 1 3 5 range 00:01 00:02 00:03 00:04 00:05 00:06", "00:01 00:02 00:04 00:05 00:06"); }
+    [Test]
+    public void TestRangeT3 () { DoTest ("0 1 2 5 range 00:01 00:02 00:03 00:04 00:05 00:06", "00:01 00:02 00:03 00:04 00:05 00:06"); }
 
     //String/Text Operators
     [Test]
@@ -1676,6 +1740,8 @@ namespace RCL.Test
     public void TestNamesK() { DoTest ("names {a:1 b:2 c:3}", "\"a\" \"b\" \"c\""); }
     [Test]
     public void TestRename() { DoTest ("\"x\" \"y\" \"z\" rename {a:1 b:2 c:3}", "{x:1 y:2 z:3}"); }
+    [Test]
+    public void TestRenameY() { DoTest ("#x #y #z rename {a:1 b:2 c:3}", "{x:1 y:2 z:3}"); }
     [Test]
     public void TestSetK0 () { DoTest ("{x:1 y:2} set {y:3 z:4}", "{x:1 y:3 z:4}"); }
     //Still need to think about how set should work in the case of a timeline.
@@ -1772,6 +1838,24 @@ namespace RCL.Test
     public void TestSavebinLoadbinDelete ()
     {
       DoTest ("{x:parse loadbin \"file\" savebin binary {a:1.0 b:2.0 c:3.0} :delete \"file\" <-$x}", "{a:1.0 b:2.0 c:3.0}");
+    }
+
+    [Test]
+    public void TestPath ()
+    {
+      DoTest ("(path #home,env,env.rclb) like \"*/env/env.rclb\"", "true");
+    }
+
+    [Test]
+    public void TestFile ()
+    {
+      DoTest ("{before:file \"file\" :\"file\" save #pretty format {a:1 b:2 c:3} after:file \"file\" :delete \"file\" <-$before & $after}", "false true"); 
+    }
+
+    [Test]
+    public void TestFileAndPath ()
+    {
+      DoTest ("{before:file #work,file :#work,file save #pretty format {a:1 b:2 c:3} after:file #work,file :delete #work,file <-$before & $after}", "false true"); 
     }
 
     [Test]

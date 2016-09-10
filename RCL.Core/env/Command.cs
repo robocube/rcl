@@ -34,15 +34,59 @@ namespace RCL.Core
           home = Environment.GetFolderPath (Environment.SpecialFolder.UserProfile);
         }
         path += home;
+        if (parts.Length > 1)
+        {
+          path += Path.DirectorySeparatorChar;
+        }
+        startIndex = 1;
+      }
+      else if (zero == "root")
+      {         
+        path += Path.DirectorySeparatorChar;
+        startIndex = 1;
+      }
+      else if (zero == "work")
+      {
+        path += parts.Length == 1 ? "." : "";
         startIndex = 1;
       }
       //Need to handle windows drive letter.
+      //There is a function called "GetPathRoot."
+      //I think it can be used to obtain the drive letter prefix,
+      //but only if you have a path.
       for (int i = startIndex; i < parts.Length; ++i)
       {
-        path += Path.DirectorySeparatorChar + parts[i].ToString ();
+        path += parts[i].ToString ();
+        if (i < parts.Length - 1)
+        {
+          path += Path.DirectorySeparatorChar;
+        }
       }
       return path;
     }
+
+    [RCVerb ("file")]
+    public void EvalFile (RCRunner runner, RCClosure closure, RCSymbol right)
+    {
+      RCArray<bool> result = new RCArray<bool> (right.Count);
+      for (int i = 0; i < right.Count; ++i)
+      {
+        result.Write (File.Exists (PathSymbolToString (right[i])));
+      }
+      runner.Yield (closure, new RCBoolean (result));
+    }
+
+    [RCVerb ("file")]
+    public void EvalFile (RCRunner runner, RCClosure closure, RCString right)
+    {
+      RCArray<bool> result = new RCArray<bool> (right.Count);
+      for (int i = 0; i < right.Count; ++i)
+      {
+        result.Write (File.Exists (right[i]));
+      }
+      runner.Yield (closure, new RCBoolean (result));
+    }
+
     [RCVerb ("load")]
     public void EvalLoad (
       RCRunner runner, RCClosure closure, RCString right)
@@ -163,20 +207,16 @@ namespace RCL.Core
       runner.Yield (closure, right);
     }
 
-    /*
-    [RCVerb ("list")]
-    public void EvalList (
-      RCRunner runner, RCClosure closure, RCString right)
+    [RCVerb ("delete")]
+    public void EvalDelete (
+      RCRunner runner, RCClosure closure, RCSymbol right)
     {
-      RCArray<string> result = new RCArray<string> ();
       for (int i = 0; i < right.Count; ++i)
       {
-        result.Write (Directory.GetFiles (right[i]));
-        result.Write (Directory.GetDirectories (right[i]));
+        File.Delete (PathSymbolToString (right[i]));
       }
-      runner.Yield (closure, new RCString (result));
+      runner.Yield (closure, right);
     }
-    */
 
     [RCVerb ("cd")]
     public void EvalCd (
@@ -347,20 +387,20 @@ namespace RCL.Core
     public void EvalModule (
       RCRunner runner, RCClosure closure, RCBlock right)
     {
-      RCArray<RCLReference> references = new RCArray<RCLReference> ();
+      RCArray<RCReference> references = new RCArray<RCReference> ();
       RCBlock result = (RCBlock) right.Edit (runner, delegate (RCValue val)
       {
-        RCLReference reference = val as RCLReference;
+        RCReference reference = val as RCReference;
         if (reference != null)
         {
-          RCLReference r = new RCLReference (reference.Name);
+          RCReference r = new RCReference (reference.Name);
           references.Write (r);
           return r;
         }
         UserOperator op = val as UserOperator;
         if (op != null)
         {
-          RCLReference r = new RCLReference (op.Name);
+          RCReference r = new RCReference (op.Name);
           references.Write (r);
           UserOperator outop = new UserOperator (r);
           outop.Init (op.Name, op.Left, op.Right);
@@ -389,20 +429,6 @@ namespace RCL.Core
       runner.Log.RecordDoc (runner, closure, "runner", 0, "exit", right);
       runner.Exit ((int) right[0]);
     }
-
-    /*
-    Making this an operator did not work cause fucked up stuff happens when you yield
-    after calling reset on the runner.
-    [RCVerb ("reset")]
-    public void EvalReset (
-      RCRunner runner, RCClosure closure, RCLong right)
-    {
-      runner.Log.RecordDoc (runner, closure,
-                            closure.Bot.Id, "runner", 0, "reset", right);
-      runner.Reset ();
-      //runner.Yield (closure, right);
-    }
-    */
 
     private static RCBlock m_options = null;
     public static void SetOptions (RCBlock options)

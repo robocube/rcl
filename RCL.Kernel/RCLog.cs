@@ -54,6 +54,7 @@ namespace RCL.Kernel
       }
     }
 
+    /*
     public virtual void Record (RCRunner runner, 
                                 RCClosure closure, 
                                 string type, 
@@ -84,6 +85,7 @@ namespace RCL.Kernel
         }
       }
     }
+    */
 
     public virtual void RecordDoc (RCRunner runner, 
                                    RCClosure closure, 
@@ -106,7 +108,7 @@ namespace RCL.Kernel
         {
           for (int i = 0; i < typeList.Count; ++i)
           {
-            typeList[i].Record (runner, closure, type, instance, state, info);
+            typeList[i].RecordDoc (runner, closure, type, instance, state, info);
           }
         }
         for (int i = 0; i < m_wild.Count; ++i)

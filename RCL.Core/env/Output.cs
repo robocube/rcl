@@ -46,6 +46,7 @@ namespace RCL.Core
       m_level = level;
     }
 
+    /*
     public override void Write (string type, string text)
     {
       if (m_output == null)
@@ -54,7 +55,9 @@ namespace RCL.Core
       }
       m_output.Write ("({0}) {1}", type, text);
     }
+    */
 
+    /*
     public override void WriteLine (string type, string line)
     {
       if (m_output == null)
@@ -63,55 +66,10 @@ namespace RCL.Core
       }
       m_output.WriteLine ("({0}) {1}", type, line);
     }
+    */
 
     protected static string TimeFormat = "yyyy.MM.dd HH:mm:ss.fffffff";
-    public override void Record (RCRunner runner, RCClosure closure,
-                                 string type, long instance, string state, object info)
-    {
-      if (m_output == null)
-      {
-        return;
-      }
-      if (m_level == RCOutput.Quiet)
-      {
-        return;
-      }
-      //else if (m_editor != null && closure.Bot.Id == 0 && instance == 0 && type == "fiber")
-      //{
-      //  return;
-      //}
-      else if (m_level == RCOutput.Single)
-      {
-        string time = DateTime.UtcNow.ToString (TimeFormat);
-        m_output.WriteLine ("{0} {1} {2} {3} {4} {5} {6}",
-                            time, closure.Bot.Id, closure.Fiber, type, instance, state, info.ToString ());
-      }
-      else if (m_level == RCOutput.Multi || m_level == RCOutput.Full)
-      {
-        bool singleLine;
-        string message = IndentMessage (CreateMessage (info), out singleLine);
-        string optionalSpace = (singleLine && message.Length > 0) ? ":" : "";
-        m_output.WriteLine ("{0} {1} {2} {3} {4}{5}{6}", 
-                            closure.Bot.Id, closure.Fiber, type, instance, state, optionalSpace, message);        
-      }
-      else if (m_level == RCOutput.Clean && type == "print")
-      {
-        string message = CreateMessage (info);
-        m_output.WriteLine (message);
-      }
-      else if (m_level == RCOutput.Test)
-      {
-        bool singleLine;
-        string message = IndentMessage (CreateMessage (info), out singleLine);
-        string optionalSpace = (singleLine && message.Length > 0) ? ":" : "";
-        m_output.WriteLine ("{0} {1} {2} {3} {4}{5}{6}", 
-                            closure.Bot.Id, closure.Fiber, type, instance, state, optionalSpace, message);        
-      }
-      else if (m_level == RCOutput.Trace)
-      {
-        throw new NotImplementedException ();
-      }
-    }
+
 
     public override void RecordDoc (RCRunner runner, RCClosure closure,
                                     string type, long instance, string state, object info)
@@ -131,7 +89,8 @@ namespace RCL.Core
       {
         return;
       }
-      else if (m_editor != null && bot == 0 && type == "fiber" && instance == 0)
+      else if (m_editor != null && bot == 0 && type == "fiber" && instance == 0 && 
+               (state == "start" || state == "done" || state == "reported"))
       {
         return;
       }

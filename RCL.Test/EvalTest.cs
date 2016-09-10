@@ -1,4 +1,4 @@
-﻿
+
 using RCL.Kernel;
 using NUnit.Framework;
 
@@ -483,6 +483,49 @@ namespace RCL.Test
     public void TestEmptyEval ()
     {
       DoEvalTest ("count eval {}", "0");
+    }
+
+    [Test]
+    public void TestEvalReference ()
+    {
+      DoEvalTest ("{k:{a:1 b:2 c:3} <-eval reference \"k\" \"b\"}", "2");
+    }
+
+    [Test]
+    public void TestEvalReference1 ()
+    {
+      DoEvalTest ("{k:{a:1 b:2 c:3} r:reference \"k\" \"b\" <-eval $r}", "2");
+    }
+
+    [Test]
+    public void TestEvalOperatorReference ()
+    {
+      DoEvalTest ("{k:{f:1 + 2} <-eval $k.f}", "3");
+    }
+
+    [Test]
+    public void TestEvalOperatorReference1 ()
+    {
+      DoEvalTest ("{k:{a:1 b:2 f:$a + $b} <-$k eval $k.f}", "3");
+    }
+
+    [Test]
+    public void TestEvalOperatorReference2 ()
+    {
+      DoEvalTest ("{k:{a:1 b:2 f:$a + $b} <-k.f {}}", "3");
+    }
+
+    [Test]
+    public void TestEvalWithStateAndReference ()
+    {
+      DoEvalTest ("{k:{a:1 b:2 c:3} <-$k eval reference \"k\" \"b\"}", "2");
+    }
+
+    [Test]
+    public void TestUserOpConflictsWithBuiltin ()
+    {
+      //Why didn't I realize this until now and what on earth am I to do about it?
+      DoEvalTest ("{file:{<-$R + 7} <-file 12}", "19");
     }
 
     [Test]
@@ -1526,13 +1569,15 @@ namespace RCL.Test
         runner.Reset ();
         RCValue program = runner.Read (code);
         RCValue result = runner.Run (program);
+        /*
         System.Console.Out.WriteLine ("code:");
         System.Console.Out.WriteLine (code);
         System.Console.Out.WriteLine ("expected:");
         System.Console.Out.WriteLine (expected);
         System.Console.Out.WriteLine ("actual:");
+        */
         string actual = result.Format (format);
-        System.Console.Out.WriteLine (actual);
+        //System.Console.Out.WriteLine (actual);
         Assert.IsNotNull (result, "RCRunner.Run result was null");
         Assert.AreEqual (expected, actual);
       }

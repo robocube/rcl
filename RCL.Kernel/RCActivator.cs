@@ -137,7 +137,7 @@ namespace RCL.Kernel
       RCOperator result = null;
       if (!m_operator.ContainsKey (key))
       {
-        result = new UserOperator (new RCLReference (op));
+        result = new UserOperator (new RCReference (op));
         result.Init (op, left, right);
       }
       else

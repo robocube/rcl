@@ -237,7 +237,7 @@ namespace RCL.Kernel
     }
 
     public static void DoFormat (
-      RCLReference reference, StringBuilder builder, RCFormat args, int level)
+      RCReference reference, StringBuilder builder, RCFormat args, int level)
     {
       builder.Append ("$");
       builder.Append (reference.Name);

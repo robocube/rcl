@@ -42,6 +42,23 @@ namespace RCL.Core
       runner.Yield (closure, result);
     }
 
+    [RCVerb ("rename")]
+    public void EvalRename (
+      RCRunner runner, RCClosure closure, RCSymbol left, RCBlock right)
+    {
+      if (left.Count != right.Count)
+        throw new Exception ("left and right arguments must have the same length");
+
+      RCBlock result = RCBlock.Empty;
+      for (int i = 0; i < left.Count; ++i)
+      {
+        RCBlock name = right.GetName (i);
+        string field = left[i].Part (0).ToString ();
+        result = new RCBlock (result, field, name.Evaluator, name.Value);
+      }
+      runner.Yield (closure, result);
+    }
+
     [RCVerb ("has")]
     public virtual void EvalHas (
       RCRunner runner, RCClosure closure, RCBlock left, RCSymbol right)

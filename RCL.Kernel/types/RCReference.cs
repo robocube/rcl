@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace RCL.Kernel
 {
-  public class RCLReference : RCValue
+  public class RCReference : RCValue
   {
     protected static readonly Dictionary<string, Type> m_types = new Dictionary<string, Type> ();
     protected static readonly Dictionary<Type, string> m_codes = new Dictionary<Type, string> ();
@@ -15,14 +15,14 @@ namespace RCL.Kernel
 
     protected internal RCBlock m_static;
 
-    public RCLReference (string name)
+    public RCReference (string name)
     {
       Name = name;
       Parts = new RCArray<string> (name.Split ('.'));
       Parts.Lock ();
     }
 
-    public RCLReference (string[] parts)
+    public RCReference (string[] parts)
     {
       Parts = new RCArray<string> (parts);
       Parts.Lock ();

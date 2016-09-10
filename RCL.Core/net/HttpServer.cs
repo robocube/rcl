@@ -64,7 +64,7 @@ namespace RCL.Core
         //lgsp.Expect100Continue = false;
         //lgsp.UseNagleAlgorithm = true;
         //lgsp.MaxIdleTime = 100000;
-        runner.Log.Record (runner, closure, "http", handle, "start", right);
+        runner.Log.RecordDoc (runner, closure, "http", handle, "start", right);
       }
       runner.Yield (closure, new RCLong (handle));
     }
@@ -80,7 +80,7 @@ namespace RCL.Core
           HttpListener listener = m_listeners[(int) right[i]];
           //I should be ok calling this in a lock right?
           listener.Close ();
-          runner.Log.Record (runner, closure, "http", right[i], "stop", "");
+          runner.Log.RecordDoc (runner, closure, "http", right[i], "stop", "");
           //Shouldn't I remove this from the m_listeners?
           //Wait I want to see if retaining it fixes the object disposed exception.
         }
@@ -124,7 +124,7 @@ namespace RCL.Core
           handle = m_context;
           m_contexts.Add (handle, new RequestInfo (context, DateTime.Now));
         }
-        state.Runner.Log.Record (state.Runner, state.Closure,
+        state.Runner.Log.RecordDoc (state.Runner, state.Closure,
                                  "http", handle, "proc",
                                  context.Request.HttpMethod + " " + context.Request.RawUrl);
         state.Runner.Yield (state.Closure, new RCLong (handle));
