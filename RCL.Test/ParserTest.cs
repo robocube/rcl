@@ -665,38 +665,38 @@ namespace RCL.Test
     [Test]
     public void TestTemplateWithCode ()
     {
-      DoParserTest ("[? [! $x !] ?]", "[? [!$x!] ?]"); // "{:\" \" :$x :\" \"}");
-      DoParserTest ("[? [!$x!] ?]", "[? [!$x!] ?]"); //"{:\" \" :$x :\" \"}");
-      DoParserTest ("[?[!$x!]?]");  //"{:\"\" :$x :\"\"}");
+      DoParserTest ("[? [! $x !] ?]", "[? [! $x !] ?]"); // "{:\" \" :$x :\" \"}");
+      DoParserTest ("[? [! $x !] ?]", "[? [! $x !] ?]"); //"{:\" \" :$x :\" \"}");
+      DoParserTest ("[?[! $x !]?]");  //"{:\"\" :$x :\"\"}");
       //Now let's see if we can trick the parser.
-      DoParserTest ("[?!][!$x!]?]"); //, "{:\"!]\" :$x :\"\"}");
+      DoParserTest ("[?!][! $x !]?]"); //, "{:\"!]\" :$x :\"\"}");
 
-      DoParserTest ("[?[!$x!]!]?]"); //, "{:\"\" :$x :\"!]\"}");
-      DoParserTest ("[??[![!!$x!!]!]??]"); //, "{:\"[!\" :$x :\"!]\"}");
+      DoParserTest ("[?[! $x !]!]?]"); //, "{:\"\" :$x :\"!]\"}");
+      DoParserTest ("[??[![!! $x !!]!]??]"); //, "{:\"[!\" :$x :\"!]\"}");
       //I'm not quite sure if this is ok like this.  Since the value in the
       //code block is just a string, a code block is not created on the way out.
       //Maybe we should prevent this by encapsulating literals inside a block.
-      DoParserTest ("[?[!\"[? ?]\"!]?]");//, "[?[? ?]?]"); //, "{:\"\" :\"[? ?]\" :\"\"}");
+      DoParserTest ("[?[! \"[? ?]\" !]?]");//, "[?[? ?]?]"); //, "{:\"\" :\"[? ?]\" :\"\"}");
       DoParserTest ("[?this is a question??]"); //, "{:\"this is a question?\"}");
       //Now let's do some more stuff in the code section.
-      DoParserTest ("[?before[!$x + $y!]after?]"); //, "{:\"before\" :$x + $y :\"after\"}");
-      DoParserTest ("[?before[!{<-$x - $y}!]after?]"); //, "{:\"before\" :{<-$x - $y} :\"after\"}");
-      DoParserTest ("[?before[!{x:1 y:2 z:3}!]after?]"); //, "{:\"before\" :{x:1l y:2l z:3l} :\"after\"}");
-      DoParserTest ("[?before[![]!]after?]"); //, "{:\"before\" :[] :\"after\"}");
+      DoParserTest ("[?before[! $x + $y !]after?]"); //, "{:\"before\" :$x + $y :\"after\"}");
+      DoParserTest ("[?before[! {<-$x - $y} !]after?]"); //, "{:\"before\" :{<-$x - $y} :\"after\"}");
+      DoParserTest ("[?before[! {x:1 y:2 z:3} !]after?]"); //, "{:\"before\" :{x:1l y:2l z:3l} :\"after\"}");
+      DoParserTest ("[?before[! [] !]after?]"); //, "{:\"before\" :[] :\"after\"}");
       //Multiple code sections?
-      DoParserTest ("[?before[!$x!]between[!$y!]after?]"); //, "{:\"before\" :$x :\"between\" :$y :\"after\"}");
+      DoParserTest ("[?before[! $x !]between[! $y !]after?]"); //, "{:\"before\" :$x :\"between\" :$y :\"after\"}");
       //Nested code sections?
-      DoParserTest ("[?before[![?inside?]!]after?]"); //, "{:\"before\" :{:\"inside\"} :\"after\"}");
-      DoParserTest ("[?before[!{x:[?one?] y:[?two?] z:[?three?]}!]after?]"); //, "{:\"before\" :{x:{:\"one\"} y:{:\"two\"} z:{:\"three\"}} :\"after\"}");
+      DoParserTest ("[?before[! [?inside?] !]after?]"); //, "{:\"before\" :{:\"inside\"} :\"after\"}");
+      DoParserTest ("[?before[! {x:[?one?] y:[?two?] z:[?three?]} !]after?]"); //, "{:\"before\" :{x:{:\"one\"} y:{:\"two\"} z:{:\"three\"}} :\"after\"}");
     }
 
     [Test]
     public void TestTemplateWithCodeEx ()
     {
       //Bugs found after TestTemplateWithCode
-      DoParserTest ("[?foo[!operator {}!]?]");
+      DoParserTest ("[?foo[! operator {} !]?]");
       DoParserTest ("{t:[?text?]}");
-      DoParserTest ("{head:[?a head?] body:[?a body?] html:[?<html>[!head {}!][!body {}!]</html>?] <-html {}}");
+      DoParserTest ("{head:[?a head?] body:[?a body?] html:[?<html>[! head {} !][! body {} !]</html>?] <-html {}}");
     }
 
     [Test]
@@ -719,8 +719,8 @@ namespace RCL.Test
         </html>
       ?]
       */
-      DoParserTest ("[?\n  <html>\n    [!head {}!]\n    [!body {}!]\n  </html>\n?]", 
-                    "[?\n  <html>\n    [!head {}!]\n    [!body {}!]\n  </html>\n?]");
+      DoParserTest ("[?\n  <html>\n    [! head {} !]\n    [! body {} !]\n  </html>\n?]", 
+                    "[?\n  <html>\n    [! head {} !]\n    [! body {} !]\n  </html>\n?]");
     }
 
     [Test]
@@ -739,8 +739,8 @@ namespace RCL.Test
   </html>
 ?]
 */
-      DoParserTest ("[?\r\n  <html>\r\n    [!head {}!]\r\n    [!body {}!]\r\n  </html>\r\n?]",
-                    "[?\n  <html>\n    [!head {}!]\n    [!body {}!]\n  </html>\n?]");
+      DoParserTest ("[?\r\n  <html>\r\n    [! head {} !]\r\n    [! body {} !]\r\n  </html>\r\n?]",
+                    "[?\n  <html>\n    [! head {} !]\n    [! body {} !]\n  </html>\n?]");
     }
 
     [Test]
@@ -753,8 +753,8 @@ namespace RCL.Test
   </html>
 ?]
 */
-      DoParserTest ("[?\n  <html>\n    <h1>[!string $R!]</h1>\n  </html>\n?]", 
-                    "[?\n  <html>\n    <h1>[!string $R!]</h1>\n  </html>\n?]");
+      DoParserTest ("[?\n  <html>\n    <h1>[! string $R !]</h1>\n  </html>\n?]", 
+                    "[?\n  <html>\n    <h1>[! string $R !]</h1>\n  </html>\n?]");
     }
 
     [Test]
@@ -767,58 +767,58 @@ namespace RCL.Test
   last line
 ?]
 */
-      DoParserTest ("[?\n  first line\n  this [!$R.is!] the [!$R.middle!] line\n  last line\n?]",
-                    "[?\n  first line\n  this [!$R.is!] the [!$R.middle!] line\n  last line\n?]");
+      DoParserTest ("[?\n  first line\n  this [! $R.is !] the [! $R.middle !] line\n  last line\n?]",
+                    "[?\n  first line\n  this [! $R.is !] the [! $R.middle !] line\n  last line\n?]");
     }
 
     [Test]
     public void TestTemplateWithStringArray ()
     {
-      DoParserTest ("[?\na\n          [!\"w\" \"x\" \"y\" \"z\"!]\n?]",
-                    "[?\n  a\n            [!\"w\" \"x\" \"y\" \"z\"!]\n?]");
+      DoParserTest ("[?\na\n          [! \"w\" \"x\" \"y\" \"z\" !]\n?]",
+                    "[?\n  a\n            [! \"w\" \"x\" \"y\" \"z\" !]\n?]");
     }
 
     [Test]
     public void TestTemplateWithLongArray ()
     {
-      DoParserTest ("[?\na\n          [!1 2 3 4 5!]\n?]", "[?\n  a\n            [!1 2 3 4 5!]\n?]");
+      DoParserTest ("[?\na\n          [! 1 2 3 4 5 !]\n?]", "[?\n  a\n            [! 1 2 3 4 5 !]\n?]");
     }
 
     [Test]
     public void TestTemplateMultilineMultipleCodeSections0 ()
     {
-      DoParserTest ("[?\n[!\"a\" \"b\" \"c\"!][!\"x\" \"y\" \"z\"!]\n?]",
-                    "[?\n  [!\"a\" \"b\" \"c\"!][!\"x\" \"y\" \"z\"!]\n?]");
+      DoParserTest ("[?\n[! \"a\" \"b\" \"c\" !][! \"x\" \"y\" \"z\" !]\n?]",
+                    "[?\n  [! \"a\" \"b\" \"c\" !][! \"x\" \"y\" \"z\" !]\n?]");
     }
 
     [Test]
     public void TestTemplateMultilineMultipleCodeSections1 ()
     {
-      DoParserTest ("[?\n  [!\"a\" \"b\" \"c\"!][!\"x\" \"y\" \"z\"!]\n?]", 
-                    "[?\n  [!\"a\" \"b\" \"c\"!][!\"x\" \"y\" \"z\"!]\n?]");
+      DoParserTest ("[?\n  [! \"a\" \"b\" \"c\" !][! \"x\" \"y\" \"z\" !]\n?]", 
+                    "[?\n  [! \"a\" \"b\" \"c\" !][! \"x\" \"y\" \"z\" !]\n?]");
     }
 
     [Test]
     public void TestTemplateMultilineMultipleCodeSections2 ()
     {
-      DoParserTest ("[?\n  [!\"a\" \"b\" \"c\"!]\n    [!\"d\" \"e\" \"f\"!]\n      [!\"g\" \"h\" \"i\"!]?]", 
-                    "[?\n  [!\"a\" \"b\" \"c\"!]\n    [!\"d\" \"e\" \"f\"!]\n      [!\"g\" \"h\" \"i\"!]?]");
+      DoParserTest ("[?\n  [! \"a\" \"b\" \"c\" !]\n    [! \"d\" \"e\" \"f\" !]\n      [! \"g\" \"h\" \"i\" !]?]", 
+                    "[?\n  [! \"a\" \"b\" \"c\" !]\n    [! \"d\" \"e\" \"f\" !]\n      [! \"g\" \"h\" \"i\" !]?]");
     }
 
     [Test]
     public void TestTemplateMultilineMultipleCodeSections3 ()
     {
       //Now make sure that when there are multiple code sections per line, that everything still works.
-      DoParserTest ("[?\n  [!\"a\"!] [!\"b\" \"c\"!]\n    [!\"d\" \"e\"!] [!\"f\"!]\n      [!\"g\"!] [!\"h\"!] [!\"i\"!]?]", 
-                    "[?\n  [!\"a\"!] [!\"b\" \"c\"!]\n    [!\"d\" \"e\"!] [!\"f\"!]\n      [!\"g\"!] [!\"h\"!] [!\"i\"!]?]");
+      DoParserTest ("[?\n  [! \"a\" !] [! \"b\" \"c\" !]\n    [! \"d\" \"e\" !] [! \"f\" !]\n      [! \"g\" !] [! \"h\" !] [! \"i\" !]?]", 
+                    "[?\n  [! \"a\" !] [! \"b\" \"c\" !]\n    [! \"d\" \"e\" !] [! \"f\" !]\n      [! \"g\" !] [! \"h\" !] [! \"i\" !]?]");
     }
 
     [Test]
     public void TestTemplateMultilineMultipleCodeSections4 ()
     {
       //One code section per line, multiple lines.
-      DoParserTest ("[?\n  [!\"a\" \"b\" \"c\"!]\n  [!\"x\" \"y\" \"z\"!]\n?]", 
-                    "[?\n  [!\"a\" \"b\" \"c\"!]\n  [!\"x\" \"y\" \"z\"!]\n?]");
+      DoParserTest ("[?\n  [! \"a\" \"b\" \"c\" !]\n  [! \"x\" \"y\" \"z\" !]\n?]", 
+                    "[?\n  [! \"a\" \"b\" \"c\" !]\n  [! \"x\" \"y\" \"z\" !]\n?]");
     }
 
     [Test]

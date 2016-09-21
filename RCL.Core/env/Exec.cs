@@ -221,7 +221,7 @@ namespace RCL.Core
             //  m_process.StandardInput.Close ();
             //}
           }
-          m_state.Runner.Log.RecordDoc (m_state.Runner, m_state.Closure,
+          m_state.Runner.Log.Record (m_state.Runner, m_state.Closure,
                                         "exec", Handle, "start",
                                         string.Format ("{0} {1}", m_program, m_arguments));
         }
@@ -274,7 +274,7 @@ namespace RCL.Core
           m_waiters.Clear ();
           m_finished = true;
         }
-        m_state.Runner.Log.RecordDoc (m_state.Runner, m_state.Closure,
+        m_state.Runner.Log.Record (m_state.Runner, m_state.Closure,
                                       "exec", Handle, "done", exitCode);
         RCString lines = null;
         lock (this)
@@ -287,7 +287,7 @@ namespace RCL.Core
         }
         if (lines != null)
         {
-          m_state.Runner.Log.RecordDoc (m_state.Runner, m_state.Closure,
+          m_state.Runner.Log.Record (m_state.Runner, m_state.Closure,
                                           "exec", Handle, "line", lines);
         }
         RCString result = new RCString (m_result);
@@ -380,8 +380,8 @@ namespace RCL.Core
           //with the usual formatting procedure.
           //example single lines will appear on the header line not their own line.
           //for purposes of writing to stdin it is imperative that every line ends cleanly.
-          state.Runner.Log.RecordDoc (state.Runner, state.Closure,
-                                      "exec", Handle, "writex", right);
+          state.Runner.Log.Record (state.Runner, state.Closure,
+                                   "exec", Handle, "writex", right);
         }
         catch (Exception ex)
         {
@@ -452,8 +452,8 @@ namespace RCL.Core
           }
           if (line != null)
           {
-            state.Runner.Log.RecordDoc (state.Runner, state.Closure,
-                                        "exec", Handle, "readx", line);
+            state.Runner.Log.Record (state.Runner, state.Closure,
+                                     "exec", Handle, "readx", line);
             state.Runner.Yield (state.Closure, new RCString (line));
           }
           else
@@ -482,8 +482,8 @@ namespace RCL.Core
           }
           if (output != null)
           {
-            m_state.Runner.Log.RecordDoc (m_state.Runner, m_state.Closure,
-                                          "exec", Handle, "line", output);
+            m_state.Runner.Log.Record (m_state.Runner, m_state.Closure,
+                                       "exec", Handle, "line", output);
           }
           m_timer.Change (200, Timeout.Infinite);
         }

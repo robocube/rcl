@@ -287,8 +287,7 @@ namespace RCL.Kernel
         else
         {
           throw new RCException (closure, tiex, RCErrors.Native, 
-                                 "An exception was thrown by the operator (" +
-                                 name + " " + right.ToString () + ")");
+                                 "An exception was thrown by the operator " + name + ".");
         }
       }
     }
@@ -338,8 +337,7 @@ namespace RCL.Kernel
         else
         {
           throw new RCException (closure, tiex, RCErrors.Native, 
-                                 "An exception was thrown by the operator ("
-                                 + left.ToString () + " " + name + " " + right.ToString () + ")");
+                                 "An exception was thrown by the operator " + name + ".");
         }
         //throw;
         //At least this way I can know which method the exception came from.

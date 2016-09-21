@@ -33,7 +33,8 @@ namespace RCL.Kernel
       return From (0, key);
     }
 
-    public static RCSymbolScalar From (int startIndex, params object[] key) 
+    public static RCSymbolScalar From (int startIndex, 
+                                       params object[] key) 
     {
       RCSymbolScalar prev = null;
       for (int i = startIndex; i < key.Length; ++i) 
@@ -42,8 +43,21 @@ namespace RCL.Kernel
       }
       return prev;
     }
+    
+    public static RCSymbolScalar From (int startIndex,
+                                       RCSymbolScalar prefix,
+                                       params object[] key) 
+    {
+      RCSymbolScalar prev = prefix;
+      for (int i = startIndex; i < key.Length; ++i) 
+      {
+        prev = new RCSymbolScalar (prev, key[i]);
+      }
+      return prev;
+    }
 
-    public static RCSymbolScalar From (RCLexer lexer, string part)
+    public static RCSymbolScalar From (RCLexer lexer,
+                                       string part)
     {
       //if (part.Length > 0 && part[0] == '#')
       //{

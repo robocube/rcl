@@ -183,7 +183,8 @@ namespace RCL.Kernel
     {
       RCClosure closure = this;
       Stack<string> lines = new Stack<string> ();
-      while (closure != null)
+      //Do not include the global namespace in the stack trace.
+      while (closure != null && closure.Parent != null)
       { 
         if (closure.Code != null)
         {
@@ -198,7 +199,10 @@ namespace RCL.Kernel
         {
           if (result.Value != null)
           {
-            lines.Push (string.Format ("{0}:{1}", result.Name, result.Value.ToString ()));
+            lines.Push (
+              string.Format ("{0}:{1}", 
+                             result.Name, 
+                             result.Value.Format (RCFormat.Pretty)));
           }
           result = result.Previous;
         }

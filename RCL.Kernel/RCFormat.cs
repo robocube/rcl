@@ -15,22 +15,22 @@ namespace RCL.Kernel
     public readonly string RowDelimeter;
     public readonly bool Align;
     public readonly bool Showt;
-    public readonly int Level;
+    //public readonly int Level;
     public readonly bool ParsableScalars;
 
     static RCFormat ()
     {
-      Default = new RCFormat ("RC", "", "", " ", " ", false, true, 0, true);
-      Pretty = new RCFormat ("RC", "  ", "\n", " ", "\n", true, true, 0, true);
-      DefaultNoT = new RCFormat ("RC", "", "", " ", " ", false, false, 0, true);
-      Html = new RCFormat ("HTML", "  ", "\n", " ", "\n", true, true, 0, true);
-      Csv = new RCFormat ("CSV", "  ", "\n", ",", "\n", false, true, 0, false);
-      Log = new RCFormat ("LOG", "  ", "\n", " ", "\n", false, true, 0, false);
+      Default = new RCFormat ("RC", "", "", " ", " ", false, true, true);
+      Pretty = new RCFormat ("RC", "  ", "\n", " ", "\n", true, true, true);
+      DefaultNoT = new RCFormat ("RC", "", "", " ", " ", false, false, true);
+      Html = new RCFormat ("HTML", "  ", "\n", " ", "\n", true, true, true);
+      Csv = new RCFormat ("CSV", "  ", "\n", ",", "\n", false, true, false);
+      Log = new RCFormat ("LOG", "  ", "\n", " ", "\n", false, true, false);
     }
 
     public RCFormat (
       string syntax, string indent, string newline, string delimeter,
-      string rowDelimeter, bool align, bool showt, int level, bool parsableScalars)
+      string rowDelimeter, bool align, bool showt, bool parsableScalars)
     {
       Syntax = syntax;
       Indent = indent;
@@ -39,7 +39,6 @@ namespace RCL.Kernel
       RowDelimeter = rowDelimeter;
       Align = align;
       Showt = showt;
-      Level = level;
       ParsableScalars = parsableScalars;
     }
   }

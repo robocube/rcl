@@ -49,7 +49,7 @@ namespace RCL.Exe
       RCRunner runner = new RCRunner (RCActivator.Default, log, 1, cmd);
 
       cmd.PrintStartup ();
-
+  
       string line = "";
       if (cmd.Program != "")
       {

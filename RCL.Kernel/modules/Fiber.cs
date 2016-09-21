@@ -32,7 +32,7 @@ public class Fiber : RCOperator
     long fiber = Interlocked.Increment (ref m_fiber);
     RCClosure next = FiberClosure (closure.Bot, fiber, closure, code);
     closure.Bot.ChangeFiberState (fiber, "start");
-    runner.Log.RecordDoc (runner, closure, "fiber", fiber, "start", code);
+    runner.Log.Record (runner, closure, "fiber", fiber, "start", code);
 
     //This creates a separate stream of execution (fiber) from the
     //one that called this method.

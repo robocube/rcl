@@ -1,4 +1,4 @@
-﻿
+
 using System;
 using System.Reflection;
 using System.Text;
@@ -283,7 +283,7 @@ namespace RCL.Kernel
       RCFormat format = new RCFormat (args.Syntax, "  ", 
                                       args.Newline, args.Delimeter, 
                                       args.RowDelimeter, args.Align, 
-                                      args.Showt, args.Level, 
+                                      args.Showt, 
                                       args.ParsableScalars);
       RCL.Kernel.Format.DoFormat (this, builder, format, level);
     }

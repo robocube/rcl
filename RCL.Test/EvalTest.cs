@@ -520,6 +520,12 @@ namespace RCL.Test
     {
       DoEvalTest ("{k:{a:1 b:2 c:3} <-$k eval reference \"k\" \"b\"}", "2");
     }
+    
+    [Test]
+    public void TestEvalWithUserOperator ()
+    {
+      DoEvalTest ("{k:{a:1} m1:{f:$a + $R} m2:{f:m1.f 10} <-$k eval $m2.f}", "11");
+    }
 
     [Test]
     public void TestUserOpConflictsWithBuiltin ()
@@ -1477,6 +1483,84 @@ namespace RCL.Test
       DoEvalTest ("{t:[?\n  a\n  b[! $R.x !]c\n  d\n?] c:{x:\"\\nx\"} <-t $c}", "\"a\\nb\\nxc\\nd\\n\"");
     }
 
+    [Test]
+    public void TestEvalTemplateEmptyLines0 ()
+    {
+      DoEvalTest ("{t:[?\n  \n?] <-t #}", "\"\\n\"");
+    }
+    
+    [Test]
+    public void TestEvalTemplateEmptyLines1 ()
+    {
+      DoEvalTest ("{t:[?\n  \n  \n?] <-t #}", "\"\\n\\n\"");
+    }
+
+    [Test]
+    public void TestEvalTemplateEmptyLines2 ()
+    {
+      DoEvalTest ("{t:[?\n  \n  [! \"foo\" + ~s !]\n  \n?] <-t #}", "\"\\n\\n\"");
+    }
+
+    [Test]
+    public void TestEvalTemplateEmptyLines3 ()
+    {
+      DoEvalTest ("{t:[?\n  \n  [! ~s !]\n  \n?] <-t #}", "\"\\n\\n\"");
+    }
+    
+    [Test]
+    public void TestEvalTemplateEmptyLines4 ()
+    {
+      DoEvalTest ("{t:[?\n  \n  [! ~s !]\na \n?] <-t #}", "\"  \\n  \\na \\n\"");
+    }
+
+    [Test]
+    public void TestEvalTemplateEmptyLines5 ()
+    {
+      DoEvalTest ("{u:~s t:[?\n  line0\n  [! \"foo\" + $u !]\n  line1\n?] <-t #}", "\"line0\\nline1\\n\"");
+    }
+
+    [Test]
+    public void TestEvalTemplateEmptyLines6 ()
+    {
+      DoEvalTest ("{t:[?\n\n[! ~s !]\n\n?] <-t #}", "\"\\n\\n\"");
+    }
+
+    [Test]
+    public void TestEvalTemplateEmptyLines7 ()
+    {
+      DoEvalTest ("{t:[?\n\n[! ~s !]\n\n\n?] <-t #}", "\"\\n\\n\\n\"");
+    }
+
+    [Test]
+    public void TestEvalTemplateEmptyLines8 ()
+    {
+      DoEvalTest ("{t:[?\n  \n[! ~s !]\n  \n  \n?] <-t #}", "\"\\n\\n\\n\"");
+    }
+
+    
+    [Test]
+    public void TestEvalTemplateEmptyLines9 ()
+    {
+      DoEvalTest ("{u:~s t:[?\n  \n  \n?] <-t #}", "\"\\n\\n\"");
+    }
+
+    [Test]
+    public void TestEvalTemplateEmptyLines10 ()
+    {
+      DoEvalTest ("{u:~s t:[?\n  \n \n?] <-t #}", "\" \\n\\n\"");
+    }
+
+    [Test]
+    public void TestEvalTemplateEmptyLines11 ()
+    {
+      //[?
+      //  
+      //  [! "foo" + ~s !]
+      //  a
+      //?]
+      DoEvalTest ("{t:[?\n  \n  [! \"foo\" + ~s !]\n  a\n?] <-t #}", "\"\\na\\n\"");
+    }
+
     /*
     [Test]
     public void TestStringTemplateCoercion ()
@@ -1513,6 +1597,20 @@ namespace RCL.Test
     public void TestFormatTemplate ()
     {
       DoEvalTest ("format [?\n  foo\n  bar\n  baz\n?]", "\"[?\\n  foo\\n  bar\\n  baz\\n?]\"");
+    }
+    
+    [Test]
+    public void TestFormatTemplate1 ()
+    {
+      DoEvalTest ("#pretty format parse \"[?\n  before\n    [! eval {host:#foo port:#bar} !]\n  after\n?]\"", 
+                  "\"[?\\n  before\\n    [! eval {host:#foo port:#bar} !]\\n  after\\n?]\"");
+    }
+    
+    [Test]
+    public void TestFormatTemplate2 ()
+    {
+      DoEvalTest ("#pretty format parse \"[?\n  before\n    [! eval {host:$R <-{<-user_entry $R} each $R.users} !]\n  after\n?]\"", 
+                  "\"[?\\n  before\\n    [! eval {host:$R <-{<-user_entry $R} each $R.users} !]\\n  after\\n?]\"");
     }
 
     [Test]

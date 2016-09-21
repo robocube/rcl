@@ -366,6 +366,19 @@ namespace RCL.Core
       runner.Yield (closure, new RCTime (result));
     }
       
+    [RCVerb ("time")]
+    public void EvalTime (RCRunner runner, RCClosure closure, RCSymbol left, RCTime right)
+    {
+      RCArray<RCTimeScalar> result = new RCArray<RCTimeScalar> ();
+      string name = left[0].Part (0).ToString ();
+      RCTimeType type = (RCTimeType) Enum.Parse (typeof (RCTimeType), name, true);
+      for (int i = 0; i < right.Count; ++i)
+      {
+        result.Write (new RCTimeScalar (new DateTime (right[i].Ticks), type));
+      }
+      runner.Yield (closure, new RCTime (result));
+    }
+
     [RCVerb ("symbol")]
     public void EvalSymbolString (
       RCRunner runner, RCClosure closure, RCString right)

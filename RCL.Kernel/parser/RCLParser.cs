@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace RCL.Kernel
 {
   /// <summary>
-  /// A Streaming parser for RC.
+  /// A streaming parser for RCL.
   /// Breaking strings down into tokens is accomplished by RCLexer.
   /// RCParser takes the resulting token streams and converts them into RCValues.
   ///
@@ -152,8 +152,8 @@ namespace RCL.Kernel
     protected class TemplateVars
     {
       public bool m_multilineTemplate = false;
-      public bool m_parsingContent = false;
-      public int m_minSpaces = 0;
+      //public bool m_parsingContent = false;
+      public int m_minSpaces = int.MaxValue;
     }
     //This stack holds a few extra variables required for parsing nested templates.
     protected Stack<TemplateVars> m_templates = new Stack<TemplateVars> ();
@@ -454,6 +454,59 @@ namespace RCL.Kernel
       TemplateVars template = m_templates.Peek ();
       if (template.m_multilineTemplate)
       {
+        for (int i = 0; i < m_block.Count; ++i)
+        {
+          RCBlock current = m_block.GetName (i);
+          section = current.Value as RCString;
+          if (section != null && i % 2 == 0)
+          {
+            string content = section[0];
+            int spaces = 0;
+            bool broken = false;
+            bool hasLine = false;
+            int firstNewline = content.IndexOf ('\n');
+            if (firstNewline > -1)
+            {
+              hasLine = true;
+            }
+            for (int j = firstNewline + 1; j < content.Length; ++j)
+            {
+              if (content[j] == ' ')
+              {
+                if (!broken)
+                {
+                  ++spaces;
+                }
+              }
+              else if (content[j] == '\n')
+              {
+                if (j > 0)
+                {
+                  template.m_minSpaces = Math.Min (template.m_minSpaces, spaces);
+                }
+                spaces = 0;
+                broken = false;
+                hasLine = true;
+              }
+              else
+              {
+                broken = true;
+              }
+            }
+            if (content.Length > 0 && 
+                content[content.Length - 1] != '\n' &&
+                hasLine &&
+                i < m_block.Count - 1)
+            {
+              template.m_minSpaces = Math.Min (template.m_minSpaces, spaces);
+            }
+            if (template.m_minSpaces == int.MaxValue)
+            {
+              template.m_minSpaces = 0;
+            }
+          }
+        }
+        
         RCBlock final = RCBlock.Empty;
         //strip indentation (spaces only) from the lines in the content.
         //Ignore the first and last sections.
@@ -570,39 +623,11 @@ namespace RCL.Kernel
     protected static char[] CRLF = new char[] {'\r', '\n'};
     public override void AcceptContent (RCToken token)
     {
-      int firstNewline = -1; //token.Text.IndexOfAny (CRLF);
-      int r = 0;
-      int n = 0;
       TemplateVars template = m_templates.Peek ();
-      if (!template.m_parsingContent)
+      int firstNewline = token.Text.IndexOfAny (CRLF);
+      if (firstNewline > -1)
       {
-        firstNewline = token.Text.IndexOfAny (CRLF);
-        if (firstNewline >= 0)
-        {
-          if (token.Text[firstNewline] == '\r')
-          {
-            r = 1;
-            ++firstNewline;
-          }
-          if (token.Text[firstNewline] == '\n')
-          {
-            n = 1;
-          }
-          template.m_multilineTemplate = true;
-        }
-        template.m_parsingContent = true;
-      }
-      if (template.m_multilineTemplate && firstNewline > -1)
-      {
-        //we have to count the spaces before the first non-space token.
-        //If the token is a tab we assume that the tab belongs to the
-        //content because no one would ever use tabs to indent an RC file.
-        int i = firstNewline + 1;
-        while (i < token.Text.Length && token.Text[i] == ' ')
-        {
-          ++i;
-        }
-        template.m_minSpaces = Math.Max (template.m_minSpaces, i - (r + n));
+        template.m_multilineTemplate = true;
       }
       //I want it to be AS IF we saw something like {:"foo bar with newlines"}
       //AcceptEvaluator (new RCToken (":", RCTokenType.Evaluator, token.Start, token.Index));

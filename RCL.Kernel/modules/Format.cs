@@ -216,12 +216,9 @@ namespace RCL.Kernel
           }
           builder.Append ("[");
           builder.Append ('!', template.EscapeCount);
-          RCFormat newArgs = new RCFormat (
-            args.Syntax, "", args.Newline, 
-            args.Delimeter, args.RowDelimeter, 
-            args.Align, args.Showt, 
-            args.Level, args.ParsableScalars);
-          child.Format (builder, newArgs, level);
+          builder.Append (' ');
+          child.Format (builder, RCFormat.Default, level);
+          builder.Append (' ');
           builder.Append ('!', template.EscapeCount);
           builder.Append ("]");
         }

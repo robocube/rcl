@@ -87,12 +87,12 @@ namespace RCL.Kernel
     }
     */
 
-    public virtual void RecordDoc (RCRunner runner, 
-                                   RCClosure closure, 
-                                   string type, 
-                                   long instance, 
-                                   string state, 
-                                   object info)
+    public virtual void Record (RCRunner runner, 
+                                RCClosure closure, 
+                                string type, 
+                                long instance, 
+                                string state, 
+                                object info)
     {
       lock (m_lock)
       {
@@ -101,19 +101,19 @@ namespace RCL.Kernel
         {
           for (int i = 0; i < typeList.Count; ++i)
           {
-            typeList[i].RecordDoc (runner, closure, type, instance, state, info);
+            typeList[i].Record (runner, closure, type, instance, state, info);
           }
         }
         else if (m_loggers.TryGetValue (type + ":" + state, out typeList))
         {
           for (int i = 0; i < typeList.Count; ++i)
           {
-            typeList[i].RecordDoc (runner, closure, type, instance, state, info);
+            typeList[i].Record (runner, closure, type, instance, state, info);
           }
         }
         for (int i = 0; i < m_wild.Count; ++i)
         {
-          m_wild[i].RecordDoc (runner, closure, type, instance, state, info);
+          m_wild[i].Record (runner, closure, type, instance, state, info);
         }
       }
     }

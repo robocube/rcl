@@ -71,8 +71,8 @@ namespace RCL.Core
     protected static string TimeFormat = "yyyy.MM.dd HH:mm:ss.fffffff";
 
 
-    public override void RecordDoc (RCRunner runner, RCClosure closure,
-                                    string type, long instance, string state, object info)
+    public override void Record (RCRunner runner, RCClosure closure,
+                                 string type, long instance, string state, object info)
     {
       long bot = 0;
       long fiber = 0;

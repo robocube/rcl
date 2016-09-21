@@ -45,6 +45,13 @@ namespace RCL.Kernel
     }
 
     [RCVerb ("eval")]
+    public void EvalEval (RCRunner runner, RCClosure closure, RCBlock left, UserOperator right)
+    {
+      //Invocation using the activator requires a perfect match on the argument type.
+      EvalEval (runner, closure, left, (RCOperator) right);
+    }
+
+    [RCVerb ("eval")]
     public void EvalEval (RCRunner runner, RCClosure closure, RCReference right)
     {
       DoEval (runner, closure, right);
@@ -278,10 +285,10 @@ namespace RCL.Kernel
                     }
                     builder.AppendLine (line);
                   }
-                  else if (builder [builder.Length - 1] != '\n')
+                  else if (k > 0 || 
+                           (builder.Length > 0 && builder [builder.Length - 1] != '\n'))
                   {
                     builder.AppendLine (line);
-                    //builder.Append (indent);
                   }
                 }
                 start = k + 1;
@@ -307,7 +314,7 @@ namespace RCL.Kernel
                 }
                 else if (j == text.Count - 1)
                 {
-                  indent = parentIndent; //"";
+                  indent = parentIndent;
                 }
                 builder.Append (lastPiece);
               }
@@ -344,7 +351,7 @@ namespace RCL.Kernel
       //Let the enclosing template decide how to finish off.
       if (template.Multiline)
       {
-        if (builder [builder.Length - 1] != '\n')
+        if (builder.Length > 0 && builder [builder.Length - 1] != '\n')
         {
           builder.AppendLine ();
         }
@@ -502,7 +509,7 @@ namespace RCL.Kernel
       {
         result = closure.Code.Finish (runner, closure, result);
         closure.Bot.ChangeFiberState (closure.Fiber, "done");
-        runner.Log.RecordDoc (runner, closure, "fiber", closure.Fiber, "done", result);
+        runner.Log.Record (runner, closure, "fiber", closure.Fiber, "done", result);
         if (closure.Fiber == 0 && closure.Bot.Id == 0)
         {
           runner.Finish (closure, result);

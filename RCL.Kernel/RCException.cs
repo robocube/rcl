@@ -13,7 +13,10 @@ namespace RCL.Kernel
     {
       string message = "Operator " + op.Name +
         " can not receive arguments of type " + right.TypeName + ".";
-      message += "(" + right.ToString () + ")";
+      //message += " (" + right.ToString () + ")";
+      message += "\n---- RCL Stack ----\n";
+      message += closure.ToString ();
+      message += "---- Native Stack ----";
       return new RCException (closure, RCErrors.Type, message);
     }
 
@@ -23,7 +26,10 @@ namespace RCL.Kernel
       string message = "Operator " + op.Name +
         " can not receive arguments of type " +
         left.TypeName + " and " + right.TypeName + ".";
-      message += "(" + left.ToString () + "," + right.ToString () + ")";
+      //message += " (" + left.ToString () + ", " + right.ToString () + ")";
+      message += "\n---- RCL Stack ----\n";
+      message += closure.ToString ();
+      message += "---- Native Stack ----";
       return new RCException (closure, RCErrors.Type, message);
     }
 
@@ -32,7 +38,10 @@ namespace RCL.Kernel
     {
       string message = "Operator " + op +
         " can not receive arguments of type " + right.GetType ().Name + ".";
-      message += "(" + right.ToString () + ")";
+      //message += " (" + right.ToString () + ")";
+      message += "\n---- RCL Stack ----\n";
+      message += closure.ToString ();
+      message += "---- Native Stack ----";
       return new RCException (closure, RCErrors.Type, message);
     }
 
@@ -42,7 +51,10 @@ namespace RCL.Kernel
       string message = "Operator " + op +
         " can not receive arguments of type " +
         left.GetType ().Name + " and " + right.GetType ().Name + ".";
-      message += "(" + left.ToString () + "," + right.ToString () + ")";
+      //message += " (" + left.ToString () + ", " + right.ToString () + ")";
+      message += "\n---- RCL Stack ----\n";
+      message += closure.ToString ();
+      message += "---- Native Stack ----";
       return new RCException (closure, RCErrors.Type, message);
     }
 

@@ -1,14 +1,13 @@
-﻿
-namespace RCL.Kernel
+﻿namespace RCL.Kernel
 {
   public class RCLogger
   {
-    public virtual void RecordDoc (RCRunner runner, 
-                                   RCClosure closure, 
-                                   string type, 
-                                   long instance, 
-                                   string state, 
-                                   object info) {}
+    public virtual void Record (RCRunner runner, 
+                                RCClosure closure, 
+                                string type, 
+                                long instance, 
+                                string state, 
+                                object info) {}
 
     public virtual void Output (RCOutput level) {}
 

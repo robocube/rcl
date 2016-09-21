@@ -60,7 +60,6 @@ namespace RCL.Core
       EvalList (runner, closure, DefaultLeft, right);
     }
 
-
     public static void ListFilesCube (RCRunner runner, 
                                       RCClosure closure, 
                                       RCSymbolScalar spec,
@@ -71,6 +70,7 @@ namespace RCL.Core
       Queue<string> todo = new Queue<string> ();
       string top = Command.PathSymbolToString (spec);
       todo.Enqueue (top);
+      RCSymbolScalar prefix = RCSymbolScalar.From ("root");
       while (todo.Count > 0)
       {
         string path = todo.Dequeue ();
@@ -82,7 +82,7 @@ namespace RCL.Core
           if (all || file.Name[0] != '.')
           {
             string [] parts = files[i].Split (Path.DirectorySeparatorChar);
-            RCSymbolScalar symbol = RCSymbolScalar.From (1, parts);
+            RCSymbolScalar symbol = RCSymbolScalar.From (1, prefix, parts);
             result.WriteCell ("size", symbol, file.Length);
             result.WriteCell ("ext", symbol, file.Extension);
             result.WriteCell ("access", symbol, new RCTimeScalar (file.LastAccessTime, RCTimeType.Datetime));
@@ -95,10 +95,10 @@ namespace RCL.Core
         for (int i = 0; i < dirs.Count; ++i) 
         {
           DirectoryInfo dir = new DirectoryInfo (dirs [i]);
-          if (all || dir.Name [0] != '.') 
+          if (all || dir.Name[0] != '.') 
           {
-            string [] parts = dirs [i].Split (Path.DirectorySeparatorChar);
-            RCSymbolScalar symbol = RCSymbolScalar.From (1, parts);
+            string [] parts = dirs[i].Split (Path.DirectorySeparatorChar);
+            RCSymbolScalar symbol = RCSymbolScalar.From (1, prefix, parts);
             result.WriteCell ("access", symbol, new RCTimeScalar (dir.LastAccessTime, RCTimeType.Datetime));
             result.WriteCell ("write", symbol, new RCTimeScalar (dir.LastWriteTime, RCTimeType.Datetime));
             result.Axis.Write (symbol);

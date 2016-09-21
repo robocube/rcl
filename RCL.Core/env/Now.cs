@@ -16,7 +16,20 @@ namespace RCL.Core
     public void EvalNow (
       RCRunner runner, RCClosure closure, RCBlock right)
     {
-      runner.Yield (closure, new RCLong (DateTime.Now.Ticks));
+      runner.Yield (closure,
+                    new RCTime (
+                      new RCTimeScalar (DateTime.Now.Ticks, 
+                                        RCTimeType.Timestamp)));
+    }
+
+    [RCVerb ("now")]
+    public void EvalNow (
+      RCRunner runner, RCClosure closure, RCSymbol right)
+    {
+      runner.Yield (closure,
+                    new RCTime (
+                      new RCTimeScalar (DateTime.Now.Ticks, 
+                                        RCTimeType.Timestamp)));
     }
   }
 }

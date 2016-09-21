@@ -139,8 +139,8 @@ namespace RCL.Core
       //So, not today.
       WriteAllLinesBetter (path, lines);
 
-      runner.Log.RecordDoc (runner, closure,
-                            "save", Interlocked.Increment (ref m_handle), path, lines);
+      runner.Log.Record (runner, closure,
+                         "save", Interlocked.Increment (ref m_handle), path, lines);
       //ideally this should return a symbol right?
       runner.Yield (closure, new RCString (path));
     }
@@ -188,8 +188,8 @@ namespace RCL.Core
       //Should not be doing sync io like this.
       //The least I can do is use a thread pool thread.
       File.WriteAllBytes (left[0], right.ToArray ());
-      runner.Log.RecordDoc (runner, closure,
-                            "save", Interlocked.Increment (ref m_handle), left[0], right);
+      runner.Log.Record (runner, closure,
+                         "save", Interlocked.Increment (ref m_handle), left[0], right);
       runner.Yield (closure, new RCString (left[0]));
     }
 
@@ -370,7 +370,7 @@ namespace RCL.Core
       public void EvalPrint (
         RCRunner runner, RCClosure closure, RCString right)
       {
-        runner.Log.RecordDoc (runner, closure, "print", 0, "out", right);
+        runner.Log.Record (runner, closure, "print", 0, "out", right);
         runner.Yield (closure, RCLong.Zero);
       }
 
@@ -378,7 +378,7 @@ namespace RCL.Core
       public void EvalPrint (
         RCRunner runner, RCClosure closure, RCString left, RCString right)
       {
-        runner.Log.RecordDoc (runner, closure, "print", 0, left[0], right);
+        runner.Log.Record (runner, closure, "print", 0, left[0], right);
         runner.Yield (closure, RCLong.Zero);
       }
     }
@@ -426,7 +426,7 @@ namespace RCL.Core
                           RCClosure closure, 
                           RCLong right)
     {
-      runner.Log.RecordDoc (runner, closure, "runner", 0, "exit", right);
+      runner.Log.Record (runner, closure, "runner", 0, "exit", right);
       runner.Exit ((int) right[0]);
     }
 

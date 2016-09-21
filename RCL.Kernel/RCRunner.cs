@@ -270,7 +270,7 @@ namespace RCL.Kernel
 
         root = new RCClosure (m_bots[0], program);
         root.Bot.ChangeFiberState (root.Fiber, "start");
-        Log.RecordDoc (this, root, "fiber", root.Fiber, "start", root.Code);
+        Log.Record (this, root, "fiber", root.Fiber, "start", root.Code);
         m_root = root;
         m_queue.Enqueue (root);
       }
@@ -305,7 +305,7 @@ namespace RCL.Kernel
           //But only during the very first call to run for this runner.
           //Log.Record (this, root, root.Bot.Id, "bot", root.Bot.Id, "start", root.Code);
           root.Bot.ChangeFiberState (root.Fiber, "start");
-          Log.RecordDoc (this, root, "fiber", root.Fiber, "start", root.Code);
+          Log.Record (this, root, "fiber", root.Fiber, "start", root.Code);
         }
         m_queue.Enqueue (root);
       }
@@ -379,7 +379,7 @@ namespace RCL.Kernel
           //This will internally take the m_botLock.
           //This should be ok but given that it is just a log write I would like to move this outside.
           previous.Bot.ChangeFiberState (previous.Fiber, "dead");
-          Log.RecordDoc (this, previous, "fiber", previous.Fiber, "dead", "");
+          Log.Record (this, previous, "fiber", previous.Fiber, "dead", "");
         }
       }
     }
@@ -436,7 +436,7 @@ namespace RCL.Kernel
           {
             try
             {
-              Log.RecordDoc (this, next, "fiber", next.Fiber, "exception", userex);
+              Log.Record (this, next, "fiber", next.Fiber, "exception", userex);
               Kill (next.Bot.Id, next.Fiber, userex, 1);
             }
             catch (Exception sysex)
@@ -600,7 +600,7 @@ namespace RCL.Kernel
         {
           string state = status == 1 ? "failed" : "killed";
           closure.Bot.ChangeFiberState (closure.Fiber, state);
-          Log.RecordDoc (this, closure, "fiber", closure.Fiber, state, exception);
+          Log.Record (this, closure, "fiber", closure.Fiber, state, exception);
           if (closure.Fiber == 0 && closure.Bot.Id == 0)
           {
             Finish (closure, result);
@@ -618,7 +618,7 @@ namespace RCL.Kernel
         if (result != null)
         {
           closure.Bot.ChangeFiberState (closure.Fiber, "caught");
-          Log.RecordDoc (this, closure, "fiber", closure.Fiber, "caught", exception);
+          Log.Record (this, closure, "fiber", closure.Fiber, "caught", exception);
           return;
         }
         parent = parent.Parent;
@@ -628,7 +628,7 @@ namespace RCL.Kernel
       {
         string state = status == 1 ? "failed" : "killed";
         closure.Bot.ChangeFiberState (closure.Fiber, state);
-        Log.RecordDoc (this, closure, "fiber", closure.Fiber, state, exception);
+        Log.Record (this, closure, "fiber", closure.Fiber, state, exception);
         if (closure.Fiber == 0 && closure.Bot.Id == 0)
         {
           m_exception = exception;
@@ -761,7 +761,7 @@ namespace RCL.Kernel
         next = Fiber.FiberClosure (bot, 0, closure, right);
       }
       bot.ChangeFiberState (0, "start");
-      Log.RecordDoc (this, next, "fiber", 0, "start", right);
+      Log.Record (this, next, "fiber", 0, "start", right);
       Continue (null, next);
       return id;
     }
@@ -1012,7 +1012,7 @@ namespace RCL.Kernel
     public void Report (RCClosure closure, Exception ex)
     {
       closure.Bot.ChangeFiberState (closure.Fiber, "reported");
-      Log.RecordDoc (this, closure, "fiber", closure.Fiber, "reported", ex);
+      Log.Record (this, closure, "fiber", closure.Fiber, "reported", ex);
     }
 
     public RCOperator New (string op, RCValue right)

@@ -310,6 +310,12 @@ namespace RCL.Test
     public void TestGtMM() { DoTest("1m>2m", "false"); }
     [Test]
     public void TestGtMX() { DoTest("1m>\\x02", "false"); }
+    [Test]
+    public void TestGtTT() { DoTest ("2015.05.31 > 2015.06.01", "false"); }
+    [Test]
+    public void TestGtTT1() { DoTest ("2015.05.31 08:00 > 2015.05.31 08:01", "false"); }
+    [Test]
+    public void TestGtTT2() { DoTest ("1.00:00:00.0000000 > 2.00:00:00.0000000", "false"); }
     //Greater Than or Equal To
     [Test]
     public void TestGteXX() { DoTest("\\x01>=\\x02", "false"); }
@@ -347,6 +353,12 @@ namespace RCL.Test
     public void TestGteMM() { DoTest("1m>=2m", "false"); }
     [Test]
     public void TestGteMX() { DoTest("1m>=\\x02", "false"); }
+    [Test]
+    public void TestGteTT() { DoTest ("2015.05.31 >= 2015.06.01", "false"); }
+    [Test]
+    public void TestGteTT1() { DoTest ("2015.05.31 08:00 >= 2015.05.31 08:00", "true"); }
+    [Test]
+    public void TestGteTT2() { DoTest ("1.00:00:00.0000000 >= 2.00:00:00.0000000", "false"); }
 
     //Less Than
     [Test]
@@ -383,6 +395,12 @@ namespace RCL.Test
     public void TestLtMM() { DoTest("1m<2m", "true"); }
     [Test]
     public void TestLtMX() { DoTest ("1m<\\x02", "true"); }
+    [Test]
+    public void TestLtTT() { DoTest ("2015.05.31 < 2015.06.01", "true"); }
+    [Test]
+    public void TestLtTT1() { DoTest ("2015.05.31 08:00 < 2015.05.31 08:01", "true"); }
+    [Test]
+    public void TestLtTT2() { DoTest ("1.00:00:00.0000000 < 2.00:00:00.0000000", "true"); }
 
     //Less Than or Equal To
     [Test]
@@ -421,6 +439,12 @@ namespace RCL.Test
     public void TestLteMM() { DoTest("1m<=2m", "true"); }
     [Test]
     public void TestLteMX() { DoTest("1m<=\\x02", "true"); }
+    [Test]
+    public void TestLteTT() { DoTest ("2015.05.31 <= 2015.06.01", "true"); }
+    [Test]
+    public void TestLteTT1() { DoTest ("2015.05.31 08:00 <= 2015.05.31 08:00", "true"); }
+    [Test]
+    public void TestLteTT2() { DoTest ("1.00:00:00.0000000 <= 2.00:00:00.0000000", "true"); }
 
     //Vector Equals
     [Test]
@@ -677,6 +701,16 @@ namespace RCL.Test
 
     [Test]
     public void TestTimeL () { DoTest ("time 0", "0001.01.01 00:00:00.0000000"); }
+    [Test]
+    public void TestTimeT0 () { DoTest ("time 0001.01.01 00:00:00.0000000", "0001.01.01 00:00:00.0000000"); }
+    [Test]
+    public void TestTimeYT1 () { DoTest ("#date time 0001.01.01 00:00:00.0000000", "0001.01.01"); }
+    [Test]
+    public void TestTimeYT2 () { DoTest ("#daytime time 0001.01.01 00:00:00.0000000", "00:00"); }
+    [Test]
+    public void TestTimeYT3 () { DoTest ("#datetime time 0001.01.01 00:00:00.0000000", "0001.01.01 00:00"); }
+    [Test]
+    public void TestTimeYT4 () { DoTest ("#timestamp time 0001.01.01 00:00:00.0000000", "0001.01.01 00:00:00.0000000"); }
     [Test]
     public void TestTimeYL0 () { DoTest ("#date time 0", "0001.01.01"); }
     [Test]
@@ -1425,13 +1459,13 @@ namespace RCL.Test
 
     //Flow Control Operators
     [Test]
-    public void TestSleepL() { DoTest("{t0:now{} :sleep 100 t1:now{} <-1000000<$t1-$t0}", "true"); }
+    public void TestSleepL() { DoTest("{t0:now{} :sleep 100 t1:now{} <-0.00:00:00.1000000<$t1-$t0}", "true"); }
     [Test]
-    public void TestSleepD() { DoTest("{t0:now{} :sleep 100.0 t1:now{} <-1000000<$t1-$t0}", "true"); }
+    public void TestSleepD() { DoTest("{t0:now{} :sleep 100.0 t1:now{} <-0.00:00:00.1000000<$t1-$t0}", "true"); }
     [Test]
-    public void TestSleepM() { DoTest("{t0:now{} :sleep 100m t1:now{} <-1000000<$t1-$t0}", "true"); }
+    public void TestSleepM() { DoTest("{t0:now{} :sleep 100m t1:now{} <-0.00:00:00.1000000<$t1-$t0}", "true"); }
     [Test]
-    public void TestSleepX() { DoTest("{t0:now{} :sleep \\x64 t1:now{} <-1000000<$t1-$t0}", "true"); }
+    public void TestSleepX() { DoTest("{t0:now{} :sleep \\x64 t1:now{} <-0.00:00:00.1000000<$t1-$t0}", "true"); }
 
     //The defining characteristic of sweach is that it takes a bunch of code blocks on the right
     //and evaluates the correct ones based on the argument on the left.  Other than that it is much

@@ -405,6 +405,9 @@ namespace RCL.Core
     [Primitive ("<")]
     public static bool LessThan (decimal l, byte r) { return l < r; }
 
+    [Primitive ("<")]
+    public static bool LessThan (RCTimeScalar l, RCTimeScalar r) { return l.Ticks < r.Ticks; }
+
     [Primitive (">")]
     public static bool GreaterThan (byte l, byte r) { return l > r; }
 
@@ -447,6 +450,9 @@ namespace RCL.Core
     [Primitive (">")]
     public static bool GreaterThan (decimal l, byte r) { return l > r; }
 
+    [Primitive (">")]
+    public static bool GreaterThan (RCTimeScalar l, RCTimeScalar r) { return l.Ticks > r.Ticks; }
+    
     //BEGIN OR EQUAL
     [Primitive ("<=")]
     public static bool LessThanOrEqual (byte l, byte r) { return l <= r; }
@@ -490,6 +496,9 @@ namespace RCL.Core
     [Primitive ("<=")]
     public static bool LessThanOrEqual (decimal l, byte r) { return l <= r; }
 
+    [Primitive ("<=")]
+    public static bool LessThanOrEqual (RCTimeScalar l, RCTimeScalar r) { return l.Ticks <= r.Ticks; }
+
     [Primitive (">=")]
     public static bool GreaterThanOrEqual (byte l, byte r) { return l >= r; }
 
@@ -531,6 +540,9 @@ namespace RCL.Core
 
     [Primitive (">=")]
     public static bool GreaterThanOrEqual (decimal l, byte r) { return l >= r; }
+
+    [Primitive (">=")]
+    public static bool GreaterThanOrEqual (RCTimeScalar l, RCTimeScalar r) { return l.Ticks >= r.Ticks; }
 
     //Hello we need these for other data types as well.
     [Primitive ("min")]
@@ -826,6 +838,9 @@ namespace RCL.Core
 
     [Primitive ("time", Profile.Monadic)]
     public static RCTimeScalar Time (string r) { return TimeToken.ParseTime (r); }
+
+    [Primitive ("time", Profile.Monadic)]
+    public static RCTimeScalar Time (RCTimeScalar r) { return r; }
 
     [Primitive ("day", Profile.Monadic)]
     public static long Day (RCTimeScalar t)
