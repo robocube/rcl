@@ -350,7 +350,15 @@ namespace RCL.Core
       public void Wait (object obj)
       {
         RCAsyncState state = (RCAsyncState) obj;
-        Finish (state);
+        try
+        {
+          Finish (state);
+        }
+        catch (Exception ex)
+        {
+          state.Runner.Report (state.Closure, ex);
+          throw;
+        }
       }
 
       public void WriteLineToInput (object obj)

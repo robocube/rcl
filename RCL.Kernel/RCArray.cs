@@ -6,41 +6,74 @@ using System.Collections.Generic;
 
 namespace RCL.Kernel
 {
+  public class RCArrayStorage<T>
+  {
+    public T[] m_source;
+    public int m_count;
+    public bool m_lock = false;
+
+    public RCArrayStorage (T[] source, int count)
+    {
+      if (source == null)
+      {
+        throw new ArgumentNullException ("source");
+      }
+      m_source = source;
+      m_count = count;
+    }
+  }
+  
   public class RCArray<T> : IEnumerable<T>
   {
     public static readonly RCArray<T> Empty = new RCArray<T> (0);
     protected internal bool m_lock = false;
     protected internal T[] m_source;
     protected internal int m_count;
+    //protected RCArrayStorage<T> m_storage;
 
     public RCArray (int capacity)
     {
       m_source = new T[capacity];
       m_count = 0;
+      //m_storage = new RCArrayStorage<T> (new T[capacity], 0);
     }
 
     public RCArray (params T[] source)
     {
       if (source == null)
+      {
         throw new ArgumentNullException ("source");
+      }
       m_source = source;
       m_count = source.Length;
+      //m_storage = new RCArrayStorage<T> (source, source.Length);
     }
-
-    public RCArray (RCArray<T> source)
-      : this (source.ToArray ()) {}
 
     public RCArray (ICollection<T> source)
     {
       m_source = new T[source.Count];
       m_count = source.Count;
+      //m_storage = new RCArrayStorage<T> (new T[source.Count],
+      //                                   source.Count);
       int i = 0;
       foreach (T val in source)
       {
+        //m_storage.m_source[i] = val;
         m_source[i] = val;
         ++i;
       }
     }
+
+    /*
+    internal RCArray (RCArrayStorage<T> storage)
+    {
+      m_storage = storage;
+      m_count = count;  
+    }
+    */
+
+    public RCArray (RCArray<T> source)
+      : this (source.ToArray ()) {}
 
     public int Count
     {
@@ -145,8 +178,10 @@ namespace RCL.Kernel
     public void Write (T value)
     {
       if (m_lock)
+      {
         throw new Exception (
           "Cannot write to an RCArray after it is locked.");
+      }
 
       Resize (1, 0);
       m_source[m_count] = value;
@@ -159,11 +194,66 @@ namespace RCL.Kernel
     public void Write (int i, T value)
     {
       if (m_lock)
+      {
         throw new Exception (
           "Cannot write to an RCArray after it is locked.");
+      }
       Resize (1, 0);
       m_source[i] = value;
     }
+
+    /*
+    protected RCArray<T> Bust (RCArray<T> values)
+    {
+      T[] source = new T[NextPowerOf2 (m_source.Length + values.Count)];
+      Write (source, m_count, values);        
+      return new RCArray<T> (source, m_source.Length + values.Count);
+    }    
+
+    protected void Write (T[] source, int count, RCArray<T> values)
+    {
+      for (int i = 0; i < values.Count; ++i)
+      {
+        source[count] = values[i];
+        ++count;
+      }
+    }
+
+    public RCArray<T> CopyWrite (RCArray<T> values)
+    {
+      if (!m_lock)
+      {
+        throw new Exception (
+          "Cannot CopyWrite to an RCArray until it is locked.");  
+      }
+
+      if (m_ccount > m_count || !NeedResize (values.Count, 0))
+      {
+        RCArray<T> result = new RCArray<T> (m_source, count);
+       
+      }
+      else 
+      {
+        return Bust (values);  
+      }
+      throw new NotImplementedException ();
+    }
+
+    public RCArray<T> CopyWrite (T[] values)
+    {
+      throw new NotImplementedException ();
+    }
+
+    public RCArray<T> CopyWrite (T value)
+    {
+      throw new NotImplementedException ();
+    }
+
+    public RCArray<T> CopyWrite (int i, T value)
+    {
+      throw new NotImplementedException ();
+    }
+    */
 
     public void RemoveAt (int i)
     {
@@ -176,6 +266,7 @@ namespace RCL.Kernel
     {
       m_lock = true;
     }
+   
     public bool Locked ()
     {
       return m_lock;

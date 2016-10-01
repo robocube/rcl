@@ -64,6 +64,102 @@ namespace RCL.Kernel
       DoEval (runner, parent, right);
     }
 
+    [RCVerb ("eval")]
+    public void EvalEval (RCRunner runner, RCClosure closure, RCByte right)
+    {
+      runner.Yield (closure, right);
+    }
+
+    [RCVerb ("eval")]
+    public void EvalEval (RCRunner runner, RCClosure closure, RCBlock left, RCByte right)
+    {
+      runner.Yield (closure, right);
+    }
+
+    [RCVerb ("eval")]
+    public void EvalEval (RCRunner runner, RCClosure closure, RCBoolean right)
+    {
+      runner.Yield (closure, right);
+    }
+
+    [RCVerb ("eval")]
+    public void EvalEval (RCRunner runner, RCClosure closure, RCBlock left, RCBoolean right)
+    {
+      runner.Yield (closure, right);
+    }
+
+    [RCVerb ("eval")]
+    public void EvalEval (RCRunner runner, RCClosure closure, RCLong right)
+    {
+      runner.Yield (closure, right);
+    }
+
+    [RCVerb ("eval")]
+    public void EvalEval (RCRunner runner, RCClosure closure, RCBlock left, RCLong right)
+    {
+      runner.Yield (closure, right);
+    }
+
+    [RCVerb ("eval")]
+    public void EvalEval (RCRunner runner, RCClosure closure, RCDouble right)
+    {
+      runner.Yield (closure, right);
+    }
+
+    [RCVerb ("eval")]
+    public void EvalEval (RCRunner runner, RCClosure closure, RCBlock left, RCDouble right)
+    {
+      runner.Yield (closure, right);
+    }
+
+    [RCVerb ("eval")]
+    public void EvalEval (RCRunner runner, RCClosure closure, RCDecimal right)
+    {
+      runner.Yield (closure, right);
+    }
+
+    [RCVerb ("eval")]
+    public void EvalEval (RCRunner runner, RCClosure closure, RCBlock left, RCDecimal right)
+    {
+      runner.Yield (closure, right);
+    }
+
+    [RCVerb ("eval")]
+    public void EvalEval (RCRunner runner, RCClosure closure, RCString right)
+    {
+      runner.Yield (closure, right);
+    }
+
+    [RCVerb ("eval")]
+    public void EvalEval (RCRunner runner, RCClosure closure, RCBlock left, RCString right)
+    {
+      runner.Yield (closure, right);
+    }
+
+    [RCVerb ("eval")]
+    public void EvalEval (RCRunner runner, RCClosure closure, RCSymbol right)
+    {
+      runner.Yield (closure, right);
+    }
+
+    [RCVerb ("eval")]
+    public void EvalEval (RCRunner runner, RCClosure closure, RCBlock left, RCSymbol right)
+    {
+      runner.Yield (closure, right);
+    }
+
+    [RCVerb ("eval")]
+    public void EvalEval (RCRunner runner, RCClosure closure, RCTime right)
+    {
+      runner.Yield (closure, right);
+    }
+
+    [RCVerb ("eval")]
+    public void EvalEval (RCRunner runner, RCClosure closure, RCBlock left, RCTime right)
+    {
+      runner.Yield (closure, right);
+    }
+
     //This higher order thingy needs to go away it makes no sense.
     public override bool IsHigherOrder ()
     {
@@ -180,9 +276,22 @@ namespace RCL.Kernel
         }
         else if (current.Evaluator.Template)
         {
-          runner.Yield (closure, ExpandTemplate (new StringBuilder (),
-                                                 (RCTemplate) current,
-                                                 closure.Result, 0, ""));
+          try 
+          {
+            RCString result = ExpandTemplate (new StringBuilder (),
+                                              (RCTemplate) current,
+                                              closure.Result,
+                                              0,
+                                              "");
+            runner.Yield (closure, result);
+          }
+          catch (Exception ex)
+          {
+            RCException rcex = new RCException (closure,
+                                                RCErrors.Native,
+                                                "An exception was thrown by the template.");
+            runner.Finish (closure, rcex, (int) RCErrors.Native);
+          }
         }
         //This means that Value is an operator or a reference.
         else if (current.Value.ArgumentEval)

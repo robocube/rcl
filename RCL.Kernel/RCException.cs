@@ -16,7 +16,6 @@ namespace RCL.Kernel
       //message += " (" + right.ToString () + ")";
       message += "\n---- RCL Stack ----\n";
       message += closure.ToString ();
-      message += "---- Native Stack ----";
       return new RCException (closure, RCErrors.Type, message);
     }
 
@@ -29,7 +28,6 @@ namespace RCL.Kernel
       //message += " (" + left.ToString () + ", " + right.ToString () + ")";
       message += "\n---- RCL Stack ----\n";
       message += closure.ToString ();
-      message += "---- Native Stack ----";
       return new RCException (closure, RCErrors.Type, message);
     }
 
@@ -41,7 +39,6 @@ namespace RCL.Kernel
       //message += " (" + right.ToString () + ")";
       message += "\n---- RCL Stack ----\n";
       message += closure.ToString ();
-      message += "---- Native Stack ----";
       return new RCException (closure, RCErrors.Type, message);
     }
 
@@ -54,7 +51,6 @@ namespace RCL.Kernel
       //message += " (" + left.ToString () + ", " + right.ToString () + ")";
       message += "\n---- RCL Stack ----\n";
       message += closure.ToString ();
-      message += "---- Native Stack ----";
       return new RCException (closure, RCErrors.Type, message);
     }
 
@@ -102,6 +98,34 @@ namespace RCL.Kernel
 
     public override string ToString ()
     {
+      StringBuilder builder = new StringBuilder ();
+      if (Error != RCErrors.Native)
+      {
+        if (Output != null)
+        {
+          for (int i = 0; i < Output.Count; ++i)
+          {
+            builder.AppendLine (Output[i]);
+          }
+        }
+        builder.AppendFormat ("<<{0},{1}>>", Error, Message);
+        return builder.ToString ();
+      }
+      string br = new String ('-', 80);
+      builder.AppendLine (br);
+      builder.AppendLine (Closure.ToString ());
+      builder.AppendLine (br);
+      builder.AppendLine (Message);
+      builder.AppendLine (br);
+      if (Exception != null)
+      {
+        builder.AppendLine (Exception.GetBaseException ().ToString ());
+        builder.AppendLine (br);
+      }
+      return builder.ToString ();
+    }
+      
+      /*
       if (Exception == null)
       {
         StringBuilder builder = new StringBuilder ();
@@ -124,6 +148,7 @@ namespace RCL.Kernel
                               new String ('-', 80));
       }
     }
+    */
 
     public string ToTestString ()
     {

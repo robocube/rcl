@@ -42,6 +42,9 @@ namespace RCL.Exe
         cmd = new RCLArgv (argv);
       }
 
+      //string message = "\x1b[0;33mYELLOW\x1b[0;31m RED\x1b[0;34m BLUE\x1b[0;37m";
+      //Console.Out.WriteLine (message);
+      
       string prompt = "RCL>";
       LineEditor editor = new LineEditor ("RCL");
       Output consoleLog = new Output (editor, cmd.Show);

@@ -204,7 +204,107 @@ namespace RCL.Test
                   "{:\"The duck goes quack\" :\"The pig goes oink\" :\"The chicken goes cluck\"}");
     }
 
-    //[Test]
+    [Test]
+    public void TestEvalX ()
+    {
+      DoEvalTest ("eval \\x00 \\x01 \\x02", "\\x00 \\x01 \\x02");
+    }
+
+    [Test]
+    public void TestEvalKX ()
+    {
+      DoEvalTest ("{} eval \\x00 \\x01 \\x02", "\\x00 \\x01 \\x02");
+    }
+
+    [Test]
+    public void TestEvalD ()
+    {
+      DoEvalTest ("eval 1.0 2.0 3.0", "1.0 2.0 3.0");
+    }
+
+    [Test]
+    public void TestEvalKD ()
+    {
+      DoEvalTest ("{} eval 1.0 2.0 3.0", "1.0 2.0 3.0");
+    }
+
+    [Test]
+    public void TestEvalL ()
+    {
+      DoEvalTest ("eval 1 2 3", "1 2 3");
+    }
+
+    [Test]
+    public void TestEvalKL ()
+    {
+      DoEvalTest ("{} eval 1 2 3", "1 2 3");
+    }
+
+    [Test]
+    public void TestEvalM ()
+    {
+      DoEvalTest ("eval 1 2 3m", "1 2 3m");
+    }
+
+    [Test]
+    public void TestEvalKM ()
+    {
+      DoEvalTest ("{} eval 1 2 3m", "1 2 3m");
+    }
+
+    [Test]
+    public void TestEvalB ()
+    {
+      DoEvalTest ("eval true false true", "true false true");
+    }
+
+    [Test]
+    public void TestEvalKB ()
+    {
+      DoEvalTest ("{} eval true false true", "true false true");
+    }
+
+    [Test]
+    public void TestEvalS ()
+    {
+      DoEvalTest ("eval \"a\" \"b\" \"c\"", "\"a\" \"b\" \"c\"");
+    }
+
+    [Test]
+    public void TestEvalKS ()
+    {
+      DoEvalTest ("{} eval \"a\" \"b\" \"c\"", "\"a\" \"b\" \"c\"");
+    }
+
+    [Test]
+    public void TestEvalY ()
+    {
+      DoEvalTest ("eval #a #b #c", "#a #b #c");
+    }
+    
+    [Test]
+    public void TestEvalKY ()
+    {
+      DoEvalTest ("{} eval #a #b #c", "#a #b #c");
+    }
+    
+    [Test]
+    public void TestEvalT ()
+    {
+      DoEvalTest (
+        "eval 2016.09.23 09:48 2016.09.23 09:48 2016.09.23 09:48", 
+        "2016.09.23 09:48 2016.09.23 09:48 2016.09.23 09:48");
+    }
+    
+    [Test]
+    public void TestEvalKT ()
+    {
+      DoEvalTest (
+        "{} eval 2016.09.23 09:48 2016.09.23 09:48 2016.09.23 09:48", 
+        "2016.09.23 09:48 2016.09.23 09:48 2016.09.23 09:48");
+    }
+
+//[Test]
 //#if (!__MonoCS__)
     //[ExpectedException(typeof(RCRuntimeException), "Unable to resolve name s.x")]
 //#else
