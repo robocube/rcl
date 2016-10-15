@@ -919,6 +919,10 @@ namespace RCL.Test
     public void TestPartY0 () { DoTest ("0 part #a,b,c #d,e,f #g,h,i", "#a #d #g"); }
     [Test]
     public void TestPartY1 () { DoTest ("2 1 part #a,b,c #d,e,f #g,h,i", "#c,b #f,e #i,h"); }
+    [Test]
+    public void TestPartY2 () { DoTest ("0 -1 part #a,b,c #d,e,f #g,h,i", "#a,c #d,f #g,i"); }
+    [Test]
+    public void TestPartY3 () { DoTest ("-2 part #a,b,c #d,e,f #g,h,i", "#b #e #h"); }
 
     //Thru
     [Test]
@@ -1901,7 +1905,7 @@ namespace RCL.Test
     [Test]
     public void TestTryFail1 ()
     {
-      DoTest ("try {<-fail \"rando failure message\"}", "{status:7 data:\"<<Custom>>\"}");
+      DoTest ("try {<-fail \"rando failure message\"}", "{status:8 data:\"<<Custom>>\"}");
     }
 
     [Test]

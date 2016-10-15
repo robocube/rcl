@@ -8,10 +8,11 @@ namespace RCL.Kernel
     Type    = 2,  //The argument was the wrong type.
     Name    = 3,  //The name could not be resolved.
     Varname = 4,  //The variable name could not be resolved.
-    Lock    = 4,  //Tried to mutate a locked value.
-    Assert  = 5,  //Explicit assertion failed.
-    Native  = 6,  //Unintentional operator exception.
-    Custom  = 7,  //Custom status created with fail.
-    Exec    = 8   //Non-zero exit status on external process.
+    Lock    = 5,  //Tried to mutate a locked value.
+    Assert  = 6,  //Explicit assertion failed.
+    Native  = 7,  //Unintentional operator exception.
+    Custom  = 8,  //Custom status created with fail.
+    Exec    = 9,  //Non-zero exit status on external process.
+    Handle  = 10  //Bad handle number.
   }
 }

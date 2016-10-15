@@ -198,6 +198,7 @@ namespace RCL.Core
         lock (this)
         {
           m_exited = true;
+          //Console.Out.WriteLine ("Exited!");
         }
         Finish (null);
       }
@@ -241,9 +242,11 @@ namespace RCL.Core
         {
           if (m_finished)
           {
-            //waiter.Runner.Yield (waiter.Closure, new RCString (m_result));
-            //return;
-            if (m_exitCode != 0)
+            if (waiter == null)
+            {
+              return;
+            }
+            else if (m_exitCode != 0)
             {
               m_state.Runner.Finish (waiter.Closure,
                                      new RCException (waiter.Closure, 
@@ -262,18 +265,26 @@ namespace RCL.Core
           {
             m_waiters.Enqueue (waiter);
           }
+          //Console.Out.WriteLine ("Checking");
           if (!(m_exited && m_outputDone && m_errorDone))
           {
+            //Console.Out.WriteLine ("Not ready to yield");
             return;
           }
+          //Console.Out.WriteLine ("Yielding");
           exitCode = m_process.ExitCode;
           m_exitCode = exitCode;
+          //Console.Out.WriteLine ("Disposing timer");
           m_timer.Dispose ();
-          m_process.Dispose ();
+          //Console.Out.WriteLine ("Disposing process");
+          //m_finished = true;
+          //m_process.Dispose ();
+          //Console.Out.WriteLine ("Disposing waiters");
           waiters = m_waiters.ToArray ();
           m_waiters.Clear ();
           m_finished = true;
         }
+        //Console.Out.WriteLine ("Logging");
         m_state.Runner.Log.Record (m_state.Runner, m_state.Closure,
                                       "exec", Handle, "done", exitCode);
         RCString lines = null;
@@ -529,6 +540,7 @@ namespace RCL.Core
                 m_errorDone = true;
               }
             }
+            //Console.Out.WriteLine ("EOF!");
             Finish (null);
           }
           else

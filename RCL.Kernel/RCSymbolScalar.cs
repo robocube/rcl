@@ -138,14 +138,28 @@ namespace RCL.Kernel
 
     public object Part (long p)
     {
-      long i = Length - 1;
-      RCSymbolScalar current = this;
-      while (i > p)
+      if (p < 0)
       {
-        --i;
-        current = current.Previous;
+        long i = -1;
+        RCSymbolScalar current = this;
+        while (i > p)
+        {
+          --i;
+          current = current.Previous;
+        }
+        return current.Key;
       }
-      return current.Key;
+      else
+      {
+        long i = Length - 1;
+        RCSymbolScalar current = this;
+        while (i > p)
+        {
+          --i;
+          current = current.Previous;
+        }
+        return current.Key;
+      }
     }
 
     public bool IsConcreteOf (RCSymbolScalar scalar)
