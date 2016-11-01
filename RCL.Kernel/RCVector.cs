@@ -101,6 +101,11 @@ namespace RCL.Kernel
       return ScalarToString (scalar);
     }
 
+    public override string IdShorthand (object scalar)
+    {
+      return Shorthand (scalar);
+    }
+
     public override string ScalarToString (object scalar)
     {
       return ScalarToString ((T) scalar);

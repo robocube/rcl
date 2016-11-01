@@ -102,12 +102,27 @@ namespace RCL.Kernel
       {
         Previous = previous;
       }
+      if (key.GetType () == typeof (string))
+      {
+        string str = (string) key;
+        if (str.Length > 0)
+        {
+          if (str[0] == '\'')
+          {
+            if (str[str.Length - 1] == '\'')
+            {
+              key = str.Substring (1, str.Length - 2);
+            }
+            else throw new Exception ("Invalid symbol part: " + str);
+          }
+        }
+      }
       Key = key;
       Type = RCVectorBase.EmptyOf (Key.GetType ());
       if (Previous == RCSymbolScalar.Empty)
       {
         Length = 1;
-        string part = Type.Shorthand (Key);
+        string part = Type.IdShorthand (Key);
         string prefix = part.Length > 0 && part[0] == '#' ? "" : "#";
         m_string = prefix + part + Type.Suffix;
       }
@@ -115,7 +130,7 @@ namespace RCL.Kernel
       {
         Length = previous.Length + 1;
         m_string = previous.ToString () + "," + 
-          Type.Shorthand (Key) + Type.Suffix;
+          Type.IdShorthand (Key) + Type.Suffix;
       }
       if (Previous.Key.Equals ("*"))
       {

@@ -36,8 +36,7 @@ namespace RCL.Kernel
       get { return "symbol"; }
     }
 
-    public override RCSymbolScalar ParseSymbol (
-      RCLexer lexer, RCToken token)
+    public override RCSymbolScalar ParseSymbol (RCLexer lexer, RCToken token)
     {
       if (token.Text == "#")
       {
@@ -45,7 +44,8 @@ namespace RCL.Kernel
       }
       string[] parts = token.Text.Split (',');
       string first = parts[0];
-      //When "casting" strings into symbols, the initial # may be omitted so "a" becomes #a.
+      //When "casting" strings into symbols, the initial # may be omitted
+      //so that "a" becomes #a.
       if (first[0] == '#')
       {
         first = first.Substring (1);

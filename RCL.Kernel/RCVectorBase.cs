@@ -77,11 +77,11 @@ namespace RCL.Kernel
 
     public abstract void Write (object box);
     public abstract string Suffix { get; }
-    //public abstract char TypeCode { get; }
     public abstract Type ScalarType { get; }
     public abstract int SizeOfScalar { get; }
     public abstract string ScalarToString (object scalar);
     public abstract string Shorthand (object scalar);
+    public abstract string IdShorthand (object scalar);
     public abstract object Array { get; }
   }
 }

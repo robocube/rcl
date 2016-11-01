@@ -53,6 +53,42 @@ namespace RCL.Kernel
     {
       return scalar.ToString ();
     }
+
+    public override string IdShorthand (object scalar)
+    {
+      string id = scalar.ToString ();
+      if (id.Length > 0)
+      {
+        if (id[0] == '\'')
+        {
+          if (id[id.Length - 1] == '\'')
+          {
+            return id;
+          }
+          else throw new Exception ("Invalid id: " + id);
+        }
+      }
+      else
+      {
+        return id;
+      }
+
+      if ((id[0] >= '0') && (id[0] <= '9'))
+      {
+        return "'" + id + "'";
+      } 
+      else
+      {
+        for (int i = 0; i < id.Length; ++i)
+        {
+          if (!RCTokenType.IsIdentifierChar (id[i]))      
+          {
+            return "'" + id + "'";
+          }
+        }
+      }
+      return id;
+    }
     
     public override bool ScalarEquals (string x, string y)
     {

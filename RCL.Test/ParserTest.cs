@@ -497,7 +497,8 @@ namespace RCL.Test
     [Test]
     public void TestQuotedNamesInSymbol2 ()
     {
-      DoParserTest ("#x,'y'");
+      //In this case the unnecessary quote should be removed.
+      DoParserTest ("#x,'y'", "#x,y");
     }
 
     [Test]
@@ -829,6 +830,25 @@ namespace RCL.Test
       RCValue vector1 = runner.Read ("4 5 6");
       Assert.AreEqual ("1 2 3", vector0.ToString ());
       Assert.AreEqual ("1 2 3 4 5 6", vector1.ToString ());
+    }
+
+    [Test]
+    public void TestProgrammaticSymbolBuilding ()
+    {
+      Assert.AreEqual ("#1,2,3", RCSymbolScalar.From ((long) 1, (long) 2, (long) 3).ToString ());
+      Assert.AreEqual ("#a,b,c", RCSymbolScalar.From ("a", "b", "c").ToString ());
+      Assert.AreEqual ("#'a-b',c,d", RCSymbolScalar.From ("a-b", "c", "d").ToString ());
+      Assert.AreEqual ("#a_b,c,d", RCSymbolScalar.From ("a_b", "c", "d").ToString ());
+      Assert.AreEqual ("#'1','2','3'", RCSymbolScalar.From ("1", "2", "3").ToString ());
+    }
+
+    [Test]
+    public void TestProgrammaticPartExtraction ()
+    {
+      //RCSymbolScalar symbol = RCSymbolScalar.From ((long) 0, "CDwindow-2b19bc6d-b257-4c8d-8104-0d2bae022016");
+      bool fragment;
+      RCSymbol symbol = (RCSymbol) runner.Peek ("#0,'this-is-a-test'", out fragment);
+      Assert.AreEqual ("this-is-a-test", symbol[0].Part (1));
     }
 
     [Test]
