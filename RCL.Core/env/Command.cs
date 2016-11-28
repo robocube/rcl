@@ -87,6 +87,19 @@ namespace RCL.Core
       runner.Yield (closure, new RCBoolean (result));
     }
 
+    [RCVerb ("guid")]
+    public void EvalGuid (RCRunner runner, RCClosure closure, RCLong right)
+    {
+      int guids = (int) right[0];
+      RCArray<string> result = new RCArray<string> (guids);
+      for (int i = 0; i < guids; ++i)
+      {
+        Guid guid = Guid.NewGuid ();
+        result.Write (guid.ToString ());
+      }
+      runner.Yield (closure, new RCString (result));
+    }
+
     [RCVerb ("load")]
     public void EvalLoad (
       RCRunner runner, RCClosure closure, RCString right)
