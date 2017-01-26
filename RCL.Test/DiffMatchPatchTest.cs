@@ -768,7 +768,9 @@ namespace nicTest {
       diffs = new List<Diff> {new Diff(Operation.INSERT, " "), new Diff(Operation.EQUAL, "a"), new Diff(Operation.INSERT, "nd"), new Diff(Operation.EQUAL, " [[Pennsylvania]]"), new Diff(Operation.DELETE, " and [[New")};
       CollectionAssert.AreEqual(diffs, dmp.diff_main("a [[Pennsylvania]] and [[New", " and [[Pennsylvania]]", false), "diff_main: Large equality.");
 
-      dmp.Diff_Timeout = 0.1f;  // 100ms
+      //dmp.Diff_Timeout = 0.1f;  // 100ms
+      //Brian here. I increased this to 1000ms because my cloud servers are super slow.
+      dmp.Diff_Timeout = 1.0f;  // 100ms
       string a = "`Twas brillig, and the slithy toves\nDid gyre and gimble in the wabe:\nAll mimsy were the borogoves,\nAnd the mome raths outgrabe.\n";
       string b = "I am the very model of a modern major general,\nI've information vegetable, animal, and mineral,\nI know the kings of England, and I quote the fights historical,\nFrom Marathon to Waterloo, in order categorical.\n";
       // Increase the text lengths by 1024 times to ensure a timeout.
