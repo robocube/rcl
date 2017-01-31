@@ -1,11 +1,13 @@
 using System;
 using System.IO;
 using System.Net;
+using System.Net.Security;
 using System.Web;
 using System.Text;
 using System.Threading;
 using System.Collections.Specialized;
 using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
 using RCL.Kernel;
 
 namespace RCL.Core
@@ -25,16 +27,49 @@ namespace RCL.Core
       new Dictionary<int, RequestInfo> ();
     protected int m_client = 0;
 
+    public HttpServer ()
+    {
+      ServicePointManager.ServerCertificateValidationCallback = MyRemoteCertificateValidationCallback;
+    }
+
     public class RequestInfo
     {
       public readonly HttpListenerContext Context;
       public readonly DateTime Time;
 
-      public RequestInfo (HttpListenerContext context, DateTime time)
+      public RequestInfo(HttpListenerContext context, DateTime time)
       {
         Context = context;
         Time = time;
       }
+    }
+
+    protected bool MyRemoteCertificateValidationCallback (System.Object sender,
+                                                          X509Certificate certificate,
+                                                          X509Chain chain,
+                                                          SslPolicyErrors sslPolicyErrors)
+    {
+      bool isOk = true;
+      // If there are errors in the certificate chain, look at each error to determine the cause.
+      if (sslPolicyErrors != SslPolicyErrors.None)
+      {
+        for (int i = 0; i < chain.ChainStatus.Length; i++)
+        {
+          if (chain.ChainStatus[i].Status != X509ChainStatusFlags.RevocationStatusUnknown)
+          {
+            chain.ChainPolicy.RevocationFlag = X509RevocationFlag.EntireChain;
+            chain.ChainPolicy.RevocationMode = X509RevocationMode.Online;
+            chain.ChainPolicy.UrlRetrievalTimeout = new TimeSpan (0, 1, 0);
+            chain.ChainPolicy.VerificationFlags = X509VerificationFlags.AllFlags;
+            bool chainIsValid = chain.Build ((X509Certificate2) certificate);
+            if (!chainIsValid)
+            {
+              isOk = false;
+            }
+          }
+        }
+      }
+      return isOk;
     }
 
     [RCVerb ("httpstart")]
@@ -103,7 +138,7 @@ namespace RCL.Core
       {
         listener = m_listeners[(int) right[0]];
         listener.BeginGetContext (new AsyncCallback (Process),
-          new RCAsyncState (runner, closure, listener));
+                                  new RCAsyncState (runner, closure, listener));
       }
       //These updates were just noise in the log file.
       //runner.Log.Record (runner, closure, closure.Bot.Id, "https", right[0], "recv", "");
@@ -307,7 +342,7 @@ namespace RCL.Core
           RequestInfo info;
           lock (m_lock)
           {
-            info = m_contexts [(int)left [i]];
+            info = m_contexts[(int) left[i]];
           }
           try
           {
@@ -329,7 +364,7 @@ namespace RCL.Core
           finally
           {
             info.Context.Response.Close ();
-            runner.Log.Record (runner, closure, "http", left [i], "send", result);
+            runner.Log.Record (runner, closure, "http", left[i], "send", result);
           }
         }
       }
@@ -352,7 +387,7 @@ namespace RCL.Core
           RequestInfo info;
           lock (m_lock)
           {
-            info = m_contexts [(int)left [i]];
+            info = m_contexts[(int) left[i]];
           }
           try
           {
@@ -375,7 +410,7 @@ namespace RCL.Core
           finally
           {
             info.Context.Response.Close ();
-            runner.Log.Record (runner, closure, "http", left [i], "send", result);
+            runner.Log.Record (runner, closure, "http", left[i], "send", result);
           }
         }
       }
@@ -392,9 +427,9 @@ namespace RCL.Core
       string ip = context.Request.UserHostAddress;
       string user = context.User != null ? info.Context.User.Identity.Name : "";
       string resource = string.Format ("{0} {1} HTTP/{2}", 
-                                      context.Request.HttpMethod, 
-                                      context.Request.Url.LocalPath, 
-                                      context.Request.ProtocolVersion.ToString ());
+                                       context.Request.HttpMethod, 
+                                       context.Request.Url.LocalPath, 
+                                       context.Request.ProtocolVersion.ToString ());
       string timestamp = string.Format ("[{0:dd/MMM/yyyy:hh:mm:ss zzz}]", info.Time);
       string httpversion = context.Request.ProtocolVersion.ToString ();
       string status = context.Response.StatusCode.ToString ();
