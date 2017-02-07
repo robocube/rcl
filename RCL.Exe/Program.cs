@@ -44,6 +44,8 @@ namespace RCL.Exe
 
       //string message = "\x1b[0;33mYELLOW\x1b[0;31m RED\x1b[0;34m BLUE\x1b[0;37m";
       //Console.Out.WriteLine (message);
+      AppDomain.CurrentDomain.UnhandledException += 
+        new UnhandledExceptionEventHandler(UnhandledException);
       
       string prompt = "RCL>";
       LineEditor editor = new LineEditor ("RCL");
@@ -166,6 +168,11 @@ namespace RCL.Exe
         }
       }
       Environment.Exit (0);
+    }
+
+    static void UnhandledException (object sender, UnhandledExceptionEventArgs e)
+    {
+      Console.Out.WriteLine ("CAUGHT BY RCL:" + e.ExceptionObject.ToString ());
     }
 
     static string Alias (string trimmed, RCRunner runner, Output output, RCLArgv cmd)
