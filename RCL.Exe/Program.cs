@@ -172,7 +172,7 @@ namespace RCL.Exe
 
     static void UnhandledException (object sender, UnhandledExceptionEventArgs e)
     {
-      Console.Out.WriteLine ("CAUGHT BY RCL:" + e.ExceptionObject.ToString ());
+      Console.Out.WriteLine ("RCL Unhandled:\n" + e.ExceptionObject.ToString ());
     }
 
     static string Alias (string trimmed, RCRunner runner, Output output, RCLArgv cmd)
