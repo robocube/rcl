@@ -36,7 +36,16 @@ namespace RCL.Kernel
     {
       //You can always override the built in macros with extension libraries
       foreach (string lib in libs)
-        m_libs.Add (lib, Assembly.LoadFile (lib));
+      {
+        try 
+        {
+          m_libs.Add (lib, Assembly.LoadFile (lib));
+        }
+        catch (BadImageFormatException)
+        {
+          //Skip any unmanaged dlls in the dir    
+        }
+      }
 
       m_dispatch = new Dictionary<OverloadKey, OverloadValue> ();
       m_modules = new HashSet<Type> ();
