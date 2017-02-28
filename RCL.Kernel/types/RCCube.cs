@@ -28,6 +28,13 @@ namespace RCL.Kernel
       m_columns = new RCArray<ColumnBase> ();
     }
 
+    public RCCube (params string[] tlcolnames)
+    {
+      m_names = new RCArray<string> ();
+      Axis = new Timeline (tlcolnames);
+      m_columns = new RCArray<ColumnBase> ();
+    }
+
     public RCCube (RCArray<string> tlcolnames)
     {
       m_names = new RCArray<string> ();
@@ -72,7 +79,8 @@ namespace RCL.Kernel
     }
 
     public RCCube (Timeline timeline,
-                   RCArray<string> names, RCArray<ColumnBase> columns)
+                   RCArray<string> names,
+                   RCArray<ColumnBase> columns)
     {
       if (timeline == null)
       {

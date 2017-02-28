@@ -23,7 +23,7 @@ namespace RCL.Core
     //is really a request.  And we have to keep them as mutable state
     //in order to respond through the http listener.
     protected int m_context = 0;
-    protected readonly Dictionary<int, RequestInfo> m_contexts =
+    protected internal readonly Dictionary<int, RequestInfo> m_contexts =
       new Dictionary<int, RequestInfo> ();
     protected int m_client = 0;
 

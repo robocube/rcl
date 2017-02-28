@@ -33,9 +33,17 @@ namespace RCL.Core
       {
         ListFibers (runner, closure);
       }
+      else if (target == "vars")
+      {
+        ListVars (runner, closure);
+      }
       else if (target == "urls")
       {
         ListUrls (runner, closure);
+      }
+      else if (target == "request")
+      {
+        ListRequest (runner, closure);
       }
       else if (target == "sockets")
       {
@@ -112,6 +120,7 @@ namespace RCL.Core
       runner.Yield (closure, result);
     }
 
+    /*
     public static void ListFibers (RCRunner runner, RCClosure closure)
     {
       RCArray<Fiber> modules = new RCArray<Fiber> ();
@@ -146,48 +155,75 @@ namespace RCL.Core
         result = new RCBlock (result, "fiber", ":", new RCLong (fibers));
         result = new RCBlock (result, "state", ":", new RCString (states));
       }
+
       runner.Yield (closure, result);
     }
+    */
 
-    /*
-    public static void ListVars (RCRunner runner, RCClosure closure)
+    public static void ListFibers (RCRunner runner, RCClosure closure)
     {
-      RCArray<MemoryStore> modules = new RCArray<MemoryStore> ();
+      RCArray<Fiber> modules = new RCArray<Fiber> ();
       RCArray<long> keys = new RCArray<long> ();
       lock (runner.m_botLock)
       {
         foreach (KeyValuePair<long, RCBot> kv in runner.m_bots)
         {
           keys.Write (kv.Key);
-          modules.Write ((MemoryStore) runner.m_bots[kv.Key].GetModule (typeof (MemoryStore)));
+          modules.Write ((Fiber) runner.m_bots[kv.Key].GetModule (typeof (Fiber)));
         }
       }
-      RCArray<long> bots = new RCArray<long> ();
-      RCArray<RCSymbolScalar> names = new RCArray<RCSymbolScalar> ();
-      RCArray<string> values = new RCArray<string> ();
+      RCCube result = new RCCube ("S");
+      for (int i = 0; i < modules.Count; ++i)
+      {
+        lock (modules[i].m_fiberLock)
+        {
+          foreach (KeyValuePair<long, Fiber.FiberState> kv in modules[i].m_fibers)
+          {
+            RCSymbolScalar sym = RCSymbolScalar.From ("fiber", keys[i], kv.Key); 
+            result.WriteCell ("bot", sym, keys[i]);
+            result.WriteCell ("fiber", sym, kv.Key);
+            result.WriteCell ("state", sym, kv.Value.State);
+            result.Write (sym);
+          }
+        }
+      }
+      runner.Yield (closure, result);
+    }
+
+    public static void ListVars (RCRunner runner, RCClosure closure)
+    {
+      RCArray<Variable> modules = new RCArray<Variable> ();
+      RCArray<long> keys = new RCArray<long> ();
+      lock (runner.m_botLock)
+      {
+        foreach (KeyValuePair<long, RCBot> kv in runner.m_bots)
+        {
+          keys.Write (kv.Key);
+          modules.Write ((Variable) runner.m_bots[kv.Key].GetModule (typeof (Variable)));
+        }
+      }
+      RCCube result = new RCCube ("S");
       for (int i = 0; i < modules.Count; ++i)
       {
         lock (modules[i].m_lock)
         {
-          foreach (KeyValuePair<RCSymbolScalar, RCValue> kv in modules[i].m_store)
+          foreach (KeyValuePair<object, Dictionary<RCSymbolScalar, RCValue>> section in modules[i].m_sections)
           {
-            bots.Write (keys[i]);
-            names.Write (kv.Key);
-            //Need to make cubes handle columns of block.
-            values.Write (kv.Value.ToString ());
+            RCSymbolScalar botsym = RCSymbolScalar.From ("var", keys[i]);
+            foreach (KeyValuePair<RCSymbolScalar, RCValue> kv in section.Value)
+            {
+              RCSymbolScalar varsym = RCSymbolScalar.From (botsym, kv.Key);
+              result.WriteCell ("bot", varsym, keys[i]);
+              result.WriteCell ("section", varsym, section.Key);
+              result.WriteCell ("name", varsym, kv.Key);
+              result.WriteCell ("value", varsym, kv.Value.ToString ());
+              result.Write (varsym);
+            }
           }
         }
       }
-      RCBlock result = RCBlock.Empty;
-      if (values.Count > 0)
-      {
-        result = new RCBlock (result, "bot", ":", new RCLong (bots));
-        result = new RCBlock (result, "name", ":", new RCSymbol (names));
-        result = new RCBlock (result, "value", ":", new RCString (values));
-      }
       runner.Yield (closure, result);
     }
-    */
 
     public static void ListSockets (RCRunner runner, RCClosure closure)
     {
@@ -206,9 +242,7 @@ namespace RCL.Core
           modules.Write ((HttpServer) runner.m_bots[kv.Key].GetModule (typeof (HttpServer)));
         }
       }
-      RCArray<long> bots = new RCArray<long> ();
-      RCArray<long> handles = new RCArray<long> ();
-      RCArray<string> urls = new RCArray<string> ();
+      RCCube result = new RCCube ("S");
       for (int i = 0; i < modules.Count; ++i)
       {
         lock (modules[i].m_lock)
@@ -217,19 +251,44 @@ namespace RCL.Core
           {
             foreach (string uri in kv.Value.Prefixes)
             {
-              bots.Write (keys[i]);
-              handles.Write (kv.Key);
-              urls.Write (uri);
+              RCSymbolScalar urlsym = RCSymbolScalar.From ("url", keys[i], (long) kv.Key);
+              result.WriteCell ("bot", urlsym, keys[i]);
+              result.WriteCell ("handle", urlsym, (long) kv.Key);
+              result.WriteCell ("url", urlsym, uri);
+              result.Write (urlsym);
             }
           }
         }
       }
-      RCBlock result = RCBlock.Empty;
-      if (urls.Count > 0)
+      runner.Yield (closure, result);
+    }
+
+    public static void ListRequest (RCRunner runner, RCClosure closure)
+    {
+      RCArray<HttpServer> modules = new RCArray<HttpServer> ();
+      RCArray<long> keys = new RCArray<long> ();
+      lock (runner.m_botLock)
       {
-        result = new RCBlock (result, "bot", ":", new RCLong (bots));
-        result = new RCBlock (result, "handle", ":", new RCLong (handles));
-        result = new RCBlock (result, "url", ":", new RCString (urls));
+        foreach (KeyValuePair<long, RCBot> kv in runner.m_bots)
+        {
+          keys.Write (kv.Key);
+          modules.Write ((HttpServer) runner.m_bots[kv.Key].GetModule (typeof (HttpServer)));
+        }
+      }
+      RCCube result = new RCCube ("S");
+      for (int i = 0; i < modules.Count; ++i)
+      {
+        lock (modules[i].m_lock)
+        {
+          foreach (KeyValuePair<int, HttpServer.RequestInfo> kv in modules[i].m_contexts)
+          {
+            RCSymbolScalar urlsym = RCSymbolScalar.From ("request", keys[i], (long) kv.Key);
+            result.WriteCell ("bot", urlsym, keys[i]);
+            result.WriteCell ("handle", urlsym, (long) kv.Key);
+            result.WriteCell ("url", urlsym, kv.Value.Context.Request.RawUrl);
+            result.Write (urlsym);
+          }
+        }
       }
       runner.Yield (closure, result);
     }

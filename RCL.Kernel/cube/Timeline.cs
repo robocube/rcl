@@ -85,6 +85,9 @@ namespace RCL.Kernel
       m_count = Symbol.Count;
     }
 
+    public Timeline (params string[] cols) 
+      :this (new RCArray<string> (cols)) {}
+
     public Timeline (RCArray<string> cols)
     {
       Colset = cols;

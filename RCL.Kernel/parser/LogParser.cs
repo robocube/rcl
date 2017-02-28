@@ -36,7 +36,7 @@ namespace RCL.Kernel
     public override RCValue Parse (RCArray<RCToken> tokens, out bool fragment)
     {
       fragment = false;
-      m_result = new RCCube (new Timeline (null, null, null, null));
+      m_result = new RCCube (new Timeline ());
       m_result.ReserveColumn ("bot");
       m_result.ReserveColumn ("fiber");
       m_result.ReserveColumn ("module");
