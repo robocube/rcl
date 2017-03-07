@@ -3,10 +3,8 @@ using System;
 using System.IO;
 using System.Text;
 using System.Threading;
-using System.Diagnostics;
-using System.Collections.Generic;
-using System.Net;
 using Mono.Terminal;
+using Mono.Unix;
 using RCL.Kernel;
 using RCL.Core;
 
@@ -52,7 +50,8 @@ namespace RCL.Exe
       Output consoleLog = new Output (editor, cmd.Show);
       RCLog log = new RCLog (consoleLog);
       RCRunner runner = new RCRunner (RCActivator.Default, log, 1, cmd);
-
+      InstallSignalHandler (runner);
+        
       cmd.PrintStartup ();
   
       string line = "";
@@ -79,6 +78,7 @@ namespace RCL.Exe
           }
           if (cmd.Batch)
           {
+            runner.Dispose ();
             Environment.Exit (0);
           }
           //otherwise go on and keep listening for further commands.
@@ -86,6 +86,8 @@ namespace RCL.Exe
         catch (ThreadAbortException)
         {
           status = runner.ExitStatus ();
+          runner.Dispose ();
+          //runner.Log.Record (runner, null, "runner", 0, "final", status);
           Environment.Exit (status);
         }
         catch (Exception ex)
@@ -97,17 +99,20 @@ namespace RCL.Exe
         {
           if (cmd.Exit)
           {
+            runner.Dispose ();
             Environment.Exit (status);
           }
         }
       }
       else if (cmd.Exit && !cmd.Batch)
       {
+        runner.Dispose ();
         Environment.Exit (0);
       }
 
       while (true)
       {
+        int status = 0;
         try
         {
           if (cmd.Batch)
@@ -131,6 +136,7 @@ namespace RCL.Exe
             }
             if (cmd.Exit)
             {
+              runner.Dispose ();
               Environment.Exit (0);
             }
           }
@@ -159,7 +165,8 @@ namespace RCL.Exe
         }
         catch (ThreadAbortException)
         {
-          int status = runner.ExitStatus ();
+          status = runner.ExitStatus ();
+          runner.Dispose ();
           Environment.Exit (status);
         }
         catch (Exception ex)
@@ -167,7 +174,42 @@ namespace RCL.Exe
           Console.Out.WriteLine (ex.ToString ());
         }
       }
+      runner.Dispose ();
       Environment.Exit (0);
+    }
+
+    static void InstallSignalHandler (RCRunner runner)
+    {
+      UnixSignal[] signals = new UnixSignal [] {
+        new UnixSignal (Mono.Unix.Native.Signum.SIGTERM),
+        new UnixSignal (Mono.Unix.Native.Signum.SIGINT)
+      };
+      Thread signalThread = new Thread (delegate ()
+      {
+        while (true)
+        {
+          int index = UnixSignal.WaitAny (signals, -1);
+          Mono.Unix.Native.Signum signal = signals[index].Signum;
+          if (signal == Mono.Unix.Native.Signum.SIGTERM)
+          {
+            ThreadPool.QueueUserWorkItem (delegate (object state) 
+            {
+              runner.Log.Record (runner, null, "runner", 0, "signal", "SIGTERM");
+              runner.Abort (15);
+            });
+          }
+          else if (signal == Mono.Unix.Native.Signum.SIGINT)
+          {
+            ThreadPool.QueueUserWorkItem (delegate (object state) 
+            {
+              runner.Log.Record (runner, null, "runner", 0, "signal", "SIGINT");
+              runner.Interupt ();
+            });
+          }
+        }
+      });
+      signalThread.IsBackground = true;
+      signalThread.Start ();
     }
 
     static void UnhandledException (object sender, UnhandledExceptionEventArgs e)

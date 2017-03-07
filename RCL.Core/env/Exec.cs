@@ -2,6 +2,7 @@
 using System;
 using System.Text;
 using System.IO;
+using Mono.Posix;
 using System.Collections.Generic;
 using System.Threading;
 using System.Diagnostics;
@@ -11,9 +12,9 @@ namespace RCL.Core
 {
   public class Exec : IDisposable
   {
-    protected object m_lock = new object ();
+    protected internal object m_lock = new object ();
     protected long m_handle = 0;
-    protected Dictionary <long, ChildProcess> m_process = new Dictionary<long, ChildProcess> ();
+    protected internal Dictionary <long, ChildProcess> m_process = new Dictionary<long, ChildProcess> ();
     protected bool disposed;
 
     [RCVerb ("exec")]
@@ -114,6 +115,20 @@ namespace RCL.Core
                                     new RCAsyncState (runner, closure, right));
     }
 
+    [RCVerb ("killx")]
+    public virtual void EvalKillx (
+      RCRunner runner, RCClosure closure, RCLong left, RCLong right)
+    {
+      ChildProcess child;
+      lock (m_lock)
+      {
+        if (!m_process.TryGetValue (left[0], out child))
+          throw new Exception ("Unknown child process: " + left[0]);
+      }
+      ThreadPool.QueueUserWorkItem (child.Kill,
+                                    new RCAsyncState (runner, closure, right));
+    }
+
     public void Dispose ()
     {
       Dispose (true);
@@ -126,16 +141,19 @@ namespace RCL.Core
       {
         if (disposing)
         {
-          foreach (KeyValuePair<long, ChildProcess> kv in m_process)
+          lock (m_lock)
           {
-            kv.Value.Close ();
+            foreach (KeyValuePair<long, ChildProcess> kv in m_process)
+            {
+              kv.Value.Close ();
+            }
           }
         }
         disposed = true;
       }
     }
 
-    protected class ChildProcess
+    protected internal class ChildProcess
     {
       public readonly long Handle;
       protected RCArray<string> m_result = new RCArray<string> ();
@@ -152,9 +170,11 @@ namespace RCL.Core
       protected bool m_errorDone = false;
       protected bool m_exited = false;
       protected bool m_finished = false;
-      protected long m_exitCode = -1;
-      protected string m_program;
-      protected string m_arguments;
+      protected bool m_killing = false;
+      protected internal long m_exitCode = -1;
+      protected internal string m_program;
+      protected internal string m_arguments;
+      protected internal long m_pid = -1;
 
       public ChildProcess (long handle, RCAsyncState state, bool yieldWhenDone)
       {
@@ -198,7 +218,6 @@ namespace RCL.Core
         lock (this)
         {
           m_exited = true;
-          //Console.Out.WriteLine ("Exited!");
         }
         Finish (null);
       }
@@ -210,6 +229,7 @@ namespace RCL.Core
           lock (this)
           {
             m_process.Start ();
+            m_pid = m_process.Id;
             m_process.BeginOutputReadLine ();
             m_process.BeginErrorReadLine ();
             //This guys says that if we are not using the standard input it should be closed
@@ -265,10 +285,9 @@ namespace RCL.Core
           {
             m_waiters.Enqueue (waiter);
           }
-          //Console.Out.WriteLine ("Checking");
-          if (!(m_exited && m_outputDone && m_errorDone))
+          //When m_killing is set, do not wait for last null from stdout and stderr.
+          if (!m_killing && !(m_exited && m_outputDone && m_errorDone))
           {
-            //Console.Out.WriteLine ("Not ready to yield");
             return;
           }
           //Console.Out.WriteLine ("Yielding");
@@ -336,22 +355,66 @@ namespace RCL.Core
         }
       }
 
-      public void Close ()
+      public void Kill (object other)
       {
+        RCAsyncState state = (RCAsyncState) other;
+        RCLong signal = (RCLong) state.Other;
+        m_state.Runner.Log.Record (
+          m_state.Runner, null, "exec", Handle, "killx", signal[0]);
         lock (this)
         {
-          if (!m_finished)
-          {
-            m_process.Kill ();
-          }
+          Mono.Unix.Native.Syscall.kill (
+            (int) m_pid, (Mono.Unix.Native.Signum) signal[0]);
         }
+        state.Runner.Yield (state.Closure, signal);
+      }
+
+      public void Close ()
+      {
+        //First ask nicely and wait 1000 ms.
+        //If it's an rcl process it should cleanly close sockets, files, other procs etc.
+        //See signal handling in Process.cs
+        m_state.Runner.Log.Record (
+          m_state.Runner, null, "exec", Handle, "closing", m_program + " (" + m_pid + ")");
+        lock (this)
+        {
+          if (m_pid >= 0 && !m_finished)
+          {
+            Mono.Unix.Native.Syscall.kill (
+              (int) m_pid, Mono.Unix.Native.Signum.SIGTERM);
+          }
+          else return;
+        }
+        DateTime timeout = DateTime.Now + new TimeSpan (0, 0, 0, 0, 20000);
         //You understand I don't normally do things like this.
-        while (true)
+        while (DateTime.Now < timeout)
         {
           lock (this)
           {
             if (m_finished)
             {
+              m_state.Runner.Log.Record (m_state.Runner, null, "exec", Handle, "finished", "soft");
+              return;
+            }
+          }
+        }
+        //Then ask not nicely and wait forever.
+        lock (this)
+        {
+          if (!m_finished)
+          {
+            m_killing = true;
+            m_process.Kill ();
+          }
+        }
+        while (true)
+        {
+          //Console.Out.WriteLine ("In the hard loop");
+          lock (this)
+          {
+            if (m_finished)
+            {
+              m_state.Runner.Log.Record (m_state.Runner, null, "exec", Handle, "finished", "hard");
               return;
             }
           }
@@ -389,7 +452,8 @@ namespace RCL.Core
           {
             if (m_outputDone || m_errorDone || m_exited)
             {
-              Exception ex = new Exception ("Cannot write to standard input, process has already exited or is in the process of exiting.");
+              Exception ex = new Exception (
+                "Cannot write to standard input, process has already exited or is in the process of exiting.");
               state.Runner.Finish (state.Closure, ex, 1);
             }
             m_process.StandardInput.BaseStream.BeginWrite (
@@ -533,10 +597,12 @@ namespace RCL.Core
             {
               if (output)
               {
+                //Console.Out.WriteLine ("Output done");
                 m_outputDone = true;
               }
               else
               {
+                //Console.Out.WriteLine ("Error done");
                 m_errorDone = true;
               }
             }

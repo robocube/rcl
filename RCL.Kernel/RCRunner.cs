@@ -331,9 +331,14 @@ namespace RCL.Kernel
 
     void HandleConsoleCancelKeyPress (object sender, ConsoleCancelEventArgs e)
     {
+      Interupt ();
+      e.Cancel = true;
+    }
+
+    public void Interupt ()
+    {
       //Kill all fibers for the 0 bot.
       this.Kill (0, -1, new Exception ("Interupt"), 1);
-      e.Cancel = true;
     }
 
     //Previous is the closure that will be removed from the pending set.
@@ -452,14 +457,25 @@ namespace RCL.Kernel
       Finish (prev, result);
     }
 
-    public void Exit (int status)
+    public void Dispose ()
     {
+      //Log.Record (this, null, "runner", 0, "disposing", "start");
       lock (m_botLock)
       {
         foreach (KeyValuePair<long, RCBot> kv in m_bots)
         {
           kv.Value.Dispose ();
         }
+        //m_exit = status;
+      }
+      //Log.Record (this, null, "runner", 0, "disposing", "done");
+      //Console.Out.WriteLine (System.Environment.StackTrace);
+    }
+
+    public void Abort (int status)
+    {
+      lock (m_botLock)
+      {
         m_exit = status;
       }
       m_ctorThread.Abort ();
@@ -903,10 +919,15 @@ namespace RCL.Kernel
       if (fibers.Count == 1)
       {
         Kill (fibers[0], -1, new Exception ("fiber killed"), 2);
+        closure.Bot.Dispose ();
       }
       else if (fibers.Count == 2)
       {
         Kill (fibers[0], fibers[1], new Exception ("fiber killed"), 2);
+        if (fibers[1] == 0)
+        {
+          closure.Bot.Dispose ();
+        }
       }
       else
       {

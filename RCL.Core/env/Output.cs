@@ -120,7 +120,7 @@ namespace RCL.Core
         string message = IndentMessage (CreateMessage (info), out singleLine);
         string optionalSpace = (singleLine && message.Length > 0) ? ":" : "";
         m_output.WriteLine ("{0} {1} {2} {3} {4}{5}{6}", 
-                            closure.Bot.Id, closure.Fiber, type, instance, state, optionalSpace, message);        
+                            bot, fiber, type, instance, state, optionalSpace, message);        
       }
       else if (m_level == RCOutput.Trace)
       {

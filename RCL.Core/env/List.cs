@@ -49,6 +49,10 @@ namespace RCL.Core
       {
         ListSockets (runner, closure);
       }
+      else if (target == "exec")
+      {
+        ListExec (runner, closure);
+      }
       else throw new Exception ("Unknown target for list: " + target);
     }
 
@@ -287,6 +291,38 @@ namespace RCL.Core
             result.WriteCell ("handle", urlsym, (long) kv.Key);
             result.WriteCell ("url", urlsym, kv.Value.Context.Request.RawUrl);
             result.Write (urlsym);
+          }
+        }
+      }
+      runner.Yield (closure, result);
+    }
+
+    public static void ListExec (RCRunner runner, RCClosure closure)
+    {
+      RCArray<Exec> modules = new RCArray<Exec> ();
+      RCArray<long> keys = new RCArray<long> ();
+      lock (runner.m_botLock)
+      {
+        foreach (KeyValuePair<long, RCBot> kv in runner.m_bots)
+        {
+          keys.Write (kv.Key);
+          modules.Write ((Exec) runner.m_bots[kv.Key].GetModule (typeof (Exec)));
+        }
+      }
+      RCCube result = new RCCube ("S");
+      for (int i = 0; i < modules.Count; ++i)
+      {
+        lock (modules[i].m_lock)
+        {
+          foreach (KeyValuePair<long, Exec.ChildProcess> kv in modules[i].m_process)
+          {
+            RCSymbolScalar sym = RCSymbolScalar.From ("exec", keys[i], kv.Key);
+            result.WriteCell ("bot", sym, keys[i]);
+            result.WriteCell ("handle", sym, (long) kv.Key);
+            result.WriteCell ("program", sym, kv.Value.m_program);
+            result.WriteCell ("arguments", sym, kv.Value.m_arguments);
+            result.WriteCell ("exit", sym, kv.Value.m_exitCode);
+            result.Write (sym);
           }
         }
       }

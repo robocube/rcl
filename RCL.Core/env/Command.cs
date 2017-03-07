@@ -440,7 +440,8 @@ namespace RCL.Core
                           RCLong right)
     {
       runner.Log.Record (runner, closure, "runner", 0, "exit", right);
-      runner.Exit ((int) right[0]);
+      runner.Abort ((int) right[0]);
+      //runner.Exit ((int) right[0]);
     }
 
     private static RCBlock m_options = null;

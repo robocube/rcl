@@ -4,7 +4,6 @@ using System.Net;
 using System.Net.Security;
 using System.Web;
 using System.Text;
-using System.Threading;
 using System.Collections.Specialized;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
@@ -12,7 +11,7 @@ using RCL.Kernel;
 
 namespace RCL.Core
 {
-  public class HttpServer
+  public class HttpServer : IDisposable
   {
     protected internal object m_lock = new object ();
     protected int m_listener = 0;
@@ -37,7 +36,7 @@ namespace RCL.Core
       public readonly HttpListenerContext Context;
       public readonly DateTime Time;
 
-      public RequestInfo(HttpListenerContext context, DateTime time)
+      public RequestInfo (HttpListenerContext context, DateTime time)
       {
         Context = context;
         Time = time;
@@ -170,6 +169,12 @@ namespace RCL.Core
                                  "http", handle, "proc",
                                  context.Request.HttpMethod + " " + context.Request.RawUrl);
         state.Runner.Yield (state.Closure, new RCLong (handle));
+      }
+      catch (ObjectDisposedException)
+      {
+        //This happens when you close down the listener
+        //Seems like this is the best known solution.
+        //http://stackoverflow.com/questions/13351615/cleanly-interupt-httplisteners-begingetcontext-method
       }
       catch (Exception ex)
       {
@@ -536,6 +541,38 @@ namespace RCL.Core
       {
         info.Context.Response.OutputStream.Close ();
         runner.Yield (closure, left);
+      }
+    }
+
+    public void Dispose ()
+    {
+      Dispose (true);
+      GC.SuppressFinalize (this);
+    }
+
+    protected bool m_disposed = false;
+    protected virtual void Dispose (bool disposing)
+    {
+      if (!m_disposed)
+      {
+        if (disposing)
+        {
+          lock (m_lock)
+          {
+            foreach (KeyValuePair<int, HttpServer.RequestInfo> kv in m_contexts)
+            {
+              kv.Value.Context.Response.OutputStream.Close ();
+            }
+            foreach (KeyValuePair<int, HttpListener> kv in m_listeners)
+            {
+              //I should be ok calling this in a lock right?
+              kv.Value.Close ();
+            }
+            m_contexts.Clear ();
+            m_listeners.Clear ();
+          }
+        }
+        m_disposed = true;
       }
     }
   }
