@@ -26,6 +26,9 @@ namespace RCL.Core
       new Dictionary<int, RequestInfo> ();
     protected int m_client = 0;
 
+    //This is only for the logging on dispose, so that the bot number will be accurate.
+    protected long m_bot = 0;
+
     public HttpServer ()
     {
       ServicePointManager.ServerCertificateValidationCallback = MyRemoteCertificateValidationCallback;
@@ -83,18 +86,11 @@ namespace RCL.Core
       RCRunner runner, RCClosure closure, RCString right)
     {
       HttpListener listener = new HttpListener ();
-      try
+      for (int i = 0; i < right.Count; ++i)
       {
-        for (int i = 0; i < right.Count; ++i)
-        {
-          listener.Prefixes.Add (right[i]);
-        }
-        listener.Start ();
+        listener.Prefixes.Add (right[i]);
       }
-      catch (Exception ex)
-      {
-        throw;
-      }
+      listener.Start ();
       int handle;
       lock (m_lock)
       {
@@ -106,6 +102,7 @@ namespace RCL.Core
         //lgsp.UseNagleAlgorithm = true;
         //lgsp.MaxIdleTime = 100000;
         runner.Log.Record (runner, closure, "http", handle, "start", right);
+        m_bot = closure.Bot.Id;
       }
       runner.Yield (closure, new RCLong (handle));
     }
@@ -561,11 +558,16 @@ namespace RCL.Core
           {
             foreach (KeyValuePair<int, HttpServer.RequestInfo> kv in m_contexts)
             {
+              RCLogger.Record (m_bot, 0, "http", (long) kv.Key, "cancel", kv.Value.Context.Request.RawUrl);
               kv.Value.Context.Response.OutputStream.Close ();
             }
             foreach (KeyValuePair<int, HttpListener> kv in m_listeners)
             {
               //I should be ok calling this in a lock right?
+              foreach (string prefix in kv.Value.Prefixes)
+              {
+                RCLogger.Record (m_bot, 0, "http", (long) kv.Key, "close", prefix);
+              }
               kv.Value.Close ();
             }
             m_contexts.Clear ();

@@ -1753,7 +1753,7 @@ namespace RCL.Test
       DoEvalTest ("unwrap #status from try {<-exec \"mono --debug rcl.exe --program=exit.rcl --action=go\"}", "1");
     }
 
-    RCRunner runner = new RCRunner (RCActivator.Default, new RCLog (new RCL.Core.Output ()), 1, new RCLArgv ());
+    RCRunner runner = new RCRunner (RCActivator.Default, new RCLog (new RCLogger ()), 1, new RCLArgv ());
 
     public void DoEvalTest (string code, string expected)
     {

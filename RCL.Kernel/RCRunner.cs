@@ -331,8 +331,9 @@ namespace RCL.Kernel
 
     void HandleConsoleCancelKeyPress (object sender, ConsoleCancelEventArgs e)
     {
-      Interupt ();
-      e.Cancel = true;
+      //Console.Out.WriteLine ("Cancel Key Press");
+      //Interupt ();
+      //e.Cancel = true;
     }
 
     public void Interupt ()

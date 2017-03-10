@@ -87,7 +87,6 @@
     <Compile Include="misc\Block.cs" />
     <Compile Include="misc\String.cs" />
     <Compile Include="env\Variable.cs" />
-    <Compile Include="env\Output.cs" />
     <Compile Include="net\TcpSendState.cs" />
     <Compile Include="net\TcpReceiveBox.cs" />
     <Compile Include="net\TcpOutBox.cs" />

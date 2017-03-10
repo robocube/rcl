@@ -47,7 +47,7 @@ namespace RCL.Exe
       
       string prompt = "RCL>";
       LineEditor editor = new LineEditor ("RCL");
-      Output consoleLog = new Output (editor, cmd.Show);
+      RCLogger consoleLog = new RCLogger (false, cmd.Show);
       RCLog log = new RCLog (consoleLog);
       RCRunner runner = new RCRunner (RCActivator.Default, log, 1, cmd);
       InstallSignalHandler (runner);
@@ -87,12 +87,11 @@ namespace RCL.Exe
         {
           status = runner.ExitStatus ();
           runner.Dispose ();
-          //runner.Log.Record (runner, null, "runner", 0, "final", status);
           Environment.Exit (status);
         }
         catch (Exception ex)
         {
-          Console.Out.WriteLine (ex.ToString ());
+          RCLogger.Record (0, 0, "fiber", 0, "reported", ex);
           status = 1;
         }
         finally
@@ -150,6 +149,7 @@ namespace RCL.Exe
             {
               line = editor.Edit (prompt, "");
             }
+            m_firstSigint = false;
             if (line != null)
             {
               string trimmed = line.TrimStart (' ').TrimEnd (' ');
@@ -167,17 +167,22 @@ namespace RCL.Exe
         {
           status = runner.ExitStatus ();
           runner.Dispose ();
+          //Prevents last RCL prompt from appearing on the same line as the next bash prompt.
+          //But I want to do something so that log output *never* appears on the same line as the prompt.
+          //Console.Out.WriteLine ();
+          Console.Out.Flush ();
           Environment.Exit (status);
         }
         catch (Exception ex)
         {
-          Console.Out.WriteLine (ex.ToString ());
+          RCLogger.Record (0, 0, "fiber", 0, "reported", ex);
         }
       }
       runner.Dispose ();
       Environment.Exit (0);
     }
 
+    protected static volatile bool m_firstSigint = false;
     static void InstallSignalHandler (RCRunner runner)
     {
       UnixSignal[] signals = new UnixSignal [] {
@@ -200,11 +205,23 @@ namespace RCL.Exe
           }
           else if (signal == Mono.Unix.Native.Signum.SIGINT)
           {
-            ThreadPool.QueueUserWorkItem (delegate (object state) 
+            if (!m_firstSigint)
             {
-              runner.Log.Record (runner, null, "runner", 0, "signal", "SIGINT");
-              runner.Interupt ();
-            });
+              m_firstSigint = true;
+              ThreadPool.QueueUserWorkItem (delegate (object state) 
+              {
+                runner.Log.Record (runner, null, "runner", 0, "signal", "SIGINT");
+                runner.Interupt ();
+              });
+            }
+            else
+            {
+              ThreadPool.QueueUserWorkItem (delegate (object state) 
+              {
+                runner.Log.Record (runner, null, "runner", 0, "signal", "SIGINT (exiting)");
+                runner.Abort (2);
+              });
+            }
           }
         }
       });
@@ -217,7 +234,7 @@ namespace RCL.Exe
       Console.Out.WriteLine ("RCL Unhandled:\n" + e.ExceptionObject.ToString ());
     }
 
-    static string Alias (string trimmed, RCRunner runner, Output output, RCLArgv cmd)
+    static string Alias (string trimmed, RCRunner runner, RCLogger output, RCLArgv cmd)
     {
       string line = trimmed;
       if (trimmed == "exit")
