@@ -129,6 +129,20 @@ namespace RCL.Core
                                     new RCAsyncState (runner, closure, right));
     }
 
+    [RCVerb ("closex")]
+    public virtual void EvalClosex (
+      RCRunner runner, RCClosure closure, RCLong right)
+    {
+      ChildProcess child;
+      lock (m_lock)
+      {
+        if (!m_process.TryGetValue (right[0], out child))
+          throw new Exception ("Unknown child process: " + right[0]);
+      }
+      ThreadPool.QueueUserWorkItem (child.Close,
+                                    new RCAsyncState (runner, closure, right));
+    }
+
     public void Dispose ()
     {
       Dispose (true);
@@ -358,15 +372,39 @@ namespace RCL.Core
       public void Kill (object other)
       {
         RCAsyncState state = (RCAsyncState) other;
-        RCLong signal = (RCLong) state.Other;
-        m_state.Runner.Log.Record (
-          m_state.Runner, null, "exec", Handle, "killx", signal[0]);
-        lock (this)
+        try
         {
-          Mono.Unix.Native.Syscall.kill (
-            (int) m_pid, (Mono.Unix.Native.Signum) signal[0]);
+          RCLong signal = (RCLong) state.Other;
+          m_state.Runner.Log.Record (
+            m_state.Runner, null, "exec", Handle, "killx", signal[0]);
+          lock (this)
+          {
+            Mono.Unix.Native.Syscall.kill (
+              (int) m_pid, (Mono.Unix.Native.Signum) signal[0]);
+          }
+          state.Runner.Yield (state.Closure, signal);
         }
-        state.Runner.Yield (state.Closure, signal);
+        catch (Exception ex)
+        {
+          state.Runner.Report (state.Closure, ex);
+        }
+      }
+
+      public void Close (object other)
+      {
+        RCAsyncState state = (RCAsyncState) other;
+        try
+        {
+          RCLong signal = (RCLong) state.Other;
+          m_state.Runner.Log.Record (
+            m_state.Runner, null, "exec", Handle, "closex", signal[0]);
+          Close ();
+          state.Runner.Yield (state.Closure, signal);
+        }
+        catch (Exception ex)
+        {
+          state.Runner.Report (state.Closure, ex);
+        }
       }
 
       public void Close ()
@@ -385,7 +423,7 @@ namespace RCL.Core
           }
           else return;
         }
-        DateTime timeout = DateTime.Now + new TimeSpan (0, 0, 0, 0, 20000);
+        DateTime timeout = DateTime.Now + new TimeSpan (0, 0, 0, 0, 2000);
         //You understand I don't normally do things like this.
         while (DateTime.Now < timeout)
         {

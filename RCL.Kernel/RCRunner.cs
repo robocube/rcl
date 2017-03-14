@@ -460,17 +460,20 @@ namespace RCL.Kernel
 
     public void Dispose ()
     {
-      //Log.Record (this, null, "runner", 0, "disposing", "start");
       lock (m_botLock)
       {
         foreach (KeyValuePair<long, RCBot> kv in m_bots)
         {
-          kv.Value.Dispose ();
+          try
+          {
+            kv.Value.Dispose ();
+          }
+          catch (Exception ex)
+          {
+            Report (ex);
+          }
         }
-        //m_exit = status;
       }
-      //Log.Record (this, null, "runner", 0, "disposing", "done");
-      //Console.Out.WriteLine (System.Environment.StackTrace);
     }
 
     public void Abort (int status)
@@ -1035,6 +1038,11 @@ namespace RCL.Kernel
     {
       closure.Bot.ChangeFiberState (closure.Fiber, "reported");
       Log.Record (this, closure, "fiber", closure.Fiber, "reported", ex);
+    }
+
+    public void Report (Exception ex)
+    {
+      Log.Record (this, null, "fiber", 0, "reported", ex);
     }
 
     public RCOperator New (string op, RCValue right)

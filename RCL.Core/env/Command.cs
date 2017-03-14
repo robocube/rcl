@@ -441,7 +441,6 @@ namespace RCL.Core
     {
       runner.Log.Record (runner, closure, "runner", 0, "exit", right);
       runner.Abort ((int) right[0]);
-      //runner.Exit ((int) right[0]);
     }
 
     private static RCBlock m_options = null;
