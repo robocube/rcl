@@ -319,6 +319,7 @@ namespace RCL.Core
             RCSymbolScalar sym = RCSymbolScalar.From ("exec", keys[i], kv.Key);
             result.WriteCell ("bot", sym, keys[i]);
             result.WriteCell ("handle", sym, (long) kv.Key);
+            result.WriteCell ("pid", sym, (long) kv.Value.m_pid);
             result.WriteCell ("program", sym, kv.Value.m_program);
             result.WriteCell ("arguments", sym, kv.Value.m_arguments);
             result.WriteCell ("exit", sym, kv.Value.m_exitCode);
