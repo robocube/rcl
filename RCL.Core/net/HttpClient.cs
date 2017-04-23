@@ -71,6 +71,19 @@ namespace RCL.Core
                                      new RestAsyncState (runner, closure, request, right, false, Interlocked.Increment (ref m_client)));
     }
 
+    [RCVerb ("putw")]
+    public void Putw (RCRunner runner, RCClosure closure, RCString left, RCString right)
+    {
+      if (left.Count != 1)
+      {
+        throw new Exception ("putw can only put to one resource at a time.");
+      }
+      HttpWebRequest request = (HttpWebRequest) WebRequest.Create (left[0]);
+      request.Method = "PUT";
+      request.BeginGetRequestStream (FinishGetRequestStream,
+                                     new RestAsyncState (runner, closure, request, right, false, Interlocked.Increment (ref m_client)));
+    }
+
     [RCVerb ("postw")]
     public void Postw (
       RCRunner runner, RCClosure closure, RCString left, RCString right)
