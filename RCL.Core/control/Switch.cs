@@ -41,8 +41,6 @@ namespace RCL.Core
       //What on earth was I thinking... we need to make this work.
       Picker<long> picker = delegate (long val)
       {
-        //long i = val < 0 ? 1 : 0;
-        //return i >= right.Count ? RCBlock.Empty : right.Get (i);
         return right.Get (val);
       };
       DoSwitch<long> (runner, closure, left, right, picker);
@@ -69,6 +67,22 @@ namespace RCL.Core
       DoSwitch<RCSymbolScalar> (runner, closure, left, right, picker);
     }
 
+    [RCVerb ("switch")]
+    public void EvalSwitch (
+      RCRunner runner, RCClosure closure, RCString left, RCBlock right)
+    {
+      Picker<string> picker = delegate (string val)
+      {
+        RCValue code = right.Get (val);
+        if (code == null)
+        {
+          code = RCBlock.Empty;
+        }
+        return code;
+      };
+      DoSwitch<string> (runner, closure, left, right, picker);
+    }
+
     protected virtual void DoSwitch<T> (
       RCRunner runner, RCClosure closure, RCVector<T> left, RCBlock right, Picker<T> picker)
     {
@@ -78,7 +92,6 @@ namespace RCL.Core
         RCValue code = picker (left[i]);
         RCClosure child = new RCClosure (
           closure, closure.Bot, code, closure.Left, RCBlock.Empty, 0);
-        //Prior-Authorization number. 866-310-3666
         code.Eval (runner, child);
       }
       else

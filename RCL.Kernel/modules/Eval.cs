@@ -26,6 +26,25 @@ namespace RCL.Kernel
     }
 
     [RCVerb ("eval")]
+    public void EvalTemplate (RCRunner runner, RCClosure closure, RCBlock left, RCTemplate right)
+    {
+      RCClosure parent = UserOpClosure (closure, right, new RCArray<RCBlock> (left));
+      DoEval (runner, parent, right);
+    }
+
+    [RCVerb ("eval")]
+    public void EvalTemplate (RCRunner runner, RCClosure closure, RCTemplate right)
+    {
+      RCClosure parent = new RCClosure (closure.Parent, 
+                                        closure.Bot, 
+                                        right, 
+                                        closure.Left, 
+                                        RCBlock.Empty, 
+                                        0);
+      DoEval (runner, parent, right);
+    }
+
+    [RCVerb ("eval")]
     public void EvalEval (RCRunner runner, RCClosure closure, RCOperator right)
     {
       RCClosure parent = new RCClosure (closure.Parent, 

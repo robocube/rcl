@@ -37,7 +37,7 @@ namespace RCL.Core
       //And throws exceptions if the response doesn't have a 200 status.
       if (right.Count != 1)
       {
-        throw new Exception ("getw can only get from one resource at a time.");
+        throw new Exception ("get can only get from one resource at a time.");
       }
       HttpWebRequest request = (HttpWebRequest) WebRequest.Create (right[0]);
       request.Method = "GET";
@@ -170,6 +170,9 @@ namespace RCL.Core
         }
         Stream stream = response.GetResponseStream ();
         TextReader reader = new StreamReader (stream);
+        string body = reader.ReadToEnd ();
+        reader.Close ();
+        /*
         string line;
         RCArray<string> body = new RCArray<string> ();
         while (true)
@@ -182,6 +185,7 @@ namespace RCL.Core
           else break;
         }
         reader.Close ();
+        */
 
         RCBlock block = new RCBlock (RCBlock.Empty,
                                      "status", ":", new RCLong (status));

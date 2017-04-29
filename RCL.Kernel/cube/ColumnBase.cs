@@ -1,7 +1,5 @@
 
 using System;
-using System.Text;
-using System.Collections.Generic;
 
 namespace RCL.Kernel
 {
@@ -43,6 +41,7 @@ namespace RCL.Kernel
     public abstract void Accept (string name, Visitor visitor, int i);
     public abstract void AcceptNull (string name, Visitor visitor, int i);
     public abstract string ScalarToString (int vrow);
+    public abstract string ScalarToCsvString (int vrow);
     public abstract object BoxCell (int vrow);
     public abstract bool BoxLast (RCSymbolScalar key, out object box);
 

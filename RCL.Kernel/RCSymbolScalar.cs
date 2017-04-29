@@ -188,7 +188,7 @@ namespace RCL.Kernel
 
     public bool IsConcreteOf (RCSymbolScalar scalar)
     {
-      bool trailing = m_string.Length > scalar.m_string.Length && m_string.StartsWith (scalar.m_string);
+      //bool trailing = m_string.Length > scalar.m_string.Length && m_string.StartsWith (scalar.m_string);
       RCSymbolScalar concrete = this;
       RCSymbolScalar @abstract = scalar;
 
@@ -215,6 +215,11 @@ namespace RCL.Kernel
     public override string ToString ()
     {
       return m_string;
+    }
+
+    public string ToCsvString ()
+    {
+      return m_string.Substring (1);
     }
 
     public void ToByte (RCArray<byte> result)

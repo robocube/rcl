@@ -289,6 +289,7 @@ namespace RCL.Core
     [RCVerb ("and")] [RCVerb ("or")]
     [RCVerb ("==")] [RCVerb ("!=")] [RCVerb ("<")] [RCVerb (">")] [RCVerb ("<=")] [RCVerb (">=")]
     [RCVerb ("min")] [RCVerb ("max")]
+    [RCVerb ("long")] [RCVerb ("double")] [RCVerb ("decimal")] [RCVerb ("byte")] [RCVerb ("string")] [RCVerb ("symbol")] [RCVerb ("boolean")] [RCVerb ("time")]
     public void EvalDyadic (
       RCRunner runner, RCClosure closure, object left, object right)
     {

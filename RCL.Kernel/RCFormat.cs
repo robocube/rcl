@@ -20,9 +20,9 @@ namespace RCL.Kernel
 
     static RCFormat ()
     {
-      Default = new RCFormat ("RC", "", "", " ", " ", false, true, true);
-      Pretty = new RCFormat ("RC", "  ", "\n", " ", "\n", true, true, true);
-      DefaultNoT = new RCFormat ("RC", "", "", " ", " ", false, false, true);
+      Default = new RCFormat ("RCL", "", "", " ", " ", false, true, true);
+      Pretty = new RCFormat ("RCL", "  ", "\n", " ", "\n", true, true, true);
+      DefaultNoT = new RCFormat ("RCL", "", "", " ", " ", false, false, true);
       Html = new RCFormat ("HTML", "  ", "\n", " ", "\n", true, true, true);
       Csv = new RCFormat ("CSV", "  ", "\n", ",", "\n", false, true, false);
       Log = new RCFormat ("LOG", "  ", "\n", " ", "\n", false, true, false);

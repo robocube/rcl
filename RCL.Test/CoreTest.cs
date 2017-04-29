@@ -596,6 +596,8 @@ namespace RCL.Test
     [Test]
     public void TestSymbolS5 () { DoTest ("symbol \"#a,0\"", "#a,0"); }
     [Test]
+    public void TestSymbolS6 () { DoTest ("#a symbol \"\"", "#a"); }
+    [Test]
     public void TestSymbolY0 () { DoTest ("symbol #this,is,a,sym", "#this,is,a,sym"); }
     [Test]
     public void TestSymbolY1 () { DoTest ("{u:[E|S|x 0 #a #symbol] <-symbol $u.x}", "[E|S|x 0 #a #symbol]"); }
@@ -616,6 +618,8 @@ namespace RCL.Test
     public void TestLongB() { DoTest("long true", "1"); }
     [Test]
     public void TestLongS() { DoTest("long \"1\"", "1"); }
+    [Test]
+    public void TestLongS1 () { DoTest ("100 long \"\"", "100"); }
     [Test]
     public void TestLongK() { DoTest("long {x:0 y:1 z:2}", "0 1 2"); }
     [Test]
@@ -680,6 +684,8 @@ namespace RCL.Test
     [Test]
     public void TestBooleanS() { DoTest("boolean \"true\"", "true"); }
     [Test]
+    public void TestBooleanS1() { DoTest ("false boolean \"\"", "false"); }
+    [Test]
     public void TestBooleanK() { DoTest("boolean {x:true y:false z:true}", "true false true"); }
 
     [Test]
@@ -697,12 +703,18 @@ namespace RCL.Test
     [Test]
     public void TestDecimalS() { DoTest("decimal \"1\"", "1m"); }
     [Test]
+    public void TestDecimalS1() { DoTest("1m decimal \"\"", "1m"); }
+    [Test]
     public void TestDecimalK() { DoTest("decimal {x:0m y:1m z:2m}", "0 1 2m"); }
 
     [Test]
     public void TestTimeL () { DoTest ("time 0", "0001.01.01 00:00:00.0000000"); }
     [Test]
     public void TestTimeT0 () { DoTest ("time 0001.01.01 00:00:00.0000000", "0001.01.01 00:00:00.0000000"); }
+    [Test]
+    public void TestTimeS () { DoTest ("time \"0001.01.01 00:00:00.0000000\"", "0001.01.01 00:00:00.0000000"); }
+    [Test]
+    public void TestTimeTS () { DoTest ("0001.01.01 00:00:00.0000000 time \"\"", "0001.01.01 00:00:00.0000000"); }
     [Test]
     public void TestTimeYT1 () { DoTest ("#date time 0001.01.01 00:00:00.0000000", "0001.01.01"); }
     [Test]
@@ -2252,7 +2264,7 @@ namespace RCL.Test
     {
       //The log format option omits the header and uses spaces instead of commas for the delimiter.
       DoTest ("#log format [a b c 0 \"x y z\" #foo 1 \"u v w\" #bar 2 \"s t u\" #baz]", 
-              "\"0 \\\"x y z\\\" #foo\\n1 \\\"u v w\\\" #bar\\n2 \\\"s t u\\\" #baz\\n\"");
+              "\"0 \\\"x y z\\\" foo\\n1 \\\"u v w\\\" bar\\n2 \\\"s t u\\\" baz\\n\"");
     }
 
     //I was going to make binary a variant of format.

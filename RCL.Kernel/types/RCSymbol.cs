@@ -45,6 +45,11 @@ namespace RCL.Kernel
       return scalar.ToString ();
     }
 
+    public override string ScalarToCsvString (RCSymbolScalar scalar)
+    {
+      return scalar.ToCsvString ();
+    }
+
     public static string FormatScalar (RCSymbolScalar scalar)
     {
       return scalar.ToString ();

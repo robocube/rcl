@@ -30,12 +30,39 @@ namespace RCL.Core
     protected Dictionary <long, Queue<RCBlock>> m_output = new Dictionary<long, Queue<RCBlock>> ();
     protected Dictionary <long, RCClosure> m_waiters = new Dictionary<long, RCClosure> ();
 
-    [RCVerb ("watchf")]
-    public void EvalWatchf (
+    [RCVerb ("watchfs")]
+    public void EvalWatchd (
       RCRunner runner, RCClosure closure, RCString right)
     {
       long handle = Interlocked.Increment (ref m_handle);
       RCLFileSystemWatcher watcher = new RCLFileSystemWatcher (runner, handle, right[0], "*");
+      watcher.InternalBufferSize = 16 * 1024;
+      watcher.IncludeSubdirectories = true;
+      watcher.NotifyFilter = NotifyFilters.DirectoryName |
+        NotifyFilters.FileName |
+        NotifyFilters.CreationTime |
+        NotifyFilters.Attributes |
+        NotifyFilters.LastWrite |
+        NotifyFilters.Size;
+      watcher.Created += watcher_Created;
+      watcher.Changed += watcher_Changed;
+      watcher.Deleted += watcher_Deleted;
+      watcher.Renamed += watcher_Renamed;
+      watcher.EnableRaisingEvents = true;
+      lock (m_lock)
+      {
+        m_output.Add (handle, new Queue<RCBlock> ());
+        m_watchers.Add (handle, watcher); 
+      }
+      runner.Yield (closure, new RCLong (handle));
+    }
+
+    [RCVerb ("watchfs")]
+    public void EvalWatchd (
+      RCRunner runner, RCClosure closure, RCString left, RCString right)
+    {
+      long handle = Interlocked.Increment (ref m_handle);
+      RCLFileSystemWatcher watcher = new RCLFileSystemWatcher (runner, handle, right[0], left[0]);
       watcher.InternalBufferSize = 16 * 1024;
       watcher.IncludeSubdirectories = true;
       watcher.NotifyFilter = NotifyFilters.DirectoryName |

@@ -116,6 +116,11 @@ namespace RCL.Kernel
       return scalar.ToString ();
     }
 
+    public virtual string ScalarToCsvString (T scalar)
+    {
+      return scalar.ToString ();
+    }
+
     public IEnumerator<T> GetEnumerator ()
     {
       return new RCVectorEnumerator<T> (this);

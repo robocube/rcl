@@ -37,7 +37,10 @@ namespace RCL.Kernel
     {
       if (source.Count == 0)
       {
-        m_builder.Append ("[]");
+        if (m_args.Syntax == "RCL") 
+        {
+          m_builder.Append ("[]");
+        }
         return;
       }
       m_names = new List<string> ();
@@ -91,7 +94,7 @@ namespace RCL.Kernel
       }
       //Populate m_columns and m_max.
       source.VisitCellsForward (this, 0, source.Count);
-      if (m_args.Syntax == "RC")
+      if (m_args.Syntax == "RCL")
       {
         FormatRC (tcols);
       }
@@ -325,8 +328,7 @@ namespace RCL.Kernel
     protected void FormatCsv (int tcols, bool useGRows, char[] escapeChars, bool head)
     {
       int colOffset = m_args.Showt ? 0 : tcols;
-      int tlcols; // = tcols;// + 1;
-
+     
       for (int i = 0; i < m_level; ++i)
       {
         m_builder.Append (m_args.Indent);
@@ -409,7 +411,9 @@ namespace RCL.Kernel
   
     public override void VisitScalar<T> (string name, Column<T> column, int row)
     {
-      string scalar = m_args.ParsableScalars ? column.ScalarToString (row) : column.Data[row].ToString ();
+      //string scalar = m_args.ParsableScalars ? column.ScalarToString (row) : column.Data[row].ToString ();
+      //string scalar = m_args.ParsableScalars ? column.ScalarToCsvString (row) : column.Data[row].ToString ();
+      string scalar = m_args.ParsableScalars ? column.ScalarToString (row) : column.ScalarToCsvString (row);
       int max = m_max[m_col];
       if (scalar.Length > max)
       {

@@ -1598,7 +1598,7 @@ namespace RCL.Test
     [Test]
     public void TestFormatCsvEscapeStringAndSymbols ()
     {
-      DoTest (RCFormat.Default, "#csv format [x y #s,1 \",\" #s,2 \"\\\"\" #s,3 \"\n\"]", "\"x,y\\n\\\"#s,1\\\",\\\",\\\"\\n\\\"#s,2\\\",\\\"\\\"\\\"\\\"\\n\\\"#s,3\\\",\\\"\\n\\\"\\n\"");
+      DoTest (RCFormat.Default, "#csv format [x y #s,1 \",\" #s,2 \"\\\"\" #s,3 \"\n\"]", "\"x,y\\n\\\"s,1\\\",\\\",\\\"\\n\\\"s,2\\\",\\\"\\\"\\\"\\\"\\n\\\"s,3\\\",\\\"\\n\\\"\\n\"");
     }
 
     [Test]
@@ -1617,7 +1617,7 @@ namespace RCL.Test
     [Test]
     public void TestFormatCsvWithBoolean ()
     {
-      DoTest (RCFormat.Default, "#csv format [x true]", "\"x\\nTrue\\n\"");
+      DoTest (RCFormat.Default, "#csv format [x true]", "\"x\\ntrue\\n\"");
     }
 
     //To - does not apply to cubes at all

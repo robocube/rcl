@@ -223,6 +223,32 @@ namespace RCL.Core
       runner.Yield (closure, new RCSymbol (method));
     }
 
+    /*
+      http://stackoverflow.com/questions/2019735/request-rawurl-vs-request-url
+      
+      http://localhost:12345/site/page.aspx?q1=1&q2=2
+      Value of HttpContext.Current.Request.Url.Host
+      localhost
+      
+      Value of HttpContext.Current.Request.Url.Authority
+      localhost:12345
+      
+      Value of HttpContext.Current.Request.Url.AbsolutePath
+      /site/page.aspx
+      
+      Value of HttpContext.Current.Request.ApplicationPath
+      /site
+      
+      Value of HttpContext.Current.Request.Url.AbsoluteUri
+      http://localhost:12345/site/page.aspx?q1=1&q2=2
+      
+      Value of HttpContext.Current.Request.RawUrl
+      /site/page.aspx?q1=1&q2=2
+      
+      Value of HttpContext.Current.Request.Url.PathAndQuery
+      /site/page.aspx?q1=1&q2=2
+    */
+
     [RCVerb ("httpheader")]
     public void EvalHttpHeader (
       RCRunner runner, RCClosure closure, RCLong right)
@@ -242,6 +268,7 @@ namespace RCL.Core
       RCBlock result = RCBlock.Empty;
       result = new RCBlock (result, "Verb", ":", new RCString (info.Context.Request.HttpMethod));
       result = new RCBlock (result, "RawUrl", ":", new RCString (info.Context.Request.RawUrl));
+      result = new RCBlock (result, "Url", ":", new RCString (info.Context.Request.Url.AbsolutePath));
       for (int i = 0; i < values.AllKeys.Length; ++i)
       {
         string key = values.AllKeys[i];

@@ -211,6 +211,11 @@ namespace RCL.Kernel
         throw new NotImplementedException ();
       }
 
+      public override string ScalarToCsvString (int vrow)
+      {
+        throw new NotImplementedException ();
+      }
+
       public override char TypeCode { get { return '0'; } }
       public override object BoxCell (int i) { return null; }
       public override object Array { get { return m_data; } }
@@ -233,6 +238,11 @@ namespace RCL.Kernel
         return RCByte.FormatScalar (m_data[i]);
       }
 
+      public override string ScalarToCsvString (int i)
+      {
+        return ScalarToString (i);
+      }
+
       public override char TypeCode { get { return 'x'; } }
     }
 
@@ -248,6 +258,11 @@ namespace RCL.Kernel
       public override string ScalarToString (int i)
       {
         return RCLong.FormatScalar (m_data[i]);
+      }
+
+      public override string ScalarToCsvString (int i)
+      {
+        return ScalarToString (i);
       }
 
       public override char TypeCode { get { return 'l'; } }
@@ -266,6 +281,11 @@ namespace RCL.Kernel
         return RCDouble.FormatScalar (m_data[i]);
       }
 
+      public override string ScalarToCsvString (int i)
+      {
+        return ScalarToString (i);
+      }
+
       public override char TypeCode { get { return 'd'; } }
     }
 
@@ -280,6 +300,11 @@ namespace RCL.Kernel
       public override string ScalarToString (int i)
       {
         return RCDecimal.FormatScalar (m_data[i]) + "m";
+      }
+
+      public override string ScalarToCsvString (int i)
+      {
+        return ScalarToString (i);
       }
 
       public override char TypeCode { get { return 'm'; } }
@@ -298,6 +323,11 @@ namespace RCL.Kernel
         return RCBoolean.FormatScalar (m_data[i]);
       }
 
+      public override string ScalarToCsvString (int i)
+      {
+        return ScalarToString (i);
+      }
+
       public override char TypeCode { get { return 'b'; } }
     }
 
@@ -314,6 +344,11 @@ namespace RCL.Kernel
         return RCString.FormatScalar (m_data[i]);
       }
 
+      public override string ScalarToCsvString (int i)
+      {
+        return m_data[i].ToString ();
+      }
+
       public override char TypeCode { get { return 's'; } }
     }
 
@@ -328,6 +363,11 @@ namespace RCL.Kernel
       public override string ScalarToString (int i)
       {
         return RCSymbol.FormatScalar (m_data[i]);
+      }
+
+      public override string ScalarToCsvString (int i)
+      {
+        return m_data[i].ToCsvString ();
       }
 
       public override char TypeCode { get { return 'y'; } }
@@ -347,6 +387,11 @@ namespace RCL.Kernel
         return RCTime.FormatScalar (m_data[i]);
       }
 
+      public override string ScalarToCsvString (int i)
+      {
+        return ScalarToString (i);
+      }
+
       public override char TypeCode { get { return 't'; } }
     }
 
@@ -361,6 +406,11 @@ namespace RCL.Kernel
       public override string ScalarToString (int i)
       {
         return RCIncr.FormatScalar (m_data[i]);
+      }
+
+      public override string ScalarToCsvString (int i)
+      {
+        return ScalarToString (i);
       }
 
       public override char TypeCode { get { return 'n'; } }

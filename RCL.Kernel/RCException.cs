@@ -11,11 +11,10 @@ namespace RCL.Kernel
     public static RCException Overload (
       RCClosure closure, RCOperator op, RCValue right)
     {
-      string message = "Operator " + op.Name +
-        " can not receive arguments of type " + right.TypeName + ".";
-      //message += " (" + right.ToString () + ")";
+      string message = closure.ToString ();
       message += "\n---- RCL Stack ----\n";
-      message += closure.ToString ();
+      message += "Operator " + op.Name +
+        " can not receive arguments of type " + right.TypeName + ".";
       return new RCException (closure, RCErrors.Type, message);
     }
 
@@ -25,7 +24,6 @@ namespace RCL.Kernel
       string message = "Operator " + op.Name +
         " can not receive arguments of type " +
         left.TypeName + " and " + right.TypeName + ".";
-      //message += " (" + left.ToString () + ", " + right.ToString () + ")";
       message += "\n---- RCL Stack ----\n";
       message += closure.ToString ();
       return new RCException (closure, RCErrors.Type, message);
@@ -34,23 +32,21 @@ namespace RCL.Kernel
     public static RCException Overload (
       RCClosure closure, string op, object right)
     {
-      string message = "Operator " + op +
-        " can not receive arguments of type " + right.GetType ().Name + ".";
-      //message += " (" + right.ToString () + ")";
+      string message = closure.ToString ();
       message += "\n---- RCL Stack ----\n";
-      message += closure.ToString ();
+      message += "Operator " + op +
+        " can not receive arguments of type " + right.GetType ().Name + ".";
       return new RCException (closure, RCErrors.Type, message);
     }
 
     public static RCException Overload (
       RCClosure closure, string op, object left, object right)
     {
-      string message = "Operator " + op +
+      string message = closure.ToString ();
+      message += "\n---- RCL Stack ----\n";
+      message += "Operator " + op +
         " can not receive arguments of type " +
         left.GetType ().Name + " and " + right.GetType ().Name + ".";
-      //message += " (" + left.ToString () + ", " + right.ToString () + ")";
-      message += "\n---- RCL Stack ----\n";
-      message += closure.ToString ();
       return new RCException (closure, RCErrors.Type, message);
     }
 

@@ -518,6 +518,15 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestSwitchWithString ()
+    {
+      DoEvalTest ("\"a\" switch {a:1 b:2 c:3}", "1");
+      DoEvalTest ("\"b\" switch {a:1 b:2 c:3}", "2");
+      DoEvalTest ("\"c\" switch {a:1 b:2 c:3}", "3");
+      DoEvalTest ("\"d\" switch {a:1 b:2 c:3}", "{}");
+    }
+
+    [Test]
     public void TestEach ()
     {
       //This test requires that operators will send closure Index values greater
@@ -1711,6 +1720,18 @@ namespace RCL.Test
     {
       DoEvalTest ("#pretty format parse \"[?\n  before\n    [! eval {host:$R <-{<-user_entry $R} each $R.users} !]\n  after\n?]\"", 
                   "\"[?\\n  before\\n    [! eval {host:$R <-{<-user_entry $R} each $R.users} !]\\n  after\\n?]\"");
+    }
+
+    [Test]
+    public void TestTemplateEval ()
+    {
+      DoEvalTest ("eval [?\n  aaa bbb ccc ddd eee\n?]", "\"aaa bbb ccc ddd eee\\n\"");
+    }
+
+    [Test]
+    public void TestTemplateEval1 ()
+    {
+      DoEvalTest ("{a:\"aaa\" b:\"bbb\" c:\"ccc\"} eval [?\n  [! $a !] [! $b !] [! $c !]\n?]", "\"aaa bbb ccc\\n\"");
     }
 
     [Test]

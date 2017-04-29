@@ -3,6 +3,7 @@ using System;
 using System.Text;
 using System.IO;
 using System.Threading;
+using System.Diagnostics;
 using RCL.Kernel;
 
 namespace RCL.Core
@@ -247,6 +248,13 @@ namespace RCL.Core
       RCRunner runner, RCClosure closure, RCBlock right)
     {
       runner.Yield (closure, new RCString (Environment.CurrentDirectory));
+    }
+
+    [RCVerb ("pid")]
+    public void EvalPid (
+      RCRunner runner, RCClosure closure, RCBlock right)
+    {
+      runner.Yield (closure, new RCLong (Process.GetCurrentProcess ().Id));
     }
 
     //Let's call this getarg to be more like getenv
