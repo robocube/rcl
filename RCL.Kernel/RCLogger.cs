@@ -86,7 +86,7 @@ namespace RCL.Kernel
         string time = DateTime.UtcNow.ToString (TimeFormat);
         bool singleLine;
         string message = IndentMessage (CreateMessage (info), out singleLine);
-        string optionalSpace = (singleLine && message.Length > 0) ? ":" : "";
+        string optionalSpace = (singleLine && message.Length > 0) ? " " : "";
         m_output.WriteLine ("{0} {1} {2} {3} {4} {5}{6}{7}",
                             time, bot, fiber, type, instance, state, optionalSpace, message);
       }
@@ -99,7 +99,7 @@ namespace RCL.Kernel
       {
         bool singleLine;
         string message = IndentMessage (CreateMessage (info), out singleLine);
-        string optionalSpace = (singleLine && message.Length > 0) ? ":" : "";
+        string optionalSpace = (singleLine && message.Length > 0) ? " " : "";
         m_output.WriteLine ("{0} {1} {2} {3} {4}{5}{6}", 
                             bot, fiber, type, instance, state, optionalSpace, message);        
       }

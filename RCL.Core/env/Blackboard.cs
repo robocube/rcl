@@ -393,6 +393,9 @@ namespace RCL.Core
         }
         RCSymbol symbol = new RCSymbol (right.Axis.Symbol);
         Dictionary<long, RCClosure> all = null;
+        long G, E;
+        RCTimeScalar T;
+        RCSymbolScalar S;
         lock (m_readWriteLock)
         {
           Section s = GetSection (symbol);
@@ -400,6 +403,13 @@ namespace RCL.Core
           line = s.m_g + s.m_blackboard.Count;
           s.m_readWaiters.GetReadersForSymbol (ref all, symbols);
           s.m_dispatchWaiters.GetReadersForSymbol (ref all, symbols);
+          /*
+          int last = s.m_blackboard.Axis.Count;
+          G = s.m_blackboard.Axis.Global[last];
+          E = s.m_blackboard.Axis.Event[last];
+          T = s.m_blackboard.Axis.Time[last];
+          S = s.m_blackboard.Axis.Symbol[last];
+          */
         }
         ContinueWaiters (runner, all);
         //I really want to see what was written including G and T and i cols.
@@ -417,7 +427,8 @@ namespace RCL.Core
     public void EvalWrite (RCRunner runner, RCClosure closure, RCSymbol left, RCBlock right)
     {
       long line = Write (runner, left, right);
-      runner.Log.Record (runner, closure, "board", 0, "write", right);
+      RCBlock logBlock = new RCBlock (right, "S", ":", left);
+      runner.Log.Record (runner, closure, "board", 0, "write", logBlock);
       runner.Yield (closure, new RCLong (line));
     }
 

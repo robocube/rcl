@@ -908,6 +908,7 @@ namespace RCL.Kernel
         {
           m_botWaiters.Remove (bot);
         }
+        m_bots[bot].Dispose ();
       }
       if (waiters != null)
       {
@@ -923,15 +924,10 @@ namespace RCL.Kernel
       if (fibers.Count == 1)
       {
         Kill (fibers[0], -1, new Exception ("fiber killed"), 2);
-        closure.Bot.Dispose ();
       }
       else if (fibers.Count == 2)
       {
         Kill (fibers[0], fibers[1], new Exception ("fiber killed"), 2);
-        if (fibers[1] == 0)
-        {
-          closure.Bot.Dispose ();
-        }
       }
       else
       {

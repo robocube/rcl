@@ -132,9 +132,10 @@ namespace RCL.Kernel
 
     //For RCL log files only.
     //public static readonly RCTokenType LogContent = new LogContentToken ();
+    //public static readonly RCTokenType LogEntryHeader = new LogEntryHeader ();
+    public static readonly RCTokenType EndOfLine = new EndOfLine ();
     public static readonly RCTokenType LogEntryHeader = new LogEntryHeader ();
-    public static readonly RCTokenType LogEntryMessage = new LogEntryMessage ();
-    public static readonly RCTokenType LogEntryDocument = new LogEntryDocument ();
+    public static readonly RCTokenType LogEntryBody = new LogEntryBody ();
 
     /// <summary>
     /// Is this the right spot for a visitor? not really sure...

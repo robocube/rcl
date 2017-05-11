@@ -1,12 +1,41 @@
 ﻿
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.IO;
-using System.Globalization;
-
 namespace RCL.Kernel
 {
+  public class EndOfLine : RCTokenType
+  {
+    public override RCToken TryParseToken (string code,
+                                           int start,
+                                           int index,
+                                           RCToken previous)
+    {
+      int current = start;
+      if (code[current] == '\r')
+      {
+        ++current;
+      }
+      if (current < code.Length && code[current] == '\n')
+      {
+        ++current;
+      }
+      if (current > start)
+      {
+        string text = code.Substring (start, current - start);
+        return new RCToken (text, this, start, index);
+      }
+      else return null;
+    }
+
+    public override void Accept (RCParser parser, RCToken token)
+    {
+      parser.AcceptEndOfLine (token);
+    }
+
+    public override string TypeName
+    {
+      get { return "endofline"; }
+    }
+  }
+
   public class LogEntryHeader : RCTokenType
   {
     public override RCToken TryParseToken (string code,
@@ -18,11 +47,7 @@ namespace RCL.Kernel
       if (code[current] >= '0' && code[current] <= '9')
       {
         //it's either a timestamp or a bot number at the beginning of a line.
-        while (current < code.Length && code[current] != ':' && code[current] != '\n')
-        {
-          ++current;
-        }
-        if (current < code.Length && code[current] == '\n')
+        while (current < code.Length && code[current] != '\r' && code[current] != '\n')
         {
           ++current;
         }
@@ -43,6 +68,7 @@ namespace RCL.Kernel
     }
   }
 
+  /*
   public class LogEntryMessage : RCTokenType
   {
     public override RCToken TryParseToken (string code,
@@ -51,7 +77,7 @@ namespace RCL.Kernel
                                            RCToken previous)
     {
       int current = start;
-      if (code[current] == ':')
+      if (code[current] == ' ')
       {
         while (current < code.Length && code[current] != '\n')
         {
@@ -77,8 +103,9 @@ namespace RCL.Kernel
       get { return "logentrymessage"; }
     }
   }
+  */
 
-  public class LogEntryDocument : RCTokenType
+  public class LogEntryBody : RCTokenType
   {
     public override RCToken TryParseToken (string code,
                                            int start,
@@ -91,24 +118,24 @@ namespace RCL.Kernel
         ++current;
         if (!(current < code.Length && code[current] == ' ')) return null;
         ++current;
-        while (current < code.Length && code[current] != '\n')
+        while (current < code.Length && !(code[current] == '\r' || code[current] == '\n'))
         {
           ++current;
         }
-        ++current;
+        string text = code.Substring (start, current - start);
+        return new RCToken (text, this, start, index);
       }
-      string text = code.Substring (start, current - start);
-      return new RCToken (text, this, start, index);
+      return null;
     }
 
     public override void Accept (RCParser parser, RCToken token)
     {
-      parser.AcceptLogEntryDocument (token);
+      parser.AcceptLogEntryBody (token);
     }
 
     public override string TypeName
     {
-      get { return "logentrydocument"; }
+      get { return "logentrybody"; }
     }
   }
 }

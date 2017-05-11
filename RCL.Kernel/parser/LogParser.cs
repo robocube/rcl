@@ -1,7 +1,5 @@
 ﻿
-using System;
 using System.Text;
-using System.Collections.Generic;
 
 namespace RCL.Kernel
 {
@@ -13,8 +11,8 @@ namespace RCL.Kernel
     {
       RCArray<RCTokenType> types = new RCArray<RCTokenType> ();
       types.Write (RCTokenType.LogEntryHeader);
-      types.Write (RCTokenType.LogEntryMessage);
-      types.Write (RCTokenType.LogEntryDocument);
+      types.Write (RCTokenType.EndOfLine);
+      types.Write (RCTokenType.LogEntryBody);
       m_logLexer = new RCLexer (types);
     }
 
@@ -26,8 +24,9 @@ namespace RCL.Kernel
     RCToken m_event = null;
     string m_message = null;
     string m_document = null;
+    StringBuilder m_builder = new StringBuilder ();
     RCCube m_result = new RCCube ();
-  
+
     public LogParser ()
     {
       m_lexer = m_logLexer;
@@ -44,12 +43,18 @@ namespace RCL.Kernel
       m_result.ReserveColumn ("event");
       m_result.ReserveColumn ("message");
       m_result.ReserveColumn ("document");
+
       for (int i = 0; i < tokens.Count; ++i)
       {
         tokens[i].Type.Accept (this, tokens[i]);
       }
+
       if (m_bot != null)
       {
+        if (m_builder.Length > 0)
+        {
+          m_document = m_builder.ToString ();
+        }
         AppendEntry ();
       }
       return m_result;
@@ -59,8 +64,13 @@ namespace RCL.Kernel
     {
       if (m_bot != null)
       {
+        if (m_builder.Length > 0)
+        {
+          m_document = m_builder.ToString ();
+        }
         AppendEntry ();
       }
+
       int current = 0;
       m_time = RCTokenType.Time.TryParseToken (token.Text, current, 0, null);
       if (m_time != null)
@@ -105,50 +115,26 @@ namespace RCL.Kernel
         current += m_event.Text.Length;
       }
       ++current;
-    }
 
-    public override void AcceptLogEntryMessage (RCToken token)
-    {
-      //This first char is always ':'
-      int end = token.Text.Length - 1;
-      if (end > 0 && token.Text[end] == '\n')
+      if (current <= token.Text.Length)
       {
-        --end;
+        m_message = token.Text.Substring (current);
       }
-      if (end > 0 && token.Text[end] == '\r')
+      else
       {
-        --end;
+        m_message = null;
       }
-      m_message = token.Text.Substring (1, end);
-    }
-
-    protected StringBuilder m_builder = new StringBuilder ();
-    public override void AcceptLogEntryDocument (RCToken token)
-    {
       m_builder.Clear ();
-      //This is not correct. Need to take out the indentation.
-      int start = 2;
-      int current = 2;
-      while (current < token.Text.Length)
-      {
-        if (token.Text[current] == '\n')
-        {
-          m_builder.AppendLine (token.Text.Substring (start, current - start));
-          start = current + 3;
-          current = start;
-        }
-        else if (token.Text[current] == '\r')
-        {
-          m_builder.AppendLine (token.Text.Substring (start, current - start));
-          start = current + 4;
-          current = start;
-        }
-        else
-        {
-          ++current;
-        }
-      }
-      m_document = m_builder.ToString ();
+    }
+
+    public override void AcceptEndOfLine (RCToken token)
+    {
+      
+    }
+
+    public override void AcceptLogEntryBody (RCToken token)
+    {
+      m_builder.AppendLine (token.Text.Substring (2));
     }
 
     protected void AppendEntry ()
