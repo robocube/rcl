@@ -493,6 +493,12 @@ namespace RCL.Kernel
       }
     }
 
+    public RCValue Peek (string code)
+    {
+      bool fragment;
+      return Peek (code, out fragment);
+    }
+
     public RCValue Peek (string code, out bool fragment)
     {
       RCParser parser = new RCLParser (Activator);

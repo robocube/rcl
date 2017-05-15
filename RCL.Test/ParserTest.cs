@@ -478,7 +478,8 @@ namespace RCL.Test
     public void TestQuotedNamesInReferences ()
     {
       DoParserTest ("{'a b c':1 2 3 '!@#$%^&*':4 5 6}");
-      DoParserTest ("{x:\"a\" \"b\" 'c':1 2 3}");
+      DoParserTest ("{x:\"a\" \"b\" c:1 2 3}");
+      DoParserTest ("{x:\"a\" \"b\" 'c-d':1 2 3}");
       DoParserTest ("$'a b'.c.'d e'");
     }
 

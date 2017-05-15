@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Text;
 using System.Collections.Generic;
 
@@ -11,6 +10,123 @@ namespace RCL.Kernel
     RCValue Get (RCArray<string> name, RCArray<RCBlock> context);
     RCValue Get (string[] name, RCArray<RCBlock> context);
     RCValue Get (string name);
+  }
+
+  public class RCName
+  {
+    protected static object m_lock = new object ();
+    protected static Dictionary<string, RCName> m_names = new Dictionary<string, RCName> ();
+    protected static RCArray<RCName> m_index = new RCArray<RCName> ();
+
+    static RCName ()
+    {
+      RCName empty = new RCName ("", 0);
+      m_names.Add ("", empty);
+      m_index.Write (empty);
+    }
+
+    static RCName GetName (string text)
+    {
+      if (text == null) 
+      {
+        text = "";    
+      }
+      string name = null;
+      RCName result;
+      lock (m_lock)
+      {
+        if (!m_names.TryGetValue (text, out result))
+        {
+          if (text[0] == '\'')
+          {
+            if (text.Length == 1 || text[text.Length - 1] != '\'')
+            {
+              throw new Exception ("Unmatched single quote in name: " + text);
+            }
+            //remove quotes if not necessary          
+            for (int i = 1; i < text.Length - 1; ++i)
+            {
+              if (!RCTokenType.IsIdentifierChar (text[i]))
+              { 
+                name = text;
+                break;  
+              }
+            }
+            if (name == null)
+            {
+              name = text.Substring (1, text.Length - 2);
+            }
+          }
+          else
+          {
+            for (int i = 0; i < text.Length; ++i)
+            {
+              //add quotes if necessary
+              if (!RCTokenType.IsIdentifierChar (text[i]))
+              {
+                name = "'" + text + "'";
+                break;
+              }
+            }
+            if (name == null)
+            {
+              name = text;
+            }
+          }
+          if (m_names.TryGetValue (name, out result))
+          {
+            //this makes it a synonym for next time
+            m_names.Add (text, result);
+            return result;
+          }
+          else
+          {
+            result = new RCName (name, m_names.Count);
+            m_names.Add (result.Text, result);
+            m_index.Write (result);
+            return result;
+          }
+        }
+        else 
+        {
+          return result;
+        }
+      }
+    }
+
+    public static string Get (string name)
+    {
+      return GetName (name).Text;
+    }
+
+    public static long Num (string name)
+    {
+      return GetName (name).Index; 
+    }
+
+    public static string RawName (string name)
+    {
+      if (name == null || name.Length == 0)
+      {
+        return "";
+      }
+      else if (name[0] == '\'')
+      {
+        return name.Substring (1, name.Length - 2);
+      }
+      else 
+      {
+        return name;
+      }
+    }
+
+    protected readonly string Text;
+    protected readonly long Index;
+    public RCName (string text, long index)
+    {
+      Text = text;
+      Index = index;
+    }
   }
 
   public class RCEvaluator
@@ -65,6 +181,7 @@ namespace RCL.Kernel
 
     public readonly RCBlock Previous;
     public readonly RCValue Value;
+    public readonly bool EscapeName = false;
 
     public readonly string Name;
     public readonly RCEvaluator Evaluator;
@@ -85,17 +202,21 @@ namespace RCL.Kernel
       }
 
       Previous = previous != null ? previous : Empty;
-      Name = name;
+      Name = RCName.Get (name);
       Evaluator = evaluator;
       Value = val;
       m_count = Previous.Count + 1;
     }
 
     public RCBlock (RCBlock previous, string name, string instr, RCValue val)
-      :this (previous, name, RCEvaluator.For (instr), val) {}
+      : this (previous, name, RCEvaluator.For (instr), val)
+    {
+    }
 
     public RCBlock (string name, string op, RCValue value)
-      :this (null, name, op, value) {}
+      : this (null, name, op, value)
+    {
+    }
 
     public override string TypeName
     {
@@ -109,6 +230,7 @@ namespace RCL.Kernel
 
     public RCBlock GetName (string name)
     {
+      name = RCName.Get (name);
       RCBlock current = this;
       while (current != null && current.Count > 0)
       {
@@ -135,7 +257,7 @@ namespace RCL.Kernel
         }
         else if (@this != null)
         {
-          @this.Write ((RCBlock)block);
+          @this.Write ((RCBlock) block);
         }
       }
       return value;
@@ -156,7 +278,7 @@ namespace RCL.Kernel
         }
         if (@this != null && i < name.Count - 1)
         {
-          @this.Write ((RCBlock)block);
+          @this.Write ((RCBlock) block);
         }
       }
       return value;
@@ -200,6 +322,14 @@ namespace RCL.Kernel
         }
       }
       return current;
+    }
+
+    public string RawName
+    {
+      get
+      {
+        return RCName.RawName (Name);
+      }
     }
 
     public RCValue Get (long index)
@@ -250,7 +380,8 @@ namespace RCL.Kernel
         }
         return result;
       }
-      else return val;
+      else
+        return val;
     }
 
     public override void Eval (RCRunner runner, RCClosure closure)
@@ -272,8 +403,8 @@ namespace RCL.Kernel
     }
 
     public override void Format (StringBuilder builder, 
-                                     RCFormat args, 
-                                     int level)
+                                 RCFormat args, 
+                                 int level)
     {
       RCL.Kernel.Format.DoFormat (this, builder, args, level);
     }

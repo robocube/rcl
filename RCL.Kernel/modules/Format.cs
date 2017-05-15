@@ -120,7 +120,16 @@ namespace RCL.Kernel
         RCBlock child = block.GetName (i);
         for (int tab = 0; tab < level; ++tab)
           builder.Append (args.Indent);
-        builder.Append (child.Name);
+        if (child.EscapeName)
+        {
+          builder.Append ("'");
+          builder.Append (child.Name);
+          builder.Append ("'");
+        }
+        else
+        {
+          builder.Append (child.Name);
+        }
         builder.Append (child.Evaluator.Symbol);
 
         if (child.Value != null)

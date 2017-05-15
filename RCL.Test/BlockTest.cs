@@ -209,6 +209,24 @@ namespace RCL.Test
     }
 
     [Test]
+    public void RawNames ()
+    {
+      r.Reset ();
+      RCBlock k = (RCBlock) r.Peek ("{'Set-Cookie':\"abcdefg\"}");
+      Assert.AreEqual ("'Set-Cookie'", k.GetName (0).Name);
+      Assert.AreEqual ("Set-Cookie", k.GetName (0).RawName);
+    }
+
+    [Test]
+    public void TestEscapedNames ()
+    {
+      r.Reset ();
+      RCBlock k = new RCBlock (RCBlock.Empty, "foo-bar", ":", new RCString ("baz"));
+      Assert.AreEqual ("'foo-bar'", k.GetName (0).Name);
+      Assert.AreEqual ("foo-bar", k.GetName (0).RawName);
+    }
+
+    [Test]
     [ExpectedException (typeof (ArgumentNullException))]
     public void TestMacroCtor ()
     {

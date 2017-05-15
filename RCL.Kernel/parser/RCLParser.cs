@@ -67,7 +67,7 @@ namespace RCL.Kernel
       if (m_operators.Count > 0)
       {
         MakeExpression ();
-      }
+      } 
       fragment = FinishBlock ();
       if (m_block != null)
       {
@@ -518,7 +518,7 @@ namespace RCL.Kernel
           {
             string content = section [0];
             StringBuilder builder = new StringBuilder ();
-
+            
             int start = 0, end = 0;
             //Skip past the initial newline in the first section.
             if (i == 0)
@@ -551,10 +551,10 @@ namespace RCL.Kernel
               start = end;
             }
             end = start;
-
+            
             GETLINE:
             start = end + template.m_minSpaces;
-
+            
             while (end < content.Length)
             {
               if (content [end] == '\n')
@@ -564,7 +564,7 @@ namespace RCL.Kernel
               }
               ++end;
             }
-
+            
             //The problem is when the first character is a newline this gets fucked up.
             if (start < content.Length && end <= content.Length)
             {

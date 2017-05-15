@@ -1136,17 +1136,23 @@ namespace RCL.Test
     [Test]
     public void TestFromMK() { DoTest ("1m from {x:0 y:1 z:2}", "{y:1}"); }
     [Test]
-    public void TestFromLKNeg() { DoTest ("-2 from {x:0 y:1 z:2}", "{y:1}"); }
+    public void TestFromLKNeg () { DoTest ("-2 from {x:0 y:1 z:2}", "{y:1}"); }
     [Test]
-    public void TestFromDKNeg() { DoTest ("-2.0 from {x:0 y:1 z:2}", "{y:1}"); }
+    public void TestFromDKNeg () { DoTest ("-2.0 from {x:0 y:1 z:2}", "{y:1}"); }
     [Test]
-    public void TestFromMKNeg() { DoTest ("-2m from {x:0 y:1 z:2}", "{y:1}"); }
+    public void TestFromMKNeg () { DoTest ("-2m from {x:0 y:1 z:2}", "{y:1}"); }
     [Test]
-    public void TestFromXK() { DoTest ("\\x01 from {x:0 y:1 z:2}", "{y:1}"); }
+    public void TestFromXK () { DoTest ("\\x01 from {x:0 y:1 z:2}", "{y:1}"); }
     [Test]
-    public void TestFromKS() { DoTest ("\"y\" from {x:0 y:1 z:2}", "{y:1}"); }
+    public void TestFromYK () { DoTest ("#y from {x:0 y:1 z:2}", "{y:1}"); }
     [Test]
-    public void TestFromKY() { DoTest ("#y from {x:0 y:1 z:2}", "{y:1}"); }
+    public void TestFromYK1 () { DoTest ("#'a b c' from {'a b c':1}", "{'a b c':1}"); }
+    [Test]
+    public void TestFromSK () { DoTest ("\"y\" from {x:0 y:1 z:2}", "{y:1}"); }
+    [Test]
+    public void TestFromSK1 () { DoTest ("\"a b c\" from {'a b c':1}", "{'a b c':1}"); }
+    [Test]
+    public void TestFromSK2 () { DoTest ("\"'a b c'\" from {'a b c':1}", "{'a b c':1}"); }
 
     [Test]
     public void TestFirst() { DoTest ("first {:0 :1 :2}", "0"); }

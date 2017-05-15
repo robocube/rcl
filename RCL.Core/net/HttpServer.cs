@@ -549,7 +549,7 @@ namespace RCL.Core
           {
             RCBlock header = headers.GetName (i);
             RCString val = (RCString) header.Value;
-            info.Context.Response.AppendHeader (header.Name, val[0]);
+            info.Context.Response.AppendHeader (header.RawName, val[0]);
           }
         }
         byte[] bytes = Encoding.UTF8.GetBytes (body[0]);

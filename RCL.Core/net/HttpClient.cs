@@ -172,20 +172,6 @@ namespace RCL.Core
         TextReader reader = new StreamReader (stream);
         string body = reader.ReadToEnd ();
         reader.Close ();
-        /*
-        string line;
-        RCArray<string> body = new RCArray<string> ();
-        while (true)
-        {
-          line = reader.ReadLine ();
-          if (line != null)
-          {
-            body.Write (line);
-          }
-          else break;
-        }
-        reader.Close ();
-        */
 
         RCBlock block = new RCBlock (RCBlock.Empty,
                                      "status", ":", new RCLong (status));
