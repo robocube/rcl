@@ -2,11 +2,9 @@
 using System;
 using System.IO;
 using System.Net;
-using System.Web;
 using System.Text;
 using System.Threading;
-using System.Collections.Specialized;
-using System.Collections.Generic;
+using System.Web;
 using RCL.Kernel;
 
 namespace RCL.Core
@@ -28,6 +26,28 @@ namespace RCL.Core
         BodyOnly = bodyOnly;
         Instance = instance;
       }
+    }
+
+    [RCVerb ("urlencode")]
+    public void UrlEncode (RCRunner runner, RCClosure closure, RCString right)
+    {
+      RCArray<string> result = new RCArray<string> (right.Count);
+      for (int i = 0; i < right.Count; ++i)
+      {
+        result.Write (HttpUtility.UrlEncode (right[i]));
+      }
+      runner.Yield (closure, new RCString (result));
+    }
+
+    [RCVerb ("urldecode")]
+    public void UrlDecode (RCRunner runner, RCClosure closure, RCString right)
+    {
+      RCArray<string> result = new RCArray<string> (right.Count);
+      for (int i = 0; i < right.Count; ++i)
+      {
+        result.Write (HttpUtility.UrlDecode (right[i]));
+      }
+      runner.Yield (closure, new RCString (result));
     }
 
     [RCVerb ("get")]
@@ -58,6 +78,24 @@ namespace RCL.Core
                                     new RestAsyncState (runner, closure, request, new RCString (), false, Interlocked.Increment (ref m_client)));
     }
 
+    [RCVerb ("getw")]
+    public void Getw (RCRunner runner, RCClosure closure, RCBlock left, RCString right)
+    {
+      if (right.Count != 1)
+      {
+        throw new Exception ("getw can only get from one resource at a time.");
+      }
+      HttpWebRequest request = (HttpWebRequest) WebRequest.Create (right[0]);
+      request.Method = "GET";
+      for (int i = 0; i < left.Count; ++i)
+      {
+        RCBlock header = left.GetName (0);
+        request.Headers.Set (header.RawName, ((RCString) header.Value)[0]);
+      }
+      ThreadPool.QueueUserWorkItem (BeginWebRequest,
+                                    new RestAsyncState (runner, closure, request, new RCString (), false, Interlocked.Increment (ref m_client)));
+    }
+
     [RCVerb ("putw")]
     public void Putw (RCRunner runner, RCClosure closure, RCString right)
     {
@@ -84,11 +122,26 @@ namespace RCL.Core
                                      new RestAsyncState (runner, closure, request, right, false, Interlocked.Increment (ref m_client)));
     }
 
+    [RCVerb ("putw")]
+    public void Putw (RCRunner runner, RCClosure closure, RCString left, RCBlock right)
+    {
+      if (left.Count != 1)
+      {
+        throw new Exception ("putw can only put to one resource at a time.");
+      }
+      HttpWebRequest request = (HttpWebRequest) WebRequest.Create (left[0]);
+      request.Method = "PUT";
+      SetHeaders (request, right);
+      RCString body = (RCString) right.Get ("body");
+      request.BeginGetRequestStream (FinishGetRequestStream,
+                                     new RestAsyncState (runner, closure, request, body, false, Interlocked.Increment (ref m_client)));
+    }
+
     [RCVerb ("postw")]
     public void Postw (
       RCRunner runner, RCClosure closure, RCString left, RCString right)
     {
-      if (right.Count != 1)
+      if (left.Count != 1)
       {
         throw new Exception ("postw can only put to one resource at a time.");
       }
@@ -96,6 +149,55 @@ namespace RCL.Core
       request.Method = "POST";
       request.BeginGetRequestStream (FinishGetRequestStream,
                                      new RestAsyncState (runner, closure, request, right, false, Interlocked.Increment (ref m_client)));
+    }
+
+    [RCVerb ("postw")]
+    public void Postw (
+      RCRunner runner, RCClosure closure, RCString left, RCBlock right)
+    {
+      if (left.Count != 1)
+      {
+        throw new Exception ("postw can only put to one resource at a time.");
+      }
+      HttpWebRequest request = (HttpWebRequest) WebRequest.Create (left[0]);
+      request.Method = "POST";
+      SetHeaders (request, right);
+      RCString body = (RCString) right.Get ("body");
+      request.BeginGetRequestStream (FinishGetRequestStream,
+                                     new RestAsyncState (runner, closure, request, body, false, Interlocked.Increment (ref m_client)));
+    }
+
+    protected void SetHeaders (HttpWebRequest request, RCBlock right)
+    {
+      RCBlock head = (RCBlock) right.Get ("head");
+      if (head != null)
+      {
+        for (int i = 0; i < head.Count; ++i)
+        {
+          RCBlock header = head.GetName (i);
+          string name = header.RawName.ToLower ();
+          if (name == "content-type")
+          {
+            request.ContentType = ((RCString) header.Value)[0];
+          }
+          else if (name == "accept")
+          {
+            request.Accept = ((RCString) header.Value)[0];
+          }
+          else if (name == "user-agent")
+          {
+            request.UserAgent = ((RCString) header.Value)[0];
+          }
+          else if (name == "referer")
+          {
+            request.Referer = ((RCString) header.Value)[0];
+          }
+          else
+          {
+            request.Headers.Set (header.RawName, ((RCString) header.Value)[0]);
+          }
+        }
+      }
     }
 
     [RCVerb ("delw")]

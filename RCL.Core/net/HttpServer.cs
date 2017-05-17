@@ -147,6 +147,34 @@ namespace RCL.Core
       //runner.Log.Record (runner, closure, closure.Bot.Id, "https", right[0], "recv", "");
     }
 
+    [RCVerb ("httpcheck")]
+    public void EvalHttpCheck (
+      RCRunner runner, RCClosure closure, RCString left, RCLong right)
+    {
+      RequestInfo info;
+      //Let's have only one listener at a time, at least for now.
+      if (right.Count > 1)
+      {
+        throw new Exception ("Can only httprecv from one listener per call");
+      }
+      if (left.Count != 2)
+      {
+        throw new Exception ("Left argument must have the form \"id\" \"1234567\"");
+      }
+      lock (m_lock)
+      {
+        info = m_contexts[(int) right[0]];
+      }
+      string id = info.Context.Request.Cookies[left[0]].Value;
+      if (!id.Equals (left[1]))
+      {
+        info.Context.Response.StatusCode = 401;
+        info.Context.Response.OutputStream.Close ();
+        throw new Exception ("Invalid session id");
+      }
+      runner.Yield (closure, right);
+    }
+
     protected void Process (IAsyncResult result)
     {
       RCAsyncState state = (RCAsyncState) result.AsyncState;

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'rclt' ">
+    <StartAction>Project</StartAction>
+    <StartArguments>--program=/Users/brian/dev/src/rclkit/rclt.rcl --action=main rcl:http_session_id</StartArguments>
+    <StartWorkingDirectory>..\..\rclkit\</StartWorkingDirectory>
+    <ExternalConsole>true</ExternalConsole>
+    <EnvironmentVariables>
+      <Variable name="RCL_BUILD" value="dev" />
+    </EnvironmentVariables>
+  </PropertyGroup>
+</Project>
