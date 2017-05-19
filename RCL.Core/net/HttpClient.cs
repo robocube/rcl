@@ -62,7 +62,7 @@ namespace RCL.Core
       HttpWebRequest request = (HttpWebRequest) WebRequest.Create (right[0]);
       request.Method = "GET";
       ThreadPool.QueueUserWorkItem (BeginWebRequest,
-                                    new RestAsyncState (runner, closure, request, new RCString (), true, Interlocked.Increment (ref m_client)));
+                                    new RestAsyncState (runner, closure, request, new RCString (), false, Interlocked.Increment (ref m_client)));
     }
 
     [RCVerb ("getw")]
@@ -87,11 +87,7 @@ namespace RCL.Core
       }
       HttpWebRequest request = (HttpWebRequest) WebRequest.Create (right[0]);
       request.Method = "GET";
-      for (int i = 0; i < left.Count; ++i)
-      {
-        RCBlock header = left.GetName (0);
-        request.Headers.Set (header.RawName, ((RCString) header.Value)[0]);
-      }
+      this.SetHeaders (request, left);
       ThreadPool.QueueUserWorkItem (BeginWebRequest,
                                     new RestAsyncState (runner, closure, request, new RCString (), false, Interlocked.Increment (ref m_client)));
     }
@@ -161,15 +157,15 @@ namespace RCL.Core
       }
       HttpWebRequest request = (HttpWebRequest) WebRequest.Create (left[0]);
       request.Method = "POST";
-      SetHeaders (request, right);
+      RCBlock head = (RCBlock) right.Get ("head");
+      SetHeaders (request, head);
       RCString body = (RCString) right.Get ("body");
       request.BeginGetRequestStream (FinishGetRequestStream,
                                      new RestAsyncState (runner, closure, request, body, false, Interlocked.Increment (ref m_client)));
     }
 
-    protected void SetHeaders (HttpWebRequest request, RCBlock right)
+    protected void SetHeaders (HttpWebRequest request, RCBlock head)
     {
-      RCBlock head = (RCBlock) right.Get ("head");
       if (head != null)
       {
         for (int i = 0; i < head.Count; ++i)
@@ -210,6 +206,22 @@ namespace RCL.Core
       }
       HttpWebRequest request = (HttpWebRequest) WebRequest.Create (right[0]);
       request.Method = "DELETE";
+
+      ThreadPool.QueueUserWorkItem (BeginWebRequest,
+                                    new RestAsyncState (runner, closure, request, new RCString (), false, Interlocked.Increment (ref m_client)));
+    }
+
+    [RCVerb ("delw")]
+    public void Delw (
+      RCRunner runner, RCClosure closure, RCBlock left, RCString right)
+    {
+      if (right.Count != 1)
+      {
+        throw new Exception ("delw can only get from one resource at a time.");
+      }
+      HttpWebRequest request = (HttpWebRequest) WebRequest.Create (right[0]);
+      request.Method = "DELETE";
+      SetHeaders (request, left);
       ThreadPool.QueueUserWorkItem (BeginWebRequest,
                                     new RestAsyncState (runner, closure, request, new RCString (), false, Interlocked.Increment (ref m_client)));
     }

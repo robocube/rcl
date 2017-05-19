@@ -165,8 +165,8 @@ namespace RCL.Core
       {
         info = m_contexts[(int) right[0]];
       }
-      string id = info.Context.Request.Cookies[left[0]].Value;
-      if (!id.Equals (left[1]))
+      Cookie cookie = info.Context.Request.Cookies[left[0]];
+      if (cookie == null || !cookie.Value.Equals (left[1]))
       {
         info.Context.Response.StatusCode = 401;
         info.Context.Response.OutputStream.Close ();
