@@ -52,7 +52,9 @@ namespace RCL.Kernel
       m_data = new RCArray<T> ();
       m_index = new RCArray<int> ();
       if (timeline.Has ("S"))
+      {
         m_last = new Dictionary<RCSymbolScalar, T> ();
+      }
     }
 
     public override bool Write (RCSymbolScalar key, int index, object box, bool force)
@@ -71,8 +73,21 @@ namespace RCL.Kernel
         }
         m_last[key] = val;
       }
-      m_data.Write (val);
-      m_index.Write (index);
+      //this allows you to overwrite a pre-existing value
+      if (m_index.Count == 0 || m_index[m_index.Count - 1] < index)
+      {
+        m_data.Write (val);
+        m_index.Write (index);
+      }
+      else
+      {
+        int existing = m_index.BinarySearch (index);
+        if (existing < 0)
+        {
+          throw new Exception ("Invalid index " + index);
+        }
+        m_data.Write (existing, val);
+      }
       return true;
     }
 

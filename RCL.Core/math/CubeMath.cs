@@ -1300,6 +1300,12 @@ namespace RCL.Core
       RCCube result = new RCCube (left);
       foreach (string rightCol in rightCols)
       {
+        /*
+        if (left.Names.BinarySearch (rightCol) > -1)
+        {
+          continue;
+        }
+        */
         ColumnBase column = right.GetColumn (rightCol);
         for (int i = 0; i < leftSyms.Length; ++i)
         {
