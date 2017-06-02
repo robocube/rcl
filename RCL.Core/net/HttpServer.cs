@@ -11,39 +11,65 @@ using RCL.Kernel;
 
 namespace RCL.Core
 {
-  public class HttpServer : IDisposable
+  public class HttpDisableCertificateCheck
   {
-    protected internal object m_lock = new object ();
-    protected int m_listener = 0;
-    protected internal Dictionary<int, HttpListener> m_listeners =
-      new Dictionary<int, HttpListener> ();
-
-    //I'm sticking to the terminology of the api here but the context
-    //is really a request.  And we have to keep them as mutable state
-    //in order to respond through the http listener.
-    protected int m_context = 0;
-    protected internal readonly Dictionary<int, RequestInfo> m_contexts =
-      new Dictionary<int, RequestInfo> ();
-    protected int m_client = 0;
-
-    //This is only for the logging on dispose, so that the bot number will be accurate.
-    protected long m_bot = 0;
-
-    public HttpServer ()
+    [RCVerb ("httpcertcheck")]
+    public void EvalHttpCertCheck (RCRunner runner, RCClosure closure, RCBoolean right)
     {
-      ServicePointManager.ServerCertificateValidationCallback = MyRemoteCertificateValidationCallback;
+      if (!right[0])
+      {
+        runner.Log.Record (runner, closure, "http", 0, "disabled", "httpcertcheck");
+        ServicePointManager.ServerCertificateValidationCallback = DisabledChecking;
+        //ServicePointManager.CertificatePolicy = new NoCheckCertificatePolicy ();
+      }
+      runner.Yield (closure, right);
     }
 
-    public class RequestInfo
+    public class NoCheckCertificatePolicy : ICertificatePolicy
     {
-      public readonly HttpListenerContext Context;
-      public readonly DateTime Time;
-
-      public RequestInfo (HttpListenerContext context, DateTime time)
+      public bool CheckValidationResult (ServicePoint servicePoint, X509Certificate certificate, WebRequest request, int certificateProblem)
       {
-        Context = context;
-        Time = time;
+        Console.Out.WriteLine ("not checking certificate");
+        return true;
       }
+    }
+
+    protected bool DisabledChecking (System.Object sender,
+                                     X509Certificate certificate,
+                                     X509Chain chain,
+                                     SslPolicyErrors sslPolicyErrors)
+    {
+      Console.Out.WriteLine ("not checking certificate");
+      return true;
+      /*
+      try
+      {
+        // If there are errors in the certificate chain, look at each error to determine the cause.
+        if (sslPolicyErrors != SslPolicyErrors.None)
+        {
+          for (int i = 0; i < chain.ChainStatus.Length; i++)
+          {
+            if (chain.ChainStatus[i].Status != X509ChainStatusFlags.RevocationStatusUnknown)
+            {
+              chain.ChainPolicy.RevocationFlag = X509RevocationFlag.EntireChain;
+              chain.ChainPolicy.RevocationMode = X509RevocationMode.Online;
+              chain.ChainPolicy.UrlRetrievalTimeout = new TimeSpan (0, 1, 0);
+              chain.ChainPolicy.VerificationFlags = X509VerificationFlags.AllFlags;
+              bool chainIsValid = chain.Build ((X509Certificate2) certificate);
+              if (!chainIsValid)
+              {
+                isOk = false;
+              }
+            }
+          }
+        }
+      }
+      catch (Exception ex)
+      {
+        Console.Out.WriteLine ("Error validating certificate\n" + ex.ToString ());
+      }
+      return isOk;
+      */
     }
 
     protected bool MyRemoteCertificateValidationCallback (System.Object sender,
@@ -79,6 +105,39 @@ namespace RCL.Core
         Console.Out.WriteLine ("Error validating certificate\n" + ex.ToString ());
       }
       return isOk;
+    }
+  }
+
+  public class HttpServer : IDisposable
+  {
+    protected internal object m_lock = new object ();
+    protected int m_listener = 0;
+    protected internal Dictionary<int, HttpListener> m_listeners =
+      new Dictionary<int, HttpListener> ();
+
+    //I'm sticking to the terminology of the api here but the context
+    //is really a request.  And we have to keep them as mutable state
+    //in order to respond through the http listener.
+    protected int m_context = 0;
+    protected internal readonly Dictionary<int, RequestInfo> m_contexts =
+      new Dictionary<int, RequestInfo> ();
+    protected int m_client = 0;
+
+    //This is only for the logging on dispose, so that the bot number will be accurate.
+    protected long m_bot = 0;
+
+    public HttpServer () {}
+
+    public class RequestInfo
+    {
+      public readonly HttpListenerContext Context;
+      public readonly DateTime Time;
+
+      public RequestInfo (HttpListenerContext context, DateTime time)
+      {
+        Context = context;
+        Time = time;
+      }
     }
 
     [RCVerb ("httpstart")]

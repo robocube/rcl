@@ -60,6 +60,7 @@ namespace RCL.Core
         throw new Exception ("get can only get from one resource at a time.");
       }
       HttpWebRequest request = (HttpWebRequest) WebRequest.Create (right[0]);
+      //request.ServicePoint.
       request.Method = "GET";
       ThreadPool.QueueUserWorkItem (BeginWebRequest,
                                     new RestAsyncState (runner, closure, request, new RCString (), false, Interlocked.Increment (ref m_client)));
