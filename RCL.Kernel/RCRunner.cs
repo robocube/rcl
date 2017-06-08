@@ -16,6 +16,7 @@ namespace RCL.Kernel
     public readonly bool Exit;
     public readonly bool Batch;
     public readonly bool Nokeys;
+    public readonly bool Noread;
     public readonly bool Version;
     public readonly string Program;
     public readonly string Action;
@@ -55,6 +56,10 @@ namespace RCL.Kernel
             {
               Nokeys = true;
             }
+            else if (option.Equals ("noread"))
+            {
+              Noread = true;
+            }
             else if (option.Equals ("version"))
             {
               //This option forces the version to display no matter what.
@@ -81,6 +86,9 @@ namespace RCL.Kernel
                   break;
                 case 'k':
                   Nokeys = true;
+                  break;
+                case 'r':
+                  Noread = true;
                   break;
                 case 'v':
                   Version = true;
@@ -135,6 +143,7 @@ namespace RCL.Kernel
       Options = new RCBlock (Options, "show", ":", new RCString (Show));
       Options = new RCBlock (Options, "batch", ":", new RCBoolean (Batch));
       Options = new RCBlock (Options, "nokeys", ":", new RCBoolean (Nokeys));
+      Options = new RCBlock (Options, "noread", ":", new RCBoolean (Noread));
       Options = new RCBlock (Options, "exit", ":", new RCBoolean (Exit));
       Options = new RCBlock (Options, "version", ":", new RCBoolean (Version));
       OutputEnum = (RCOutput) Enum.Parse (typeof (RCOutput), Output, true);

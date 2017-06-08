@@ -143,7 +143,15 @@ namespace RCL.Exe
           {
             if (cmd.Nokeys)
             {
-              line = Console.ReadLine ();
+              //No read requires nokeys to have an effect, obvs.
+              if (cmd.Noread)
+              {
+                Thread.Sleep (Timeout.Infinite);
+              }
+              else
+              {
+                line = Console.ReadLine ();
+              }
             }
             else
             {
