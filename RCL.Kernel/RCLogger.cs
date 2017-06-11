@@ -81,6 +81,24 @@ namespace RCL.Kernel
         m_output.WriteLine ("{0} {1} {2} {3} {4} {5} {6}",
                             time, bot, fiber, type, instance, state, info.ToString ());
       }
+      else if (m_level == RCOutput.Systemd)
+      {
+				// 0 Emergency: system is unusable
+				// 1 Alert: action must be taken immediately
+				// 2 Critical: critical conditions
+				// 3 Error: error conditions
+				// 4 Warning: warning conditions
+				// 5 Notice: normal but significant condition
+				// 6 Informational: informational messages
+				// 7 Debug: debug-level messages
+        int severity = 6;
+        if (info is Exception)
+        {
+          severity = 3;
+        }
+        m_output.WriteLine ("<{0}>{1} {2} {3} {4} {5} {6}",
+                            severity, bot, fiber, type, instance, state, info.ToString ());
+      }
       else if (m_level == RCOutput.Multi || m_level == RCOutput.Full)
       {
         string time = DateTime.UtcNow.ToString (TimeFormat);
