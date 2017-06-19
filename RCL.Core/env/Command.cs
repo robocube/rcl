@@ -172,7 +172,7 @@ namespace RCL.Core
       }
 
       //using (var stream = File.OpenWrite (path))
-      using (var stream = File.Open (path, FileMode.Create))
+      using (var stream = File.Open (path, FileMode.Create, FileAccess.Write))
         using (StreamWriter writer = new StreamWriter (stream))
       {
         if (lines.Length > 0)
