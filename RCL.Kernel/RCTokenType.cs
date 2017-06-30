@@ -134,6 +134,7 @@ namespace RCL.Kernel
     //public static readonly RCTokenType LogContent = new LogContentToken ();
     //public static readonly RCTokenType LogEntryHeader = new LogEntryHeader ();
     public static readonly RCTokenType EndOfLine = new EndOfLine ();
+    public static readonly RCTokenType LogEntryRawLine = new LogEntryRawLine ();
     public static readonly RCTokenType LogEntryHeader = new LogEntryHeader ();
     public static readonly RCTokenType LogEntryBody = new LogEntryBody ();
 

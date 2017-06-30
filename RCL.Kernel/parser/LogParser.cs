@@ -13,6 +13,7 @@ namespace RCL.Kernel
       types.Write (RCTokenType.LogEntryHeader);
       types.Write (RCTokenType.EndOfLine);
       types.Write (RCTokenType.LogEntryBody);
+      types.Write (RCTokenType.LogEntryRawLine);
       m_logLexer = new RCLexer (types);
     }
 
@@ -137,17 +138,75 @@ namespace RCL.Kernel
       m_builder.AppendLine (token.Text.Substring (2));
     }
 
+    protected readonly static char[] TRIM_CHARS = new char[] { '\r', '\n' };
+    public override void AcceptLogEntryRawLine (RCToken token)
+    {
+      if (m_bot != null)
+      {
+        if (m_builder.Length > 0)
+        {
+          m_document = m_builder.ToString ();
+        }
+        AppendEntry ();
+      }
+
+      m_time = null;
+      m_bot = null;
+      m_fiber = null;
+      m_module = null;
+      m_instance = null;
+      m_event = null;
+      m_message = token.Text.TrimEnd (TRIM_CHARS);
+      m_document = null;
+      AppendEntry ();
+    }
+
     protected void AppendEntry ()
     {
       if (m_time != null)
       {
         m_result.WriteCell ("time", null, m_time.ParseTime (m_lexer));
       }
-      m_result.WriteCell ("bot", null, m_bot.ParseLong (m_lexer));
-      m_result.WriteCell ("fiber", null, m_fiber.ParseLong (m_lexer));
-      m_result.WriteCell ("module", null, m_module.Text);
-      m_result.WriteCell ("instance", null, m_instance.ParseLong (m_lexer));
-      m_result.WriteCell ("event", null, m_event.Text);
+      if (m_bot != null)
+      {
+        m_result.WriteCell ("bot", null, m_bot.ParseLong (m_lexer));
+      }
+      else
+      {
+        m_result.WriteCell ("bot", null, (long) -1);
+      }
+      if (m_fiber != null)
+      {
+        m_result.WriteCell ("fiber", null, m_fiber.ParseLong (m_lexer));
+      }
+      else
+      {
+        m_result.WriteCell ("fiber", null, (long) -1);
+      }
+      if (m_module != null)
+      {
+        m_result.WriteCell ("module", null, m_module.Text);
+      }
+      else
+      {
+        m_result.WriteCell ("module", null, "");
+      }
+      if (m_instance != null)
+      {
+        m_result.WriteCell ("instance", null, m_instance.ParseLong (m_lexer));
+      }
+      else
+      {
+        m_result.WriteCell ("instance", null, (long) -1);
+      }
+      if (m_event != null)
+      {
+        m_result.WriteCell ("event", null, m_event.Text);
+      }
+      else
+      {
+        m_result.WriteCell ("event", null, "");
+      }
       if (m_message != null)
       {
         m_result.WriteCell ("message", null, m_message);

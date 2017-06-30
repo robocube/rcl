@@ -18,7 +18,7 @@ namespace RCL.Core
     {
       if (!right[0])
       {
-        runner.Log.Record (runner, closure, "http", 0, "disabled", "httpcertcheck");
+        runner.Log.Record (runner, closure, "http", 0, "certcheck", "disabled");
         ServicePointManager.ServerCertificateValidationCallback = DisabledChecking;
         //ServicePointManager.CertificatePolicy = new NoCheckCertificatePolicy ();
       }
@@ -229,6 +229,7 @@ namespace RCL.Core
       {
         info.Context.Response.StatusCode = 401;
         info.Context.Response.OutputStream.Close ();
+        runner.Log.Record (runner, closure, "http", right[0], "session", cookie != null ? cookie.Value : "null");
         throw new Exception ("Invalid session id");
       }
       runner.Yield (closure, right);
@@ -250,7 +251,7 @@ namespace RCL.Core
           m_contexts.Add (handle, new RequestInfo (context, DateTime.Now));
         }
         state.Runner.Log.Record (state.Runner, state.Closure,
-                                 "http", handle, "proc",
+                                 "http", handle, "recieve",
                                  context.Request.HttpMethod + " " + context.Request.RawUrl);
         state.Runner.Yield (state.Closure, new RCLong (handle));
       }

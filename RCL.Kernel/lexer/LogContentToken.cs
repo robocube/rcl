@@ -56,15 +56,45 @@ namespace RCL.Kernel
       }
       return null;
     }
-
+    
     public override void Accept (RCParser parser, RCToken token)
     {
       parser.AcceptLogEntryHeader (token);
     }
-
+    
     public override string TypeName
     {
       get { return "logentryheader"; }
+    }
+  }
+
+  public class LogEntryRawLine : RCTokenType
+  {
+    public override RCToken TryParseToken (string code,
+                                           int start,
+                                           int index,
+                                           RCToken previous)
+    {
+      int current;
+      for (current = start; start < code.Length; ++current)
+      {
+        if (code[current] == '\r' || code[current] == '\n')
+        {
+          break;
+        }
+      }
+      string text = code.Substring (start, current - start);
+      return new RCToken (text, this, start, index);
+    }
+    
+    public override void Accept (RCParser parser, RCToken token)
+    {
+      parser.AcceptLogEntryRawLine (token);
+    }
+    
+    public override string TypeName
+    {
+      get { return "logentryrawline"; }
     }
   }
 

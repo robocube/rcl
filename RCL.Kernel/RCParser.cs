@@ -49,6 +49,7 @@ namespace RCL.Kernel
     public virtual void AcceptLogContent (RCToken token) {}
     public virtual void AcceptEndOfLine (RCToken token) {}
     public virtual void AcceptLogEntryHeader (RCToken token) {}
+    public virtual void AcceptLogEntryRawLine (RCToken token) {}
     //public virtual void AcceptLogEntryMessage (RCToken token) {}
     public virtual void AcceptLogEntryBody (RCToken token) {}
   }

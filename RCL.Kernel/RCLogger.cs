@@ -71,7 +71,7 @@ namespace RCL.Kernel
         return;
       }
       else if (!m_nokeys && bot == 0 && type == "fiber" && instance == 0 && 
-               (state == "start" || state == "done" || state == "reported"))
+               (state == "start" || state == "done")) // || state == "reported"))
       {
         return;
       }
@@ -150,6 +150,10 @@ namespace RCL.Kernel
       else if (info is RCException && m_level == RCOutput.Test)
       {
         message = ((RCException) info).ToTestString ();
+      }
+      else if (info is Exception && m_level == RCOutput.Test)
+      {
+        message = "<<Reported>>";
       }
       else if (info is RCString)
       {
