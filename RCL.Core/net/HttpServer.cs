@@ -487,8 +487,13 @@ namespace RCL.Core
           }
           finally
           {
-            info.Context.Response.Close ();
             runner.Log.Record (runner, closure, "http", left[i], "send", result);
+            info.Context.Response.OutputStream.Close ();
+            info.Context.Request.InputStream.Close ();
+            lock (m_lock)
+            {
+              m_contexts.Remove ((int) left[i]);
+            }
           }
         }
       }
@@ -533,8 +538,13 @@ namespace RCL.Core
           }
           finally
           {
-            info.Context.Response.Close ();
             runner.Log.Record (runner, closure, "http", left[i], "send", result);
+            info.Context.Response.OutputStream.Close ();
+            info.Context.Request.InputStream.Close ();
+            lock (m_lock)
+            {
+              m_contexts.Remove ((int) left[i]);
+            }
           }
         }
       }
