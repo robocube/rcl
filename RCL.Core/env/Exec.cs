@@ -23,7 +23,7 @@ namespace RCL.Core
     {
       RCAsyncState state = new RCAsyncState (runner, closure, command);
       long handle = CreateHandle ();
-      ChildProcess process = new ChildProcess (handle, state, true);
+      ChildProcess process = new ChildProcess (this, handle, state, true);
       RegisterProcess (process);
       process.Start ();
     }
@@ -34,7 +34,7 @@ namespace RCL.Core
     {
       RCAsyncState state = new RCAsyncState (runner, closure, command);
       long handle = CreateHandle ();
-      ChildProcess process = new ChildProcess (handle, state, false);
+      ChildProcess process = new ChildProcess (this, handle, state, false);
       RegisterProcess (process);
       process.Start ();
       runner.Yield (closure, new RCLong (handle));
@@ -170,6 +170,7 @@ namespace RCL.Core
     protected internal class ChildProcess
     {
       public readonly long Handle;
+      protected readonly Exec Module;
       protected RCArray<string> m_result = new RCArray<string> ();
       protected Queue<string> m_lines = new Queue<string> ();
       protected Queue<RCAsyncState> m_outputReaders = new Queue<RCAsyncState> ();
@@ -190,9 +191,10 @@ namespace RCL.Core
       protected internal string m_arguments;
       protected internal long m_pid = -1;
 
-      public ChildProcess (long handle, RCAsyncState state, bool yieldWhenDone)
+      public ChildProcess (Exec module, long handle, RCAsyncState state, bool yieldWhenDone)
       {
         Handle = handle;
+        Module = module;
         m_state = state;
         m_yieldOnExit = yieldWhenDone;
         RCString command = (RCString) m_state.Other;
@@ -366,6 +368,14 @@ namespace RCL.Core
           {
             m_state.Runner.Yield (m_state.Closure, result);
           }
+          lock (Module.m_lock)
+          {
+            Module.m_process.Remove ((int) Handle);
+          }
+          lock (this)
+          {
+            m_process.Dispose ();
+          }
         }
       }
 
@@ -447,7 +457,6 @@ namespace RCL.Core
         }
         while (true)
         {
-          //Console.Out.WriteLine ("In the hard loop");
           lock (this)
           {
             if (m_finished)
