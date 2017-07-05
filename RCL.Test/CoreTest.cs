@@ -1561,21 +1561,21 @@ namespace RCL.Test
     public void TestUnionT () { DoTest ("2015.05.27 2015.05.28 2015.05.29 union 2015.05.28 2015.05.29 2015.05.30", "2015.05.27 2015.05.28 2015.05.29 2015.05.30"); }
 
     [Test]
-    public void TestExceptL () { DoTest ("1 2 3 except 2 3 4", "1 4"); }
+    public void TestExceptL () { DoTest ("1 2 3 except 2 3 4", "1"); }
     [Test]
-    public void TestExceptD () { DoTest ("1.0 2.0 3.0 except 2.0 3.0 4.0", "1.0 4.0"); }
+    public void TestExceptD () { DoTest ("1.0 2.0 3.0 except 2.0 3.0 4.0", "1.0"); }
     [Test]
-    public void TestExceptM () { DoTest ("1 2 3m except 2 3 4m", "1 4m"); }
+    public void TestExceptM () { DoTest ("1 2 3m except 2 3 4m", "1m"); }
     [Test]
-    public void TestExceptX () { DoTest ("\\x01 \\x02 \\x03 except \\x02 \\x03 \\x04", "\\x01 \\x04"); }
+    public void TestExceptX () { DoTest ("\\x01 \\x02 \\x03 except \\x02 \\x03 \\x04", "\\x01"); }
     [Test]
-    public void TestExceptB () { DoTest ("true except false", "true false"); }
+    public void TestExceptB () { DoTest ("true except false", "true"); }
     [Test]
-    public void TestExceptS () { DoTest ("\"a\" \"b\" \"c\" except \"b\" \"c\" \"d\"", "\"a\" \"d\""); }
+    public void TestExceptS () { DoTest ("\"a\" \"b\" \"c\" except \"b\" \"c\" \"d\"", "\"a\""); }
     [Test]
-    public void TestExceptY () { DoTest ("#a #b #c except #b #c #d", "#a #d"); }
+    public void TestExceptY () { DoTest ("#a #b #c except #b #c #d", "#a"); }
     [Test]
-    public void TestExceptT () { DoTest ("2015.05.27 2015.05.28 2015.05.29 except 2015.05.28 2015.05.29 2015.05.30", "2015.05.27 2015.05.30"); }
+    public void TestExceptT () { DoTest ("2015.05.27 2015.05.28 2015.05.29 except 2015.05.28 2015.05.29", "2015.05.27"); }
     [Test]
     public void TestExceptK () { DoTest ("{a:1 b:2 c:3 d:4} except \"b\" \"c\"", "{a:1 d:4}"); }
     [Test]
@@ -1604,8 +1604,6 @@ namespace RCL.Test
     [Ignore ("Should work but I want it to do nesting")]
     public void TestInterKY () { DoTest ("{a:1 b:2 c:3 d:4} inter #b #c", "{b:2 c:3}"); }
 
-
-    //This looks more like 'in' than 'contains' to me. Is this naming appropriate?
     [Test]
     public void TestInL () { DoTest ("0 1 2 3 4 in 1 3", "false true false true false"); }
     [Test]

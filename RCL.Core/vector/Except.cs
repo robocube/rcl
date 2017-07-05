@@ -90,10 +90,14 @@ namespace RCL.Core
         {
           results.Remove (right[i]);
         }
+        /*
+        Can't remember why it was implemented like this orginally.
+        Do I need functionality like this?
         else
         {
           results.Add (right[i]);
         }
+        */
       }
       T[] array = new T[results.Count];
       results.CopyTo (array);
