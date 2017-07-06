@@ -11,100 +11,91 @@ using RCL.Kernel;
 
 namespace RCL.Core
 {
-  public class HttpDisableCertificateCheck
+  public class HttpCertCheck
   {
     [RCVerb ("httpcertcheck")]
-    public void EvalHttpCertCheck (RCRunner runner, RCClosure closure, RCBoolean right)
+    public void EvalHttpCertCheck (RCRunner runner, RCClosure closure, RCString right)
     {
-      if (!right[0])
+      if (right[0] == "Enabled")
       {
-        runner.Log.Record (runner, closure, "http", 0, "certcheck", "disabled");
-        ServicePointManager.ServerCertificateValidationCallback = DisabledChecking;
-        //ServicePointManager.CertificatePolicy = new NoCheckCertificatePolicy ();
+        runner.Log.Record (runner, closure, "http", 0, "certcheck", "Enabled");
+        ServicePointManager.ServerCertificateValidationCallback = null;
+      }
+      else if (right[0] == "AllowSelfSigned")
+      {
+        runner.Log.Record (runner, closure, "http", 0, "certcheck", "AllowSelfSigned");
+        ServicePointManager.ServerCertificateValidationCallback =
+          new CertificateValidator (runner, closure).AllowSelfSigned;
+      }
+      else if (right[0] == "None")
+      {
+        runner.Log.Record (runner, closure, "http", 0, "certcheck", "NoChecking");
+        ServicePointManager.ServerCertificateValidationCallback =
+          new CertificateValidator (runner, closure).NoChecking;
+      }
+      else 
+      {
+        throw new Exception ("Valid values are \"Enabled\", \"AllowSelfSigned\" and \"NoChecking\"");
       }
       runner.Yield (closure, right);
     }
 
-    public class NoCheckCertificatePolicy : ICertificatePolicy
+    protected class CertificateValidator
     {
-      public bool CheckValidationResult (ServicePoint servicePoint, X509Certificate certificate, WebRequest request, int certificateProblem)
+      protected readonly RCRunner Runner;
+      protected readonly RCClosure Closure;
+
+      public CertificateValidator (RCRunner runner, RCClosure closure)
       {
-        Console.Out.WriteLine ("not checking certificate");
+        Runner = runner;
+        Closure = closure;
+      }
+
+      public bool NoChecking (System.Object sender,
+                              X509Certificate certificate,
+                              X509Chain chain,
+                              SslPolicyErrors sslPolicyErrors)
+      {
+        Runner.Log.Record (Runner, Closure, "http", 0, "certcheck", "Allowing request in spite of policy error");
         return true;
       }
-    }
 
-    protected bool DisabledChecking (System.Object sender,
-                                     X509Certificate certificate,
-                                     X509Chain chain,
-                                     SslPolicyErrors sslPolicyErrors)
-    {
-      Console.Out.WriteLine ("not checking certificate");
-      return true;
-      /*
-      try
+      public bool AllowSelfSigned (System.Object sender,
+                                    X509Certificate certificate,
+                                    X509Chain chain,
+                                    SslPolicyErrors sslPolicyErrors)
       {
-        // If there are errors in the certificate chain, look at each error to determine the cause.
-        if (sslPolicyErrors != SslPolicyErrors.None)
+        try
         {
-          for (int i = 0; i < chain.ChainStatus.Length; i++)
+          // If there are errors in the certificate chain, look at each error to determine the cause.
+          if (sslPolicyErrors != SslPolicyErrors.None)
           {
-            if (chain.ChainStatus[i].Status != X509ChainStatusFlags.RevocationStatusUnknown)
+            for (int i = 0; i < chain.ChainStatus.Length; i++)
             {
-              chain.ChainPolicy.RevocationFlag = X509RevocationFlag.EntireChain;
-              chain.ChainPolicy.RevocationMode = X509RevocationMode.Online;
-              chain.ChainPolicy.UrlRetrievalTimeout = new TimeSpan (0, 1, 0);
-              chain.ChainPolicy.VerificationFlags = X509VerificationFlags.AllFlags;
-              bool chainIsValid = chain.Build ((X509Certificate2) certificate);
-              if (!chainIsValid)
+              if (chain.ChainStatus[i].Status != X509ChainStatusFlags.RevocationStatusUnknown)
               {
-                isOk = false;
+                chain.ChainPolicy.RevocationFlag = X509RevocationFlag.EntireChain;
+                chain.ChainPolicy.RevocationMode = X509RevocationMode.Online;
+                chain.ChainPolicy.UrlRetrievalTimeout = new TimeSpan (0, 1, 0);
+                chain.ChainPolicy.VerificationFlags = X509VerificationFlags.AllFlags;
+                bool chainIsValid = chain.Build ((X509Certificate2) certificate);
+                if (!chainIsValid)
+                {
+                  Runner.Log.Record (Runner, Closure, "http", 0, "certcheck", "Allowing request in spite of policy error");
+                  return false;
+                }
               }
             }
+            Runner.Log.Record (Runner, Closure, "http", 0, "certcheck", "Allowing request in spite of policy error");
           }
         }
-      }
-      catch (Exception ex)
-      {
-        Console.Out.WriteLine ("Error validating certificate\n" + ex.ToString ());
-      }
-      return isOk;
-      */
-    }
-
-    protected bool MyRemoteCertificateValidationCallback (System.Object sender,
-                                                          X509Certificate certificate,
-                                                          X509Chain chain,
-                                                          SslPolicyErrors sslPolicyErrors)
-    {
-      bool isOk = true;
-      try
-      {
-        // If there are errors in the certificate chain, look at each error to determine the cause.
-        if (sslPolicyErrors != SslPolicyErrors.None)
+        catch (Exception ex)
         {
-          for (int i = 0; i < chain.ChainStatus.Length; i++)
-          {
-            if (chain.ChainStatus[i].Status != X509ChainStatusFlags.RevocationStatusUnknown)
-            {
-              chain.ChainPolicy.RevocationFlag = X509RevocationFlag.EntireChain;
-              chain.ChainPolicy.RevocationMode = X509RevocationMode.Online;
-              chain.ChainPolicy.UrlRetrievalTimeout = new TimeSpan (0, 1, 0);
-              chain.ChainPolicy.VerificationFlags = X509VerificationFlags.AllFlags;
-              bool chainIsValid = chain.Build ((X509Certificate2) certificate);
-              if (!chainIsValid)
-              {
-                isOk = false;
-              }
-            }
-          }
+          Runner.Report (Closure, ex);
+          return false;
         }
+        return true;
       }
-      catch (Exception ex)
-      {
-        Console.Out.WriteLine ("Error validating certificate\n" + ex.ToString ());
-      }
-      return isOk;
     }
   }
 
