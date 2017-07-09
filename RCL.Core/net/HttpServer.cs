@@ -226,6 +226,28 @@ namespace RCL.Core
       runner.Yield (closure, right);
     }
 
+    [RCVerb ("httpcookie")]
+    public void EvalHttpCookie (
+      RCRunner runner, RCClosure closure, RCLong right)
+    {
+      RequestInfo info;
+      if (right.Count > 1)
+      {
+        throw new Exception ("Can only get one httpcookie per call");
+      }
+      lock (m_lock)
+      {
+        info = m_contexts[(int) right[0]];
+      }
+      RCBlock result = RCBlock.Empty;
+      for (int i = 0; i < info.Context.Request.Cookies.Count; ++i)
+      {
+        Cookie cookie = info.Context.Request.Cookies[i];
+        result = new RCBlock (result, cookie.Name, ":", new RCString (cookie.Value));
+      }
+      runner.Yield (closure, result);
+    }
+
     protected void Process (IAsyncResult result)
     {
       RCAsyncState state = (RCAsyncState) result.AsyncState;
