@@ -83,6 +83,29 @@ namespace RCL.Core
       DoSwitch<string> (runner, closure, left, right, picker);
     }
 
+    [RCVerb ("then")]
+    public void EvalThen (RCRunner runner, RCClosure closure, RCBoolean left, RCBlock right)
+    {
+      if (left[0])
+      {
+        int i = closure.Index - 2;
+        if (i < left.Count)
+        {
+          RCClosure child = new RCClosure (
+            closure, closure.Bot, right, closure.Left, RCBlock.Empty, 0);
+          right.Eval (runner, child);
+        }
+        else
+        {
+          runner.Yield (closure, closure.Parent.Result);
+        }
+      }
+      else
+      {
+        runner.Yield (closure, RCBoolean.False);
+      }
+    }
+
     protected virtual void DoSwitch<T> (
       RCRunner runner, RCClosure closure, RCVector<T> left, RCBlock right, Picker<T> picker)
     {
