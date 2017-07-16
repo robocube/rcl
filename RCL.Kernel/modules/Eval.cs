@@ -278,7 +278,7 @@ namespace RCL.Kernel
       //right.BindRight (runner, closure, this, left);
     }
 
-    //Kicks of evaluation for a block.
+    //Kicks off evaluation for a block.
     public static void DoEval (RCRunner runner, RCClosure closure, RCBlock block)
     {
       if (block.Count == 0)
@@ -295,13 +295,12 @@ namespace RCL.Kernel
         }
         else if (current.Evaluator.Template)
         {
-          try 
+          try
           {
             RCString result = ExpandTemplate (new StringBuilder (),
                                               (RCTemplate) current,
                                               closure.Result,
-                                              0,
-                                              "");
+                                              0, "");
             runner.Yield (closure, result);
           }
           catch (Exception ex)
@@ -311,6 +310,10 @@ namespace RCL.Kernel
                                                 "An exception was thrown by the template.");
             runner.Finish (closure, rcex, (int) RCErrors.Native);
           }
+        }
+        else if (current.Evaluator.Pass)
+        {
+          DoYield (runner, closure, current.Value);
         }
         //This means that Value is an operator or a reference.
         else if (current.Value.ArgumentEval)
@@ -329,15 +332,12 @@ namespace RCL.Kernel
         {
           //I need something different to happen when we are at the top level already.
           //Or maybe I need to inject a wrapper closure when I do Rep this way?
-          if ((closure.Index < block.Count - 1)  ||
-              (closure.Parent != null))
+          if ((closure.Index < block.Count - 1) || (closure.Parent != null))
           {
             DoYield (runner, closure, current.Value);
           }
           else
           {
-            //This is the end of the block.
-            //Return the completed result set.
             DoYield (runner, closure, current);
           }
         }
@@ -534,9 +534,10 @@ namespace RCL.Kernel
       }
       if (val == null && !returnNull)
       {
-        throw new RCException (
-          //Delimit thing is annoying.
-          closure, RCErrors.Name, "Unable to resolve name " + RCReference.Delimit (name, "."));
+        //Delimit thing is annoying.
+        throw new RCException (closure,
+                               RCErrors.Name,
+                               "Unable to resolve name " + RCReference.Delimit (name, "."));
       }
       return val;
     }
@@ -628,7 +629,9 @@ namespace RCL.Kernel
     public static void DoYield (RCRunner runner, RCClosure closure, RCValue result)
     {
       if (result == null)
+      {
         throw new ArgumentNullException ("result");
+      }
 
       //Do not permit any further changes to result or its children values.
       result.Lock ();
@@ -664,8 +667,10 @@ namespace RCL.Kernel
     {
       if (previous.Parent != null)
       {
-        return previous.Parent.Code.Next (
-          runner, tail == null ? previous : tail, previous.Parent, result);
+        return previous.Parent.Code.Next (runner,
+                                          tail == null ? previous : tail,
+                                          previous.Parent,
+                                          result);
       }
       else return null;
     }
@@ -679,27 +684,34 @@ namespace RCL.Kernel
     {
       if (previous.Index < block.Count - 1)
       {
-        return new RCClosure (
-          previous.Bot, previous.Fiber, previous.Locks,
-          previous.Parent, block, previous.Left,
-          NextBlock (runner, block, previous, result), previous.Index + 1);
+        return new RCClosure (previous.Bot,
+                              previous.Fiber, previous.Locks,
+                              previous.Parent, block, previous.Left,
+                              NextBlock (runner, block, previous, result),
+                              previous.Index + 1);
       }
       else if (previous.Parent != null)
       {
         if (block.Count == 0)
         {
-          return previous.Parent.Code.Next (
-            runner, tail, previous.Parent, result);
+          return previous.Parent.Code.Next (runner,
+                                            tail,
+                                            previous.Parent,
+                                            result);
         }
         else if (block.Evaluator.Return && previous.Index == block.Count - 1)
         {
-          return previous.Parent.Code.Next (
-            runner, tail, previous.Parent, result);
+          return previous.Parent.Code.Next (runner,
+                                            tail,
+                                            previous.Parent,
+                                            result);
         }
         else
         {
-          return previous.Parent.Code.Next (
-            runner, tail, previous.Parent, NextBlock (runner, block, previous, result));
+          return previous.Parent.Code.Next (runner,
+                                            tail,
+                                            previous.Parent,
+                                            NextBlock (runner, block, previous, result));
         }
       }
       else return null;
@@ -711,8 +723,12 @@ namespace RCL.Kernel
                                         RCValue val)
     {
       RCBlock code = block.GetName (previous.Index);
-      RCBlock result = new RCBlock (
-        previous.Result, code.Name, code.Evaluator, val);
+      RCEvaluator evaluator = code.Evaluator;
+      if (evaluator.Pass)
+      {
+        evaluator = RCEvaluator.Let;
+      }
+      RCBlock result = new RCBlock (previous.Result, code.Name, evaluator, val);
       runner.Output (previous, new RCSymbolScalar (null, code.Name), val);
       return result;
     }
@@ -925,7 +941,7 @@ namespace RCL.Kernel
         RCBlock obj = closure.Code as RCBlock;
         if (obj != null)
         {
-          if (obj.Evaluator == RCEvaluator.Let && result != closure.Code)
+          if (obj.Count > 0 && obj.Evaluator.FinishBlock && result != closure.Code)
           {
             result = NextBlock (runner, obj, closure, result);
           }

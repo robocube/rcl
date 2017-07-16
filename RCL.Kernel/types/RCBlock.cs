@@ -131,45 +131,56 @@ namespace RCL.Kernel
 
   public class RCEvaluator
   {
-    public static readonly RCEvaluator Let, Yield, Apply, Expand;
+    public static readonly RCEvaluator Let, Quote, Yield, Apply, Expand;
 
     public readonly string Symbol;
-    public readonly bool Evaluate;
     public readonly bool Return;
     public readonly bool Invoke;
+    public readonly bool Pass;
     public readonly bool Template;
+    public readonly bool FinishBlock;
 
     static RCEvaluator ()
     {
-      Let = new RCEvaluator (":", true, false, false, false);
-      Yield = new RCEvaluator ("<-", true, true, false, false);
-      Apply = new RCEvaluator ("<+", false, false, true, false);
-      Expand = new RCEvaluator ("<&", false, true, false, true);
+      Let = new RCEvaluator (":", true, false, false, false, false, true);
+      Quote = new RCEvaluator ("::", false, false, false, false, true, true);
+      Yield = new RCEvaluator ("<-", true, true, false, false, false, false);
+      Apply = new RCEvaluator ("<+", false, false, true, false, false, false);
+      Expand = new RCEvaluator ("<&", false, true, false, true, false, false);
     }
 
     public RCEvaluator (
-      string symbol, bool evaluate, bool @return, bool invoke, bool template)
+      string symbol, bool evaluate, bool @return, bool invoke, bool template, bool pass, bool finishBlock)
     {
       Symbol = symbol;
-      Evaluate = evaluate;
+      Pass = pass;
       Return = @return;
       Invoke = invoke;
       Template = template;
+      FinishBlock = finishBlock;
     }
 
     public static RCEvaluator For (string symbol)
     {
-      if (symbol[0] == ':')
+      if (symbol.Equals (":"))
       {
         return Let;
       }
-      if (symbol[1] == '-')
+      else if (symbol.Equals ("::"))
+      {
+        return Quote;
+      }
+      else if (symbol.Equals ("<-"))
       {
         return Yield;
       }
-      if (symbol[1] == '+')
+      else if (symbol.Equals ("<+"))
       {
         return Apply;
+      }
+      else if (symbol.Equals ("<&"))
+      {
+        return Expand;
       }
       throw new Exception ("Unknown evaluator: " + symbol);
     }

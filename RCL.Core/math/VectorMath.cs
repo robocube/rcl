@@ -418,10 +418,24 @@ namespace RCL.Core
       }
       runner.Yield (closure, new RCReference (strings));
     }
+
+    [RCVerb ("monad")]
+    public void EvalMonad (RCRunner runner, RCClosure closure, RCString left, object right)
+    {
+      RCOperator op = runner.Activator.New (left[0], (RCValue) right);
+      runner.Yield (closure, op);
+    }
+
+    [RCVerb ("dyad")]
+    public void EvalDyad (RCRunner runner, RCClosure closure, RCString left, object right)
+    {
+      RCBlock block = (RCBlock) right;
+      RCOperator op = runner.Activator.New (left[0], block.Get ("l"), block.Get ("r"));
+      runner.Yield (closure, op);
+    }
       
     [RCVerb ("in")] [RCVerb ("like")]
-    public void EvalRightContextual (
-      RCRunner runner, RCClosure closure, object left, object right)
+    public void EvalRightContextual (RCRunner runner, RCClosure closure, object left, object right)
     {
       RCOperator op = (RCOperator) closure.Code;
       runner.Yield (closure, VectorMath.InvokeDyadic (

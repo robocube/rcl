@@ -205,6 +205,30 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestQuote ()
+    {
+      DoEvalTest ("{x::1 + 1}", "{x:1 + 1}");
+    }
+
+    [Test]
+    public void TestQuote1 ()
+    {
+      DoEvalTest ("{x::1 + 1 y:1 + 1}", "{x:1 + 1 y:2}");
+    }
+
+    [Test]
+    public void TestMonad ()
+    {
+      DoEvalTest ("{x:\"not\" monad true false true", "{x:not true false true}");
+    }
+
+    [Test]
+    public void TestDyad ()
+    {
+      DoEvalTest ("{x:\"+\" dyad {l:1 r:2}", "{x:1 + 2}");
+    }
+
+    [Test]
     public void TestEvalX ()
     {
       DoEvalTest ("eval \\x00 \\x01 \\x02", "\\x00 \\x01 \\x02");

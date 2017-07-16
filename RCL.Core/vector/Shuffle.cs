@@ -161,7 +161,7 @@ namespace RCL.Core
       return result;
     }
 
-    protected RCBlock DoShuffle(Random random, RCBlock right)
+    protected RCBlock DoShuffle (Random random, RCBlock right)
     {
       //wikipedia discusses a variant of this algorithm that allows you to
       //initialize the array and shuffle it in a single operation.
@@ -183,7 +183,7 @@ namespace RCL.Core
       for(int i = 0; i < names.Length; ++i)
       {
         RCBlock name = right.GetName (names[i]);
-        result = new RCBlock(result, name.Name, name.Evaluator, name.Value);
+        result = new RCBlock (result, name.Name, name.Evaluator, name.Value);
       }
       return result;
     }
