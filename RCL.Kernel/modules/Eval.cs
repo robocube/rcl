@@ -566,7 +566,8 @@ namespace RCL.Kernel
     }
 
     /// <summary>
-    /// This method creates an identical closure where the left and right arguments can be accessed in user space.
+    /// This method creates an identical closure where the left and right
+    /// arguments can be accessed in user space.
     /// This has to be done by operators that evaluate user provided code.
     /// </summary>
     protected static RCClosure UserOpClosure (RCClosure previous,
@@ -616,12 +617,16 @@ namespace RCL.Kernel
       return child;
     }
 
-    public static void DoEvalInline (RCRunner runner, RCClosure closure, InlineOperator op)
+    public static void DoEvalInline (RCRunner runner,
+                                     RCClosure closure,
+                                     InlineOperator op)
     {
       op.m_code.Eval (runner, UserOpClosure (closure, op.m_code, null));
     }
 
-    public static void DoEvalTemplate (RCRunner runner, RCClosure closure, RCTemplate template)
+    public static void DoEvalTemplate (RCRunner runner,
+                                       RCClosure closure,
+                                       RCTemplate template)
     {
       throw new Exception ("Not implemented");
     }
@@ -723,13 +728,12 @@ namespace RCL.Kernel
                                         RCValue val)
     {
       RCBlock code = block.GetName (previous.Index);
-      RCEvaluator evaluator = code.Evaluator;
-      if (evaluator.Pass)
-      {
-        evaluator = RCEvaluator.Let;
-      }
-      RCBlock result = new RCBlock (previous.Result, code.Name, evaluator, val);
-      runner.Output (previous, new RCSymbolScalar (null, code.Name), val);
+      RCBlock result = new RCBlock (previous.Result,
+                                    code.Name,
+                                    code.Evaluator.Next,
+                                    val);
+      runner.Output (previous,
+                     new RCSymbolScalar (null, code.Name), val);
       return result;
     }
 

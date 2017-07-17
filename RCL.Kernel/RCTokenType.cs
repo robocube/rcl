@@ -13,7 +13,8 @@ namespace RCL.Kernel
     internal static readonly char[] NumTypes = new char[] { 'd', 'l', 'i', 'f', 'm' };
     internal static readonly char[] TypeChars = new char[] { 'd', 'l', 'm', 'y', 'i', 'f', 's', 'c', 't', 'z', 'n', 'b', 'x' };
     internal static string[] SpecialOperators = { "-", "+", "*", "/", "%", "&", "<=", ">=", "<", ">", "==", "!=", "=", "!" };
-    internal static string[] Evaluators = { "::", ":", "<-" };
+    //The order of tests matters here.
+    internal static string[] Evaluators = { "::", ":", "<-:", "<-" };
     
     /// <summary>
     /// Would life be better if i let you use shorthand like tttffftttfff

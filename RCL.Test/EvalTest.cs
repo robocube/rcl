@@ -217,6 +217,12 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestYiote ()
+    {
+      DoEvalTest ("{x::1 + 1 <-:$x}", "{x:1 + 1 <-$x}");
+    }
+
+    [Test]
     public void TestMonad ()
     {
       DoEvalTest ("{x:\"not\" monad true false true", "{x:not true false true}");

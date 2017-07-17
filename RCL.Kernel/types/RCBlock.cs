@@ -131,7 +131,7 @@ namespace RCL.Kernel
 
   public class RCEvaluator
   {
-    public static readonly RCEvaluator Let, Quote, Yield, Apply, Expand;
+    public static readonly RCEvaluator Let, Quote, Yield, Yiote, Apply, Expand;
 
     public readonly string Symbol;
     public readonly bool Return;
@@ -139,18 +139,26 @@ namespace RCL.Kernel
     public readonly bool Pass;
     public readonly bool Template;
     public readonly bool FinishBlock;
+    public readonly RCEvaluator Next;
 
     static RCEvaluator ()
     {
-      Let = new RCEvaluator (":", true, false, false, false, false, true);
-      Quote = new RCEvaluator ("::", false, false, false, false, true, true);
-      Yield = new RCEvaluator ("<-", true, true, false, false, false, false);
-      Apply = new RCEvaluator ("<+", false, false, true, false, false, false);
-      Expand = new RCEvaluator ("<&", false, true, false, true, false, false);
+      Let = new RCEvaluator (":", true, false, false, false, false, true, Let);
+      Quote = new RCEvaluator ("::", false, false, false, false, true, true, Let);
+      Yield = new RCEvaluator ("<-", true, true, false, false, false, false, Yield);
+      Yiote = new RCEvaluator ("<-:", false, false, false, false, true, true, Yield);
+      Apply = new RCEvaluator ("<+", false, false, true, false, false, false, Apply);
+      Expand = new RCEvaluator ("<&", false, true, false, true, false, false, Expand);
     }
 
-    public RCEvaluator (
-      string symbol, bool evaluate, bool @return, bool invoke, bool template, bool pass, bool finishBlock)
+    public RCEvaluator (string symbol,
+                        bool evaluate,
+                        bool @return,
+                        bool invoke,
+                        bool template,
+                        bool pass,
+                        bool finishBlock,
+                        RCEvaluator next)
     {
       Symbol = symbol;
       Pass = pass;
@@ -158,6 +166,7 @@ namespace RCL.Kernel
       Invoke = invoke;
       Template = template;
       FinishBlock = finishBlock;
+      Next = next == null ? this : next;
     }
 
     public static RCEvaluator For (string symbol)
@@ -173,6 +182,10 @@ namespace RCL.Kernel
       else if (symbol.Equals ("<-"))
       {
         return Yield;
+      }
+      else if (symbol.Equals ("<-:"))
+      {
+        return Yiote;
       }
       else if (symbol.Equals ("<+"))
       {
