@@ -77,10 +77,21 @@ namespace RCL.Core
       if (i < right.Count)
       {
         RCBlock name = right.GetName (i);
-        RCBlock result = new RCBlock ("L", ":", new RCString (name.Name));
+        RCBlock result = new RCBlock (closure.Result,
+                                      "L", ":", new RCString (name.Name));
         result = new RCBlock (result, "R", ":", right.Get(i));
-        left.Eval (runner, new RCClosure (
-          closure, closure.Bot, left, closure.Left, result, 0));
+        closure = new RCClosure (closure.Parent,
+                                 closure.Bot,
+                                 closure.Code,
+                                 closure.Left,
+                                 result,
+                                 closure.Index);
+        left.Eval (runner, new RCClosure (closure,
+                                          closure.Bot,
+                                          left,
+                                          closure.Left,
+                                          RCBlock.Empty,
+                                          0));
       }
       else
       {
@@ -88,8 +99,10 @@ namespace RCL.Core
       }
     }
 
-    protected virtual void DoEach<T> (
-      RCRunner runner, RCClosure closure, RCBlock left, RCVector<T> right)
+    protected virtual void DoEach<T> (RCRunner runner,
+                                      RCClosure closure,
+                                      RCBlock left,
+                                      RCVector<T> right)
     {
       if (right.Count == 0)
       {
@@ -110,8 +123,10 @@ namespace RCL.Core
       }
     }
 
-    public override RCClosure Next (
-      RCRunner runner, RCClosure tail, RCClosure previous, RCValue result)
+    public override RCClosure Next (RCRunner runner,
+                                    RCClosure tail,
+                                    RCClosure previous,
+                                    RCValue result)
     {
       if (previous.Index < 2)
       {
@@ -146,7 +161,6 @@ namespace RCL.Core
       {
         RCBlock output = new RCBlock (previous.Parent.Result, 
                                       name, ":", result);
-        
         RCClosure parent = new RCClosure (previous.Parent.Parent, 
                                           previous.Bot, 
                                           previous.Code, 

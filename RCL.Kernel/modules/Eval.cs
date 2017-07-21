@@ -570,9 +570,9 @@ namespace RCL.Kernel
     /// arguments can be accessed in user space.
     /// This has to be done by operators that evaluate user provided code.
     /// </summary>
-    protected static RCClosure UserOpClosure (RCClosure previous,
-                                              RCValue code,
-                                              RCArray<RCBlock> @this)
+    public static RCClosure UserOpClosure (RCClosure previous,
+                                           RCValue code,
+                                           RCArray<RCBlock> @this)
     {
       RCValue left = previous.Result.Get ("0");
       RCValue right = previous.Result.Get ("1");

@@ -607,6 +607,12 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestEachWithBlock1 ()
+    {
+      DoEvalTest ("{x:1} each {:{} :{}}", "{:{x:1} :{x:1}}");
+    }
+
+    [Test]
     public void TestRInEval ()
     {
       DoEvalTest ("{<-eval {x:$R}} 0", "{x:0}");
