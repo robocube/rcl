@@ -213,6 +213,21 @@ namespace RCL.Kernel
       return end > start ? end - start : -1;
     }
 
+    public static int LengthOfStrictIdentifier (string text, int start)
+    {
+      //Check for a regular old vanilla name.
+      int end = start;
+      if (end < text.Length && text[end] >= '0' && text[end] <= '9')
+      {
+        return -1;
+      }
+      while (end < text.Length && IsIdentifierChar (text[end]))
+      {
+        end++;
+      }
+      return end > start ? end - start : -1;
+    }
+
     public static int LengthOfDelimitedValue (string text, int start, char delimiter)
     {
       int end = start;

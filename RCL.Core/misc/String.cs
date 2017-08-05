@@ -380,5 +380,16 @@ namespace RCL.Core
       }
       runner.Yield (closure, new RCString (result.ToString ()));
     }
+
+    [RCVerb ("isname")]
+    public void EvalIsName (RCRunner runner, RCClosure closure, RCString right)
+    {
+      RCArray<bool> result = new RCArray<bool> (right.Count);
+      for (int i = 0; i < right.Count; ++i)
+      {
+        result.Write (RCTokenType.LengthOfStrictIdentifier (right[i], 0) == right[i].Length);
+      }
+      runner.Yield (closure, new RCBoolean (result));
+    }
   }
 }
