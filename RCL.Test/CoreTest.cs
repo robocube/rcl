@@ -1788,6 +1788,8 @@ namespace RCL.Test
     public void TestLike2U () { DoTest ("[S|x #a \"foobar\" #b \"fazbar\" #c \"bar\" #d \"foobaz\"] like \"*bar\"", "[S|x #a true #b true #c true #d false]"); }
     [Test]
     public void TestLike3U () { DoTest ("[x \"foozbar\" \"foolsbar\" \"foobar\" \"foobaz\"] like \"foo*bar\"", "[x true true true false]"); }
+    [Test]
+    public void TestIsName () { DoTest ("isname \"aaa\" \"a a\" \"'foo'\" \"1foo\" \"foo1\" \"foo_bar\"", "true false false false true true"); }
 
     //Block
     [Test]
