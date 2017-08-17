@@ -66,6 +66,13 @@ namespace RCL.Core
 
     [RCVerb ("each")]
     public void EvalEach (
+      RCRunner runner, RCClosure closure, RCTemplate left, RCBlock right)
+    {
+      EvalEach (runner, closure, (RCBlock) left, right);
+    }
+
+    [RCVerb ("each")]
+    public void EvalEach (
       RCRunner runner, RCClosure closure, RCBlock left, RCBlock right)
     {
       if (right.Count == 0)

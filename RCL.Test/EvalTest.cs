@@ -613,6 +613,13 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestEachWithTemplate ()
+    {
+      DoEvalTest ("[?foo [! $R !] baz?] each {:\"bar\" :\"bat\"}",
+                  "{:\"foo bar baz\" :\"foo bat baz\"}");
+    }
+
+    [Test]
     public void TestRInEval ()
     {
       DoEvalTest ("{<-eval {x:$R}} 0", "{x:0}");
