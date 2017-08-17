@@ -1226,6 +1226,8 @@ namespace RCL.Test
     public void TestWhereSB () { DoTest ("\"x\" \"y\" \"z\" where true false true", "\"x\" \"z\""); }
     [Test]
     public void TestWhereTB () { DoTest ("2015.05.27 2015.05.28 2015.05.29 where true false true", "2015.05.27 2015.05.29"); }
+    [Test]
+    public void TestWhereKB () { DoTest ("{a:{x:1} b:{y:1} c:{z:1}} where true false true", "{a:{x:1} c:{z:1}}"); }
 
     [Test]
     public void TestSortAscL() { DoTest ("#asc sort 2 0 1", "0 1 2"); }

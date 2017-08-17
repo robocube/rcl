@@ -68,6 +68,22 @@ namespace RCL.Core
       runner.Yield (closure, DoWhere<RCIncrScalar> (left, right));
     }
 
+    [RCVerb ("where")]
+    public void EvalWhere (
+      RCRunner runner, RCClosure closure, RCBlock left, RCBoolean right)
+    {
+      RCBlock result = RCBlock.Empty;
+      for (int i = 0; i < right.Count; ++i)
+      {
+        if (right[i])
+        {
+          RCBlock current = left.GetName (i);
+          result = new RCBlock (result, current.Name, current.Evaluator, current.Value);
+        }
+      }
+      runner.Yield (closure, result);
+    }
+
     public static RCVector<L> DoWhere<L> (RCVector<L> left, RCVector<bool> right)
     {
       RCArray<L> result = new RCArray<L> ();
