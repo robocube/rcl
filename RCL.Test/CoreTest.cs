@@ -1804,6 +1804,8 @@ namespace RCL.Test
     public void TestSetK0 () { DoTest ("{x:1 y:2} set {y:3 z:4}", "{x:1 y:3 z:4}"); }
     [Test]
     public void TestSetK1 () { DoTest ("{:~s :~s :~s} set {:\"a0\" \"a1\" :\"b0\" \"b1\" :\"c0\" \"c1\"}", "{:\"a0\" \"a1\" :\"b0\" \"b1\" :\"c0\" \"c1\"}"); }
+    [Test]
+    public void TestSetK2 () { DoTest ("{:~s :~s :~s} set {}", "{:~s :~s :~s}"); }
     //Still need to think about how set should work in the case of a timeline.
     [Test]
     public void TestHasY () { DoTest ("{x:1 y:2 z:3} has #a #y #z", "false true true"); }

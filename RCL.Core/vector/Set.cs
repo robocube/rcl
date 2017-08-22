@@ -31,10 +31,11 @@ namespace RCL.Core
         {
           rname = right.GetName (lname.Name);
         }
-        if (rname != null)
+        //rname.Value is null in the case of the empty block
+        if (rname != null && rname.Value != null)
         {
           result = new RCBlock (
-            result, lname.Name, lname.Evaluator, rname.Value);
+            result, rname.Name, rname.Evaluator, rname.Value);
           handled.Add (rname.Name);
         }
         else
