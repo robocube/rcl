@@ -22,7 +22,15 @@ namespace RCL.Core
       for (int i = 0; i < left.Count; ++i)
       {
         RCBlock lname = left.GetName (i);
-        RCBlock rname = right.GetName (lname.Name);
+        RCBlock rname;
+        if (lname.Name == "")
+        {
+          rname = right.GetName (i);
+        }
+        else
+        {
+          rname = right.GetName (lname.Name);
+        }
         if (rname != null)
         {
           result = new RCBlock (

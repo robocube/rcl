@@ -208,7 +208,7 @@ namespace RCL.Kernel
     protected static void PrintCopyright ()
     {
       Console.Out.WriteLine ("Copyright (C) 2007-2015 Brian M. Andersen");
-      Console.Out.WriteLine ("Copyright (C) 2015-2016 Robocube Corporation");
+      Console.Out.WriteLine ("Copyright (C) 2015-2017 Robocube Corporation");
     }
   }
 
@@ -266,17 +266,18 @@ namespace RCL.Kernel
         worker.Start ();
       }
     }
+
     public void Start (RCValue program)
     {
       if (program == null)
         throw new Exception ("program may not be null");
-
+      
       RCClosure root = null;
       lock (m_queueLock)
       {
         if (m_root != null)
           throw new Exception ("Runner has already started.");
-
+        
         root = new RCClosure (m_bots[0], program);
         root.Bot.ChangeFiberState (root.Fiber, "start");
         Log.Record (this, root, "fiber", root.Fiber, "start", root.Code);
@@ -291,7 +292,7 @@ namespace RCL.Kernel
       //Shouldn't this be an exception?
       if (program == null)
         return null;
-
+      
       RCBlock wrapper = new RCBlock (RCBlock.Empty, "", "<-", program);
       RCClosure parent = new RCClosure (
         m_bots[0], 0, null, null, wrapper, null, m_state, 0);
