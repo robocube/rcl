@@ -1621,7 +1621,24 @@ namespace RCL.Test
     [Test]
     public void TestInT () { DoTest ("2015.05.26 2015.05.27 2015.05.28 2015.05.29 2015.05.30 in 2015.05.28 2015.05.30", "false false true false true"); }
 
-    //TODO: Each for operators
+    [Test]
+    public void TestReverseL () { DoTest ("reverse 1 2 3", "3 2 1"); }
+    [Test]
+    public void TestReverseD () { DoTest ("reverse 1.0 2.0 3.0", "3.0 2.0 1.0"); }
+    [Test]
+    public void TestReverseM () { DoTest ("reverse 1.0 2.0 3.0m", "3.0 2.0 1.0m"); }
+    [Test]
+    public void TestReverseX () { DoTest ("reverse \\x00 \\x01 \\x02", "\\x02 \\x01 \\x00"); }
+    [Test]
+    public void TestReverseB () { DoTest ("reverse true false true false", "false true false true"); }
+    [Test]
+    public void TestReverseY () { DoTest ("reverse #a #b #c", "#c #b #a"); }
+    [Test]
+    public void TestReverseS () { DoTest ("reverse \"a\" \"b\" \"c\"", "\"c\" \"b\" \"a\""); }
+    [Test]
+    public void TestReverseT () { DoTest ("reverse 2017.08.24 2017.08.25 2017.08.26", "2017.08.26 2017.08.25 2017.08.24"); }
+    [Test]
+    public void TestReverseK () { DoTest ("reverse {a:1 b:2 c:3}", "{c:3 b:2 a:1}"); }
 
     [Test]
     public void TestPrint() { DoTest ("print \"this\" \"is\" \"some\" \"output\"", "0"); }
@@ -1806,6 +1823,23 @@ namespace RCL.Test
     public void TestSetK1 () { DoTest ("{:~s :~s :~s} set {:\"a0\" \"a1\" :\"b0\" \"b1\" :\"c0\" \"c1\"}", "{:\"a0\" \"a1\" :\"b0\" \"b1\" :\"c0\" \"c1\"}"); }
     [Test]
     public void TestSetK2 () { DoTest ("{:~s :~s :~s} set {}", "{:~s :~s :~s}"); }
+    [Test]
+    public void TestGetLK () { DoTest ("1 get {:#x :#y :#z}", "#y"); }
+    [Test]
+    public void TestGetKL () { DoTest ("{:#x :#y :#z} get 1", "#y"); }
+    [Test]
+    public void TestGetSK () { DoTest ("\"b\" get {a:#x b:#y c:#z}", "#y"); }
+    [Test]
+    public void TestGetKS () { DoTest ("{a:#x b:#y c:#z} get \"b\"", "#y"); }
+    [Test]
+    public void TestGetYK () { DoTest ("#b get {a:#x b:#y c:#z}", "#y"); }
+    [Test]
+    public void TestGetKY () { DoTest ("{a:#x b:#y c:#z} get #b", "#y"); }
+    [Test]
+    public void TestGetYK1 () { DoTest ("#1 get {a:#x b:#y c:#z}", "#y"); }
+    [Test]
+    public void TestGetKY1 () { DoTest ("{a:#x b:#y c:#z} get #1", "#y"); }
+
     //Still need to think about how set should work in the case of a timeline.
     [Test]
     public void TestHasY () { DoTest ("{x:1 y:2 z:3} has #a #y #z", "false true true"); }

@@ -231,15 +231,15 @@ namespace RCL.Core
       long[] rank;
       switch (sortCol.TypeCode)
       {
-      case 'x' : rank = Rank.DoRank<byte> (direction, sortCol.TypeCode, (RCArray<byte>) sortCol.Array); break;
-      case 'l' : rank = Rank.DoRank<long> (direction, sortCol.TypeCode, (RCArray<long>) sortCol.Array); break;
-      case 'd' : rank = Rank.DoRank<double> (direction, sortCol.TypeCode, (RCArray<double>) sortCol.Array); break;
-      case 'm' : rank = Rank.DoRank<decimal> (direction, sortCol.TypeCode, (RCArray<decimal>) sortCol.Array); break;
-      case 's' : rank = Rank.DoRank<string> (direction, sortCol.TypeCode, (RCArray<string>) sortCol.Array); break;
-      case 'b' : rank = Rank.DoRank<bool> (direction, sortCol.TypeCode, (RCArray<bool>) sortCol.Array); break;
-      case 'y' : rank = Rank.DoRank<RCSymbolScalar> (direction, sortCol.TypeCode, (RCArray<RCSymbolScalar>) sortCol.Array); break;
-      case 't' : rank = Rank.DoRank<RCTimeScalar> (direction, sortCol.TypeCode, (RCArray<RCTimeScalar>) sortCol.Array); break;
-      default: throw new Exception ("Type:" + sortCol.TypeCode + " is not supported by sort");
+        case 'x' : rank = Rank.DoRank<byte> (direction, sortCol.TypeCode, (RCArray<byte>) sortCol.Array); break;
+        case 'l' : rank = Rank.DoRank<long> (direction, sortCol.TypeCode, (RCArray<long>) sortCol.Array); break;
+        case 'd' : rank = Rank.DoRank<double> (direction, sortCol.TypeCode, (RCArray<double>) sortCol.Array); break;
+        case 'm' : rank = Rank.DoRank<decimal> (direction, sortCol.TypeCode, (RCArray<decimal>) sortCol.Array); break;
+        case 's' : rank = Rank.DoRank<string> (direction, sortCol.TypeCode, (RCArray<string>) sortCol.Array); break;
+        case 'b' : rank = Rank.DoRank<bool> (direction, sortCol.TypeCode, (RCArray<bool>) sortCol.Array); break;
+        case 'y' : rank = Rank.DoRank<RCSymbolScalar> (direction, sortCol.TypeCode, (RCArray<RCSymbolScalar>) sortCol.Array); break;
+        case 't' : rank = Rank.DoRank<RCTimeScalar> (direction, sortCol.TypeCode, (RCArray<RCTimeScalar>) sortCol.Array); break;
+        default: throw new Exception ("Type:" + sortCol.TypeCode + " is not supported by sort");
       }
 
       int[] rowRank = new int[rank.Length];
@@ -261,15 +261,15 @@ namespace RCL.Core
         ColumnBase newcol = null;
         switch (oldcol.TypeCode)
         {
-        case 'x' : newcol = DoColumn<byte> (oldcol, map, axis); break;
-        case 'l' : newcol = DoColumn<long> (oldcol, map, axis); break;
-        case 'd' : newcol = DoColumn<double> (oldcol, map, axis); break;
-        case 'm' : newcol = DoColumn<decimal> (oldcol, map, axis); break;
-        case 's' : newcol = DoColumn<string> (oldcol, map, axis); break;
-        case 'b' : newcol = DoColumn<bool> (oldcol, map, axis); break;
-        case 'y' : newcol = DoColumn<RCSymbolScalar> (oldcol, map, axis); break;
-        case 't' : newcol = DoColumn<RCTimeScalar> (oldcol, map, axis); break;
-        default: throw new Exception ("Type:" + newcol.TypeCode + " is not supported by sort");
+          case 'x' : newcol = DoColumn<byte> (oldcol, map, axis); break;
+          case 'l' : newcol = DoColumn<long> (oldcol, map, axis); break;
+          case 'd' : newcol = DoColumn<double> (oldcol, map, axis); break;
+          case 'm' : newcol = DoColumn<decimal> (oldcol, map, axis); break;
+          case 's' : newcol = DoColumn<string> (oldcol, map, axis); break;
+          case 'b' : newcol = DoColumn<bool> (oldcol, map, axis); break;
+          case 'y' : newcol = DoColumn<RCSymbolScalar> (oldcol, map, axis); break;
+          case 't' : newcol = DoColumn<RCTimeScalar> (oldcol, map, axis); break;
+          default: throw new Exception ("Type:" + newcol.TypeCode + " is not supported by sort");
         }
         columns.Write (newcol);
       }

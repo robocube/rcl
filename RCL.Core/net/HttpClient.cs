@@ -323,6 +323,7 @@ namespace RCL.Core
       runner.Yield (closure, right);
     }
 
+    /*
     [RCVerb ("get")]
     public void Get (RCRunner runner, RCClosure closure, RCString right)
     {
@@ -345,6 +346,7 @@ namespace RCL.Core
                                                  true);
       ThreadPool.QueueUserWorkItem (state.BeginWebRequest, state);
     }
+    */
 
     [RCVerb ("getw")]
     public void Getw (RCRunner runner, RCClosure closure, RCString right)

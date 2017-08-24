@@ -131,7 +131,7 @@ namespace RCL.Kernel
 
   public class RCEvaluator
   {
-    public static readonly RCEvaluator Let, Quote, Yield, Yiote, Apply, Expand;
+    public static readonly RCEvaluator Let, Quote, Yield, Yiote, Yiyi, Apply, Expand;
 
     public readonly string Symbol;
     public readonly bool Return;
@@ -147,6 +147,7 @@ namespace RCL.Kernel
       Quote = new RCEvaluator ("::", false, false, false, false, true, true, Let);
       Yield = new RCEvaluator ("<-", true, true, false, false, false, false, Yield);
       Yiote = new RCEvaluator ("<-:", false, false, false, false, true, true, Yield);
+      Yiyi = new RCEvaluator ("<--", true, false, false, false, false, true, Yield);  
       Apply = new RCEvaluator ("<+", false, false, true, false, false, false, Apply);
       Expand = new RCEvaluator ("<&", false, true, false, true, false, false, Expand);
     }
@@ -186,6 +187,10 @@ namespace RCL.Kernel
       else if (symbol.Equals ("<-:"))
       {
         return Yiote;
+      }
+      else if (symbol.Equals ("<--"))
+      {
+        return Yiyi;
       }
       else if (symbol.Equals ("<+"))
       {
