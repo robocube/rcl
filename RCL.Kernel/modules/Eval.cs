@@ -82,7 +82,7 @@ namespace RCL.Kernel
       RCClosure parent = UserOpClosure (closure, right, new RCArray<RCBlock> (left));
       DoEval (runner, parent, right);
     }
-
+    
     [RCVerb ("eval")]
     public void EvalEval (RCRunner runner, RCClosure closure, RCByte right)
     {
@@ -177,6 +177,34 @@ namespace RCL.Kernel
     public void EvalEval (RCRunner runner, RCClosure closure, RCBlock left, RCTime right)
     {
       runner.Yield (closure, right);
+    }
+
+    [RCVerb ("apply")]
+    public void EvalApply (RCRunner runner, RCClosure closure, RCBlock left, object right)
+    {
+      RCClosure parent = UserOpClosure (closure, left, null, null, (RCValue) right);
+      DoEval (runner, parent, left);
+    }
+
+    [RCVerb ("apply")]
+    public void EvalApply (RCRunner runner, RCClosure closure, RCTemplate left, object right)
+    {
+      RCClosure parent = UserOpClosure (closure, left, null, null, (RCValue) right);
+      DoEval (runner, parent, left);
+    }
+
+    [RCVerb ("apply")]
+    public void EvalApply (RCRunner runner, RCClosure closure, RCOperator left, object right)
+    {
+      RCClosure parent = UserOpClosure (closure, left, null, null, (RCValue) right);
+      DoEval (runner, parent, left);
+    }
+
+    [RCVerb ("apply")]
+    public void EvalApply (RCRunner runner, RCClosure closure, RCReference left, object right)
+    {
+      RCClosure parent = UserOpClosure (closure, left, null, null, (RCValue) right);
+      DoEval (runner, parent, left);
     }
 
     //This higher order thingy needs to go away it makes no sense.
@@ -565,6 +593,13 @@ namespace RCL.Kernel
       code.Eval (runner, UserOpClosure (closure, code, @this));
     }
 
+    public static RCClosure UserOpClosure (RCClosure previous,
+                                           RCValue code,
+                                           RCArray<RCBlock> @this)
+    {
+      return UserOpClosure (previous, code, @this, null, null);
+    }
+
     /// <summary>
     /// This method creates an identical closure where the left and right
     /// arguments can be accessed in user space.
@@ -572,10 +607,12 @@ namespace RCL.Kernel
     /// </summary>
     public static RCClosure UserOpClosure (RCClosure previous,
                                            RCValue code,
-                                           RCArray<RCBlock> @this)
+                                           RCArray<RCBlock> @this,
+                                           RCValue left,
+                                           RCValue right)
     {
-      RCValue left = previous.Result.Get ("0");
-      RCValue right = previous.Result.Get ("1");
+      left = left != null ? left : previous.Result.Get ("0");
+      right = right != null ? right : previous.Result.Get ("1");
       RCBlock result = null;
       //But what if Parent is null? Can that happen?
       if (@this != null && @this.Count > 0)

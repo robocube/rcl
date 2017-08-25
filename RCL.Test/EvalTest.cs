@@ -346,6 +346,78 @@ namespace RCL.Test
         "2016.09.23 09:48 2016.09.23 09:48 2016.09.23 09:48");
     }
 
+    [Test]
+    public void TextApplyKL ()
+    {
+      DoEvalTest ("{<-$R where $R > 2} apply 0 1 2 3 4 5", "3 4 5");
+    }
+
+    [Test]
+    public void TextApplyKD ()
+    {
+      DoEvalTest ("{<-$R where $R > 2.0} apply 0.0 1.0 2.0 3.0 4.0 5.0", "3.0 4.0 5.0");
+    }
+
+    [Test]
+    public void TextApplyKM ()
+    {
+      DoEvalTest ("{<-$R where $R > 2.0m} apply 0.0 1.0 2.0 3.0 4.0 5.0m", "3.0 4.0 5.0m");
+    }
+
+    [Test]
+    public void TextApplyKS ()
+    {
+      DoEvalTest ("{<-$R where $R like \"foo*\"} apply \"foobar\" \"foobaz\" \"fazban\" \"farbat\"", "\"foobar\" \"foobaz\"");
+    }
+
+    [Test]
+    public void TextApplyKY ()
+    {
+      DoEvalTest ("{<-$R where 1 == long 1 part $R} apply #x,1,foo #y,1,bar #z,2,baz", "#x,1,foo #y,1,bar");
+    }
+
+    [Test]
+    public void TextApplyKT ()
+    {
+      DoEvalTest ("{<-$R where $R < 2017.08.26} apply 2017.08.24 2017.08.25 2017.08.26", "2017.08.24 2017.08.25");
+    }
+
+    [Test]
+    public void TextApplyKX ()
+    {
+      DoEvalTest ("{<-$R where $R < \\x02} apply \\x00 \\x01 \\x02", "\\x00 \\x01");
+    }
+
+    [Test]
+    public void TextApplyKB ()
+    {
+      DoEvalTest ("{<-not $R} apply true false true false true false", "false true false true false true");
+    }
+
+    [Test]
+    public void TestApplyKK ()
+    {
+      DoEvalTest ("{<-$R where (names $R) like \"foo*\"} apply {foobar:1 fazban:2 foobad:3}", "{foobar:1 foobad:3}");
+    }
+
+    [Test]
+    public void TestApplyTV ()
+    {
+      DoEvalTest ("{<-[? aaa [! format $R !] aaa ?] apply 111", "\" aaa 111 aaa \"");
+    }
+
+    [Test]
+    public void TestApplyOV ()
+    {
+      DoEvalTest ("(\"+\" dyad {l:10 r:$R}) apply 1 2 3", "11 12 13");
+    }
+
+    [Test]
+    public void TestApplyRV ()
+    {
+      DoEvalTest ("(reference \"R\" \"b\") apply {a:1 b:2 c:3}", "2");
+    }
+
 //[Test]
 //#if (!__MonoCS__)
     //[ExpectedException(typeof(RCRuntimeException), "Unable to resolve name s.x")]
