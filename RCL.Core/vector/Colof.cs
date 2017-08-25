@@ -10,6 +10,30 @@ namespace RCL.Core
 {
   public class Colof
   {
+    [RCVerb ("gcol")]
+    public void EvalGCol (RCRunner runner, RCClosure closure, RCCube right)
+    {
+      runner.Yield (closure, (RCLong) right.Get ("G"));
+    }
+
+    [RCVerb ("ecol")]
+    public void EvalECol (RCRunner runner, RCClosure closure, RCCube right)
+    {
+      runner.Yield (closure, (RCLong) right.Get ("E"));
+    }
+
+    [RCVerb ("tcol")]
+    public void EvalTCol (RCRunner runner, RCClosure closure, RCCube right)
+    {
+      runner.Yield (closure, (RCTime) right.Get ("T"));
+    }
+
+    [RCVerb ("scol")]
+    public void EvalSCol (RCRunner runner, RCClosure closure, RCCube right)
+    {
+      runner.Yield (closure, (RCSymbol) right.Get ("S"));
+    }
+
     [RCVerb ("colofx")]
     public void EvalColofx (RCRunner runner, RCClosure closure, RCCube right)
     {

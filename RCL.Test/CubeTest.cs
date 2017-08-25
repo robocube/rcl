@@ -1357,6 +1357,30 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestGCol ()
+    {
+      DoTest ("gcol [G S|x 0 #a 0 1 #a 1 2 #a 2]", "0 1 2");
+    }
+
+    [Test]
+    public void TestECol ()
+    {
+      DoTest ("ecol [T E S|x 2017.08.24 0 #a 0 2017.08.25 1 #a 1 2017.08.26 2 #a 2]", "0 1 2");
+    }
+
+    [Test]
+    public void TestTCol ()
+    {
+      DoTest ("tcol [T S|x 2017.08.24 #a 1 2017.08.25 #a 2 2017.08.26 #a 3]", "2017.08.24 2017.08.25 2017.08.26");
+    }
+
+    [Test]
+    public void TestSCol ()
+    {
+      DoTest ("scol [S|x #a 0 #a 1 #a 2]", "#a #a #a");
+    }
+
+    [Test]
     public void TestColofl0 ()
     {
       DoTest ("colofl [S|x #a 0 #a 1 #a 2]", "0 1 2");
