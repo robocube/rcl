@@ -1812,11 +1812,15 @@ namespace RCL.Test
 
     //Block
     [Test]
-    public void TestNamesK() { DoTest ("names {a:1 b:2 c:3}", "\"a\" \"b\" \"c\""); }
+    public void TestNamesK () { DoTest ("names {a:1 b:2 c:3}", "\"a\" \"b\" \"c\""); }
     [Test]
-    public void TestRename() { DoTest ("\"x\" \"y\" \"z\" rename {a:1 b:2 c:3}", "{x:1 y:2 z:3}"); }
+    public void TestRenameS () { DoTest ("\"x\" \"y\" \"z\" rename {a:1 b:2 c:3}", "{x:1 y:2 z:3}"); }
     [Test]
-    public void TestRenameY() { DoTest ("#x #y #z rename {a:1 b:2 c:3}", "{x:1 y:2 z:3}"); }
+    public void TestRenameY () { DoTest ("#x #y #z rename {a:1 b:2 c:3}", "{x:1 y:2 z:3}"); }
+    [Test]
+    public void TestRenameS1 () { DoTest ("\"x\" rename {a:1 b:2 c:3}", "{x:1 x:2 x:3}"); }
+    [Test]
+    public void TestRenameY1 () { DoTest ("#x rename {a:1 b:2 c:3}", "{x:1 x:2 x:3}"); }
     [Test]
     public void TestSetK0 () { DoTest ("{x:1 y:2} set {y:3 z:4}", "{x:1 y:3 z:4}"); }
     [Test]

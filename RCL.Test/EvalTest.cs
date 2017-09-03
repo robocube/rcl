@@ -716,6 +716,12 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestEachIndices ()
+    {
+      DoEvalTest ("{<-$L} each {:1 :2 :3}", "{:0 :1 :2}");
+    }
+
+    [Test]
     public void TestEmptyEval ()
     {
       DoEvalTest ("count eval {}", "0");

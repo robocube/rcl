@@ -30,14 +30,25 @@ namespace RCL.Core
     public void EvalRename (
       RCRunner runner, RCClosure closure, RCString left, RCBlock right)
     {
-      if (left.Count != right.Count)
+      if (left.Count != right.Count && left.Count != 1)
         throw new Exception ("left and right arguments must have the same length");
 
       RCBlock result = RCBlock.Empty;
-      for (int i = 0; i < left.Count; ++i)
+      if (left.Count == 1)
       {
-        RCBlock name = right.GetName (i);
-        result = new RCBlock (result, left[i], name.Evaluator, name.Value);
+        for (int i = 0; i < right.Count; ++i)
+        {
+          RCBlock name = right.GetName (i);
+          result = new RCBlock (result, left[0], name.Evaluator, name.Value);
+        }
+      }
+      else
+      {
+        for (int i = 0; i < left.Count; ++i)
+        {
+          RCBlock name = right.GetName (i);
+          result = new RCBlock (result, left[i], name.Evaluator, name.Value);
+        }
       }
       runner.Yield (closure, result);
     }
@@ -46,15 +57,27 @@ namespace RCL.Core
     public void EvalRename (
       RCRunner runner, RCClosure closure, RCSymbol left, RCBlock right)
     {
-      if (left.Count != right.Count)
+      if (left.Count != right.Count && left.Count != 1)
         throw new Exception ("left and right arguments must have the same length");
 
       RCBlock result = RCBlock.Empty;
-      for (int i = 0; i < left.Count; ++i)
+      if (left.Count == 1)
       {
-        RCBlock name = right.GetName (i);
-        string field = left[i].Part (0).ToString ();
-        result = new RCBlock (result, field, name.Evaluator, name.Value);
+        for (int i = 0; i < right.Count; ++i)
+        {
+          RCBlock name = right.GetName (i);
+          string field = left[0].Part (0).ToString ();
+          result = new RCBlock (result, field, name.Evaluator, name.Value);
+        }
+      }
+      else
+      {
+        for (int i = 0; i < left.Count; ++i)
+        {
+          RCBlock name = right.GetName (i);
+          string field = left[i].Part (0).ToString ();
+          result = new RCBlock (result, field, name.Evaluator, name.Value);
+        }
       }
       runner.Yield (closure, result);
     }

@@ -84,8 +84,16 @@ namespace RCL.Core
       if (i < right.Count)
       {
         RCBlock name = right.GetName (i);
-        RCBlock result = new RCBlock (closure.Result,
-                                      "L", ":", new RCString (name.Name));
+        RCValue lval;
+        if (name.Name != "")
+        {
+          lval = new RCString (name.Name);
+        }
+        else
+        {
+          lval = new RCLong (i);
+        }
+        RCBlock result = new RCBlock (closure.Result, "L", ":", lval);
         result = new RCBlock (result, "R", ":", right.Get(i));
         closure = new RCClosure (closure.Parent,
                                  closure.Bot,
