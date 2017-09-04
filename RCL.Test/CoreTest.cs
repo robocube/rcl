@@ -1822,6 +1822,26 @@ namespace RCL.Test
     [Test]
     public void TestRenameY1 () { DoTest ("#x rename {a:1 b:2 c:3}", "{x:1 x:2 x:3}"); }
     [Test]
+    public void TestNameKSS () {
+      DoTest ("\"name\" name {:{name:\"a\" value:1} :{name:\"b\" value:2} :{name:\"c\" value:3}}",
+          "{a:{name:\"a\" value:1} b:{name:\"b\" value:2} c:{name:\"c\" value:3}}");
+    }
+    [Test]
+    public void TestNameKSY () {
+      DoTest ("\"name\" name {:{name:#a value:1} :{name:#b value:2} :{name:#c value:3}}",
+        "{a:{name:#a value:1} b:{name:#b value:2} c:{name:#c value:3}}");
+    }
+    [Test]
+    public void TestNameKYS () {
+      DoTest ("#name name {:{name:\"a\" value:1} :{name:\"b\" value:2} :{name:\"c\" value:3}}",
+          "{a:{name:\"a\" value:1} b:{name:\"b\" value:2} c:{name:\"c\" value:3}}");
+    }
+    [Test]
+    public void TestNameKYY () {
+      DoTest ("#name name {:{name:#a value:1} :{name:#b value:2} :{name:#c value:3}}",
+          "{a:{name:#a value:1} b:{name:#b value:2} c:{name:#c value:3}}");
+    }
+    [Test]
     public void TestSetK0 () { DoTest ("{x:1 y:2} set {y:3 z:4}", "{x:1 y:3 z:4}"); }
     [Test]
     public void TestSetK1 () { DoTest ("{:~s :~s :~s} set {:\"a0\" \"a1\" :\"b0\" \"b1\" :\"c0\" \"c1\"}", "{:\"a0\" \"a1\" :\"b0\" \"b1\" :\"c0\" \"c1\"}"); }

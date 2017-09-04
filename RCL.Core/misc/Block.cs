@@ -13,6 +13,60 @@ namespace RCL.Core
 {
   public class Block
   {
+    [RCVerb ("name")]
+    public void EvalName (RCRunner runner, RCClosure closure, RCString left, RCBlock right)
+    {
+      if (left.Count != 1)
+      {
+        throw new Exception ("left argument must have count 1");
+      }
+      RCBlock result = Name (left[0], right);
+      runner.Yield (closure, result);
+    }
+
+    [RCVerb ("name")]
+    public void EvalName (RCRunner runner, RCClosure closure, RCSymbol left, RCBlock right)
+    {
+      if (left.Count != 1)
+      {
+        throw new Exception ("left argument must have count 1");
+      }
+      string nameProperty = (string) left[0].Part (0);
+      RCBlock result = Name (nameProperty, right);
+      runner.Yield (closure, result);
+    }
+
+    protected RCBlock Name (string nameProperty, RCBlock right)
+    {
+      RCBlock result = RCBlock.Empty;
+      for (int i = 0; i < right.Count; ++i)
+      {
+        RCBlock name = right.GetName (i);
+        RCBlock val = (RCBlock) name.Value;
+        RCValue newName = val.Get (nameProperty);
+        string nameStr;
+        RCString str = newName as RCString;
+        if (str != null)
+        {
+          nameStr = str[0];
+        }
+        else
+        {
+          RCSymbol sym = newName as RCSymbol;
+          if (sym != null)
+          {
+            nameStr = (string) sym[0].Part (0);
+          }
+          else
+          {
+            throw new Exception ("The name must be a string or a symbol with a name in the first part");
+          }
+        }
+        result = new RCBlock (result, nameStr, name.Evaluator, val);
+      }
+      return result;
+    }
+
     [RCVerb ("names")]
     public void EvalNames (
       RCRunner runner, RCClosure closure, RCBlock right)
