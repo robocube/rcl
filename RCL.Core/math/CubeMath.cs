@@ -1942,9 +1942,30 @@ namespace RCL.Core
       for (int i = 0; i < left.Count; ++i)
       {
         string name = (string) left[i].Part (0);
-        ColumnBase column = right.GetColumn (name);
-        result.Names.Write (name);
-        result.Columns.Write (column);
+        if (right.Has (name))
+        {
+          ColumnBase column = right.GetColumn (name);
+          result.Names.Write (name);
+          result.Columns.Write (column);
+        }
+      }
+      runner.Yield (closure, result);
+    }
+
+    [RCVerb ("from")]
+    public void EvalFrom (
+      RCRunner runner, RCClosure closure, RCString left, RCCube right)
+    {
+      RCCube result = new RCCube (right.Axis);
+      for (int i = 0; i < left.Count; ++i)
+      {
+        string name = left[i];
+        if (right.Has (name))
+        {
+          ColumnBase column = right.GetColumn (name);
+          result.Names.Write (name);
+          result.Columns.Write (column);
+        }
       }
       runner.Yield (closure, result);
     }
@@ -1952,6 +1973,13 @@ namespace RCL.Core
     [RCVerb ("at")]
     public void EvalAt (
       RCRunner runner, RCClosure closure, RCCube left, RCSymbol right)
+    {
+      EvalFrom (runner, closure, right, left);
+    }
+
+    [RCVerb ("at")]
+    public void EvalAt (
+      RCRunner runner, RCClosure closure, RCCube left, RCString right)
     {
       EvalFrom (runner, closure, right, left);
     }

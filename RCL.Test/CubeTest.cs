@@ -1689,9 +1689,39 @@ namespace RCL.Test
     }
 
     [Test]
-    public void TestFrom ()
+    public void TestFromYU ()
     {
       DoTest ("#z #x from [S|x y z #a 1 10 100 #b 2 20 200 #c 3 30 300]", "[S|z x #a 100 1 #b 200 2 #c 300 3]");
+    }
+
+    [Test]
+    public void TestFromSU ()
+    {
+      DoTest ("\"z\" \"x\" from [S|x y z #a 1 10 100 #b 2 20 200 #c 3 30 300]", "[S|z x #a 100 1 #b 200 2 #c 300 3]");
+    }
+
+    [Test]
+    public void TestFromYUEmpty ()
+    {
+      DoTest ("#z #x from []", "[]");
+    }
+
+    [Test]
+    public void TestFromSUEmpty ()
+    {
+      DoTest ("\"z\" \"x\" from []", "[]");
+    }
+
+    [Test]
+    public void TestAtYUEmpty ()
+    {
+      DoTest ("[] at #z #x", "[]");
+    }
+
+    [Test]
+    public void TestAtSUEmpty ()
+    {
+      DoTest ("[] at \"z\" \"x\"", "[]");
     }
 
     [Test]
