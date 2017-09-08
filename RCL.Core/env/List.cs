@@ -96,6 +96,7 @@ namespace RCL.Core
             string [] parts = files[i].Split (Path.DirectorySeparatorChar);
             RCSymbolScalar symbol = RCSymbolScalar.From (1, prefix, parts);
             result.WriteCell ("size", symbol, file.Length);
+            result.WriteCell ("name", symbol, file.Name);
             result.WriteCell ("ext", symbol, file.Extension);
             result.WriteCell ("access", symbol, new RCTimeScalar (file.LastAccessTime, RCTimeType.Datetime));
             result.WriteCell ("write", symbol, new RCTimeScalar (file.LastWriteTime, RCTimeType.Datetime));
