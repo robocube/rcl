@@ -1756,6 +1756,8 @@ namespace RCL.Test
     [Test]
     public void TestSplitw1 () { DoTest ("\"  \" splitw \"  x  y z\"", "\"\" \"x\" \"y z\""); }
     [Test]
+    public void TestTuple () { DoTest ("\":\" tuple \"a\" \"b:c\" \"d:e:f\"", "#a #b,c #d,e,f"); }
+    [Test]
     public void TestSlice0() { DoTest ("\":\" slice \"a:b\" \"c:d\" \"e:f\"", "{:\"a\" \"c\" \"e\" :\"b\" \"d\" \"f\"}"); }
     [Test]
     public void TestSlice1() { DoTest ("\",\" slice \"a\" \"b,c\" \"d,e,f\"", "{:\"a\" \"b\" \"d\" :\"\" \"c\" \"e\" :\"\" \"\" \"f\"}"); }

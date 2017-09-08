@@ -163,6 +163,22 @@ namespace RCL.Core
       runner.Yield (closure, new RCString (result));
     }
 
+    [RCVerb ("tuple")]
+    public void EvalTuple (RCRunner runner,
+                           RCClosure closure,
+                           RCString left,
+                           RCString right)
+    {
+      RCArray<RCSymbolScalar> result = new RCArray<RCSymbolScalar> ();
+      for (int i = 0; i < right.Count; ++i)
+      {
+        string[] parts = right[i].Split (left[0].ToCharArray ());
+        RCSymbolScalar sym = RCSymbolScalar.From (parts);
+        result.Write (sym);
+      }
+      runner.Yield (closure, new RCSymbol (result));
+    }
+
     [RCVerb ("splitw")]
     public  void EvalSplitw (RCRunner runner,
                              RCClosure closure,
