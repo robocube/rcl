@@ -135,19 +135,9 @@ namespace RCL.Core
     }
 
     //This higher order thingy needs to go away it makes no sense.
-    /*
     public override bool IsHigherOrder ()
     {
-      return false;
-    }
-    */
-
-    public override RCClosure Next (RCRunner runner,
-		                                RCClosure tail,
-		                                RCClosure previous,
-                                    RCValue result)
-    {
-      return base.Next (runner, tail, previous, result);
+      return true;
     }
 
     public override bool IsLastCall (RCClosure closure, RCClosure arg)

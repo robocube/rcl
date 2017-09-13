@@ -243,7 +243,7 @@ namespace RCL.Kernel
           {
             if (m_reference.Name.Equals (code.m_reference.Name))
             {
-              //Console.Out.WriteLine ("TAIL RECURSION DETECTED");
+              // Console.Out.WriteLine ("TAIL RECURSION DETECTED");
               return true;
             }
           }

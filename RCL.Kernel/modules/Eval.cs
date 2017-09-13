@@ -858,12 +858,10 @@ namespace RCL.Kernel
       userop = null;
       useropContext = null;
       RCClosure argument0, argument1;
-      /*
       if (previous.Code.IsHigherOrder ())
       {
         return previous.Parent;
       }
-      */
       if (previous.Parent == null)
       {
         return previous.Parent;
@@ -890,6 +888,17 @@ namespace RCL.Kernel
       if (!parent1.Code.IsLastCall (parent1, argument1))
       {
         return previous.Parent;
+      }
+      UserOperator name = op as UserOperator;
+      if (name != null)
+      {
+        //Now we just did the this context work so you know what that means.
+        //We have to pass in this.
+        if (name.m_reference.Parts.Count > 1)
+        {
+          useropContext = new RCArray<RCBlock> ();
+        }
+        userop = Resolve (null, previous.Parent, name.m_reference.Parts, useropContext);
       }
       return parent1.Parent;
     }

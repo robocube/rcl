@@ -716,6 +716,24 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestNameReuseInTailPositionTemplate ()
+    {
+      DoEvalTest ("{f:{t:[?[!$x!]?] <-true switch {:t {} :\"y\"}} x:\"x\" t:[?[!f {}!]?] <-t {}}", "\"x\"");
+    }
+
+    [Test]
+    public void TestNameReuseInTailPositionBlock ()
+    {
+      DoEvalTest ("{f:{t:{<-$x} <-true switch {:t {} :\"y\"}} x:\"x\" t:{<-f {}} <-t {}}", "\"x\"");
+    }
+
+    [Test]
+    public void TestNameNotReusedInTailPositionBlock ()
+    {
+      DoEvalTest ("{f:{t1:{<-$x} <-true switch {:t1 {} :2}} x:1 t:{<-f {}} <-t {}}", "1");
+    }
+
+    [Test]
     public void TestRInEval ()
     {
       DoEvalTest ("{<-eval {x:$R}} 0", "{x:0}");
