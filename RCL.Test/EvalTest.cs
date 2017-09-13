@@ -610,25 +610,25 @@ namespace RCL.Test
     [Test]
     public void TestNestedSwitch ()
     {
-      DoEvalTest("{f:{<-true switch {:$L - $R}} <-13 f 9}", "4");
+      DoEvalTest ("{f:{<-true switch {:$L - $R}} <-13 f 9}", "4");
     }
 
     [Test]
     public void TestNestedSwitch1 ()
     {
-      DoEvalTest("{f:{<-true switch {:true switch {:$L - $R}}} <-13 f 9}", "4");
+      DoEvalTest ("{f:{<-true switch {:true switch {:$L - $R}}} <-13 f 9}", "4");
     }
 
     [Test]
     public void TestNestedSwitch2 ()
     {
-      DoEvalTest("{f:{<-true switch {:true switch {:true switch {:true switch {:$L - $R}}}}} <-13 f 9}", "4");
+      DoEvalTest ("{f:{<-true switch {:true switch {:true switch {:true switch {:$L - $R}}}}} <-13 f 9}", "4");
     }
 
     [Test]
     public void TestSwitchInTake ()
     {
-      DoEvalTest("{<-#lock take {<-true switch {:0 :1}}}", "0");
+      DoEvalTest ("{<-#lock take {<-true switch {:0 :1}}}", "0");
     }
 
     [Test]
@@ -701,6 +701,18 @@ namespace RCL.Test
     {
       DoEvalTest ("[?foo [! $R !] baz?] each {:\"bar\" :\"bat\"}",
                   "{:\"foo bar baz\" :\"foo bat baz\"}");
+    }
+
+    [Test]
+    public void TestTemplateInTailPositionSwitch ()
+    {
+      DoEvalTest ("{f:{x:\"x\" t:[?[!$x!]?] <-true switch {:t $R :\"\"}} <-f {}}", "\"x\"");
+    }
+
+    [Test]
+    public void TestBlockInTailPositionSwitch ()
+    {
+      DoEvalTest ("{f:{x:\"x\" t:{<-$x} <-true switch {:t $R :\"\"}} <-f {}}", "\"x\"");
     }
 
     [Test]

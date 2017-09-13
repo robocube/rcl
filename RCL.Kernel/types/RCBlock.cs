@@ -409,8 +409,7 @@ namespace RCL.Kernel
         }
         return result;
       }
-      else
-        return val;
+      else return val;
     }
 
     public override void Eval (RCRunner runner, RCClosure closure)
@@ -418,9 +417,9 @@ namespace RCL.Kernel
       RCL.Kernel.Eval.DoEval (runner, closure, this);
     }
 
-    public override RCClosure Next (RCRunner runner, 
-                                    RCClosure tail, 
-                                    RCClosure previous, 
+    public override RCClosure Next (RCRunner runner,
+                                    RCClosure tail,
+                                    RCClosure previous,
                                     RCValue result)
     {
       return RCL.Kernel.Eval.DoNext (this, runner, tail, previous, result);

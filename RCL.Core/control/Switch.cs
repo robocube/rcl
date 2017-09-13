@@ -91,8 +91,12 @@ namespace RCL.Core
         int i = closure.Index - 2;
         if (i < left.Count)
         {
-          RCClosure child = new RCClosure (
-            closure, closure.Bot, right, closure.Left, RCBlock.Empty, 0);
+          RCClosure child = new RCClosure (closure,
+                                           closure.Bot,
+                                           right,
+                                           closure.Left,
+                                           RCBlock.Empty,
+                                           0);
           right.Eval (runner, child);
         }
         else
@@ -106,15 +110,22 @@ namespace RCL.Core
       }
     }
 
-    protected virtual void DoSwitch<T> (
-      RCRunner runner, RCClosure closure, RCVector<T> left, RCBlock right, Picker<T> picker)
+    protected virtual void DoSwitch<T> (RCRunner runner,
+                                        RCClosure closure,
+                                        RCVector<T> left,
+                                        RCBlock right,
+                                        Picker<T> picker)
     {
       int i = closure.Index - 2;
       if (i < left.Count)
       {
         RCValue code = picker (left[i]);
-        RCClosure child = new RCClosure (
-          closure, closure.Bot, code, closure.Left, RCBlock.Empty, 0);
+        RCClosure child = new RCClosure (closure,
+                                         closure.Bot,
+                                         code,
+                                         closure.Left,
+                                         RCBlock.Empty,
+                                         0);
         code.Eval (runner, child);
       }
       else
@@ -124,18 +135,33 @@ namespace RCL.Core
     }
 
     //This higher order thingy needs to go away it makes no sense.
+    /*
     public override bool IsHigherOrder ()
     {
-      return true;
+      return false;
+    }
+    */
+
+    public override RCClosure Next (RCRunner runner,
+		                                RCClosure tail,
+		                                RCClosure previous,
+                                    RCValue result)
+    {
+      return base.Next (runner, tail, previous, result);
     }
 
     public override bool IsLastCall (RCClosure closure, RCClosure arg)
     {
       if (arg == null)
+      {
         return base.IsLastCall (closure, arg);
+      }
       if (!base.IsLastCall (closure, arg))
+      {
         return false;
-      return arg.Code.IsBeforeLastCall (arg);
+      }
+      bool isBeforeLastCall = arg.Code.IsBeforeLastCall (arg);
+      return isBeforeLastCall;
     }
   }
 }

@@ -50,9 +50,9 @@ namespace RCL.Core
       return base.Next (runner, closure, closure, result);
     }
 
-    public override RCClosure Next (RCRunner runner, 
-		                                RCClosure tail, 
-		                                RCClosure previous, 
+    public override RCClosure Next (RCRunner runner,
+		                                RCClosure tail,
+		                                RCClosure previous,
                                     RCValue result)
     {
       if (previous.Index == 1)
@@ -64,6 +64,13 @@ namespace RCL.Core
       }
       else return base.Next (runner, tail, previous, result);
     }
+
+    /*
+    public override bool IsHigherOrder ()
+    {
+      return false;
+    }
+    */
 
     public override RCValue Finish (RCValue result)
     {

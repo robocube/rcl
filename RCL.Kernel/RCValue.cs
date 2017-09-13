@@ -124,10 +124,12 @@ namespace RCL.Kernel
     }
 
     //Need to get rid of this method.
+    /*
     public virtual bool IsHigherOrder ()
     {
       return false;
     }
+    */
 
     public override bool Equals (object obj)
     {

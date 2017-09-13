@@ -199,7 +199,9 @@ namespace RCL.Core
     {
       RCValue right = closure.Result.Get ("1");
       if (right == null)
+      {
         return base.IsLastCall (closure, arg);
+      }
       return closure.Index == right.Count + 2;
     }
   }

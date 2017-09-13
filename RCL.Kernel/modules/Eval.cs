@@ -208,10 +208,12 @@ namespace RCL.Kernel
     }
 
     //This higher order thingy needs to go away it makes no sense.
+    /*
     public override bool IsHigherOrder ()
     {
-      return true;
+      return false;
     }
+    */
 
     public override bool IsLastCall (RCClosure closure, RCClosure arg)
     {
@@ -262,13 +264,13 @@ namespace RCL.Kernel
     {
       if (argument.ArgumentEval)
       {
-        argument.Eval (runner, 
-                       new RCClosure (closure, 
-                                      closure.Bot, 
-                                      argument, 
-                                      closure.Left, 
-                                      null, 
-                                      0));
+        RCClosure child = new RCClosure (closure,
+                                         closure.Bot,
+                                         argument,
+                                         closure.Left,
+                                         null,
+                                         0);
+        argument.Eval (runner, child);
       }
       else
       {
@@ -283,7 +285,6 @@ namespace RCL.Kernel
     {
       RCValue left = closure.Result.Get ("0");
       RCValue right = closure.Result.Get ("1");
-
       RCValue virtop = Resolve (null, closure, new RCArray<string> (op.Name), null, true);
       if (virtop != null)
       {
@@ -291,7 +292,6 @@ namespace RCL.Kernel
         virtop.Eval (runner, parent);
         return;
       }
-
       if (left == null)
       {
         runner.Activator.Invoke (runner, closure, op.Name, right);
@@ -300,7 +300,6 @@ namespace RCL.Kernel
       {
         runner.Activator.Invoke (runner, closure, op.Name, left, right);
       }
-
       //A lot of good men died to bring us this one line of code...
       //Let's keep this around as a memorial.
       //right.BindRight (runner, closure, this, left);
@@ -674,7 +673,6 @@ namespace RCL.Kernel
       {
         throw new ArgumentNullException ("result");
       }
-
       //Do not permit any further changes to result or its children values.
       result.Lock ();
       RCClosure next = closure.Code.Next (runner, closure, closure, result);
@@ -787,20 +785,22 @@ namespace RCL.Kernel
         {
           RCValue userop;
           RCArray<RCBlock> useropContext;
-          RCClosure next = new RCClosure (
-            NextParentOf (op, previous, out userop, out useropContext),
-            head.Bot,
-            op,
-            previous.Left,
-            new RCBlock (null, "1", ":", result),
-            previous.Index + 1,
-            userop, useropContext);
+          RCClosure nextParentOf = NextParentOf (op, previous, out userop, out useropContext);
+          RCClosure next = new RCClosure (nextParentOf,
+                                          head.Bot,
+                                          op,
+                                          previous.Left,
+                                          new RCBlock (null, "1", ":", result),
+                                          previous.Index + 1,
+                                          userop, useropContext);
           return next;
         }
         else if (previous.Index == 1 && previous.Parent != null)
         {
-          return previous.Parent.Code.Next (
-            runner, head == null ? previous : head, previous.Parent, result);
+          return previous.Parent.Code.Next (runner,
+                                            head == null ? previous : head,
+                                            previous.Parent,
+                                            result);
         }
         else return null;
       }
@@ -808,39 +808,40 @@ namespace RCL.Kernel
       {
         if (previous.Index == 0)
         {
-          return new RCClosure (
-            previous.Parent,
-            head.Bot,
-            op,
-            result,
-            previous.Result,
-            previous.Index + 1);
+          return new RCClosure (previous.Parent,
+                                head.Bot,
+                                op,
+                                result,
+                                previous.Result,
+                                previous.Index + 1);
         }
         else if (previous.Index == 1)
         {
           RCValue userop;
           RCArray<RCBlock> useropContext;
-          RCClosure next = new RCClosure (
-            NextParentOf (op, previous, out userop, out useropContext),
-            head.Bot,
-            op,
-            //reset "pocket" left to null.
-            null, 
-            //fold it into the current context for the final eval.
-            new RCBlock (
-              new RCBlock (null, "0", ":", previous.Left), "1", ":", result),
-            previous.Index + 1);
+          RCClosure next = new RCClosure (NextParentOf (op, previous, out userop, out useropContext),
+                                          head.Bot,
+                                          op,
+                                          //reset "pocket" left to null.
+                                          null,
+                                          //fold it into the current context for the final eval.
+                                          new RCBlock (new RCBlock (null, "0", ":", previous.Left), "1", ":", result),
+                                          previous.Index + 1);
           return next;
         }
         else if (previous.Index == 2 && previous.Parent != null)
         {
-          return previous.Parent.Code.Next (
-            runner, head == null ? previous : head, previous.Parent, result);
+          return previous.Parent.Code.Next (runner,
+                                            head == null ? previous : head,
+                                            previous.Parent,
+                                            result);
         }
         else if (previous.Parent != null && previous.Parent.Parent != null)
         {
-          return previous.Parent.Parent.Code.Next (
-            runner, head == null ? previous : head, previous.Parent.Parent, result);
+          return previous.Parent.Parent.Code.Next (runner,
+                                                   head == null ? previous : head,
+                                                   previous.Parent.Parent,
+                                                   result);
         }
         else return null;
       }
@@ -857,10 +858,12 @@ namespace RCL.Kernel
       userop = null;
       useropContext = null;
       RCClosure argument0, argument1;
+      /*
       if (previous.Code.IsHigherOrder ())
       {
         return previous.Parent;
       }
+      */
       if (previous.Parent == null)
       {
         return previous.Parent;
@@ -888,22 +891,21 @@ namespace RCL.Kernel
       {
         return previous.Parent;
       }
-      UserOperator name = op as UserOperator;
-      if (name != null)
-      {
-        //Now we just did the this context work so you know what that means.
-        //We have to pass in this.
-        if (name.m_reference.Parts.Count > 1)
-        {
-          useropContext = new RCArray<RCBlock> ();
-        }
-        userop = Resolve (null, previous.Parent, name.m_reference.Parts, useropContext);
-      }
       return parent1.Parent;
     }
 
     public static bool DoIsBeforeLastCall (RCClosure closure, RCOperator op)
     {
+      return false;
+      // We now check explicitly for the tail recursive case
+      // This means less need to worry about "last call" status
+      // UserOperator is the only place where this operation might return true now.
+      // There is never a need to eliminate the tail stack frame in the case of a built-in.
+      // Still I don't feel quite ready to excise all of this "last call" code.
+      // We will save that until the production system is ready.
+      // That we can do a full and proper regression.
+      // It's possible there is something I'm missing.
+      /*
       if (closure.Index == 0)
       {
         return op.Left == null;
@@ -912,6 +914,7 @@ namespace RCL.Kernel
       {
         return closure.Index == 1;
       }
+      */
     }
 
     public static bool DoIsLastCall (RCClosure closure, 

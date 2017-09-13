@@ -54,7 +54,9 @@ namespace RCL.Core
       public override bool IsLastCall (RCClosure closure, RCClosure arg)
       {
         if (arg == null)
+        {
           return base.IsLastCall (closure, arg);
+        }
         return arg.Code.IsLastCall (arg, null);
       }
     }
