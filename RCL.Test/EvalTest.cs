@@ -728,6 +728,19 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestNameReuseInTailPositionBlock1 ()
+    {
+      DoEvalTest ("{f:{x:\"x0\" t:{<-$x} <-true switch {:t {} :\"y\"}} t:{<-f {}} <-t {}}", "\"x0\"");
+    }
+
+    [Test]
+    public void TestNameReuseInTailPositionBlock2 ()
+    {
+      // This one matters; the variable defined in the lexical scope of t:{<-$x} is the one used.
+      DoEvalTest ("{f:{x:\"x0\" t:{<-$x} <-true switch {:t {} :\"y\"}} x:\"x1\" t:{<-f {}} <-t {}}", "\"x0\"");
+    }
+
+    [Test]
     public void TestNameNotReusedInTailPositionBlock ()
     {
       DoEvalTest ("{f:{t1:{<-$x} <-true switch {:t1 {} :2}} x:1 t:{<-f {}} <-t {}}", "1");

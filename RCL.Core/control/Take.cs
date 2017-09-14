@@ -67,7 +67,8 @@ namespace RCL.Core
       RCClosure next = new RCClosure (
         closure.Bot, closure.Fiber, symbols,
         closure, section, closure.Left,
-        closure.Parent != null ? closure.Parent.Result : null, 0);
+        closure.Parent != null ? closure.Parent.Result : null, 0,
+        closure.UserOp, closure.UserOpContext);
 
       lock (m_takeLock)
       {

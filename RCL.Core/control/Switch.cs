@@ -137,7 +137,7 @@ namespace RCL.Core
     //This higher order thingy needs to go away it makes no sense.
     public override bool IsHigherOrder ()
     {
-      return true;
+      return false;
     }
 
     public override bool IsLastCall (RCClosure closure, RCClosure arg)

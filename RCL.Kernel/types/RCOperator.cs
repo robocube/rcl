@@ -233,24 +233,7 @@ namespace RCL.Kernel
 
     public override bool IsBeforeLastCall (RCClosure closure)
     {
-      //if (RCL.Kernel.Eval.DoIsBeforeLastCall (closure, this))
-      {
-        RCClosure current = closure.Parent;
-        while (current != null)
-        {
-          UserOperator code = current.Code as UserOperator;
-          if (code != null)
-          {
-            if (m_reference.Name.Equals (code.m_reference.Name))
-            {
-              // Console.Out.WriteLine ("TAIL RECURSION DETECTED");
-              return true;
-            }
-          }
-          current = current.Parent;
-        }
-      }
-      return false;
+      return RCL.Kernel.Eval.DoIsBeforeLastCall (closure, this);
     }
   }
 

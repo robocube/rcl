@@ -57,12 +57,19 @@ namespace RCL.Kernel
     /// </summary>
     public readonly long Depth = 0;
 
+    /// <summary>
+    /// If a UserOperator is currently being evaluated,
+    /// the body of the operation can be obtained here.
+    /// </summary>
     public readonly RCValue UserOp;
 
+    /// <summary>
+    /// An array of blocks that contain any variables available to UserOp.
+    /// </summary>
     public readonly RCArray<RCBlock> UserOpContext;
 
     public RCClosure (RCBot bot, RCValue code)
-      :this (bot, 0, null, null, code, null, null, 0) {}
+      :this (bot, 0, null, null, code, null, null, 0, null, null) {}
 
     public RCClosure (
       RCClosure parent,
@@ -88,6 +95,8 @@ namespace RCL.Kernel
         Fiber = parent.Fiber;
         Locks = parent.Locks;
         Depth = parent.Depth + 1;
+        UserOp = parent.UserOp;
+        UserOpContext = parent.UserOpContext;
       }
 
       if (bot == null)
@@ -101,8 +110,14 @@ namespace RCL.Kernel
       Left = left;
       Result = result != null ? result : RCBlock.Empty;
       Index = index;
-      UserOp = userOp;
-      UserOpContext = userOpContext;
+      if (userOp != null)
+      {
+        UserOp = userOp;
+      }
+      if (userOpContext != null)
+      {
+        UserOpContext = userOpContext;
+      }
     }
 
     public RCClosure (
@@ -113,7 +128,9 @@ namespace RCL.Kernel
       RCValue code,
       RCValue left,
       RCBlock result,
-      int index)
+      int index,
+      RCValue userOp,
+      RCArray<RCBlock> userOpContext)
     {
       if (parent != null)
         Depth = parent.Depth + 1;
@@ -131,6 +148,14 @@ namespace RCL.Kernel
       Left = left;
       Result = result != null ? result : RCBlock.Empty;
       Index = index;
+      if (userOp != null)
+      {
+        UserOp = userOp;
+      }
+      if (userOpContext != null)
+      {
+        UserOpContext = userOpContext;
+      }
     }
 
     public override string ToString ()

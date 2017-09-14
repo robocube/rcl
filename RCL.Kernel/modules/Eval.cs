@@ -638,18 +638,20 @@ namespace RCL.Kernel
         result = new RCBlock (result, "L", ":", left);
         result = new RCBlock (result, "R", ":", right);
       }
+      //Passing code and @this here is important. NextParentOf will look
+      //for the body of the executing function in that variable to detect tail calls.
       RCClosure replacement = new RCClosure (previous.Parent,
                                              previous.Bot,
                                              previous.Code,
                                              previous.Left,
                                              result,
-                                             previous.Index);
+                                             previous.Index, code, @this);
       RCClosure child = new RCClosure (replacement,
                                        previous.Bot,
                                        code,
                                        previous.Left,
                                        RCBlock.Empty,
-                                       0);
+                                       0, code, @this);
       return child;
     }
 
@@ -728,7 +730,8 @@ namespace RCL.Kernel
                               previous.Fiber, previous.Locks,
                               previous.Parent, block, previous.Left,
                               NextBlock (runner, block, previous, result),
-                              previous.Index + 1);
+                              previous.Index + 1,
+                              previous.UserOp, previous.UserOpContext);
       }
       else if (previous.Parent != null)
       {
@@ -813,7 +816,7 @@ namespace RCL.Kernel
                                 op,
                                 result,
                                 previous.Result,
-                                previous.Index + 1);
+                                previous.Index + 1, previous.UserOp, previous.UserOpContext);
         }
         else if (previous.Index == 1)
         {
@@ -826,7 +829,8 @@ namespace RCL.Kernel
                                           null,
                                           //fold it into the current context for the final eval.
                                           new RCBlock (new RCBlock (null, "0", ":", previous.Left), "1", ":", result),
-                                          previous.Index + 1);
+                                          previous.Index + 1,
+                                          userop, useropContext);
           return next;
         }
         else if (previous.Index == 2 && previous.Parent != null)
@@ -858,6 +862,7 @@ namespace RCL.Kernel
       userop = null;
       useropContext = null;
       RCClosure argument0, argument1;
+
       if (previous.Code.IsHigherOrder ())
       {
         return previous.Parent;
@@ -868,7 +873,10 @@ namespace RCL.Kernel
       }
       if (!previous.Parent.Code.IsLastCall (previous.Parent, previous))
       {
-        return previous.Parent;
+        if (!CheckForTailRecursion (op, previous, ref userop, ref useropContext))
+        {
+          return previous.Parent;
+        }
       }
       RCClosure parent0 = OwnerOpOf (op, previous, out argument0);
       if (parent0 == null)
@@ -877,7 +885,10 @@ namespace RCL.Kernel
       }
       if (!parent0.Code.IsLastCall (parent0, argument0))
       {
-        return previous.Parent;
+        if (!CheckForTailRecursion (op, previous, ref userop, ref useropContext))
+        {
+          return previous.Parent;
+        }
       }
       RCClosure parent1 = OwnerOpOf (op, parent0, out argument1);
       if (parent1 == null)
@@ -889,6 +900,15 @@ namespace RCL.Kernel
       {
         return previous.Parent;
       }
+
+      return parent1.Parent;
+    }
+
+    public static bool CheckForTailRecursion (RCOperator op,
+                                              RCClosure previous,
+                                              ref RCValue userop,
+                                              ref RCArray<RCBlock> useropContext)
+    {
       UserOperator name = op as UserOperator;
       if (name != null)
       {
@@ -899,8 +919,22 @@ namespace RCL.Kernel
           useropContext = new RCArray<RCBlock> ();
         }
         userop = Resolve (null, previous.Parent, name.m_reference.Parts, useropContext);
+        RCClosure current = previous.Parent;
+        while (current != null)
+        {
+          UserOperator code = current.Code as UserOperator;
+          if (code != null)
+          {
+            if (userop == current.UserOp)
+            {
+              // Console.Out.WriteLine ("TAIL RECURSION DETECTED");
+              return true;
+            }
+          }
+          current = current.Parent;
+        }
       }
-      return parent1.Parent;
+      return false;
     }
 
     public static bool DoIsBeforeLastCall (RCClosure closure, RCOperator op)
@@ -912,7 +946,7 @@ namespace RCL.Kernel
       // There is never a need to eliminate the tail stack frame in the case of a built-in.
       // Still I don't feel quite ready to excise all of this "last call" code.
       // We will save that until the production system is ready.
-      // That we can do a full and proper regression.
+      // So that we can do a full and proper regression.
       // It's possible there is something I'm missing.
       /*
       if (closure.Index == 0)
