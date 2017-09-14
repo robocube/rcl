@@ -1,4 +1,3 @@
-
 using System;
 using System.Text;
 
@@ -862,18 +861,19 @@ namespace RCL.Kernel
       userop = null;
       useropContext = null;
       RCClosure argument0, argument1;
-
-      if (previous.Code.IsHigherOrder ())
-      {
-        return previous.Parent;
-      }
+      bool recursion = false;
       if (previous.Parent == null)
       {
         return previous.Parent;
       }
-      if (!previous.Parent.Code.IsLastCall (previous.Parent, previous))
+      recursion = CheckForRecursion (op, previous, ref userop, ref useropContext);
+      if (!recursion)
       {
-        if (!CheckForTailRecursion (op, previous, ref userop, ref useropContext))
+        return previous.Parent;
+      }
+      else if (!previous.Parent.Code.IsLastCall (previous.Parent, previous))
+      {
+        if (!recursion)
         {
           return previous.Parent;
         }
@@ -885,7 +885,7 @@ namespace RCL.Kernel
       }
       if (!parent0.Code.IsLastCall (parent0, argument0))
       {
-        if (!CheckForTailRecursion (op, previous, ref userop, ref useropContext))
+        if (!recursion)
         {
           return previous.Parent;
         }
@@ -900,11 +900,29 @@ namespace RCL.Kernel
       {
         return previous.Parent;
       }
-
       return parent1.Parent;
     }
 
-    public static bool CheckForTailRecursion (RCOperator op,
+    public static void PreresolveUserOp (RCClosure closure,
+                                         RCValue op,
+                                         ref RCValue resolved,
+                                         ref RCArray<RCBlock> context)
+    {
+      //Now we just did the this context work so you know what that means.
+      //We have to pass in this.
+      UserOperator name = op as UserOperator;
+      if (name == null)
+      {
+        return;
+      }
+      if (name.m_reference.Parts.Count > 1)
+      {
+        context = new RCArray<RCBlock> ();
+      }
+      resolved = Resolve (null, closure.Parent, name.m_reference.Parts, context);
+    }
+
+    public static bool CheckForRecursion (RCValue op,
                                               RCClosure previous,
                                               ref RCValue userop,
                                               ref RCArray<RCBlock> useropContext)
@@ -912,13 +930,8 @@ namespace RCL.Kernel
       UserOperator name = op as UserOperator;
       if (name != null)
       {
-        //Now we just did the this context work so you know what that means.
-        //We have to pass in this.
-        if (name.m_reference.Parts.Count > 1)
-        {
-          useropContext = new RCArray<RCBlock> ();
-        }
-        userop = Resolve (null, previous.Parent, name.m_reference.Parts, useropContext);
+        //Console.Out.WriteLine ("CHECKING FOR TAIL RECURSION");
+        PreresolveUserOp (previous, op, ref userop, ref useropContext);
         RCClosure current = previous.Parent;
         while (current != null)
         {
@@ -927,13 +940,14 @@ namespace RCL.Kernel
           {
             if (userop == current.UserOp)
             {
-              // Console.Out.WriteLine ("TAIL RECURSION DETECTED");
+              //Console.Out.WriteLine ("TAIL RECURSION DETECTED");
               return true;
             }
           }
           current = current.Parent;
         }
       }
+      //Console.Out.WriteLine ("NO TAIL RECURSION HERE BUB");
       return false;
     }
 

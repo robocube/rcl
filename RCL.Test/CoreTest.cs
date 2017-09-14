@@ -2157,22 +2157,24 @@ namespace RCL.Test
       DoTest ("{b:bot {:assert false} :wait $b :kill $b <-0}", "0");
     }
 
+    //These three tests are still important but the module operator itself
+    //can be removed since it was an abomination. Should work "out of the box" now.
     [Test]
     public void TestModule ()
     {
-      DoTest ("{lib:module {f1:{<-$R * $R} f2:{<-f1 $R}} <-lib.f2 3}", "9");
+      DoTest ("{lib:{f1:{<-$R * $R} f2:{<-f1 $R}} <-lib.f2 3}", "9");
     }
 
     [Test]
     public void TestModule1 ()
     {
-      DoTest ("{lib:module {f1:{<-$R * $R} f2:{<-f1 $R} f3:{<-f2 $R}} <-lib.f3 3}", "9");
+      DoTest ("{lib:{f1:{<-$R * $R} f2:{<-f1 $R} f3:{<-f2 $R}} <-lib.f3 3}", "9");
     }
 
     [Test]
     public void TestModule2 ()
     {
-      DoTest ("{lib:module {f1:{<-1 + 2}} <-lib.f1 {}}", "3");
+      DoTest ("{lib:{f1:{<-1 + 2}} <-lib.f1 {}}", "3");
     }
 
     //Parsing other data formats

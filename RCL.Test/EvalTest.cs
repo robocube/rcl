@@ -747,6 +747,12 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestInnerOperatorInTailPosition ()
+    {
+      DoEvalTest ("{f:{g:{<-$R} <-g 1} <-f {}}", "1");
+    }
+
+    [Test]
     public void TestRInEval ()
     {
       DoEvalTest ("{<-eval {x:$R}} 0", "{x:0}");
