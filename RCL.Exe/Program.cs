@@ -47,7 +47,7 @@ namespace RCL.Exe
       
       string prompt = "RCL>";
       LineEditor editor = new LineEditor ("RCL");
-      RCLogger consoleLog = new RCLogger (false, cmd.Show);
+      RCLogger consoleLog = new RCLogger (cmd.Nokeys, cmd.Show);
       RCLog log = new RCLog (consoleLog);
       RCRunner runner = new RCRunner (RCActivator.Default, log, 1, cmd);
       InstallSignalHandler (runner);
@@ -177,7 +177,6 @@ namespace RCL.Exe
           runner.Dispose ();
           //Prevents last RCL prompt from appearing on the same line as the next bash prompt.
           //But I want to do something so that log output *never* appears on the same line as the prompt.
-          //Console.Out.WriteLine ();
           Console.Out.Flush ();
           Environment.Exit (status);
         }

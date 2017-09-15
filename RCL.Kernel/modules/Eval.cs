@@ -871,6 +871,7 @@ namespace RCL.Kernel
       {
         return previous.Parent;
       }
+      /*
       else if (!previous.Parent.Code.IsLastCall (previous.Parent, previous))
       {
         if (!recursion)
@@ -878,6 +879,7 @@ namespace RCL.Kernel
           return previous.Parent;
         }
       }
+      */
       RCClosure parent0 = OwnerOpOf (op, previous, out argument0);
       if (parent0 == null)
       {
@@ -923,9 +925,9 @@ namespace RCL.Kernel
     }
 
     public static bool CheckForRecursion (RCValue op,
-                                              RCClosure previous,
-                                              ref RCValue userop,
-                                              ref RCArray<RCBlock> useropContext)
+                                          RCClosure previous,
+                                          ref RCValue userop,
+                                          ref RCArray<RCBlock> useropContext)
     {
       UserOperator name = op as UserOperator;
       if (name != null)

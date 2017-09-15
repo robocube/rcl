@@ -13,9 +13,34 @@ namespace RCL.Kernel
   {
     public readonly RCBlock Options;
     public readonly RCString Arguments;
+
+    //--exit -x
+    //With --program, causes rcl to exit after --program is finished
+    //With --batch, causes rcl to exit after input has been evaluated
+    //Use --exit to avoid putting calls to :exit in your --program
+    //This is to facilitate interactive debugging and development
     public readonly bool Exit;
+
+    //--batch -b
+    //Causes rcl to read all input from the console or file at once
+    //After the end of the input, no more input will be accepted,
+    //either with Console.ReadLine or with Getline.
+    //If --exit is set, rcl will exit after processing all input
+    //Otherwise the main thread will go to sleep until one of:
+    // a unix signal requesting termination is received
+    // :exit is invoked as a result of --program
     public readonly bool Batch;
+
+    //--nokeys -k
+    //Disables the Getline library which causes problems in non-interactive settings
+    //Causes log messages to go to Console.Out rather than Console.Error
+    //When --nokeys is set, any input is read with Console.ReadLine
     public readonly bool Nokeys;
+
+    //--noread -r
+    //With --nokeys, prevents all calls to Console.ReadLine and related methods
+    //Use --noread when attempts to read from stdin would cause errors
+    //(For example, under systemd)
     public readonly bool Noread;
     public readonly bool Version;
     public readonly string Program;
