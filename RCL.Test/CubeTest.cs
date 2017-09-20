@@ -845,17 +845,14 @@ namespace RCL.Test
       string null00 = "[x y z -- 10 100 2 20 200 3 30 300]";
       string null11 = "[x y z 1 10 100 2 -- 200 3 30 300]";
       string null22 = "[x y z 1 10 100 2 20 200 3 30 --]";
-
+      
       DoTest (string.Format ("#desc,x sort {0}", col1row1), "[x 1]");
       DoTest (string.Format ("#desc,y sort {0}", col2row1), "[x y 1 10]");
       DoTest (string.Format ("#desc,z sort {0}", col3row1), "[x y z 1 10 100]");
-
       DoTest (string.Format ("#desc,x sort {0}", col1row2), "[x 2 1]");
       DoTest (string.Format ("#desc,y sort {0}", col2row2), "[x y 2 20 1 10]");
       DoTest (string.Format ("#desc,z sort {0}", col3row2), "[x y z 2 20 200 1 10 100]");
-
       DoTest (string.Format ("#desc,y sort {0}", col3row3), "[x y z 3 30 300 2 20 200 1 10 100]");
-
       //DoTest (string.Format ("#desc,x sort {0}", null00), "[x y z 3l 30l 300l 2l 20l 200l -- 10l 100l]");
       //It should really be the way commented above this line.
       //Gotta fix that column ordering bug.
@@ -863,6 +860,38 @@ namespace RCL.Test
       DoTest (string.Format ("#desc,y sort {0}", null11), "[x y z 3 30 300 1 10 100 2 -- 200]");
       DoTest (string.Format ("#desc,z sort {0}", null22), "[x y z 2 20 200 1 10 100 3 30 --]");
     }
+
+    /* Please come back to this soon
+    [Test]
+    public void TestSortWithTimeline ()
+    {
+      string col1row1 = "[S|x #a 1]";
+      string col2row1 = "[S|x y #a 1 10]";
+      string col3row1 = "[S|x y z #a 1 10 100]";
+      string col1row2 = "[S|x #a 1 #b 2]";
+      string col2row2 = "[S|x y #a 1 10 #b 2 20]";
+      string col3row2 = "[S|x y z #a 1 10 100 #b 2 20 200]";
+      string col3row3 = "[S|x y z #a 1 10 100 #b 2 20 200 #c 3 30 300]";
+      //string col1row3 = "[x 1l 2l 3l]";
+      string null00 = "[S|x y z -- #a 10 100 #b 2 20 200 #c 3 30 300]";
+      string null11 = "[S|x y z #a 1 10 100 #b 2 -- 200 #c 3 30 300]";
+      string null22 = "[S|x y z #a 1 10 100 #b 2 20 200 #c 3 30 --]";
+      
+      DoTest (string.Format ("#desc,x sort {0}", col1row1), "[S|x #a 1]");
+      DoTest (string.Format ("#desc,y sort {0}", col2row1), "[S|x y #a 1 10]");
+      DoTest (string.Format ("#desc,z sort {0}", col3row1), "[S|x y z #a 1 10 100]");
+      DoTest (string.Format ("#desc,x sort {0}", col1row2), "[S|x #b 2 #a 1]");
+      DoTest (string.Format ("#desc,y sort {0}", col2row2), "[S|x y #b 2 20 #a 1 10]");
+      DoTest (string.Format ("#desc,z sort {0}", col3row2), "[S|x y z #b 2 20 200 #a 1 10 100]");
+      DoTest (string.Format ("#desc,y sort {0}", col3row3), "[S|x y z #c 3 30 300 #b 2 20 200 #a 1 10 100]");
+      //DoTest (string.Format ("#desc,x sort {0}", null00), "[x y z 3l 30l 300l 2l 20l 200l -- 10l 100l]");
+      //It should really be the way commented above this line.
+      //Gotta fix that column ordering bug.
+      DoTest (string.Format ("#desc,x sort {0}", null00), "[S|x y z #c 3 30 300 #b 2 20 200 #a -- 10 100]");
+      DoTest (string.Format ("#desc,y sort {0}", null11), "[S|x y z #c 3 30 300 #a 1 10 100 #b 2 -- 200]");
+      DoTest (string.Format ("#desc,z sort {0}", null22), "[S|x y z #b 2 20 200 #a 1 10 100 #c 3 30 --]");
+    }
+    */
 
     [Test]
     public void TestSortColumnsStayInOrder ()
