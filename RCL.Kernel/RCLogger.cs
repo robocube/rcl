@@ -78,6 +78,10 @@ namespace RCL.Kernel
       else if (m_level == RCOutput.Single)
       {
         string time = DateTime.UtcNow.ToString (TimeFormat);
+        if (info is Exception)
+        {
+          info = "<<Reported>>";
+        }
         m_output.WriteLine ("{0} {1} {2} {3} {4} {5} {6}",
                             time, bot, fiber, type, instance, state, info.ToString ());
       }
@@ -147,11 +151,11 @@ namespace RCL.Kernel
       {
         message = ((RCValue) info).Format (RCFormat.Pretty);
       }
-      else if (info is RCException && m_level == RCOutput.Test)
+      else if (info is RCException && (m_level == RCOutput.Test || m_level == RCOutput.Single))
       {
         message = ((RCException) info).ToTestString ();
       }
-      else if (info is Exception && m_level == RCOutput.Test)
+      else if (info is Exception && (m_level == RCOutput.Test || m_level == RCOutput.Single))
       {
         message = "<<Reported>>";
       }

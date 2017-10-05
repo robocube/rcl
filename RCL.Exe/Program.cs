@@ -201,6 +201,10 @@ namespace RCL.Exe
         while (true)
         {
           int index = UnixSignal.WaitAny (signals, -1);
+          if (index < 0)
+          {
+            continue;
+          }
           Mono.Unix.Native.Signum signal = signals[index].Signum;
           if (signal == Mono.Unix.Native.Signum.SIGTERM)
           {
