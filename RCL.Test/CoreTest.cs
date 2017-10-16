@@ -84,8 +84,8 @@ namespace RCL.Test
     [Test]
     public void TestPlusDL() { DoTest("1.0+2.0", "3.0"); }
     [Test]
-    [ExpectedException(typeof(RCException))]
-    public void TestPlusDM() { DoTest("1.0+2m", "3.0"); }
+    //[ExpectedException(typeof(RCException))]
+    public void TestPlusDM() { Assert.Throws<RCException> (delegate () { DoTest("1.0+2m", "3.0"); }); }
     [Test]
     public void TestPlusDX() { DoTest("1.0 + \\x02", "3.0"); }
     [Test]
@@ -99,8 +99,7 @@ namespace RCL.Test
     [Test]
     public void TestPlusMM() { DoTest("1m+2m", "3m"); }
     [Test]
-    [ExpectedException(typeof(RCException))]
-    public void TestPlusMD() { DoTest("1m+2.0", "3m"); }
+    public void TestPlusMD() { Assert.Throws<RCException> (delegate () { DoTest("1m+2.0", "3m"); }); }
     [Test]
     public void TestPlusML() { DoTest("1m+2", "3m"); }
     [Test]
@@ -150,8 +149,7 @@ namespace RCL.Test
     [Test]
     public void TestMinusDL() { DoTest("1.0-2", "-1.0"); }
     [Test]
-    [ExpectedException(typeof(RCException))]
-    public void TestMinusDM() { DoTest("1.0-2m", "-1.0"); }
+    public void TestMinusDM() { Assert.Throws<RCException> (delegate () { DoTest("1.0-2m", "-1.0"); }); }
     [Test]
     public void TestMinusDX() { DoTest("1.0-\\x02", "-1.0"); }
     [Test]
@@ -165,8 +163,7 @@ namespace RCL.Test
     [Test]
     public void TestMinusMM() { DoTest("1m-2m", "-1m"); }
     [Test]
-    [ExpectedException(typeof(RCException))]
-    public void TestMinusMD() { DoTest("1m-2d", "-1m"); }
+    public void TestMinusMD() { Assert.Throws<RCException> (delegate () { DoTest("1m-2d", "-1m"); }); }
     [Test]
     public void TestMinusML() { DoTest("1m-2", "-1m"); }
     [Test]
@@ -201,8 +198,7 @@ namespace RCL.Test
     [Test]
     public void TestMultiplyDL() { DoTest ("1.0*2", "2.0"); }
     [Test]
-    [ExpectedException(typeof(RCException))]
-    public void TestMultiplyDM() { DoTest ("1.0*2m", "2.0"); }
+    public void TestMultiplyDM() { Assert.Throws<RCException> (delegate () { DoTest ("1.0*2m", "2.0"); }); }
     [Test]
     public void TestMultiplyDX() { DoTest ("1.0*\\x02", "2.0"); }
     [Test]
@@ -216,8 +212,7 @@ namespace RCL.Test
     [Test]
     public void TestMultiplyMM() { DoTest ("1m*2m", "2m"); }
     [Test]
-    [ExpectedException(typeof(RCException))]
-    public void TestMultiplyMD() { DoTest ("1m*2.0", "2.0"); }
+    public void TestMultiplyMD() { Assert.Throws<RCException> (delegate () { DoTest ("1m*2.0", "2.0"); }); }
     [Test]
     public void TestMultiplyML() { DoTest ("1m*2", "2m"); }
     [Test]
@@ -237,8 +232,7 @@ namespace RCL.Test
     [Test]
     public void TestDivideDL() { DoTest("4.0/2", "2.0"); }
     [Test]
-    [ExpectedException(typeof(RCException))]
-    public void TestDivideDM() { DoTest("4.0/2m", "2.0"); }
+    public void TestDivideDM() { Assert.Throws<RCException> (delegate () { DoTest("4.0/2m", "2.0"); }); }
     [Test]
     public void TestDivideDX() { DoTest("4.0/\\x02", "2.0"); }
     [Test]
@@ -252,8 +246,7 @@ namespace RCL.Test
     [Test]
     public void TestDivideMM() { DoTest("4m/2m", "2m"); }
     [Test]
-    [ExpectedException(typeof(RCException))]
-    public void TestDivideMD() { DoTest("4m/2.0", "2.0"); }
+    public void TestDivideMD() { Assert.Throws<RCException> (delegate () { DoTest("4m/2.0", "2.0"); }); }
     [Test]
     public void TestDivideML() { DoTest("4m/2", "2m"); }
     [Test]
@@ -289,8 +282,7 @@ namespace RCL.Test
     //.Net doesn't allow comparing decimal and double.
     //I think this is too conservative, but I will tow the line for now.
     [Test]
-    [ExpectedException(typeof(RCException))]
-    public void TestGtDM() { DoTest("1.0>2m", "false"); }
+    public void TestGtDM() { Assert.Throws<RCException> (delegate () { DoTest("1.0>2m", "false"); }); }
     [Test]
     public void TestGtDX() { DoTest("1.0>\\x02", "false"); }
     [Test]
@@ -302,8 +294,7 @@ namespace RCL.Test
     [Test]
     public void TestGtLX() { DoTest("1>\\x02", "false"); }
     [Test]
-    [ExpectedException(typeof(RCException))]
-    public void TestGtMD() { DoTest("1m>2.0", "false"); }
+    public void TestGtMD() { Assert.Throws<RCException> (delegate () { DoTest("1m>2.0", "false"); }); }
     [Test]
     public void TestGtML() { DoTest("1m>2", "false"); }
     [Test]
@@ -332,8 +323,7 @@ namespace RCL.Test
     //.Net doesn't allow comparing decimal and double.
     //I think this is too conservative, but I will tow the line for now.
     [Test]
-    [ExpectedException(typeof(RCException))]
-    public void TestGteDM() { DoTest("1.0>=2m", "false"); }
+    public void TestGteDM() { Assert.Throws<RCException> (delegate () { DoTest("1.0>=2m", "false"); }); }
     [Test]
     public void TestGteDX() { DoTest("1.0>=\\x02", "false"); }
     [Test]
@@ -345,8 +335,7 @@ namespace RCL.Test
     [Test]
     public void TestGteLX() { DoTest("1>=\\x02", "false"); }
     [Test]
-    [ExpectedException(typeof(RCException))]
-    public void TestGteMD() { DoTest("1m>=2.0", "false"); }
+    public void TestGteMD() { Assert.Throws<RCException> (delegate () { DoTest("1m>=2.0", "false"); }); }
     [Test]
     public void TestGteML() { DoTest("1m>=2", "false"); }
     [Test]
@@ -374,8 +363,7 @@ namespace RCL.Test
     [Test]
     public void TestLtDL() { DoTest("1.0<2", "true"); }
     [Test]
-    [ExpectedException(typeof(RCException))]
-    public void TestLtDM() { DoTest("1.0<2m", "true");}
+    public void TestLtDM() { Assert.Throws<RCException> (delegate () { DoTest("1.0<2m", "true"); }); }
     [Test]
     public void TestLtDX() { DoTest ("1.0<\\x02", "true"); }
     [Test]
@@ -387,8 +375,7 @@ namespace RCL.Test
     [Test]
     public void TestLtLX() { DoTest ("1<\\x02", "true"); }
     [Test]
-    [ExpectedException(typeof(RCException))]
-    public void TestLtMD() { DoTest("1m<2.0", "true"); }
+    public void TestLtMD() { Assert.Throws<RCException> (delegate () { DoTest("1m<2.0", "true"); }); }
     [Test]
     public void TestLtML() { DoTest("1m<2", "true"); }
     [Test]
@@ -418,8 +405,7 @@ namespace RCL.Test
     //.Net doesn't allow comparing decimal and double.
     //I think this is too conservative, but I will tow the line for now.
     [Test]
-    [ExpectedException(typeof(RCException))]
-    public void TestLteDM() { DoTest("1.0<=2m", "true"); }
+    public void TestLteDM() { Assert.Throws<RCException> (delegate () { DoTest("1.0<=2m", "true"); }); }
     [Test]
     public void TestLteDX() { DoTest ("1.0<=\\x02", "true"); }
     [Test]
@@ -431,8 +417,7 @@ namespace RCL.Test
     [Test]
     public void TestLteLX() { DoTest("1<=\\x02", "true"); }
     [Test]
-    [ExpectedException(typeof(RCException))]
-    public void TestLteMD() { DoTest("1m<=2.0", "true"); }
+    public void TestLteMD() { Assert.Throws<RCException> (delegate () { DoTest("1m<=2.0", "true"); }); }
     [Test]
     public void TestLteML() { DoTest("1m<=1", "true"); }
     [Test]
@@ -460,8 +445,7 @@ namespace RCL.Test
     [Test]
     public void TestEqDL() { DoTest("1.0==2", "false"); }
     [Test]
-    [ExpectedException(typeof(RCException))]
-    public void TestEqDM() { DoTest("1.0==2m", "false"); }
+    public void TestEqDM() { Assert.Throws<RCException> (delegate () { DoTest ("1.0==2m", "false"); }); }
     [Test]
     public void TestEqDX() { DoTest("1.0==\\x02", "false"); }
     [Test]
@@ -473,8 +457,7 @@ namespace RCL.Test
     [Test]
     public void TestEqLX() { DoTest("1==\\x02", "false"); }
     [Test]
-    [ExpectedException(typeof(RCException))]
-    public void TestEqMD() { DoTest("1m==2.0", "false"); }
+    public void TestEqMD() { Assert.Throws<RCException> (delegate () { DoTest ("1m==2.0", "false"); }); }
     [Test]
     public void TestEqML() { DoTest("1m==2", "false"); }
     [Test]
@@ -504,8 +487,7 @@ namespace RCL.Test
     [Test]
     public void TestNeqDL() { DoTest("1.0!=2", "true"); }
     [Test]
-    [ExpectedException(typeof(RCException))]
-    public void TestNeqDM() { DoTest("1.0!=2m", "true"); }
+    public void TestNeqDM() { Assert.Throws<RCException> (delegate () { DoTest ("1.0!=2m", "true"); }); }
     [Test]
     public void TestNeqDX() { DoTest("1.0!=\\x02", "true"); }
     [Test]
@@ -517,8 +499,7 @@ namespace RCL.Test
     [Test]
     public void TestNeqLX() { DoTest("1!=\\x02", "true"); }
     [Test]
-    [ExpectedException(typeof(RCException))]
-    public void TestNeqMD() { DoTest("1m!=2.0", "true"); }
+    public void TestNeqMD() { Assert.Throws<RCException> (delegate () { DoTest ("1m!=2.0", "true"); }); }
     [Test]
     public void TestNeqML() { DoTest("1m!=2", "true"); }
     [Test]
@@ -1037,22 +1018,22 @@ namespace RCL.Test
     [Test]
     public void TestAtKY() { DoTest ("{x:0 y:1 z:2} at #y", "{y:1}"); }
     [Test]
-    [Ignore]
+    [Ignore ("because")]
     public void TestAtUL() { DoTest ("[S|x y z 0 10 100] at 1", "10"); }
     [Test]
-    [Ignore]
+    [Ignore ("because")]
     public void TestAtUD() { DoTest ("[S|x y z 0 10 100] at 1.0", "10"); }
     [Test]
-    [Ignore]
+    [Ignore ("because")]
     public void TestAtUM() { DoTest ("[S|x y z 0 10 100] at 1m", "10"); }
     [Test]
-    [Ignore]
+    [Ignore ("because")]
     public void TestAtUX() { DoTest ("[S|x y z 0 10 100] at \\x01", "10"); }
     [Test]
-    [Ignore]
+    [Ignore ("because")]
     public void TestAtUS() { DoTest ("[S|x y z 0 10 100] at \"y\"", "10"); }
     [Test]
-    [Ignore]
+    [Ignore ("because")]
     public void TestAtUY() { DoTest ("[S|x y z 0 10 100] at #y", "10"); }
 
     //From is just at with the indices on the left side.
@@ -1161,8 +1142,10 @@ namespace RCL.Test
     [Test]
     public void TestUnwrap() { DoTest ("unwrap {:0}", "0"); }
     [Test]
-    [ExpectedException]
-    public void TestUnwrapEx() { DoTest ("unwrap {:0 :1 :2}", ""); }
+    public void TestUnwrapEx ()
+    {
+      Assert.Throws<RCException> (delegate () { DoTest ("unwrap {:0 :1 :2}", ""); });
+    }
 
     //Oh no! What if find doesn't find anything.  How do I represent the result?
     //I have been avoiding this problem for a while... Let's think...
@@ -1241,7 +1224,7 @@ namespace RCL.Test
     public void TestSortAscB() { DoTest ("#asc sort true false true", "false true true"); }
     [Test]
     public void TestSortAscS() { DoTest ("#asc sort \"c\" \"b\" \"a\"", "\"a\" \"b\" \"c\""); }
-    [Test][Ignore]
+    [Test][Ignore ("because")]
     public void TestSortAscY() { DoTest ("#asc sort #b #c #a", "#a #b #c"); }
     [Test]
     public void TestSortAscT() { DoTest ("#asc sort 2015.05.25 2015.05.24 2015.05.26", "2015.05.24 2015.05.25 2015.05.26"); }
@@ -1262,7 +1245,7 @@ namespace RCL.Test
     public void TestSortAbsAscB() { DoTest ("#absasc sort true false true", "false true true"); }
     [Test]
     public void TestSortAbsAscS() { DoTest ("#absasc sort \"c\" \"b\" \"a\"", "\"a\" \"b\" \"c\""); }
-    [Test][Ignore]
+    [Test][Ignore ("because")]
     public void TestSortAbsAscY() { DoTest ("#absasc sort #b #c #a", "#a #b #c"); }
     [Test]
     public void TestSortAbsAscT() { DoTest ("#absasc sort 2015.05.25 2015.05.24 2015.05.26", "2015.05.24 2015.05.25 2015.05.26"); }
@@ -1283,7 +1266,7 @@ namespace RCL.Test
     public void TestSortDescB() { DoTest ("#desc sort true false true", "true true false"); }
     [Test]
     public void TestSortDescS() { DoTest ("#desc sort \"c\" \"b\" \"a\"", "\"c\" \"b\" \"a\""); }
-    [Test] [Ignore]
+    [Test] [Ignore ("because")]
     public void TestSortDescY() { DoTest ("#desc sort #b #c #a", "#c #b #a"); }
     [Test]
     public void TestSortDescT() { DoTest ("#desc sort 2015.05.25 2015.05.24 2015.05.26", "2015.05.26 2015.05.25 2015.05.24"); }
@@ -1306,7 +1289,7 @@ namespace RCL.Test
     public void TestSortAbsDescB() { DoTest ("#absdesc sort true false true", "true true false"); }
     [Test]
     public void TestSortAbsDescS() { DoTest ("#absdesc sort \"c\" \"b\" \"a\"", "\"c\" \"b\" \"a\""); }
-    [Test][Ignore]
+    [Test][Ignore ("because")]
     public void TestSortAbsDescY() { DoTest ("#absdesc sort #b #c #a", "#a #b #c"); }
     [Test]
     public void TestSortAbsDescT() { DoTest ("#absdesc sort 2015.05.25 2015.05.24 2015.05.26", "2015.05.26 2015.05.25 2015.05.24"); }
@@ -1327,7 +1310,7 @@ namespace RCL.Test
     public void TestRankAscB() { DoTest ("#asc rank true false true", "1 0 2"); }
     [Test]
     public void TestRankAscS() { DoTest ("#asc rank \"c\" \"b\" \"a\"", "2 1 0"); }
-    [Test][Ignore]
+    [Test][Ignore ("because")]
     public void TestRankAscY() { DoTest ("#asc rank #b #c #a", "2 0 1"); }
     [Test]
     public void TestRankAscT() { DoTest ("#asc rank 2015.05.25 2015.05.26 2015.05.24", "2 0 1"); }
@@ -1344,7 +1327,7 @@ namespace RCL.Test
     public void TestRankAbsAscB() { DoTest ("#absasc rank true false true", "1 0 2"); }
     [Test]
     public void TestRankAbsAscS() { DoTest ("#absasc rank \"c\" \"b\" \"a\"", "2 1 0"); }
-    [Test][Ignore]
+    [Test][Ignore ("because")]
     public void TestRankAbsAscY() { DoTest ("#absasc rank #b #c #a", "2 0 1"); }
     [Test]
     public void TestRankAbsAscT() { DoTest ("#absasc rank 2015.05.25 2015.05.26 2015.05.24", "2 0 1"); }
@@ -1361,7 +1344,7 @@ namespace RCL.Test
     public void TestRankDescB() { DoTest ("#desc rank true false true", "0 2 1"); }
     [Test]
     public void TestRankDescS() { DoTest ("#desc rank \"c\" \"b\" \"a\"", "0 1 2"); }
-    [Test][Ignore]
+    [Test][Ignore ("because")]
     public void TestRankDescY() { DoTest ("#desc rank #b #c #a", "1 0 2"); }
     [Test]
     public void TestRankDescT() { DoTest ("#desc rank 2015.05.25 2015.05.26 2015.05.24", "1 0 2"); }
@@ -1378,7 +1361,7 @@ namespace RCL.Test
     public void TestRankAbsDescB() { DoTest ("#absdesc rank true false true", "0 2 1"); }
     [Test]
     public void TestRankAbsDescS() { DoTest ("#absdesc rank \"c\" \"b\" \"a\"", "0 1 2"); }
-    [Test][Ignore]
+    [Test][Ignore ("because")]
     public void TestRankAbsDescY() { DoTest ("#absdesc rank #b #c #a", "1 0 2"); }
     [Test]
     public void TestRankAbsDescT() { DoTest ("#absdesc rank 2015.05.25 2015.05.26 2015.05.24", "1 0 2"); }
@@ -1459,7 +1442,7 @@ namespace RCL.Test
     public void TestUniqueY () { DoTest ("unique #x #y #z #y", "#x #y #z"); }
     [Test]
     public void TestUniqueT () { DoTest ("unique 2015.05.25 2015.05.26 2015.05.27 2015.05.26", "2015.05.25 2015.05.26 2015.05.27"); }
-    [Test][Ignore]
+    [Test][Ignore ("because")]
     public void TestUniqueK () { /*???*/ }
 
     [Test]
@@ -1478,7 +1461,7 @@ namespace RCL.Test
     public void TestMapY () { DoTest ("#x #y #1 #10 map #x #x #y #10 #1 #1", "#y #y #y #10 #10 #10"); }
     [Test]
     public void TestMapT () { DoTest ("2015.05.25 2015.06.25 2015.05.26 2015.06.26 map 2015.05.25 2015.05.25 2015.06.25 2015.06.26 2015.05.26 2015.05.26", "2015.06.25 2015.06.25 2015.06.25 2015.06.26 2015.06.26 2015.06.26"); }
-    [Test][Ignore]
+    [Test][Ignore ("because")]
     public void TestMapK () { /*???*/ }
 
     //Flow Control Operators
@@ -1537,9 +1520,9 @@ namespace RCL.Test
     public void TestEachT() { DoTest ("{<-$R} each 2015.05.27 2015.05.28 2015.05.29", "{:2015.05.27 :2015.05.28 :2015.05.29}"); }
     [Test]
     public void TestEachK() { DoTest ("{<-eval {x:$R.x-1.0}} each {:{x:1.0} :{x:2.0} :{x:3.0}}", "{:{x:0.0} :{x:1.0} :{x:2.0}}"); }
-    [Test] [Ignore]
+    [Test] [Ignore ("because")]
     public void TestEachKeY() { DoTest ("{<-[?<a>[!$R!]</a>?] $R} each #a #b #c #d", "\"<a>#a</a>\" \"<a>#b</a>\" \"<a>#c</a>\" \"<a>#d</a>\""); }
-    [Test] [Ignore]
+    [Test] [Ignore ("because")]
     public void TestEachEY() { DoTest ("[?<a>[!$R!]</a>?] each #a #b #c #d", "\"<a>#a</a>\" \"<a>#b</a>\" \"<a>#c</a>\" \"<a>#d</a>\""); }
 
     //[Test]
@@ -1872,7 +1855,7 @@ namespace RCL.Test
     [Test]
     public void TestHasS () { DoTest ("{x:1 y:2 z:3} has \"a\" \"y\" \"z\"", "false true true"); }
     [Test]
-    [Ignore]
+    [Ignore ("reason")]
     public void TestHasL () { DoTest ("{x:1 y:2 z:3} has 0 1 4", "true true false"); }
 
     [Test]
@@ -1931,7 +1914,7 @@ namespace RCL.Test
   {
     //Messaging/Stream Operators
     [Test]
-    [Ignore]
+    [Ignore ("because")]
     public void TestOpenSendReceiveCloseCube ()
     {
       DoTest ("{handle:open #cube,'..','..',data,test :$handle receive $handle send {verb:#write symbol:#a data:{a:1 b:2.0 c:3m d:\"x\" e:#x f:true}} <-$handle receive $handle send {verb:#read symbol:#a rows:0}}", "[S|a b c d e f #a 1 2.0 3m \"x\" #x true]");

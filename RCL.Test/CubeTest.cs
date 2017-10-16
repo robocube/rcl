@@ -356,7 +356,7 @@ namespace RCL.Test
     }
 
     [Test]
-    [Ignore]
+    [Ignore ("because")]
     public void TestBlockCubeCorrespondence ()
     {
       //DoTest ("cube block []", "[]");
@@ -1379,7 +1379,7 @@ namespace RCL.Test
     }
 
     [Test]
-    [Ignore]
+    [Ignore ("because")]
     public void TestLength1 ()
     {
       DoTest ("length [y \"xyz\" \"xy\"]", "[x 3 2]");
@@ -1630,7 +1630,7 @@ namespace RCL.Test
     }
 
     [Test]
-    [Ignore]
+    [Ignore ("because")]
     public void TestRepeat ()
     {
       //I don't know what repeat should do for cubes...
@@ -1754,7 +1754,7 @@ namespace RCL.Test
     }
 
     [Test]
-    [Ignore]
+    [Ignore ("because")]
     public void TestFrom1 ()
     {
       //This cannot be because right because from is supposed to return a cube.
@@ -1768,7 +1768,7 @@ namespace RCL.Test
     //Find - what I want to do with find is return the indices that you would use with at or from.
     //Again you probably need a visitor.
     [Test]
-    [Ignore]
+    [Ignore ("because")]
     public void TestFind () {}
 
     //Sort - cubes are always and forever sorted by time so there is no need of a sort routine.
@@ -1776,7 +1776,7 @@ namespace RCL.Test
     //Rank - rank however will be very important.
     //also xrank, which will be the version that works across symbols rather than within them.
     [Test]
-    [Ignore]
+    [Ignore ("because")]
     public void TestRank ()
     {
       DoTest (RCFormat.Default,
@@ -1810,7 +1810,7 @@ namespace RCL.Test
     //That isn't necessarily a showstopper and will probably be needed at some point.
     //But it can wait.
     [Test]
-    [Ignore]
+    [Ignore ("because")]
     public void TestSplit () {}
 
     [Test]
@@ -1866,7 +1866,7 @@ namespace RCL.Test
 
     //Rename
     [Test]
-    [Ignore]
+    [Ignore ("because")]
     public void TestRename ()
     {
       //ideally name/rename should use symbols because names in strings
@@ -2121,7 +2121,7 @@ namespace RCL.Test
     }
 
     [Test]
-    [Ignore]
+    [Ignore ("because")]
     public void TestObject5 ()
     {
       DoTest ("{u:[S|x #a 0 #a 1 #b 1 #b 2 #c 2 #c 3] <-#x object $u}", "[S|x #0 0 #1 1 #2 2 #3 3]");
@@ -2214,7 +2214,7 @@ namespace RCL.Test
     }
 
     [Test]
-    [Ignore]
+    [Ignore ("because")]
     public void TestAppendTime0 ()
     {
       //For cubes, append should merge the timelines of both arguments into one.
@@ -2272,7 +2272,7 @@ namespace RCL.Test
     }
 
     [Test]
-    [Ignore]
+    [Ignore ("because")]
     public void TestRetimeline2 ()
     {
       //These don't work quite write because of the weird behavoir with S and T.

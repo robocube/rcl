@@ -895,7 +895,7 @@ namespace RCL.Test
     }
 
     [Test]
-    [Ignore]
+    [Ignore ("because")]
     public void TestMonadicInlineWithBlockRight()
     {
       DoEvalTest ("{z:$R.x y:$R.y x:$R.z} {x:1.0 y:2.0 z:3.0}", "{z:1.0 y:2.0 x:3.0}");
@@ -914,10 +914,10 @@ namespace RCL.Test
     }
 
     [Test]
-    [ExpectedException(typeof(RCException))]
+    //[ExpectedException(typeof(RCException))]
     public void TestWriteChecksCount()
     {
-      DoEvalTest ("#x write {a:1 10 b:2 20 c:3 30}", "0");
+      Assert.Throws<RCException> (delegate () { DoEvalTest ("#x write {a:1 10 b:2 20 c:3 30}", "0"); });
     }
 
     [Test]
@@ -1014,7 +1014,7 @@ namespace RCL.Test
     }
 
     [Test]
-    [Ignore]
+    [Ignore ("because")]
     public void TestWriteGTSWithBlock()
     {
       DoEvalTest ("{:write {T:25 S:#s,a x:456.7} <-#s read 0 0}", "[G|T|S|x 0 25 #s,a 456.7]", RCFormat.Default);
@@ -1917,7 +1917,7 @@ namespace RCL.Test
     }
 
     [Test]
-    [Ignore]
+    [Ignore ("because")]
     public void TestServer ()
     {
       //Once we get some traction with demo/messaging, should be able to deprecate this test and the operators it depends on.
@@ -1925,7 +1925,7 @@ namespace RCL.Test
     }
 
     [Test]
-    [Ignore]
+    [Ignore ("because")]
     public void TestHttpSendMulti ()
     {
       //Test sending two replies containing the same payload.

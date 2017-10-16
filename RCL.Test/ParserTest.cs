@@ -634,7 +634,7 @@ namespace RCL.Test
     }
 
     [Test]
-    [Ignore]
+    [Ignore ("because")]
     public void TestCubeWithColumnOfBlock ()
     {
       DoParserTest ("[x {a:1} {b:2} {c:3}]");

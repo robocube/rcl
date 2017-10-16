@@ -37,13 +37,6 @@
   </Target>
   -->
   <ItemGroup>
-    <Content Include="thirdbin\nunit-gui-runner.dll" />
-    <Content Include="thirdbin\nunit.core.dll" />
-    <Content Include="thirdbin\nunit.framework.dll" />
-    <Content Include="thirdbin\nunit.uikit.dll" />
-    <Content Include="thirdbin\nunit.util.dll" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="ParserTest.cs" />
     <Compile Include="RunnerTest.cs" />
     <Compile Include="BlockTest.cs" />
@@ -59,7 +52,9 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="nunit.framework" />
+    <Reference Include="nunit.framework">
+      <HintPath>nunit\bin\net-4.5\nunit.framework.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RCL.Core\RCL.Core.csproj">
@@ -75,13 +70,91 @@
       <Name>RCL.Exe</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="nunit\.DS_Store" />
+    <None Include="nunit\CHANGES.md" />
+    <None Include="nunit\LICENSE.txt" />
+    <None Include="nunit\NOTICES.txt" />
+    <None Include="nunit\bin\net-2.0\NUnit.System.Linq.dll" />
+    <None Include="nunit\bin\net-2.0\mock-assembly.exe" />
+    <None Include="nunit\bin\net-2.0\nunit.framework.tests.dll" />
+    <None Include="nunit\bin\net-2.0\nunit.framework.xml" />
+    <None Include="nunit\bin\net-2.0\nunit.testdata.dll" />
+    <None Include="nunit\bin\net-2.0\nunitlite-runner.exe" />
+    <None Include="nunit\bin\net-2.0\nunitlite.dll" />
+    <None Include="nunit\bin\net-2.0\nunitlite.tests.exe" />
+    <None Include="nunit\bin\net-2.0\slow-nunit-tests.dll" />
+    <None Include="nunit\bin\net-3.5\mock-assembly.exe" />
+    <None Include="nunit\bin\net-3.5\nunit.framework.dll" />
+    <None Include="nunit\bin\net-3.5\nunit.framework.tests.dll" />
+    <None Include="nunit\bin\net-3.5\nunit.framework.xml" />
+    <None Include="nunit\bin\net-3.5\nunit.testdata.dll" />
+    <None Include="nunit\bin\net-3.5\nunitlite-runner.exe" />
+    <None Include="nunit\bin\net-3.5\nunitlite.dll" />
+    <None Include="nunit\bin\net-3.5\nunitlite.tests.exe" />
+    <None Include="nunit\bin\net-3.5\slow-nunit-tests.dll" />
+    <None Include="nunit\bin\net-4.0\Microsoft.Threading.Tasks.Extensions.Desktop.dll" />
+    <None Include="nunit\bin\net-4.0\Microsoft.Threading.Tasks.Extensions.dll" />
+    <None Include="nunit\bin\net-4.0\Microsoft.Threading.Tasks.dll" />
+    <None Include="nunit\bin\net-4.0\System.IO.dll" />
+    <None Include="nunit\bin\net-4.0\System.Runtime.dll" />
+    <None Include="nunit\bin\net-4.0\System.Threading.Tasks.dll" />
+    <None Include="nunit\bin\net-4.0\mock-assembly.exe" />
+    <None Include="nunit\bin\net-4.0\nunit.framework.dll" />
+    <None Include="nunit\bin\net-4.0\nunit.framework.tests.dll" />
+    <None Include="nunit\bin\net-4.0\nunit.framework.xml" />
+    <None Include="nunit\bin\net-4.0\nunit.testdata.dll" />
+    <None Include="nunit\bin\net-4.0\nunitlite-runner.exe" />
+    <None Include="nunit\bin\net-4.0\nunitlite.dll" />
+    <None Include="nunit\bin\net-4.0\nunitlite.tests.exe" />
+    <None Include="nunit\bin\net-4.0\slow-nunit-tests.dll" />
+    <None Include="nunit\bin\net-4.5\System.ValueTuple.dll" />
+    <None Include="nunit\bin\net-4.5\mock-assembly.exe" />
+    <None Include="nunit\bin\net-4.5\nunit.framework.dll" />
+    <None Include="nunit\bin\net-4.5\nunit.framework.tests.dll" />
+    <None Include="nunit\bin\net-4.5\nunit.framework.xml" />
+    <None Include="nunit\bin\net-4.5\nunit.testdata.dll" />
+    <None Include="nunit\bin\net-4.5\nunitlite-runner.exe" />
+    <None Include="nunit\bin\net-4.5\nunitlite.dll" />
+    <None Include="nunit\bin\net-4.5\nunitlite.tests.exe" />
+    <None Include="nunit\bin\net-4.5\slow-nunit-tests.dll" />
+    <None Include="nunit\bin\netstandard13\System.IO.dll" />
+    <None Include="nunit\bin\netstandard13\System.Runtime.dll" />
+    <None Include="nunit\bin\netstandard13\System.Threading.Tasks.dll" />
+    <None Include="nunit\bin\netstandard13\mock-assembly.dll" />
+    <None Include="nunit\bin\netstandard13\nunit.framework.dll" />
+    <None Include="nunit\bin\netstandard13\nunit.framework.tests.dll" />
+    <None Include="nunit\bin\netstandard13\nunit.framework.xml" />
+    <None Include="nunit\bin\netstandard13\nunit.testdata.dll" />
+    <None Include="nunit\bin\netstandard13\nunitlite-runner.exe" />
+    <None Include="nunit\bin\netstandard13\nunitlite.dll" />
+    <None Include="nunit\bin\netstandard13\nunitlite.tests.exe" />
+    <None Include="nunit\bin\netstandard13\slow-nunit-tests.dll" />
+    <None Include="nunit\bin\netstandard16\System.IO.dll" />
+    <None Include="nunit\bin\netstandard16\System.Runtime.dll" />
+    <None Include="nunit\bin\netstandard16\System.Threading.Tasks.dll" />
+    <None Include="nunit\bin\netstandard16\mock-assembly.dll" />
+    <None Include="nunit\bin\netstandard16\nunit.framework.dll" />
+    <None Include="nunit\bin\netstandard16\nunit.framework.tests.dll" />
+    <None Include="nunit\bin\netstandard16\nunit.framework.xml" />
+    <None Include="nunit\bin\netstandard16\nunit.testdata.dll" />
+    <None Include="nunit\bin\netstandard16\nunitlite-runner.exe" />
+    <None Include="nunit\bin\netstandard16\nunitlite.dll" />
+    <None Include="nunit\bin\netstandard16\nunitlite.tests.exe" />
+    <None Include="nunit\bin\netstandard16\slow-nunit-tests.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="nunit\bin\net-2.0\nunit.framework.dll" />
+  </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>
         <Policies>
-          <TextStylePolicy TabWidth="2" IndentWidth="2" NoTabsAfterNonTabs="True" inheritsSet="VisualStudio" inheritsScope="text/plain" scope="text/plain" />
-          <VersionControlPolicy inheritsSet="Mono" />
-          <CSharpFormattingPolicy IndentSwitchBody="True" AnonymousMethodBraceStyle="NextLine" PropertyBraceStyle="NextLine" PropertyGetBraceStyle="NextLine" PropertySetBraceStyle="NextLine" EventBraceStyle="NextLine" EventAddBraceStyle="NextLine" EventRemoveBraceStyle="NextLine" StatementBraceStyle="NextLine" ElseNewLinePlacement="NewLine" CatchNewLinePlacement="NewLine" FinallyNewLinePlacement="NewLine" WhileNewLinePlacement="NewLine" EmbeddedStatementPlacement="DoNotCare" BeforeIndexerDeclarationBracket="False" AfterDelegateDeclarationParameterComma="True" BeforeSizeOfParentheses="True" BeforeTypeOfParentheses="True" SpacesBeforeBrackets="False" SpacesAfterTypecast="True" AlignToFirstMethodCallArgument="True" inheritsSet="Mono" inheritsScope="text/x-csharp" scope="text/x-csharp" />
+          <TextStylePolicy FileWidth="80" TabsToSpaces="True" RemoveTrailingWhitespace="True" EolMarker="Native" TabWidth="2" IndentWidth="2" NoTabsAfterNonTabs="True" inheritsSet="VisualStudio" inheritsScope="text/plain" scope="text/plain" />
+          <VersionControlPolicy inheritsSet="Mono">
+            <CommitMessageStyle Header="" Indent="" FirstFilePrefix="* " FileSeparator=":&#xA;* " LastFilePostfix=": " LineAlign="2" InterMessageLines="1" IncludeDirectoryPaths="False" Wrap="True" />
+          </VersionControlPolicy>
+          <CSharpFormattingPolicy IndentBlock="True" IndentBraces="False" IndentSwitchSection="False" IndentSwitchCaseSection="True" LabelPositioning="OneLess" NewLinesForBracesInTypes="True" NewLinesForBracesInMethods="True" NewLinesForBracesInProperties="False" NewLinesForBracesInAccessors="False" NewLinesForBracesInAnonymousMethods="False" NewLinesForBracesInControlBlocks="False" NewLinesForBracesInAnonymousTypes="False" NewLinesForBracesInObjectCollectionArrayInitializers="False" NewLinesForBracesInLambdaExpressionBody="False" NewLineForElse="False" NewLineForCatch="False" NewLineForFinally="False" NewLineForMembersInObjectInit="False" NewLineForMembersInAnonymousTypes="False" NewLineForClausesInQuery="False" SpacingAfterMethodDeclarationName="True" SpaceWithinMethodDeclarationParenthesis="False" SpaceBetweenEmptyMethodDeclarationParentheses="False" SpaceAfterMethodCallName="True" SpaceWithinMethodCallParentheses="False" SpaceBetweenEmptyMethodCallParentheses="False" SpaceAfterControlFlowStatementKeyword="True" SpaceWithinExpressionParentheses="False" SpaceWithinCastParentheses="False" SpaceWithinOtherParentheses="False" SpaceAfterCast="False" SpacesIgnoreAroundVariableDeclaration="False" SpaceBeforeOpenSquareBracket="True" SpaceBetweenEmptySquareBrackets="False" SpaceWithinSquareBrackets="False" SpaceAfterColonInBaseTypeDeclaration="True" SpaceAfterComma="True" SpaceAfterDot="False" SpaceAfterSemicolonsInForStatement="True" SpaceBeforeColonInBaseTypeDeclaration="True" SpaceBeforeComma="False" SpaceBeforeDot="False" SpaceBeforeSemicolonsInForStatement="False" SpacingAroundBinaryOperator="Single" WrappingPreserveSingleLine="True" WrappingKeepStatementsOnSingleLine="True" PlaceSystemDirectiveFirst="True" inheritsSet="Mono" inheritsScope="text/x-csharp" scope="text/x-csharp" />
           <NameConventionPolicy>
             <Rules>
               <NamingRule Name="Namespaces" AffectedEntity="Namespace" VisibilityMask="VisibilityMask" NamingStyle="PascalCase" IncludeInstanceMembers="True" IncludeStaticEntities="True" />
@@ -135,8 +208,8 @@
               </NamingRule>
             </Rules>
           </NameConventionPolicy>
-          <TextStylePolicy FileWidth="120" NoTabsAfterNonTabs="True" inheritsSet="VisualStudio" inheritsScope="text/plain" scope="text/x-fsharp" />
-          <TextStylePolicy TabWidth="2" IndentWidth="2" NoTabsAfterNonTabs="True" inheritsSet="VisualStudio" inheritsScope="text/plain" scope="text/x-csharp" />
+          <TextStylePolicy TabWidth="4" TabsToSpaces="True" IndentWidth="4" RemoveTrailingWhitespace="True" EolMarker="Native" FileWidth="120" NoTabsAfterNonTabs="True" inheritsSet="VisualStudio" inheritsScope="text/plain" scope="text/x-fsharp" />
+          <TextStylePolicy FileWidth="80" TabsToSpaces="True" RemoveTrailingWhitespace="True" EolMarker="Native" TabWidth="2" IndentWidth="2" NoTabsAfterNonTabs="True" inheritsSet="VisualStudio" inheritsScope="text/plain" scope="text/x-csharp" />
           <FSharpFormattingPolicy scope="text/x-fsharp">
             <DefaultFormat IndentOnTryWith="False" ReorderOpenDeclaration="False" SpaceAfterComma="True" SpaceAfterSemicolon="True" SpaceAroundDelimiter="True" SpaceBeforeArgument="True" SpaceBeforeColon="True" />
           </FSharpFormattingPolicy>

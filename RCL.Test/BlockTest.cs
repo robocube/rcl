@@ -227,11 +227,10 @@ namespace RCL.Test
     }
 
     [Test]
-    [ExpectedException (typeof (ArgumentNullException))]
     public void TestMacroCtor ()
     {
       r.Reset ();
-      r.New ("+", null, null);
+      Assert.Throws<ArgumentNullException> (delegate () { r.New ("+", null, null); });
     }
   }
 }
