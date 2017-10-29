@@ -422,8 +422,8 @@ namespace RCL.Core
         //First ask nicely and wait 1000 ms.
         //If it's an rcl process it should cleanly close sockets, files, other procs etc.
         //See signal handling in Process.cs
-        m_state.Runner.Log.Record (
-          m_state.Runner, null, "exec", Handle, "closing", m_program + " " + m_arguments + " (" + m_pid + ")");
+        string message = m_program + (m_arguments.Length > 0 ? " " : "") + m_arguments + " (" + m_pid + ")";
+        m_state.Runner.Log.Record (m_state.Runner, null, "exec", Handle, "closing", message);
         lock (this)
         {
           if (m_pid >= 0 && !m_finished)
