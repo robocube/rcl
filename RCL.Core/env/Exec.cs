@@ -159,15 +159,7 @@ namespace RCL.Core
           {
             foreach (KeyValuePair<long, ChildProcess> kv in m_process)
             {
-              try
-              {
-                Console.Out.WriteLine ("Disposing " + kv.Value.m_program + " " + kv.Value.m_arguments);
-                kv.Value.Close ();
-              }
-              catch (Exception ex)
-              {
-                Console.Out.WriteLine (ex);
-              }
+              kv.Value.Close ();
             }
           }
         }
@@ -431,7 +423,7 @@ namespace RCL.Core
         //If it's an rcl process it should cleanly close sockets, files, other procs etc.
         //See signal handling in Process.cs
         m_state.Runner.Log.Record (
-          m_state.Runner, null, "exec", Handle, "closing", m_program + " (" + m_pid + ")");
+          m_state.Runner, null, "exec", Handle, "closing", m_program + " " + m_arguments + " (" + m_pid + ")");
         lock (this)
         {
           if (m_pid >= 0 && !m_finished)
