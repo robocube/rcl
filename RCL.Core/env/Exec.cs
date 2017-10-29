@@ -159,7 +159,14 @@ namespace RCL.Core
           {
             foreach (KeyValuePair<long, ChildProcess> kv in m_process)
             {
-              kv.Value.Close ();
+              try
+              {
+                kv.Value.Close ();
+              }
+              catch (Exception ex)
+              {
+                Console.Out.WriteLine (ex);
+              }
             }
           }
         }
