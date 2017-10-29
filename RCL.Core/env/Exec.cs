@@ -161,6 +161,7 @@ namespace RCL.Core
             {
               try
               {
+                Console.Out.WriteLine ("Disposing " + kv.Value.m_program + " " + kv.Value.m_arguments);
                 kv.Value.Close ();
               }
               catch (Exception ex)
