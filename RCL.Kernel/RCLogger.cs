@@ -38,12 +38,33 @@ namespace RCL.Kernel
       m_level = level;
     }
 
+    public void RecordDoc (RCRunner runner,
+                           RCClosure closure,
+                           string type,
+                           long instance,
+                           string state,
+                           object info)
+    {
+      Record (runner, closure, type, instance, state, info, true);
+    }
+
     public void Record (RCRunner runner,
                         RCClosure closure,
                         string type,
                         long instance,
                         string state,
                         object info)
+    {
+      Record (runner, closure, type, instance, state, info, false);
+    }
+
+    public void Record (RCRunner runner,
+                        RCClosure closure,
+                        string type,
+                        long instance,
+                        string state,
+                        object info,
+                        bool forceDoc)
     {
       long bot = 0;
       long fiber = 0;
@@ -52,7 +73,7 @@ namespace RCL.Kernel
         bot = closure.Bot.Id;
         fiber = closure.Fiber;
       }
-      Record (bot, fiber, type, instance, state, info);
+      Record (bot, fiber, type, instance, state, info, forceDoc);
     }
 
     public static void Record (long bot,
@@ -61,6 +82,17 @@ namespace RCL.Kernel
                                long instance,
                                string state,
                                object info)
+    {
+      Record (bot, fiber, type, instance, state, info, false);
+    }
+
+    public static void Record (long bot,
+                               long fiber,
+                               string type,
+                               long instance,
+                               string state,
+                               object info,
+                               bool forceDoc)
     {
       if (m_output == null)
       {
@@ -107,7 +139,7 @@ namespace RCL.Kernel
       {
         string time = DateTime.UtcNow.ToString (TimeFormat);
         bool singleLine;
-        string message = IndentMessage (CreateMessage (info), out singleLine);
+        string message = IndentMessage (CreateMessage (info), forceDoc, out singleLine);
         string optionalSpace = (singleLine && message.Length > 0) ? " " : "";
         m_output.WriteLine ("{0} {1} {2} {3} {4} {5}{6}{7}",
                             time, bot, fiber, type, instance, state, optionalSpace, message);
@@ -120,7 +152,7 @@ namespace RCL.Kernel
       else if (m_level == RCOutput.Test)
       {
         bool singleLine;
-        string message = IndentMessage (CreateMessage (info), out singleLine);
+        string message = IndentMessage (CreateMessage (info), forceDoc, out singleLine);
         string optionalSpace = (singleLine && message.Length > 0) ? " " : "";
         m_output.WriteLine ("{0} {1} {2} {3} {4}{5}{6}", 
                             bot, fiber, type, instance, state, optionalSpace, message);        
@@ -180,11 +212,11 @@ namespace RCL.Kernel
       return message;
     }
 
-    protected static string IndentMessage (string message, out bool singleLine)
+    protected static string IndentMessage (string message, bool forceDoc, out bool singleLine)
     {
       string[] lines = message.Split ('\n', '\r');
       int chars = 0;
-      if (lines.Length == 1)
+      if (lines.Length == 1 && !forceDoc)
       {
         singleLine = true;
         return lines[0];

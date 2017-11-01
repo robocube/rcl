@@ -54,7 +54,6 @@ namespace RCL.Kernel
       }
     }
 
-    /*
     public virtual void Record (RCRunner runner, 
                                 RCClosure closure, 
                                 string type, 
@@ -62,6 +61,27 @@ namespace RCL.Kernel
                                 string state, 
                                 object info)
     {
+      Record (runner, closure, type, instance, state, info, false);
+    }
+
+    public virtual void RecordDoc (RCRunner runner,
+                                   RCClosure closure,
+                                   string type,
+                                   long instance,
+                                   string state,
+                                   object info)
+    {
+      Record (runner, closure, type, instance, state, info, true);
+    }
+
+    public virtual void Record (RCRunner runner,
+                                RCClosure closure,
+                                string type,
+                                long instance,
+                                string state,
+                                object info,
+                                bool forceDoc)
+    {
       lock (m_lock)
       {
         List<RCLogger> typeList;
@@ -69,93 +89,21 @@ namespace RCL.Kernel
         {
           for (int i = 0; i < typeList.Count; ++i)
           {
-            typeList[i].Record (runner, closure, type, instance, state, info);
+            typeList[i].Record (runner, closure, type, instance, state, info, forceDoc);
           }
         }
         else if (m_loggers.TryGetValue (type + ":" + state, out typeList))
         {
           for (int i = 0; i < typeList.Count; ++i)
           {
-            typeList[i].Record (runner, closure, type, instance, state, info);
+            typeList[i].Record (runner, closure, type, instance, state, info, forceDoc);
           }
         }
         for (int i = 0; i < m_wild.Count; ++i)
         {
-          m_wild[i].Record (runner, closure, type, instance, state, info);
+          m_wild[i].Record (runner, closure, type, instance, state, info, forceDoc);
         }
       }
     }
-    */
-
-    public virtual void Record (RCRunner runner, 
-                                RCClosure closure, 
-                                string type, 
-                                long instance, 
-                                string state, 
-                                object info)
-    {
-      lock (m_lock)
-      {
-        List<RCLogger> typeList;
-        if (m_loggers.TryGetValue (type, out typeList))
-        {
-          for (int i = 0; i < typeList.Count; ++i)
-          {
-            typeList[i].Record (runner, closure, type, instance, state, info);
-          }
-        }
-        else if (m_loggers.TryGetValue (type + ":" + state, out typeList))
-        {
-          for (int i = 0; i < typeList.Count; ++i)
-          {
-            typeList[i].Record (runner, closure, type, instance, state, info);
-          }
-        }
-        for (int i = 0; i < m_wild.Count; ++i)
-        {
-          m_wild[i].Record (runner, closure, type, instance, state, info);
-        }
-      }
-    }
-
-    /*
-    public virtual void Write (string type, string message)
-    {
-      lock (m_lock)
-      {
-        List<RCLogger> typeList;
-        if (m_loggers.TryGetValue (type, out typeList))
-        {
-          for (int i = 0; i < typeList.Count; ++i)
-          {
-            typeList[i].Write (type, message);
-          }
-        }
-        for (int i = 0; i < m_wild.Count; ++i)
-        {
-          m_wild[i].Write (type, message);
-        }
-      }
-    }
-
-    public virtual void WriteLine (string type, string line)
-    {
-      lock (m_lock)
-      {
-        List<RCLogger> typeList;
-        if (m_loggers.TryGetValue (type, out typeList))
-        {
-          for (int i = 0; i < typeList.Count; ++i)
-          {
-            typeList[i].WriteLine (type, line);
-          }
-        }
-        for (int i = 0; i < m_wild.Count; ++i)
-        {
-          m_wild[i].WriteLine (type, line);
-        }
-      }
-    }
-    */
   }
 }

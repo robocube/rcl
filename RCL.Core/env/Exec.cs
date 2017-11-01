@@ -321,7 +321,7 @@ namespace RCL.Core
         }
         //Console.Out.WriteLine ("Logging");
         m_state.Runner.Log.Record (m_state.Runner, m_state.Closure,
-                                      "exec", Handle, "done", exitCode);
+                                   "exec", Handle, "done", exitCode);
         RCString lines = null;
         lock (this)
         {
@@ -333,8 +333,8 @@ namespace RCL.Core
         }
         if (lines != null)
         {
-          m_state.Runner.Log.Record (m_state.Runner, m_state.Closure,
-                                          "exec", Handle, "line", lines);
+          m_state.Runner.Log.RecordDoc (m_state.Runner, m_state.Closure,
+                                        "exec", Handle, "line", lines);
         }
         RCString result = new RCString (m_result);
         for (int i = 0; i < waiters.Length; ++i)
@@ -612,8 +612,8 @@ namespace RCL.Core
           }
           if (output != null)
           {
-            m_state.Runner.Log.Record (m_state.Runner, m_state.Closure,
-                                       "exec", Handle, "line", output);
+            m_state.Runner.Log.RecordDoc (m_state.Runner, m_state.Closure,
+                                          "exec", Handle, "line", output);
           }
           m_timer.Change (200, Timeout.Infinite);
         }
