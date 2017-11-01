@@ -224,7 +224,12 @@ namespace RCL.Kernel
       singleLine = false;
       StringBuilder output = new StringBuilder ();
       output.AppendLine ();
-      for (int i = 0; i < lines.Length; ++i)
+      int til = lines.Length;
+      if (lines.Length > 0 && lines[lines.Length - 1].Length == 0)
+      {
+        --til;
+      }
+      for (int i = 0; i < til; ++i)
       {
         string line = string.Format ("  {0}\n", lines[i]);
         if (m_level == RCOutput.Multi)
@@ -238,6 +243,7 @@ namespace RCL.Kernel
         output.Append (line);
         chars += line.Length;
       }
+      //Get rid of the final newline because we use AppendLine to do the output
       if (output.Length > 0)
       {
         output.Remove (output.Length - 1, 1);
