@@ -191,7 +191,7 @@ namespace RCL.Test
     {
       RCRunner runner = new RCRunner ();
       runner.Rep ("\"exit.o2\" save #pretty format {:exit 1}");
-      runner.Rep ("p:startx \"mono rcl.exe --output=clean --nokeys --program=exit.o2\"");
+      runner.Rep ("p:startx \"mono rcl.exe --output=clean --show=print --nokeys --program=exit.o2\"");
       Assert.AreEqual ("{status:1 data:\"<<Exec,exit status 1>>\"}", runner.Rep ("try {<-waitx $p}").ToString ());
     }
 
