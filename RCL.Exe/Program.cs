@@ -51,7 +51,6 @@ namespace RCL.Exe
       RCLog log = new RCLog (consoleLog);
       RCRunner runner = new RCRunner (RCActivator.Default, log, 1, cmd);
       InstallSignalHandler (runner);
-        
       cmd.PrintStartup ();
   
       string line = "";
@@ -91,7 +90,7 @@ namespace RCL.Exe
         }
         catch (Exception ex)
         {
-          RCLogger.Record (0, 0, "fiber", 0, "reported", ex);
+          RCLogger.RecordFilter (0, 0, "fiber", 0, "reported", ex);
           status = 1;
         }
         finally
@@ -182,7 +181,7 @@ namespace RCL.Exe
         }
         catch (Exception ex)
         {
-          RCLogger.Record (0, 0, "fiber", 0, "reported", ex);
+          RCLogger.RecordFilter (0, 0, "fiber", 0, "reported", ex);
         }
       }
       runner.Dispose ();

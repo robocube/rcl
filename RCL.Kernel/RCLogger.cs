@@ -1,22 +1,26 @@
 ﻿using System;
 using System.IO;
+using System.Collections.Generic;
 using System.Text;
 
 namespace RCL.Kernel
 {
   public class RCLogger
   {
+    protected static object m_lock = new object ();
     protected static bool m_nokeys = false;
     protected static TextWriter m_output;
     protected static RCArray<string> m_types;
     protected static RCOutput m_level = RCOutput.Full;
     protected static string TimeFormat = "yyyy.MM.dd HH:mm:ss.fffffff";
+    protected static HashSet<string> m_show;
 
     public RCLogger () : this (true, "*") {}
 
     public RCLogger (bool nokeys, params string[] whiteList)
     {
       m_nokeys = nokeys;
+      m_show = new HashSet<string> (whiteList);
       m_types = new RCArray<string> (whiteList);
       if (!m_nokeys)
       {
@@ -38,33 +42,83 @@ namespace RCL.Kernel
       m_level = level;
     }
 
-    public void RecordDoc (RCRunner runner,
-                           RCClosure closure,
-                           string type,
-                           long instance,
-                           string state,
-                           object info)
+    public static void RecordFilter (RCRunner runner,
+                                     RCClosure closure,
+                                     string type,
+                                     long instance,
+                                     string state,
+                                     object info)
     {
-      Record (runner, closure, type, instance, state, info, true);
+      RecordFilter (runner, closure, type, instance, state, info, false);
     }
 
-    public void Record (RCRunner runner,
-                        RCClosure closure,
-                        string type,
-                        long instance,
-                        string state,
-                        object info)
+    public static void RecordFilter (RCRunner runner,
+                                     RCClosure closure,
+                                     string type,
+                                     long instance,
+                                     string state,
+                                     object info,
+                                     bool forceDoc)
     {
-      Record (runner, closure, type, instance, state, info, false);
+      lock (m_lock)
+      {
+        if (m_show.Contains ("*"))
+        {
+          Record (runner, closure, type, instance, state, info, forceDoc);
+        }
+        else if (m_show.Contains (type))
+        {
+          Record (runner, closure, type, instance, state, info, forceDoc);
+        }
+        else if (m_show.Contains (type + ":" + state))
+        {
+          Record (runner, closure, type, instance, state, info, forceDoc);
+        }
+      }
     }
 
-    public void Record (RCRunner runner,
-                        RCClosure closure,
-                        string type,
-                        long instance,
-                        string state,
-                        object info,
-                        bool forceDoc)
+    public static void RecordFilter (long bot,
+                                     long fiber,
+                                     string type,
+                                     long instance,
+                                     string state,
+                                     object info)
+    {
+      RecordFilter (bot, fiber, type, instance, state, info, false);
+    }
+
+    public static void RecordFilter (long bot,
+                                     long fiber,
+                                     string type,
+                                     long instance,
+                                     string state,
+                                     object info,
+                                     bool forceDoc)
+    {
+      lock (m_lock)
+      {
+        if (m_show.Contains ("*"))
+        {
+          Record (bot, fiber, type, instance, state, info, forceDoc);
+        }
+        else if (m_show.Contains (type))
+        {
+          Record (bot, fiber, type, instance, state, info, forceDoc);
+        }
+        else if (m_show.Contains (type + ":" + state))
+        {
+          Record (bot, fiber, type, instance, state, info, forceDoc);
+        }
+      }
+    }
+
+    protected static void Record (RCRunner runner,
+                                  RCClosure closure,
+                                  string type,
+                                  long instance,
+                                  string state,
+                                  object info,
+                                  bool forceDoc)
     {
       long bot = 0;
       long fiber = 0;
@@ -76,23 +130,23 @@ namespace RCL.Kernel
       Record (bot, fiber, type, instance, state, info, forceDoc);
     }
 
-    public static void Record (long bot,
-                               long fiber,
-                               string type,
-                               long instance,
-                               string state,
-                               object info)
+    protected static void Record (long bot,
+                                  long fiber,
+                                  string type,
+                                  long instance,
+                                  string state,
+                                  object info)
     {
       Record (bot, fiber, type, instance, state, info, false);
     }
 
-    public static void Record (long bot,
-                               long fiber,
-                               string type,
-                               long instance,
-                               string state,
-                               object info,
-                               bool forceDoc)
+    protected static void Record (long bot,
+                                  long fiber,
+                                  string type,
+                                  long instance,
+                                  string state,
+                                  object info,
+                                  bool forceDoc)
     {
       if (m_output == null)
       {

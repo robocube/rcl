@@ -6,52 +6,21 @@ namespace RCL.Kernel
 {
   public class RCLog
   {
-    protected List<RCLogger> m_all = new List<RCLogger> ();
-    protected Dictionary<string, List<RCLogger>> m_loggers = new Dictionary<string, List<RCLogger>> ();
-    protected List<RCLogger> m_wild = new List<RCLogger> ();
-    protected object m_lock = new object ();
+    protected RCLogger m_logger;
 
-    public RCLog (params RCLogger[] loggers)
+    public RCLog ()
     {
-      for (int i = 0; i < loggers.Length; ++i)
-      {
-        m_all.Add (loggers[i]);
-        //This is to support the idea of making certain loggers optional 
-        //as you are constructing the RCLog. See Program.cs.
-        if (loggers[i] == null) 
-        {
-          continue;
-        }
-        RCArray<string> type = loggers[i].Types ();
-        for (int j = 0; j < type.Count; ++j)
-        {
-          if (type[j] == "*")
-          {
-            m_wild.Add (loggers[i]);
-          }
-          else
-          {
-            List<RCLogger> typeList;
-            if (!m_loggers.TryGetValue (type[j], out typeList))
-            {
-              typeList = new List<RCLogger> ();
-              m_loggers.Add (type[j], typeList);
-            }
-            typeList.Add (loggers[i]);
-          }
-        }
-      }
+      m_logger = new RCLogger (true);
+    }
+
+    public RCLog (RCLogger logger)
+    {
+      m_logger = logger;
     }
 
     public void SetVerbosity (RCOutput output)
     {
-      lock (m_lock)
-      {
-        foreach (RCLogger logger in m_all)
-        {
-          logger.SetVerbosity (output);
-        }
-      }
+      m_logger.SetVerbosity (output);
     }
 
     public virtual void Record (RCRunner runner, 
@@ -61,7 +30,7 @@ namespace RCL.Kernel
                                 string state, 
                                 object info)
     {
-      Record (runner, closure, type, instance, state, info, false);
+      RCLogger.RecordFilter (runner, closure, type, instance, state, info, false);
     }
 
     public virtual void RecordDoc (RCRunner runner,
@@ -71,7 +40,7 @@ namespace RCL.Kernel
                                    string state,
                                    object info)
     {
-      Record (runner, closure, type, instance, state, info, true);
+      RCLogger.RecordFilter (runner, closure, type, instance, state, info, true);
     }
 
     public virtual void Record (RCRunner runner,
@@ -82,28 +51,8 @@ namespace RCL.Kernel
                                 object info,
                                 bool forceDoc)
     {
-      lock (m_lock)
-      {
-        List<RCLogger> typeList;
-        if (m_loggers.TryGetValue (type, out typeList))
-        {
-          for (int i = 0; i < typeList.Count; ++i)
-          {
-            typeList[i].Record (runner, closure, type, instance, state, info, forceDoc);
-          }
-        }
-        else if (m_loggers.TryGetValue (type + ":" + state, out typeList))
-        {
-          for (int i = 0; i < typeList.Count; ++i)
-          {
-            typeList[i].Record (runner, closure, type, instance, state, info, forceDoc);
-          }
-        }
-        for (int i = 0; i < m_wild.Count; ++i)
-        {
-          m_wild[i].Record (runner, closure, type, instance, state, info, forceDoc);
-        }
-      }
+      RCLogger.RecordFilter (runner, closure, type, instance, state, info, forceDoc);
     }
   }
 }
+

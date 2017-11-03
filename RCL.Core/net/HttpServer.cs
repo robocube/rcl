@@ -696,7 +696,7 @@ namespace RCL.Core
           {
             foreach (KeyValuePair<int, HttpServer.RequestInfo> kv in m_contexts)
             {
-              RCLogger.Record (m_bot, 0, "http", (long) kv.Key, "cancel", kv.Value.Context.Request.RawUrl);
+              RCLogger.RecordFilter (m_bot, (long) 0, "http", (long) kv.Key, "cancel", kv.Value.Context.Request.RawUrl);
               kv.Value.Context.Response.OutputStream.Close ();
             }
             foreach (KeyValuePair<int, HttpListener> kv in m_listeners)
@@ -704,7 +704,7 @@ namespace RCL.Core
               //I should be ok calling this in a lock right?
               foreach (string prefix in kv.Value.Prefixes)
               {
-                RCLogger.Record (m_bot, 0, "http", (long) kv.Key, "close", prefix);
+                RCLogger.RecordFilter (m_bot, (long) 0, "http", (long) kv.Key, "close", prefix);
               }
               kv.Value.Close ();
             }
