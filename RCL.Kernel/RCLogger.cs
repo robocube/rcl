@@ -144,7 +144,7 @@ namespace RCL.Kernel
         m_output.WriteLine ("{0} {1} {2} {3} {4} {5}{6}{7}",
                             time, bot, fiber, type, instance, state, optionalSpace, message);
       }
-      else if (m_level == RCOutput.Clean && type == "print")
+      else if (m_level == RCOutput.Clean) //&& type == "print")
       {
         string message = CreateMessage (info);
         m_output.WriteLine (message);

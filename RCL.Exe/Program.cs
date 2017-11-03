@@ -24,14 +24,14 @@ namespace RCL.Exe
       if (flags != null)
       {
         string[] flagsv = flags.Split (' ');
-        string[] newArgv = new string [argv.Length + flagsv.Length];
-        for (int i = 0; i < argv.Length; ++i)
-        {
-          newArgv[i] = argv[i];
-        }
+        string[] newArgv = new string [flagsv.Length + argv.Length];
         for (int i = 0; i < flagsv.Length; ++i)
         {
-          newArgv[argv.Length + i] = flagsv[i];
+          newArgv[i] = flagsv[i];
+        }
+        for (int i = 0; i < argv.Length; ++i)
+        {
+          newArgv[flagsv.Length + i] = argv[i];
         }
         cmd = new RCLArgv (newArgv);
       }
