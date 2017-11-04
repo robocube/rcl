@@ -12,7 +12,7 @@ namespace RCL.Kernel
     protected static TextWriter m_output;
     protected static RCArray<string> m_types;
     protected static RCOutput m_level = RCOutput.Full;
-    protected static string TimeFormat = "yyyy.MM.dd HH:mm:ss.fffffff";
+    protected static string TimeFormat = "yyyy.MM.dd HH:mm:ss.ffffff";
     protected static HashSet<string> m_show;
 
     public RCLogger () : this (true, "*") {}
