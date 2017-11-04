@@ -209,13 +209,23 @@ namespace RCL.Kernel
       }
       if (copyright)
       {
-        Console.WriteLine ();
+        //Console.WriteLine ();
         PrintCopyright ();
       }
       if (options)
       {
         Console.WriteLine ();
-        Console.WriteLine ("Options:");
+        //Console.Write ("Arguments:");
+        for (int i = 0; i < Arguments.Count; ++i)
+        {
+          Console.Write (Arguments[i]);
+          if (i < Arguments.Count - 1)
+          {
+            Console.Write (" ");
+          }
+        }
+        Console.WriteLine ();
+        //Console.WriteLine ("Options:");
         Console.WriteLine (Options.Format (RCFormat.Pretty));
       }
       if (options || copyright)
