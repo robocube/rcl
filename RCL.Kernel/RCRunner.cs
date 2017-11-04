@@ -216,15 +216,18 @@ namespace RCL.Kernel
       {
         Console.WriteLine ();
         //Console.Write ("Arguments:");
-        for (int i = 0; i < Arguments.Count; ++i)
+        if (Arguments.Count > 0)
         {
-          Console.Write (Arguments[i]);
-          if (i < Arguments.Count - 1)
+          for (int i = 0; i < Arguments.Count; ++i)
           {
-            Console.Write (" ");
+            Console.Write (Arguments[i]);
+            if (i < Arguments.Count - 1)
+            {
+              Console.Write (" ");
+            }
           }
+          Console.WriteLine ();
         }
-        Console.WriteLine ();
         //Console.WriteLine ("Options:");
         Console.WriteLine (Options.Format (RCFormat.Pretty));
       }
