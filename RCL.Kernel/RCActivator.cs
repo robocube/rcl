@@ -105,7 +105,7 @@ namespace RCL.Kernel
           //Having an entry in m_operator is what distinguishes a built-in
           //operator from a UserOperator implemented in RC.
           //note that you cannot currently create a user operator with the same
-          //name as an existing built-in operator.  This may turn out to be a problem.
+          //name as an existing built-in operator. This may turn out to be a problem.
           Type optype;
           m_operator.TryGetValue (verb.Name, out optype);
           if (optype == null || optype == typeof (RCOperator))
