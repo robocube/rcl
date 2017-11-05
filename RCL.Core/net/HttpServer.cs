@@ -221,7 +221,7 @@ namespace RCL.Core
         info.Context.Response.StatusCode = 401;
         info.Context.Response.OutputStream.Close ();
         runner.Log.Record (runner, closure, "http", right[0], "session", cookie != null ? cookie.Value : "null");
-        throw new Exception ("Invalid session id");
+        throw new RCException (closure, RCErrors.Session, "Invalid session id");
       }
       runner.Yield (closure, right);
     }

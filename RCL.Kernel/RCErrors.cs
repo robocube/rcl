@@ -13,6 +13,7 @@ namespace RCL.Kernel
     Native  = 7,  //Unintentional operator exception.
     Custom  = 8,  //Custom status created with fail.
     Exec    = 9,  //Non-zero exit status on external process.
-    Handle  = 10  //Bad handle number.
+    Handle  = 10, //Bad handle number.
+    Session = 11
   }
 }
