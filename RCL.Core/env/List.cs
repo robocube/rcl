@@ -29,6 +29,11 @@ namespace RCL.Core
         ListFilesCube (runner, closure, right[0], options.Contains (all), 
                                                   options.Contains (deep));
       }
+      else if (target == "root")
+      {
+        ListFilesCube (runner, closure, right[0], options.Contains (all),
+                                                  options.Contains (deep));
+      }
       else if (target == "fibers")
       {
         ListFibers (runner, closure);
