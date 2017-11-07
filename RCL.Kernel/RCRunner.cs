@@ -490,7 +490,7 @@ namespace RCL.Kernel
           {
             try
             {
-              Log.Record (this, next, "fiber", next.Fiber, "exception", userex);
+              //Log.Record (this, next, "fiber", next.Fiber, "exception", userex);
               Kill (next.Bot.Id, next.Fiber, userex, 1);
             }
             catch (Exception sysex)
