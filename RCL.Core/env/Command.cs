@@ -88,6 +88,28 @@ namespace RCL.Core
       runner.Yield (closure, new RCBoolean (result));
     }
 
+    [RCVerb ("dir")]
+    public void EvalDir (RCRunner runner, RCClosure closure, RCSymbol right)
+    {
+      RCArray<bool> result = new RCArray<bool> (right.Count);
+      for (int i = 0; i < right.Count; ++i)
+      {
+        result.Write (Directory.Exists (PathSymbolToString (right[i])));
+      }
+      runner.Yield (closure, new RCBoolean (result));
+    }
+
+    [RCVerb ("dir")]
+    public void EvalDir (RCRunner runner, RCClosure closure, RCString right)
+    {
+      RCArray<bool> result = new RCArray<bool> (right.Count);
+      for (int i = 0; i < right.Count; ++i)
+      {
+        result.Write (Directory.Exists (right[i]));
+      }
+      runner.Yield (closure, new RCBoolean (result));
+    }
+
     [RCVerb ("guid")]
     public void EvalGuid (RCRunner runner, RCClosure closure, RCLong right)
     {
