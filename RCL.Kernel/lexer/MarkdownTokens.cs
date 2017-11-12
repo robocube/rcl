@@ -10,22 +10,26 @@ namespace RCL.Kernel
                                            int index,
                                            RCToken previous)
     {
-      for (int current = start; current < code.Length; ++current)
+      string text;
+      int current = start;
+      for (; current < code.Length; ++current)
       {
         //Console.Out.Write (code[current]);
         if (code[current] == '\r' || code[current] == '\n' ||
-            code[current] == '_' || code[current] == '*')
+            code[current] == '[' || code[current] == '_' || code[current] == '*')
         {
           int length = current - start;
           if (length > 0)
           {
-            string text = code.Substring (start, length);
+            text = code.Substring (start, length);
             return new RCToken (text, this, start, index);
           }
           else return null;
         }
       }
-      throw new Exception ("No newline at end of content");
+      text = code.Substring (start, current - start);
+      return new RCToken (text, this, start, index);
+      //throw new Exception ("No newline at end of content");
     }
     
     public override void Accept (RCParser parser, RCToken token)
@@ -154,6 +158,47 @@ namespace RCL.Kernel
     public override string TypeName
     {
       get { return "MarkdownBeginItalicToken"; }
+    }
+  }
+
+  public class MarkdownLinkToken : RCTokenType
+  {
+    public override RCToken TryParseToken (string code,
+                                           int start,
+                                           int index,
+                                           RCToken previous)
+    {
+      int current = start;
+      if (code[current] != '[') return null;
+      for (; current < code.Length; ++current)
+      {
+        if (code[current] == ']')
+        {
+          ++current;
+          if (code[current] != '(') return null;
+          for (; current < code.Length; ++current)
+          {
+            if (code[current] == ')') 
+            {
+              ++current;
+              string text = code.Substring (start, current - start);
+              return new RCToken (text, this, start, index);
+            }
+          }
+          return null;
+        }
+      }
+      return null;
+    }
+    
+    public override void Accept (RCParser parser, RCToken token)
+    {
+      parser.AcceptMarkdownLink (token);
+    }
+
+    public override string TypeName
+    {
+      get { return "MarkdownLink"; }
     }
   }
 }

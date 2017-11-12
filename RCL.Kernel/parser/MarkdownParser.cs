@@ -12,6 +12,7 @@ namespace RCL.Kernel
     {
       RCArray<RCTokenType> types = new RCArray<RCTokenType> ();
       types.Write (RCTokenType.EndOfLine);
+      types.Write (RCTokenType.MarkdownLinkToken);
       types.Write (RCTokenType.MarkdownContentToken);
       types.Write (RCTokenType.MarkdownBeginBoldToken);
       types.Write (RCTokenType.MarkdownEndBoldToken);
@@ -35,6 +36,7 @@ namespace RCL.Kernel
     protected enum MarkdownState
     {
       None,
+      Link,
       Paragraph,
       MaybeBR,
       Newline1
@@ -47,9 +49,13 @@ namespace RCL.Kernel
         tokens[i].Type.Accept (this, tokens[i]);
       }
       fragment = false;
-      if (m_state == MarkdownState.Newline1)
+      if (m_values.Count > 0)
       {
         EndBlock ();
+      }
+      if (m_run.Length > 0 && m_value == null)
+      {
+        return new RCBlock (null, "", ":", new RCString (m_run.ToString ()));
       }
       return m_value;
     }
@@ -57,7 +63,8 @@ namespace RCL.Kernel
     protected StringBuilder m_run = new StringBuilder ();
     public override void AcceptMarkdownContent (RCToken token) 
     {
-      //Console.Out.WriteLine ("AcceptMarkdownContent: '{0}'", token.Text);
+      Console.Out.WriteLine ("AcceptMarkdownContent: '{0}'", token.Text);
+      Console.Out.WriteLine ("m_state: " + m_state);
       if (m_state == MarkdownState.None)
       {
         m_state = MarkdownState.Paragraph;
@@ -66,6 +73,7 @@ namespace RCL.Kernel
         m_name = "";
         m_value = RCBlock.Empty;
       }
+      
       if (m_state == MarkdownState.Paragraph ||
           m_state == MarkdownState.MaybeBR)
       {
@@ -93,7 +101,7 @@ namespace RCL.Kernel
 
     public override void AcceptEndOfLine (RCToken token)
     {
-      //Console.Out.WriteLine ("AcceptEndOfLine: '{0}'", token.Text);
+      Console.Out.WriteLine ("AcceptEndOfLine", token.Text);
       if (m_state == MarkdownState.Newline1)
       {
         EndBlock ();
@@ -142,6 +150,84 @@ namespace RCL.Kernel
       EndBlock ();
     }
 
+    public override void AcceptMarkdownLink (RCToken token)
+    {
+      Console.Out.WriteLine ("AcceptMarkdownLink: '{0}'", token.Text);
+      Console.Out.WriteLine ("m_state: " + m_state);
+      if (m_state == MarkdownState.Newline1)
+      {
+        m_run.Append (" ");
+      }
+      m_state = MarkdownState.Link;
+      int closingBracket = token.Text.IndexOf (']');
+      string linkText = token.Text.Substring (1, closingBracket - 1);
+      Console.Out.WriteLine ("Link Text: '{0}'", linkText);
+      int openingParen = closingBracket + 1;
+      int closingParen = token.Text.IndexOf (')', openingParen);
+      int firstChar = openingParen + 1;
+      string href = token.Text.Substring (firstChar, closingParen - firstChar);
+      Console.Out.WriteLine ("Href Text: '{0}'", href);
+      RCArray<RCToken> textTokens = new RCArray<RCToken> ();
+      m_markdownLexer.Lex (linkText, textTokens);
+      bool fragment;
+      AppendRun ();
+      MarkdownParser linkParser = new MarkdownParser ();
+      linkParser.m_state = MarkdownState.Link;
+      RCBlock text = (RCBlock) linkParser.Parse (textTokens, out fragment);
+      Console.Out.WriteLine ("Reentry result: " + text.ToString ());
+      m_name = "a";
+      StartBlock ();
+      m_value = new RCBlock (RCBlock.Empty, "text", ":", text);
+      m_value = new RCBlock (m_value, "href", ":", new RCString (href));
+      EndBlock ();
+    }
+
+    /*
+    public override void AcceptCube (RCToken token)
+    {
+      Console.Out.WriteLine ("AcceptCube: '{0}'", token.Text);
+      if (token.Text == "[")
+      {
+        m_value = new RCBlock (m_value, "", ":", new RCString (m_run.ToString ()));
+        m_name = "a";
+        StartBlock ();
+        m_name = "text";
+        m_value = RCBlock.Empty;
+        StartBlock ();
+        m_value = RCBlock.Empty;
+      }
+      else if (token.Text == "]")
+      {
+        m_value = new RCBlock (m_value, "", ":", new RCString (m_run.ToString ()));
+        EndBlock ();
+        StartBlock ();
+        m_name = "href";
+        m_value = RCBlock.Empty;
+      }
+    }
+
+    public override void AcceptParen (RCToken token)
+    {
+      Console.Out.WriteLine ("AcceptParen: '{0}'", token.Text);
+      if (token.Text == "(")
+      {
+        m_value = new RCBlock (m_value, "", ":", new RCString (m_run.ToString ()));
+        m_name = "a";
+        StartBlock ();
+        m_name = "";
+        m_value = RCBlock.Empty;
+      }
+      else if (token.Text == ")")
+      {
+        m_value = new RCBlock (m_value, "", ":", new RCString (m_run.ToString ()));
+        m_name = "text";
+        StartBlock ();
+        m_name = "";
+        m_value = RCBlock.Empty;
+      }
+    }
+    */
+
     protected void StartBlock ()
     {
       if (m_value == null)
@@ -152,8 +238,8 @@ namespace RCL.Kernel
       {
         m_name = "";
       }
-      //Console.Out.WriteLine ("PUSH: m_name:{0} m_value:{1} m_state:{2}",
-      //                       m_name, m_value.ToString (), m_state);
+      Console.Out.WriteLine ("PUSH: m_name:{0} m_value:{1} m_state:{2}",
+                             m_name, m_value.ToString (), m_state);
       m_values.Push (m_value);
       m_names.Push (m_name);
       m_states.Push (m_state);
@@ -172,8 +258,8 @@ namespace RCL.Kernel
         m_value = m_values.Pop ();
         m_state = m_states.Pop ();
         m_value = new RCBlock (m_value, m_name, ":", child);
-        //Console.Out.WriteLine ("POP: m_name:{0} m_value:{1} m_state:{2}",
-        //                       m_name, m_value.ToString (), m_state);
+        Console.Out.WriteLine ("POP: m_name:{0} m_value:{1} m_state:{2}",
+                               m_name, m_value.ToString (), m_state);
         m_name = "";
       }
     }

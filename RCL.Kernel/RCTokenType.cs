@@ -143,6 +143,8 @@ namespace RCL.Kernel
     public static readonly RCTokenType MarkdownEndItalicToken = new MarkdownEndItalicToken ();
     public static readonly RCTokenType MarkdownBeginBoldToken = new MarkdownBeginBoldToken ();
     public static readonly RCTokenType MarkdownEndBoldToken = new MarkdownEndBoldToken ();
+    public static readonly RCTokenType MarkdownLinkToken = new MarkdownLinkToken ();
+
     /*
     public static readonly RCTokenType MarkdownH1Token = new MarkdownH1Token ();
     public static readonly RCTokenType MarkdownH2Token = new MarkdownH2Token ();
@@ -159,7 +161,6 @@ namespace RCL.Kernel
     public static readonly RCTokenType MarkdownHRToken = new MarkdownHRToken ();
     public static readonly RCTokenType MarkdownBRToken = new MarkdownBRToken ();
     public static readonly RCTokenType MarkdownCodeBlockToken = new MarkdownCodeBlockToken ();
-    public static readonly RCTokenType MarkdownLinkToken = new MarkdownLinkToken ();
     public static readonly RCTokenType MarkdownImageToken = new MarkdownImageToken ();
     */
 
@@ -435,6 +436,11 @@ namespace RCL.Kernel
     }
 
     public virtual RCSymbolScalar ParseSymbol (RCLexer lexer, RCToken token)
+    {
+      throw new Exception ("cannot convert " + Name + " to symbol");
+    }
+
+    public virtual RCBlock ParseLink (RCLexer lexer, RCToken token)
     {
       throw new Exception ("cannot convert " + Name + " to symbol");
     }
