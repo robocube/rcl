@@ -14,13 +14,13 @@ namespace RCL.Kernel
     {
       int length = LengthOfKeyword (text, start, "null");
       if (length < 0) return null;
-      string result = text.Substring(start, length);
-      return new RCToken(result, this, start, index);
+      string result = text.Substring (start, length);
+      return new RCToken (result, this, start, index);
     }
 
     public override void Accept (RCParser parser, RCToken token)
     {
-      parser.AcceptNull(token);
+      parser.AcceptNull (token);
     }
 
     public override string TypeName

@@ -132,12 +132,36 @@ namespace RCL.Kernel
     public static readonly RCTokenType XmlContent = new XMLContentToken ();
 
     //For RCL log files only.
-    //public static readonly RCTokenType LogContent = new LogContentToken ();
-    //public static readonly RCTokenType LogEntryHeader = new LogEntryHeader ();
     public static readonly RCTokenType EndOfLine = new EndOfLine ();
     public static readonly RCTokenType LogEntryRawLine = new LogEntryRawLine ();
     public static readonly RCTokenType LogEntryHeader = new LogEntryHeader ();
     public static readonly RCTokenType LogEntryBody = new LogEntryBody ();
+
+    ///For markdown parsing only.
+    public static readonly RCTokenType MarkdownContentToken = new MarkdownContentToken ();
+    public static readonly RCTokenType MarkdownBeginItalicToken = new MarkdownBeginItalicToken ();
+    public static readonly RCTokenType MarkdownEndItalicToken = new MarkdownEndItalicToken ();
+    public static readonly RCTokenType MarkdownBeginBoldToken = new MarkdownBeginBoldToken ();
+    public static readonly RCTokenType MarkdownEndBoldToken = new MarkdownEndBoldToken ();
+    /*
+    public static readonly RCTokenType MarkdownH1Token = new MarkdownH1Token ();
+    public static readonly RCTokenType MarkdownH2Token = new MarkdownH2Token ();
+    public static readonly RCTokenType MarkdownH3Token = new MarkdownH3Token ();
+    public static readonly RCTokenType MarkdownH4Token = new MarkdownH4Token ();
+    public static readonly RCTokenType MarkdownH5Token = new MarkdownH5Token ();
+    public static readonly RCTokenType MarkdownH6Token = new MarkdownH6Token ();
+    public static readonly RCTokenType MarkdownBeginOLToken = new MarkdownBeginOLToken ();
+    public static readonly RCTokenType MarkdownEndOLToken = new MarkdownEndOLToken ();
+    public static readonly RCTokenType MarkdownBeginULToken = new MarkdownBeginULToken ();
+    public static readonly RCTokenType MarkdownEndULToken = new MarkdownEndULToken ();
+    public static readonly RCTokenType MarkdownBeginLIToken = new MarkdownBeginLIToken ();
+    public static readonly RCTokenType MarkdownEndLIToken = new MarkdownEndLIToken ();
+    public static readonly RCTokenType MarkdownHRToken = new MarkdownHRToken ();
+    public static readonly RCTokenType MarkdownBRToken = new MarkdownBRToken ();
+    public static readonly RCTokenType MarkdownCodeBlockToken = new MarkdownCodeBlockToken ();
+    public static readonly RCTokenType MarkdownLinkToken = new MarkdownLinkToken ();
+    public static readonly RCTokenType MarkdownImageToken = new MarkdownImageToken ();
+    */
 
     /// <summary>
     /// Is this the right spot for a visitor? not really sure...

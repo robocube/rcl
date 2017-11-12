@@ -50,7 +50,13 @@ namespace RCL.Kernel
     public virtual void AcceptEndOfLine (RCToken token) {}
     public virtual void AcceptLogEntryHeader (RCToken token) {}
     public virtual void AcceptLogEntryRawLine (RCToken token) {}
-    //public virtual void AcceptLogEntryMessage (RCToken token) {}
     public virtual void AcceptLogEntryBody (RCToken token) {}
+
+    //For Markdown syntax files
+    public virtual void AcceptMarkdownContent (RCToken token) {}
+    public virtual void AcceptMarkdownBeginBold (RCToken token) {}
+    public virtual void AcceptMarkdownEndBold (RCToken token) {}
+    public virtual void AcceptMarkdownBeginItalic (RCToken token) {}
+    public virtual void AcceptMarkdownEndItalic (RCToken token) {}
   }
 }

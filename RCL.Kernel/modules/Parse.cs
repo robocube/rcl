@@ -40,6 +40,10 @@ namespace RCL.Kernel
       {
         parser = new LogParser ();
       }
+      else if (which.Equals ("md"))
+      {
+        parser = new MarkdownParser ();
+      }
       else throw new Exception ("Unknown parser: " + which);
 
       runner.Yield (closure, DoParse (parser, right));
