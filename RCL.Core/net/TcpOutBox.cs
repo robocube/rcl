@@ -29,11 +29,10 @@ namespace RCL.Core
 
     public RCAsyncState Remove ()
     {
-      RCAsyncState next = null;
       lock (m_lock)
       {
         //Remove the last item.
-        RCAsyncState prior = m_outbox.Dequeue ();
+        m_outbox.Dequeue ();
         //Console.Out.WriteLine ("Outbox removed {0}, {1} remaining", ((SendState)prior.Other).Id, m_outbox.Count);
         //If not empty then start sending the next one.
         if (m_outbox.Count > 0)

@@ -161,39 +161,39 @@ namespace RCL.Kernel
         target.Write (0, symboli);
       }
     }
-      
-    public class RCVectorEnumerator<T> : IEnumerator<T>
+  }
+
+  public class RCVectorEnumerator<T> : IEnumerator<T>
+  {
+    protected int i = -1;
+    protected RCVector<T> m_vector;
+
+    public RCVectorEnumerator (RCVector<T> array)
     {
-      protected int i = -1;
-      protected RCVector<T> m_vector;
+      m_vector = array;
+    }
 
-      public RCVectorEnumerator (RCVector<T> array)
-      {
-        m_vector = array;
-      }
+    public T Current
+    {
+      get { return (T) m_vector[i]; }
+    }
 
-      public T Current
-      {
-        get { return m_vector[i]; }
-      }
+    public void Dispose () { }
 
-      public void Dispose () { }
+    object System.Collections.IEnumerator.Current
+    {
+      get { return m_vector[i]; }
+    }
 
-      object System.Collections.IEnumerator.Current
-      {
-        get { return m_vector[i]; }
-      }
+    public bool MoveNext ()
+    {
+      ++i;
+      return i < m_vector.Count;
+    }
 
-      public bool MoveNext ()
-      {
-        ++i;
-        return i < m_vector.Count;
-      }
-
-      public void Reset ()
-      {
-        i = -1;
-      }
+    public void Reset ()
+    {
+      i = -1;
     }
   }
 }

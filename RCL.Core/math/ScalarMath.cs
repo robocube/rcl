@@ -758,7 +758,7 @@ namespace RCL.Core
       {
         return double.Parse (r);
       }
-      catch (Exception ex)
+      catch (Exception)
       {
         return double.NaN;
       }

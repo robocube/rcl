@@ -143,6 +143,11 @@ namespace RCL.Kernel
       return thisText.Equals (otherText);
     }
 
+    public override int GetHashCode ()
+    {
+      return base.GetHashCode ();
+    }
+
     public virtual RCOperator AsOperator (
       RCActivator activator, RCValue left, RCValue right)
     {

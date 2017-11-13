@@ -8,6 +8,7 @@ using RCL.Kernel;
 
 namespace RCL.Core
 {
+  /* WARNING - This code was part of an experiment that never really worked */
   public class TcpCubeClient : Tcp.Client
   {
     protected string m_path = "";
@@ -105,10 +106,9 @@ namespace RCL.Core
         }
         RCArray<byte> array = new RCArray<byte> ();
         column.Value.ToByte (array);
-        RCAsyncState state = new RCAsyncState (runner, closure, stream);
-        throw new NotImplementedException ("This is where it's at baby, get er done.");
-        //stream.BeginWrite (
-        //  array, 0, array.Length, new AsyncCallback (EndWrite), state);
+        //throw new NotImplementedException ("This is where it's at baby, get er done.");
+        //RCAsyncState state = new RCAsyncState (runner, closure, stream);
+        //stream.BeginWrite (array, 0, array.Length, new AsyncCallback (EndWrite), state);
       }
     }
 

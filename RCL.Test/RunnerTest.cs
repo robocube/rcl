@@ -248,7 +248,6 @@ namespace RCL.Test
 
     protected string RepString (RCRunner runner, string code)
     {
-      int status;
       RCValue result = runner.Rep (code);
       if (result == null)
       {

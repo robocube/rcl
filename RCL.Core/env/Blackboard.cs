@@ -60,7 +60,7 @@ namespace RCL.Core
       {
         Read (runner, closure, left, new ReadSpec (left, right, 0, false));
       }
-      catch (Exception ex)
+      catch (Exception)
       {
         throw;
       }
@@ -393,9 +393,9 @@ namespace RCL.Core
         }
         RCSymbol symbol = new RCSymbol (right.Axis.Symbol);
         Dictionary<long, RCClosure> all = null;
-        long G, E;
-        RCTimeScalar T;
-        RCSymbolScalar S;
+        //long G, E;
+        //RCTimeScalar T;
+        //RCSymbolScalar S;
         lock (m_readWriteLock)
         {
           Section s = GetSection (symbol);
@@ -417,7 +417,7 @@ namespace RCL.Core
         runner.Log.Record (runner, closure, "board", 0, "write", right);
         runner.Yield (closure, new RCLong (line));
       }
-      catch (Exception ex)
+      catch (Exception)
       {
         throw;
       }

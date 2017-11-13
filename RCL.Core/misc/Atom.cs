@@ -844,12 +844,12 @@ namespace RCL.Core {
         q.b1 = z1;
 
         long g = q.g0;
-        long r = q.r0;
+        //long r = q.r0;
         long b = q.b0;
         q.x0 = Math.Sqrt (3) * (g + b/2d);
         q.y0 = (-3/2d) * b;
         g = q.g1;
-        r = q.r1;
+        //r = q.r1;
         b = q.b1;
         q.x1 = Math.Sqrt (3) * (g + b/2d);
         q.y1 = (-3/2d) * b;
@@ -861,7 +861,7 @@ namespace RCL.Core {
           m_start0.Put (x0, y0, z0, q);
         }
         else {
-          Quantum s1 = m_start1.Get (x0, y0, z0);
+          //Quantum s1 = m_start1.Get (x0, y0, z0);
           m_start1.Put (x0, y0, z0, q);
         }
       }

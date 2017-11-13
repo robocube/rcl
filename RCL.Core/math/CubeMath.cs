@@ -154,14 +154,14 @@ namespace RCL.Core
                 m_overloads.Add (key, new Overload (vectorop, primop));
               }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
               throw;
             }
           }
         }
       }
-      catch (Exception ex)
+      catch (Exception)
       {
         throw;
       }
@@ -1464,7 +1464,7 @@ namespace RCL.Core
           }
         }
       }
-      catch (Exception ex)
+      catch (Exception)
       {
         throw;
       }

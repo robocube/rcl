@@ -654,7 +654,9 @@ namespace RCL.Kernel
       }
       lock (fiber.m_fiberLock)
       {
-        fiber.m_fiberResults.TryGetValue (0, out m_result);
+        RCValue finalResult;
+        fiber.m_fiberResults.TryGetValue (0, out finalResult);
+        m_result = finalResult;
       }
       if (m_result == null)
       {

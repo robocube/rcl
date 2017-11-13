@@ -48,7 +48,7 @@ namespace RCL.Test
       {
         runner.Reset ();
         RCValue program = runner.Read (code);
-        RCValue result = runner.Run (program);
+        runner.Run (program);
         Assert.Fail ("No exception thrown.");
       }
       catch (RCException ex)

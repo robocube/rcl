@@ -431,7 +431,7 @@ namespace RCL.Core
       {
         DoHttpSend (runner, closure, left, right);
       }
-      catch (Exception ex)
+      catch (Exception)
       {
         throw;
       }
@@ -446,7 +446,7 @@ namespace RCL.Core
         //Maybe we should send multiple here?
         DoHttpSend (runner, closure, left, right[0]);
       }
-      catch (Exception ex)
+      catch (Exception)
       {
         throw;
       }
@@ -461,7 +461,7 @@ namespace RCL.Core
         //Maybe we should send multiple here?
         DoHttpSend (runner, closure, left, right.ToArray ());
       }
-      catch (Exception ex)
+      catch (Exception)
       {
         throw;
       }

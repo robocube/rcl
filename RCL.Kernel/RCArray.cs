@@ -307,39 +307,39 @@ namespace RCL.Kernel
     {
       return Array.IndexOf (m_source, val) > -1;
     }
+  }
 
-    public class RCArrayEnumerator<T> : IEnumerator<T>
+  public class RCArrayEnumerator<T> : IEnumerator<T>
+  {
+    protected int i = -1;
+    protected RCArray<T> m_array;
+
+    public RCArrayEnumerator (RCArray<T> array)
     {
-      protected int i = -1;
-      protected RCArray<T> m_array;
-  
-      public RCArrayEnumerator (RCArray<T> array)
-      {
-        m_array = array;
-      }
-  
-      public T Current
-      {
-        get { return m_array[i]; }
-      }
-  
-      public void Dispose () { }
-  
-      object System.Collections.IEnumerator.Current
-      {
-        get { return m_array[i]; }
-      }
-  
-      public bool MoveNext ()
-      {
-        ++i;
-        return i < m_array.Count;
-      }
-  
-      public void Reset ()
-      {
-        i = -1;
-      }
+      m_array = array;
+    }
+
+    public T Current
+    {
+      get { return (T) m_array[i]; }
+    }
+
+    public void Dispose () { }
+
+    object System.Collections.IEnumerator.Current
+    {
+      get { return m_array[i]; }
+    }
+
+    public bool MoveNext ()
+    {
+      ++i;
+      return i < m_array.Count;
+    }
+
+    public void Reset ()
+    {
+      i = -1;
     }
   }
 }

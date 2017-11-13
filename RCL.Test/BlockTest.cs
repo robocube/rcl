@@ -170,7 +170,7 @@ namespace RCL.Test
       RCBlock obj = val as RCBlock;
       Assert.IsNotNull (obj, "result is not an RCObject");
       //Currency vector
-      RCVector<double> ccyv = obj.Get ("ccy") as RCVector<double>;
+      //RCVector<double> ccyv = obj.Get ("ccy") as RCVector<double>;
       Assert.AreEqual (new RCDouble (1001, 2004, 3003), obj.Get ("ccy"));
       Assert.AreEqual ("1001.0 2004.0 3003.0", obj.Get ("ccy").ToString ());
     }

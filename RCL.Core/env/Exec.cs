@@ -560,6 +560,13 @@ namespace RCL.Core
               {
                 throw new NotImplementedException ();
                 //start checking each time from checked lines.
+                //I can't really remember what this code was going to do.
+                //It has to do with using a termChar other than newline.
+                //I think it will come into play when we want more interaction
+                //with a process via readx. At present we write input to these
+                //processes only once.
+                //Commenting this code for now to fix the warning.
+                /*
                 for (int i = m_checkedLines[termChar]; i < m_result.Count; ++i)
                 {
                   int termPos = m_result[i].IndexOf (termChar);
@@ -577,6 +584,7 @@ namespace RCL.Core
                   }
                   ++m_checkedLines[termChar];
                 }
+                */
               }
             }
           }

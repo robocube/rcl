@@ -110,7 +110,7 @@ public class Fiber : RCOperator
     {
       runner.Kill (closure, right);
     }
-    catch (Exception ex)
+    catch (Exception)
     {
       throw;
     }

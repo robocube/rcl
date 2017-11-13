@@ -69,9 +69,9 @@ namespace RCL.Core
       id = new RCSymbolScalar (id, cid);
 
       StringBuilder address = new StringBuilder ();
-      HttpVerb verb = (HttpVerb) Enum.Parse (
-        typeof(HttpVerb),
-        ((RCSymbol) message.Get ("verb"))[0].Part (0).ToString ());
+      //HttpVerb verb = (HttpVerb) Enum.Parse (
+      //  typeof(HttpVerb),
+      //  ((RCSymbol) message.Get ("verb"))[0].Part (0).ToString ());
       object[] resource = ((RCSymbol) message.Get ("resource"))[0].ToArray ();
 
       address.Append ("http://");

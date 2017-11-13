@@ -329,8 +329,9 @@ namespace RCL.Kernel
                                               0, "");
             runner.Yield (closure, result);
           }
-          catch (Exception ex)
+          catch (Exception)
           {
+            //Maybe we should fold the original exception into the output here?
             RCException rcex = new RCException (closure,
                                                 RCErrors.Native,
                                                 "An exception was thrown by the template.");

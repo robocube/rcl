@@ -139,7 +139,7 @@ namespace RCL.Core
               throw new Exception ("dispatch table already contains the key:" + key);
             m_overloads.Add (key, new Overload (vectorop, primop));
             }
-            catch (Exception ex)
+            catch (Exception)
             {
               throw;
             }

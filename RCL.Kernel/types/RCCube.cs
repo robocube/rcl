@@ -200,7 +200,7 @@ namespace RCL.Kernel
         visitor.VisitNull<object> (name, this, i);
       }
 
-      public bool Last (RCSymbolScalar key, out object val)
+      public new bool Last (RCSymbolScalar key, out object val)
       {
         val = null;
         return false;
@@ -220,7 +220,7 @@ namespace RCL.Kernel
       public override object BoxCell (int i) { return null; }
       public override object Array { get { return m_data; } }
       public override RCArray<int> Index { get { return m_index; } }
-      public RCArray<object> Data { get { return m_data; } }
+      public new RCArray<object> Data { get { return m_data; } }
       public override int Count { get { return m_data.Count; } }
     }
     

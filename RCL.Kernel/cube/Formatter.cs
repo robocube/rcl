@@ -354,17 +354,6 @@ namespace RCL.Kernel
       int rows = m_columns[0].Count;
       for (int row = 0; row < rows; ++row)
       {
-        string outRow;
-        if (useGRows)
-        {
-          //A wee bit of ugliness.
-          string full = m_columns[0][row];
-          outRow = full.Substring (0, full.Length - 1);
-        }
-        else
-        {
-          outRow = row.ToString ();
-        }
         for (int i = 0; i < m_level; ++i)
         {
           m_builder.Append (m_args.Indent);

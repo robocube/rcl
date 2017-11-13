@@ -32,8 +32,7 @@ namespace RCL.Kernel
                                          Column<T> column, int row)
     {
       RCSymbolScalar scalar = m_source.Axis.Symbol[column.Index[row]];
-      RCSymbolScalar result = m_target.WriteCell (
-                                                  name, scalar, column.Data[row], column.Index[row], true, true);
+      m_target.WriteCell (name, scalar, column.Data[row], column.Index[row], true, true);
     }
 
     public override void VisitNull<T> (string name,
