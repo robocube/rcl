@@ -14,6 +14,7 @@ namespace RCL.Kernel
       types.Write (RCTokenType.EndOfLine);
       types.Write (RCTokenType.MarkdownLinkToken);
       types.Write (RCTokenType.MarkdownLiteralLinkToken);
+      types.Write (RCTokenType.MarkdownHeaderToken);
       types.Write (RCTokenType.MarkdownContentToken);
       types.Write (RCTokenType.MarkdownBeginBoldToken);
       types.Write (RCTokenType.MarkdownEndBoldToken);
@@ -228,6 +229,32 @@ namespace RCL.Kernel
       RCBlock textBlock = new RCBlock ("", ":", new RCString (linkText));
       m_value = new RCBlock (RCBlock.Empty, "text", ":", textBlock);
       m_value = new RCBlock (m_value, "href", ":", new RCString (linkText));
+      EndBlock ();
+    }
+
+    public override void AcceptMarkdownHeader (RCToken token)
+    {
+      int space = token.Text.IndexOf (' ');
+      int headerTextStart = space + 1;
+      int headerTextLength = token.Text.TrimEnd ().Length - headerTextStart;
+      string headerText = token.Text.Substring (headerTextStart, headerTextLength);
+      int headerLevel = 0;
+      while (token.Text[headerLevel] == '#')
+      {
+        ++headerLevel;
+      }
+      //Yes, headers can have em and strong applied, joy.
+      RCArray<RCToken> headerTokens = new RCArray<RCToken> ();
+      m_markdownLexer.Lex (headerText, headerTokens);
+      AppendRun ();
+      MarkdownParser headerParser = new MarkdownParser ();
+      headerParser.m_state = MarkdownState.Link;
+      bool fragment;
+      RCBlock text = (RCBlock) headerParser.Parse (headerTokens, out fragment);
+      Console.Out.WriteLine ("Reentry result: " + text.ToString ());
+      m_name = "h" + headerLevel.ToString ();
+      StartBlock ();
+      m_value = text;
       EndBlock ();
     }
 

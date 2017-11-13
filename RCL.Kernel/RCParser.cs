@@ -60,5 +60,6 @@ namespace RCL.Kernel
     public virtual void AcceptMarkdownEndItalic (RCToken token) {}
     public virtual void AcceptMarkdownLink (RCToken token) {}
     public virtual void AcceptMarkdownLiteralLink (RCToken token) {}
+    public virtual void AcceptMarkdownHeader (RCToken token) {}
   }
 }
