@@ -144,6 +144,7 @@ namespace RCL.Kernel
     public static readonly RCTokenType MarkdownBeginBoldToken = new MarkdownBeginBoldToken ();
     public static readonly RCTokenType MarkdownEndBoldToken = new MarkdownEndBoldToken ();
     public static readonly RCTokenType MarkdownLinkToken = new MarkdownLinkToken ();
+    public static readonly RCTokenType MarkdownLiteralLinkToken = new MarkdownLiteralLinkToken ();
 
     /*
     public static readonly RCTokenType MarkdownH1Token = new MarkdownH1Token ();

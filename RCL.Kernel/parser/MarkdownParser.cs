@@ -13,6 +13,7 @@ namespace RCL.Kernel
       RCArray<RCTokenType> types = new RCArray<RCTokenType> ();
       types.Write (RCTokenType.EndOfLine);
       types.Write (RCTokenType.MarkdownLinkToken);
+      types.Write (RCTokenType.MarkdownLiteralLinkToken);
       types.Write (RCTokenType.MarkdownContentToken);
       types.Write (RCTokenType.MarkdownBeginBoldToken);
       types.Write (RCTokenType.MarkdownEndBoldToken);
@@ -174,7 +175,7 @@ namespace RCL.Kernel
       int openBracket = token.Text.IndexOf ('[');
       int closingBracket = token.Text.IndexOf (']');
       int linkTextStart = openBracket + 1;
-      int linkTextLength = closingBracket - (openBracket + 1);
+      int linkTextLength = closingBracket - linkTextStart;
       string linkText = token.Text.Substring (linkTextStart, linkTextLength);
       Console.Out.WriteLine ("Link Text: '{0}'", linkText);
       int openingParen = closingBracket + 1;
@@ -207,6 +208,27 @@ namespace RCL.Kernel
         EndBlock ();
       }
       else throw new Exception ("Cannot parse link: " + token.Text);
+    }
+
+    public override void AcceptMarkdownLiteralLink (RCToken token)
+    {
+      if (m_state == MarkdownState.None)
+      {
+        m_name = "p";
+        StartBlock ();
+      }
+      m_state = MarkdownState.Link;
+      int openBracket = 0;
+      int closeBracket = token.Text.Length - 1;
+      int linkTextStart = openBracket + 1;
+      int linkTextLength = closeBracket - linkTextStart;
+      string linkText = token.Text.Substring (linkTextStart, linkTextLength);
+      m_name = "a";
+      StartBlock ();
+      RCBlock textBlock = new RCBlock ("", ":", new RCString (linkText));
+      m_value = new RCBlock (RCBlock.Empty, "text", ":", textBlock);
+      m_value = new RCBlock (m_value, "href", ":", new RCString (linkText));
+      EndBlock ();
     }
 
     protected void StartBlock ()
