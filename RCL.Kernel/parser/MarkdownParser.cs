@@ -53,9 +53,9 @@ namespace RCL.Kernel
       {
         EndBlock ();
       }
-      if (m_run.Length > 0 && m_value == null)
+      if (m_run.Length > 0) //&& m_value == null)
       {
-        return new RCBlock (null, "", ":", new RCString (m_run.ToString ()));
+        return new RCBlock (m_value, "", ":", new RCString (m_run.ToString ()));
       }
       return m_value;
     }
@@ -120,8 +120,9 @@ namespace RCL.Kernel
 
     public override void AcceptMarkdownBeginBold (RCToken token)
     {
-      //Console.Out.WriteLine ("AcceptMarkdownBeginBold: '{0}'", token.Text);
-      m_value = new RCBlock (m_value, "", ":", new RCString (m_run.ToString ()));
+      Console.Out.WriteLine ("AcceptMarkdownBeginBold: '{0}'", token.Text);
+      //m_value = new RCBlock (m_value, "", ":", new RCString (m_run.ToString ()));
+      AppendRun ();
       m_name = "strong";
       StartBlock ();
       m_name = "";
@@ -130,14 +131,15 @@ namespace RCL.Kernel
 
     public override void AcceptMarkdownEndBold (RCToken token)
     {
-      //Console.Out.WriteLine ("AcceptMarkdownEndBold: '{0}'", token.Text);
+      Console.Out.WriteLine ("AcceptMarkdownEndBold: '{0}'", token.Text);
       EndBlock ();
     }
 
     public override void AcceptMarkdownBeginItalic (RCToken token)
     {
-      //Console.Out.WriteLine ("AcceptMarkdownBeginItalic: '{0}'", token.Text);
-      m_value = new RCBlock (m_value, "", ":", new RCString (m_run.ToString ()));
+      Console.Out.WriteLine ("AcceptMarkdownBeginItalic: '{0}'", token.Text);
+      //m_value = new RCBlock (m_value, "", ":", new RCString (m_run.ToString ()));
+      AppendRun ();
       m_name = "em";
       StartBlock ();
       m_name = "";
@@ -146,7 +148,7 @@ namespace RCL.Kernel
 
     public override void AcceptMarkdownEndItalic (RCToken token)
     {
-      //Console.Out.WriteLine ("AcceptMarkdownEndItalic: '{0}'", token.Text);
+      Console.Out.WriteLine ("AcceptMarkdownEndItalic: '{0}'", token.Text);
       EndBlock ();
     }
 
@@ -181,52 +183,6 @@ namespace RCL.Kernel
       m_value = new RCBlock (m_value, "href", ":", new RCString (href));
       EndBlock ();
     }
-
-    /*
-    public override void AcceptCube (RCToken token)
-    {
-      Console.Out.WriteLine ("AcceptCube: '{0}'", token.Text);
-      if (token.Text == "[")
-      {
-        m_value = new RCBlock (m_value, "", ":", new RCString (m_run.ToString ()));
-        m_name = "a";
-        StartBlock ();
-        m_name = "text";
-        m_value = RCBlock.Empty;
-        StartBlock ();
-        m_value = RCBlock.Empty;
-      }
-      else if (token.Text == "]")
-      {
-        m_value = new RCBlock (m_value, "", ":", new RCString (m_run.ToString ()));
-        EndBlock ();
-        StartBlock ();
-        m_name = "href";
-        m_value = RCBlock.Empty;
-      }
-    }
-
-    public override void AcceptParen (RCToken token)
-    {
-      Console.Out.WriteLine ("AcceptParen: '{0}'", token.Text);
-      if (token.Text == "(")
-      {
-        m_value = new RCBlock (m_value, "", ":", new RCString (m_run.ToString ()));
-        m_name = "a";
-        StartBlock ();
-        m_name = "";
-        m_value = RCBlock.Empty;
-      }
-      else if (token.Text == ")")
-      {
-        m_value = new RCBlock (m_value, "", ":", new RCString (m_run.ToString ()));
-        m_name = "text";
-        StartBlock ();
-        m_name = "";
-        m_value = RCBlock.Empty;
-      }
-    }
-    */
 
     protected void StartBlock ()
     {
