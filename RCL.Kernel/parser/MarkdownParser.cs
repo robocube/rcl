@@ -57,6 +57,10 @@ namespace RCL.Kernel
       {
         return new RCBlock (m_value, "", ":", new RCString (m_run.ToString ()));
       }
+      else if (m_state == MarkdownState.Link && m_value == null)
+      {
+        m_value = new RCBlock (null, "", ":", new RCString (""));
+      }
       return m_value;
     }
 
@@ -160,9 +164,18 @@ namespace RCL.Kernel
       {
         m_run.Append (" ");
       }
+      else if (m_state == MarkdownState.None)
+      {
+        m_name = "p";
+        StartBlock ();
+      }
       m_state = MarkdownState.Link;
+      //[ will be at 1 in the case of ! img syntax
+      int openBracket = token.Text.IndexOf ('[');
       int closingBracket = token.Text.IndexOf (']');
-      string linkText = token.Text.Substring (1, closingBracket - 1);
+      int linkTextStart = openBracket + 1;
+      int linkTextLength = closingBracket - (openBracket + 1);
+      string linkText = token.Text.Substring (linkTextStart, linkTextLength);
       Console.Out.WriteLine ("Link Text: '{0}'", linkText);
       int openingParen = closingBracket + 1;
       int closingParen = token.Text.IndexOf (')', openingParen);
@@ -177,11 +190,23 @@ namespace RCL.Kernel
       linkParser.m_state = MarkdownState.Link;
       RCBlock text = (RCBlock) linkParser.Parse (textTokens, out fragment);
       Console.Out.WriteLine ("Reentry result: " + text.ToString ());
-      m_name = "a";
-      StartBlock ();
-      m_value = new RCBlock (RCBlock.Empty, "text", ":", text);
-      m_value = new RCBlock (m_value, "href", ":", new RCString (href));
-      EndBlock ();
+      if (token.Text[0] == '[')
+      {
+        m_name = "a";
+        StartBlock ();
+        m_value = new RCBlock (RCBlock.Empty, "text", ":", text);
+        m_value = new RCBlock (m_value, "href", ":", new RCString (href));
+        EndBlock ();
+      }
+      else if (token.Text[0] == '!')
+      {
+        m_name = "img";
+        StartBlock ();
+        m_value = new RCBlock (RCBlock.Empty, "src", ":", new RCString (href));
+        m_value = new RCBlock (m_value, "alt", ":", text);
+        EndBlock ();
+      }
+      else throw new Exception ("Cannot parse link: " + token.Text);
     }
 
     protected void StartBlock ()

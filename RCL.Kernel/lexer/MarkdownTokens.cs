@@ -169,6 +169,7 @@ namespace RCL.Kernel
                                            RCToken previous)
     {
       int current = start;
+      if (code[current] == '!') ++current;
       if (code[current] != '[') return null;
       for (; current < code.Length; ++current)
       {
