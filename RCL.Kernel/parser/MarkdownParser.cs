@@ -15,6 +15,7 @@ namespace RCL.Kernel
       types.Write (RCTokenType.MarkdownLinkToken);
       types.Write (RCTokenType.MarkdownLiteralLinkToken);
       types.Write (RCTokenType.MarkdownHeaderToken);
+      types.Write (RCTokenType.MarkdownBlockquoteToken);
       types.Write (RCTokenType.MarkdownContentToken);
       types.Write (RCTokenType.MarkdownBeginBoldToken);
       types.Write (RCTokenType.MarkdownEndBoldToken);
@@ -41,7 +42,8 @@ namespace RCL.Kernel
       Link,
       Paragraph,
       MaybeBR,
-      Newline1
+      Newline1,
+      Blockquote
     }
 
     public override RCValue Parse (RCArray<RCToken> tokens, out bool fragment)
@@ -51,13 +53,20 @@ namespace RCL.Kernel
         tokens[i].Type.Accept (this, tokens[i]);
       }
       fragment = false;
-      if (m_values.Count > 0)
+
+      Console.Out.WriteLine ("Done parsing. Doing cleanup");
+      if (m_quoteRun.Length > 0)
+      {
+        m_value = ParseEmbeddedRun (m_quoteRun.ToString ());
+      }
+      while (m_values.Count > 0)
       {
         EndBlock ();
       }
+      
       if (m_run.Length > 0) //&& m_value == null)
       {
-        return new RCBlock (m_value, "", ":", new RCString (m_run.ToString ()));
+        m_value = new RCBlock (m_value, "", ":", new RCString (m_run.ToString ()));
       }
       else if (m_state == MarkdownState.Link && m_value == null)
       {
@@ -80,28 +89,35 @@ namespace RCL.Kernel
         m_value = RCBlock.Empty;
       }
       
+      UpdateTextRun (m_run, token.Text);
+    }
+
+    protected void UpdateTextRun (StringBuilder run, string text)
+    {
       if (m_state == MarkdownState.Paragraph ||
+          m_state == MarkdownState.Link ||
           m_state == MarkdownState.MaybeBR)
       {
-        if (token.Text.EndsWith ("  "))
+        if (text.EndsWith ("  "))
         {
+          Console.Out.WriteLine ("Two spaces... MaybeBR?");
           m_state = MarkdownState.MaybeBR;
         }
         else
         {
           m_state = MarkdownState.Paragraph;
         }
-        m_run.Append (token.Text);
+        run.Append (text);
       }
       else if (m_state == MarkdownState.Newline1)
       {
-        m_run.Append (" ");
-        m_run.Append (token.Text);
+        run.Append (" ");
+        run.Append (text);
         m_state = MarkdownState.Paragraph;
       }
       else
       {
-        m_run.Append (token.Text);
+        run.Append (text);
       }
     }
 
@@ -115,8 +131,17 @@ namespace RCL.Kernel
       }
       else if (m_state == MarkdownState.MaybeBR)
       {
-        m_run.Remove (m_run.Length - 2, 2);
-        m_run.AppendLine ();
+        if (m_quoteRun.Length > 0)
+        {
+          Console.Out.WriteLine ("Inserting a newline");
+          m_quoteRun.AppendLine ();
+        }
+        if (m_run.Length >= 2)
+        {
+          Console.Out.WriteLine ("Removing last two spaces");
+          m_run.Remove (m_run.Length - 2, 2);
+          m_run.AppendLine ();
+        }
       }
       else
       {
@@ -127,7 +152,6 @@ namespace RCL.Kernel
     public override void AcceptMarkdownBeginBold (RCToken token)
     {
       Console.Out.WriteLine ("AcceptMarkdownBeginBold: '{0}'", token.Text);
-      //m_value = new RCBlock (m_value, "", ":", new RCString (m_run.ToString ()));
       AppendRun ();
       m_name = "strong";
       StartBlock ();
@@ -144,7 +168,6 @@ namespace RCL.Kernel
     public override void AcceptMarkdownBeginItalic (RCToken token)
     {
       Console.Out.WriteLine ("AcceptMarkdownBeginItalic: '{0}'", token.Text);
-      //m_value = new RCBlock (m_value, "", ":", new RCString (m_run.ToString ()));
       AppendRun ();
       m_name = "em";
       StartBlock ();
@@ -184,14 +207,8 @@ namespace RCL.Kernel
       int firstChar = openingParen + 1;
       string href = token.Text.Substring (firstChar, closingParen - firstChar);
       Console.Out.WriteLine ("Href Text: '{0}'", href);
-      RCArray<RCToken> textTokens = new RCArray<RCToken> ();
-      m_markdownLexer.Lex (linkText, textTokens);
-      bool fragment;
       AppendRun ();
-      MarkdownParser linkParser = new MarkdownParser ();
-      linkParser.m_state = MarkdownState.Link;
-      RCBlock text = (RCBlock) linkParser.Parse (textTokens, out fragment);
-      Console.Out.WriteLine ("Reentry result: " + text.ToString ());
+      RCBlock text = ParseEmbeddedRun (linkText);
       if (token.Text[0] == '[')
       {
         m_name = "a";
@@ -243,19 +260,90 @@ namespace RCL.Kernel
       {
         ++headerLevel;
       }
-      //Yes, headers can have em and strong applied, joy.
-      RCArray<RCToken> headerTokens = new RCArray<RCToken> ();
-      m_markdownLexer.Lex (headerText, headerTokens);
       AppendRun ();
-      MarkdownParser headerParser = new MarkdownParser ();
-      headerParser.m_state = MarkdownState.Link;
-      bool fragment;
-      RCBlock text = (RCBlock) headerParser.Parse (headerTokens, out fragment);
-      Console.Out.WriteLine ("Reentry result: " + text.ToString ());
+      RCBlock text = ParseEmbeddedRun (headerText);
       m_name = "h" + headerLevel.ToString ();
       StartBlock ();
       m_value = text;
       EndBlock ();
+    }
+
+    protected int m_quoteLevel = 0;
+    protected StringBuilder m_quoteRun = new StringBuilder ();
+    public override void AcceptMarkdownBlockquote (RCToken token)
+    {
+      Console.Out.WriteLine ("AcceptMarkdownBlockquote: '{0}'", token.Text);
+      Console.Out.WriteLine ("m_state: " + m_state);
+      int firstContent = -1;
+      int quoteLevel = 0;
+      for (int current = 0; current < token.Text.Length; ++current)
+      {
+        if (token.Text[current] != ' ' && token.Text[current] != '>')
+        {
+          firstContent = current;
+          break;
+        }
+        if (token.Text[current] == '>')
+        {
+          ++quoteLevel;
+        }
+      }
+      if (firstContent < 0)
+      {
+        //It's a blank line - nothing to do
+        return;
+      }
+      int contentLength = token.Text.Length - firstContent;
+      string text = token.Text.Substring (firstContent, contentLength);
+      int levels = quoteLevel - m_quoteLevel;
+      for (int level = 0; level < levels; ++level)
+      {
+        m_state = MarkdownState.Paragraph;
+        m_name = "blockquote";
+        StartBlock ();
+        m_name = "p";
+        StartBlock ();
+      }
+
+      if (quoteLevel > m_quoteLevel)
+      {
+        Console.Out.WriteLine ("quoteLevel increased");
+        if (m_quoteRun.Length > 0)
+        {
+          m_value = ParseEmbeddedRun (m_quoteRun.ToString ());
+          m_quoteRun.Clear ();
+          EndBlock ();
+          EndBlock ();
+        }
+      }
+      else if (quoteLevel < m_quoteLevel)
+      {
+        Console.Out.WriteLine ("quoteLevel decreased");
+        m_value = ParseEmbeddedRun (m_quoteRun.ToString ());
+        m_quoteRun.Clear ();
+        EndBlock ();
+        m_name = "blockquote";
+        StartBlock ();
+        m_name = "p";
+        StartBlock ();
+      }
+      UpdateTextRun (m_quoteRun, text);
+      m_quoteLevel = quoteLevel;
+    }
+
+    protected RCBlock ParseEmbeddedRun (string text)
+    {
+      Console.Out.WriteLine ("Parsing embedded text: '{0}'", text.ToString ());
+      RCArray<RCToken> tokens = new RCArray<RCToken> ();
+      m_lexer.Lex (text, tokens);
+      //Don't forget to move this above the call
+      //AppendRun ();
+      MarkdownParser parser = new MarkdownParser ();
+      parser.m_state = MarkdownState.Link;
+      bool fragment;
+      RCBlock result = (RCBlock) parser.Parse (tokens, out fragment);
+      Console.Out.WriteLine ("Reentry result: " + result.ToString ());
+      return result;
     }
 
     protected void StartBlock ()

@@ -146,25 +146,7 @@ namespace RCL.Kernel
     public static readonly RCTokenType MarkdownLinkToken = new MarkdownLinkToken ();
     public static readonly RCTokenType MarkdownLiteralLinkToken = new MarkdownLiteralLinkToken ();
     public static readonly RCTokenType MarkdownHeaderToken = new MarkdownHeaderToken ();
-
-    /*
-    public static readonly RCTokenType MarkdownH1Token = new MarkdownH1Token ();
-    public static readonly RCTokenType MarkdownH2Token = new MarkdownH2Token ();
-    public static readonly RCTokenType MarkdownH3Token = new MarkdownH3Token ();
-    public static readonly RCTokenType MarkdownH4Token = new MarkdownH4Token ();
-    public static readonly RCTokenType MarkdownH5Token = new MarkdownH5Token ();
-    public static readonly RCTokenType MarkdownH6Token = new MarkdownH6Token ();
-    public static readonly RCTokenType MarkdownBeginOLToken = new MarkdownBeginOLToken ();
-    public static readonly RCTokenType MarkdownEndOLToken = new MarkdownEndOLToken ();
-    public static readonly RCTokenType MarkdownBeginULToken = new MarkdownBeginULToken ();
-    public static readonly RCTokenType MarkdownEndULToken = new MarkdownEndULToken ();
-    public static readonly RCTokenType MarkdownBeginLIToken = new MarkdownBeginLIToken ();
-    public static readonly RCTokenType MarkdownEndLIToken = new MarkdownEndLIToken ();
-    public static readonly RCTokenType MarkdownHRToken = new MarkdownHRToken ();
-    public static readonly RCTokenType MarkdownBRToken = new MarkdownBRToken ();
-    public static readonly RCTokenType MarkdownCodeBlockToken = new MarkdownCodeBlockToken ();
-    public static readonly RCTokenType MarkdownImageToken = new MarkdownImageToken ();
-    */
+    public static readonly RCTokenType MarkdownBlockquoteToken = new MarkdownBlockquoteToken ();
 
     /// <summary>
     /// Is this the right spot for a visitor? not really sure...
