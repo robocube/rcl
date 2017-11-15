@@ -274,6 +274,7 @@ namespace RCL.Kernel
     {
       Console.Out.WriteLine ("AcceptMarkdownBlockquote: '{0}'", token.Text);
       Console.Out.WriteLine ("m_state: " + m_state);
+      ShowStack ();
       int firstContent = -1;
       int quoteLevel = 0;
       for (int current = 0; current < token.Text.Length; ++current)
@@ -295,35 +296,37 @@ namespace RCL.Kernel
       }
       int contentLength = token.Text.Length - firstContent;
       string text = token.Text.Substring (firstContent, contentLength);
-      int levels = quoteLevel - m_quoteLevel;
-      for (int level = 0; level < levels; ++level)
-      {
-        m_state = MarkdownState.Paragraph;
-        m_name = "blockquote";
-        StartBlock ();
-        m_name = "p";
-        StartBlock ();
-      }
 
       if (quoteLevel > m_quoteLevel)
       {
-        Console.Out.WriteLine ("quoteLevel increased");
+        Console.Out.WriteLine ("quoteLevel increased to " + quoteLevel);
         if (m_quoteRun.Length > 0)
         {
           m_value = ParseEmbeddedRun (m_quoteRun.ToString ());
           m_quoteRun.Clear ();
-          EndBlock ();
-          EndBlock ();
+          EndBlock (); //p
+          //EndBlock (); //blockquote
         }
+        int levels = quoteLevel - m_quoteLevel;
+        for (int level = 0; level < levels; ++level)
+        {
+          m_state = MarkdownState.Paragraph;
+          m_name = "blockquote";
+          StartBlock ();
+        }
+        m_name = "p";
+        StartBlock ();
       }
       else if (quoteLevel < m_quoteLevel)
       {
-        Console.Out.WriteLine ("quoteLevel decreased");
-        m_value = ParseEmbeddedRun (m_quoteRun.ToString ());
-        m_quoteRun.Clear ();
-        EndBlock ();
-        m_name = "blockquote";
-        StartBlock ();
+        Console.Out.WriteLine ("quoteLevel decreased to " + quoteLevel);
+        if (m_quoteRun.Length > 0)
+        {
+          m_value = ParseEmbeddedRun (m_quoteRun.ToString ());
+          m_quoteRun.Clear ();
+          EndBlock (); //p
+          EndBlock (); //blockquote
+        }
         m_name = "p";
         StartBlock ();
       }
@@ -333,17 +336,26 @@ namespace RCL.Kernel
 
     protected RCBlock ParseEmbeddedRun (string text)
     {
-      Console.Out.WriteLine ("Parsing embedded text: '{0}'", text.ToString ());
+      //Console.Out.WriteLine ("Reentry text: '{0}'", text.ToString ());
       RCArray<RCToken> tokens = new RCArray<RCToken> ();
       m_lexer.Lex (text, tokens);
-      //Don't forget to move this above the call
-      //AppendRun ();
       MarkdownParser parser = new MarkdownParser ();
       parser.m_state = MarkdownState.Link;
       bool fragment;
       RCBlock result = (RCBlock) parser.Parse (tokens, out fragment);
-      Console.Out.WriteLine ("Reentry result: " + result.ToString ());
+      //Console.Out.WriteLine ("Reentry result: '{0}'" + result.ToString ());
       return result;
+    }
+
+    protected void ShowStack ()
+    {
+      string[] names = m_names.ToArray ();
+      Console.Out.Write ("names: ");
+      for (int i = 0; i < names.Length; ++i)
+      {
+        Console.Out.Write ("{0} ", names[i]);
+      }
+      Console.Out.WriteLine ();
     }
 
     protected void StartBlock ()
@@ -356,8 +368,8 @@ namespace RCL.Kernel
       {
         m_name = "";
       }
-      Console.Out.WriteLine ("PUSH: m_name:{0} m_value:{1} m_state:{2}",
-                             m_name, m_value.ToString (), m_state);
+      Console.Out.WriteLine ("PUSH: m_name:{0} m_state:{2}\nm_value:{1}",
+                             m_name, m_value.Format (RCFormat.Pretty), m_state);
       m_values.Push (m_value);
       m_names.Push (m_name);
       m_states.Push (m_state);
@@ -376,8 +388,8 @@ namespace RCL.Kernel
         m_value = m_values.Pop ();
         m_state = m_states.Pop ();
         m_value = new RCBlock (m_value, m_name, ":", child);
-        Console.Out.WriteLine ("POP: m_name:{0} m_value:{1} m_state:{2}",
-                               m_name, m_value.ToString (), m_state);
+        Console.Out.WriteLine ("POP: m_name:{0} m_state:{2}\nm_value:{1}",
+                               m_name, m_value.Format (RCFormat.Pretty), m_state);
         m_name = "";
       }
     }
