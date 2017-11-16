@@ -199,15 +199,12 @@ namespace RCL.Kernel
     {
       Console.Out.WriteLine ("AcceptMarkdownLink: '{0}'", token.Text);
       Console.Out.WriteLine ("m_state: " + m_state);
-      if (m_state == MarkdownState.Newline1)
-      {
-        m_run.Append (" ");
-      }
-      else if (m_state == MarkdownState.None || m_state == MarkdownState.Blockquote)
+      if (m_state == MarkdownState.None || m_state == MarkdownState.Blockquote)
       {
         m_name = "p";
         StartBlock ();
       }
+      FinishRuns (false);
       m_state = MarkdownState.Link;
       //[ will be at 1 in the case of ! img syntax
       int openBracket = token.Text.IndexOf ('[');
@@ -245,6 +242,8 @@ namespace RCL.Kernel
 
     public override void AcceptMarkdownLiteralLink (RCToken token)
     {
+      //Do not break out of a p for a link
+      FinishRuns (false);
       if (m_state == MarkdownState.None)
       {
         m_name = "p";
@@ -266,6 +265,9 @@ namespace RCL.Kernel
 
     public override void AcceptMarkdownHeader (RCToken token)
     {
+      Console.Out.WriteLine ("AcceptMarkdownHeader({0}): '{1}'", m_state, token.Text);
+      //Do break out of a p for a header
+      FinishRuns (true);
       int space = token.Text.IndexOf (' ');
       int headerTextStart = space + 1;
       int headerTextLength = token.Text.TrimEnd ().Length - headerTextStart;
@@ -335,6 +337,26 @@ namespace RCL.Kernel
       m_quoteLevel = quoteLevel;
     }
 
+    protected void FinishRuns (bool endBlock)
+    {
+      if (m_run.Length > 0)
+      {
+        if (!endBlock && m_state == MarkdownState.Newline1)
+        {
+          m_run.Append (" ");
+        }
+        AppendRun ();
+        if (endBlock)
+        {
+          EndBlock ();
+        }
+      }
+      if (m_quoteRun.Length > 0)
+      {
+        FinishQuote (true);
+      }
+    }
+
     protected void FinishQuote (bool endBlock)
     {
       if (m_quoteRun.Length > 0)
@@ -367,7 +389,7 @@ namespace RCL.Kernel
                                         out bool reentered)
     {
       m_reentered = true;
-      //Console.Out.WriteLine ("Reentry text: '{0}'", text.ToString ());
+      Console.Out.WriteLine ("Reentry text: '{0}'", text.ToString ());
       RCArray<RCToken> tokens = new RCArray<RCToken> ();
       m_lexer.Lex (text, tokens);
       MarkdownParser parser = new MarkdownParser ();
