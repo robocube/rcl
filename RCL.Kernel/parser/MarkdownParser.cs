@@ -78,7 +78,8 @@ namespace RCL.Kernel
     public override void AcceptMarkdownContent (RCToken token) 
     {
       Console.Out.WriteLine ("AcceptMarkdownContent({0}): '{1}'", m_state, token.Text);
-      if (m_state == MarkdownState.None)
+      if (m_values.Count == 0 && m_run.Length == 0 &&
+          (m_state == MarkdownState.None || m_state == MarkdownState.Newline1))
       {
         m_state = MarkdownState.Paragraph;
         m_name = "p";
@@ -131,6 +132,7 @@ namespace RCL.Kernel
         if (m_quoteRun.Length > 0)
         {
           FinishQuote (true);
+          EndBlock ();
           m_quoteLevel = 0;
         }
         else
