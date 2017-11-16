@@ -203,7 +203,7 @@ namespace RCL.Kernel
       {
         m_run.Append (" ");
       }
-      else if (m_state == MarkdownState.None)
+      else if (m_state == MarkdownState.None || m_state == MarkdownState.Blockquote)
       {
         m_name = "p";
         StartBlock ();
