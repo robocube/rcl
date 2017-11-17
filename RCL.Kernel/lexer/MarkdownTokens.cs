@@ -316,4 +316,64 @@ namespace RCL.Kernel
       get { return "MarkdownBlockquoteToken"; }
     }
   }
+
+  public class MarkdownULItemToken : RCTokenType
+  {
+    public override RCToken TryParseToken (string code,
+                                           int start,
+                                           int index,
+                                           RCToken previous)
+    {
+      int length = LengthOfKeyword (code, start, "* ");
+      if (length < 0) return null;
+      int current = start + length;
+      string text = code.Substring (start, current - start);
+      return new RCToken (text, this, start, index);
+    }
+    
+    public override void Accept (RCParser parser, RCToken token)
+    {
+      parser.AcceptMarkdownULItem (token);
+    }
+    
+    public override string TypeName
+    {
+      get { return "MarkdownULItem"; }
+    }
+  }
+
+  public class MarkdownOLItemToken : RCTokenType
+  {
+    public override RCToken TryParseToken (string code,
+                                           int start,
+                                           int index,
+                                           RCToken previous)
+    {
+      int current = start;
+      while (current < code.Length && code[current] >= '0' && code[current] <= '9')
+      {
+        ++current;
+      }
+      if (current > start && current < code.Length && code[current] == '.')
+      {
+        ++current;
+      }
+      if (current < code.Length && code[current] == ' ')
+      {
+        string text = code.Substring (start, current - start);
+        return new RCToken (text, this, start, index);
+      }
+      return null;
+    }
+    
+    public override void Accept (RCParser parser, RCToken token)
+    {
+      parser.AcceptMarkdownOLItem (token);
+    }
+    
+    public override string TypeName
+    {
+      get { return "MarkdownOLItem"; }
+    }
+  }
 }

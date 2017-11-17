@@ -16,11 +16,13 @@ namespace RCL.Kernel
       types.Write (RCTokenType.MarkdownLiteralLinkToken);
       types.Write (RCTokenType.MarkdownHeaderToken);
       types.Write (RCTokenType.MarkdownBlockquoteToken);
-      types.Write (RCTokenType.MarkdownContentToken);
       types.Write (RCTokenType.MarkdownBeginBoldToken);
       types.Write (RCTokenType.MarkdownEndBoldToken);
       types.Write (RCTokenType.MarkdownBeginItalicToken);
       types.Write (RCTokenType.MarkdownEndItalicToken);
+      types.Write (RCTokenType.MarkdownContentToken);
+      types.Write (RCTokenType.MarkdownOLItemToken);
+      types.Write (RCTokenType.MarkdownULItemToken);
       m_markdownLexer = new RCLexer (types);
     }
 
@@ -45,7 +47,8 @@ namespace RCL.Kernel
       Paragraph,
       MaybeBR,
       Newline1,
-      Blockquote
+      Blockquote,
+      ListItem
     }
 
     public override RCValue Parse (RCArray<RCToken> tokens, out bool fragment)
@@ -78,6 +81,7 @@ namespace RCL.Kernel
     public override void AcceptMarkdownContent (RCToken token) 
     {
       Console.Out.WriteLine ("AcceptMarkdownContent({0}): '{1}'", m_state, token.Text);
+      string text = token.Text;
       if (m_values.Count == 0 && m_run.Length == 0 &&
           (m_state == MarkdownState.None || m_state == MarkdownState.Newline1))
       {
@@ -86,8 +90,9 @@ namespace RCL.Kernel
         StartBlock ();
         m_name = "";
         m_value = RCBlock.Empty;
+        text = text.TrimStart ();
       }
-      UpdateTextRun (m_run, token.Text);
+      UpdateTextRun (m_run, text);
     }
 
     protected void UpdateTextRun (StringBuilder run, string text)
@@ -95,7 +100,8 @@ namespace RCL.Kernel
       if (m_state == MarkdownState.Paragraph ||
           m_state == MarkdownState.Link ||
           m_state == MarkdownState.Blockquote ||
-          m_state == MarkdownState.MaybeBR)
+          m_state == MarkdownState.MaybeBR ||
+          m_state == MarkdownState.ListItem)
       {
         if (text.EndsWith ("  "))
         {
@@ -110,6 +116,7 @@ namespace RCL.Kernel
       }
       else if (m_state == MarkdownState.Newline1)
       {
+        text = text.TrimStart ();
         run.Append (" ");
         run.Append (text);
         m_state = MarkdownState.Paragraph;
@@ -129,7 +136,11 @@ namespace RCL.Kernel
       }
       if (m_state == MarkdownState.Newline1)
       {
-        if (m_quoteRun.Length > 0)
+        if (m_parsingList)
+        {
+          return;
+        }
+        else if (m_quoteRun.Length > 0)
         {
           FinishQuote (true);
           EndBlock ();
@@ -284,6 +295,12 @@ namespace RCL.Kernel
       StartBlock ();
       m_value = text;
       EndBlock ();
+      /*
+      if (m_parsingList)
+      {
+        EndBlock ();
+      }
+      */
     }
 
     protected int m_quoteLevel = 0;
@@ -335,6 +352,31 @@ namespace RCL.Kernel
       UpdateTextRun (m_quoteRun, text);
       m_quoteRun.AppendLine ();
       m_quoteLevel = quoteLevel;
+    }
+
+    public override void AcceptMarkdownOLItem (RCToken token)
+    {
+      Console.Out.WriteLine ("AcceptMarkdownOLItem({0}): '{1}'", m_state, token.Text);
+    }
+
+    bool m_parsingList = false;
+    public override void AcceptMarkdownULItem (RCToken token)
+    {
+      Console.Out.WriteLine ("AcceptMarkdownULItem({0}): '{1}'", m_state, token.Text);
+      if (m_parsingList)
+      {
+        FinishRuns (false);
+        EndBlock ();
+      }
+      if (m_state == MarkdownState.None)
+      {
+        m_parsingList = true;
+        m_name = "ul";
+        StartBlock ();
+      }
+      m_state = MarkdownState.ListItem;
+      m_name = "li";
+      StartBlock ();
     }
 
     protected void FinishRuns (bool endBlock)
@@ -410,12 +452,14 @@ namespace RCL.Kernel
         Console.Out.Write ("{0} ", names[i]);
       }
       Console.Out.WriteLine ();
+      /*
       RCBlock[] values = m_values.ToArray ();
       Console.Out.WriteLine ("values: ");
       for (int i = 0; i < names.Length; ++i)
       {
         Console.Out.WriteLine ("{0} ", values[i]);
       }
+      */
     }
 
     protected void StartBlock ()
@@ -462,7 +506,7 @@ namespace RCL.Kernel
         return;
       }
       RCString text = new RCString (m_run.ToString ());
-      Console.Out.WriteLine ("Adding run: " + m_run.ToString ());
+      Console.Out.WriteLine ("Adding run: '{0}'", m_run.ToString ());
       m_run.Clear ();
       m_value = new RCBlock (m_value, m_name, ":", text);
       m_name = "";

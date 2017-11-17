@@ -40,7 +40,8 @@ namespace RCL.Kernel
         }
         if (token == null)
         {
-          throw new Exception ("unable to lex:" + input);
+          throw new Exception (
+            string.Format ("unable to lex: '{0}', i={1}", input, i));
         }
       }
     }

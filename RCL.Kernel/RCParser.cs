@@ -62,5 +62,7 @@ namespace RCL.Kernel
     public virtual void AcceptMarkdownLiteralLink (RCToken token) {}
     public virtual void AcceptMarkdownHeader (RCToken token) {}
     public virtual void AcceptMarkdownBlockquote (RCToken token) {}
+    public virtual void AcceptMarkdownULItem (RCToken token) {}
+    public virtual void AcceptMarkdownOLItem (RCToken token) {}
   }
 }
