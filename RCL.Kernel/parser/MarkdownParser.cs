@@ -39,6 +39,8 @@ namespace RCL.Kernel
     protected RCBlock m_value = null;
     protected string m_name = null;
     protected internal bool m_reentered = false;
+    protected bool m_parsingList = false;
+    protected bool m_parsingParagraph = false;
 
     protected enum MarkdownState
     {
@@ -82,7 +84,7 @@ namespace RCL.Kernel
     {
       Console.Out.WriteLine ("AcceptMarkdownContent({0}): '{1}'", m_state, token.Text);
       string text = token.Text;
-      if (m_values.Count == 0 && m_run.Length == 0 &&
+      if (!m_parsingParagraph && m_run.Length == 0 &&
           (m_state == MarkdownState.None || m_state == MarkdownState.Newline1))
       {
         m_state = MarkdownState.Paragraph;
@@ -90,6 +92,11 @@ namespace RCL.Kernel
         StartBlock ();
         m_name = "";
         m_value = RCBlock.Empty;
+        text = text.TrimStart ();
+        m_parsingParagraph = true;
+      }
+      else if (m_state == MarkdownState.Newline1 || m_state == MarkdownState.MaybeBR)
+      {
         text = text.TrimStart ();
       }
       UpdateTextRun (m_run, text);
@@ -150,6 +157,7 @@ namespace RCL.Kernel
         {
           EndBlock ();
         }
+        m_parsingParagraph = false;
         m_state = MarkdownState.None;
       }
       else if (m_state == MarkdownState.MaybeBR)
@@ -214,6 +222,7 @@ namespace RCL.Kernel
       {
         m_name = "p";
         StartBlock ();
+        m_parsingParagraph = true;
       }
       FinishRuns (false);
       m_state = MarkdownState.Link;
@@ -259,6 +268,7 @@ namespace RCL.Kernel
       {
         m_name = "p";
         StartBlock ();
+        m_parsingParagraph = true;
       }
       m_state = MarkdownState.Link;
       int openBracket = 0;
@@ -359,22 +369,27 @@ namespace RCL.Kernel
       Console.Out.WriteLine ("AcceptMarkdownOLItem({0}): '{1}'", m_state, token.Text);
     }
 
-    bool m_parsingList = false;
     public override void AcceptMarkdownULItem (RCToken token)
     {
       Console.Out.WriteLine ("AcceptMarkdownULItem({0}): '{1}'", m_state, token.Text);
+      MarkdownState oldState = m_state;
+      m_state = MarkdownState.ListItem;
       if (m_parsingList)
       {
         FinishRuns (false);
+        while (m_names.Peek () != "li")
+        {
+          EndBlock ();
+        }
         EndBlock ();
+        m_parsingParagraph = false;
       }
-      if (m_state == MarkdownState.None)
+      if (oldState == MarkdownState.None)
       {
         m_parsingList = true;
         m_name = "ul";
         StartBlock ();
       }
-      m_state = MarkdownState.ListItem;
       m_name = "li";
       StartBlock ();
     }
@@ -497,6 +512,12 @@ namespace RCL.Kernel
         m_name = "";
         Console.Out.WriteLine ("m_value: {0}", m_value.Format (RCFormat.Pretty));
       }
+      //else
+      //{
+      //  m_name = "";
+      //  m_value = RCBlock.Empty;
+      //  m_state = MarkdownState.None;
+      //}
     }
 
     protected void AppendRun ()
