@@ -41,7 +41,7 @@ namespace RCL.Kernel
     protected internal bool m_reentered = false;
     protected bool m_parsingList = false;
     protected bool m_parsingParagraph = false;
-    protected bool m_blankLine = true;
+    protected bool m_blankLine = false;
 
     protected enum MarkdownState
     {
@@ -89,9 +89,16 @@ namespace RCL.Kernel
       Console.Out.WriteLine ("m_parsingList: {0}", m_parsingList);
       Console.Out.WriteLine ("m_blankLine: {0}", m_blankLine);
       string text = token.Text;
+      if (m_parsingList && m_parsingParagraph &&
+          m_blankLine && m_state == MarkdownState.None)
+      {
+        EndBlock ();
+        m_parsingParagraph = false;
+      }
       //m_parsingParagraph should be sufficient, shouldn't need m_run.Length check.
-      if (m_blankLine && !m_parsingParagraph && m_run.Length == 0 &&
-          (m_state == MarkdownState.None || m_state == MarkdownState.Newline1))
+      if ((!m_parsingParagraph && m_blankLine && m_parsingList) ||
+          (!m_parsingList && !m_parsingParagraph && m_run.Length == 0 &&
+           (m_state == MarkdownState.None || m_state == MarkdownState.Newline1)))
       {
         m_state = MarkdownState.Paragraph;
         m_name = "p";
@@ -305,10 +312,6 @@ namespace RCL.Kernel
 
     public override void AcceptMarkdownHeader (RCToken token)
     {
-      if (m_parsingList)
-      {
-        m_blankLine = false;
-      }
       Console.Out.WriteLine ("AcceptMarkdownHeader({0}): '{1}'", m_state, token.Text);
       //Do break out of a p for a header
       FinishRuns (true);
@@ -410,7 +413,6 @@ namespace RCL.Kernel
         }
         EndBlock ();
         m_parsingParagraph = false;
-        m_blankLine = false;
       }
       if (!m_parsingList && oldState == MarkdownState.None)
       {
@@ -424,14 +426,17 @@ namespace RCL.Kernel
 
     protected void WrapLITextIfNeeded (MarkdownState oldState)
     {
-      if (m_parsingList &&
-          m_blankLine &&
-          !m_parsingParagraph &&
-          oldState == MarkdownState.None)
+      Console.Out.WriteLine ("m_parsingParagraph: {0}", m_parsingParagraph);
+      Console.Out.WriteLine ("m_parsingList: {0}", m_parsingList);
+      Console.Out.WriteLine ("m_blankLine: {0}", m_blankLine);
+      if (m_parsingList && m_blankLine && !m_parsingParagraph)
       {
         //insert a new item
         Console.Out.WriteLine ("INSERTING P TAG!");
-        m_value = new RCBlock (RCBlock.Empty, "p", ":", m_value);
+        if (m_value.Name == "" || m_value.Name == "em" || m_value.Name == "strong")
+        {
+          m_value = new RCBlock (RCBlock.Empty, "p", ":", m_value);
+        }
       }
     }
 
