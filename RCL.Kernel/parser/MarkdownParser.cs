@@ -41,6 +41,7 @@ namespace RCL.Kernel
     protected internal bool m_reentered = false;
     protected bool m_parsingList = false;
     protected bool m_parsingParagraph = false;
+    protected bool m_blankLine = true;
 
     protected enum MarkdownState
     {
@@ -63,7 +64,9 @@ namespace RCL.Kernel
       fragment = false;
 
       Console.Out.WriteLine ("Done parsing. Doing cleanup ({0})", m_state);
+      //FinishRuns (true);
       FinishQuote (true);
+      //WrapLITextIfNeeded (m_state);
       while (m_values.Count > 0)
       {
         EndBlock ();
@@ -83,8 +86,11 @@ namespace RCL.Kernel
     public override void AcceptMarkdownContent (RCToken token) 
     {
       Console.Out.WriteLine ("AcceptMarkdownContent({0}): '{1}'", m_state, token.Text);
+      Console.Out.WriteLine ("m_parsingParagraph: {0}", m_parsingParagraph);
+      Console.Out.WriteLine ("m_parsingList: {0}", m_parsingList);
       string text = token.Text;
-      if (!m_parsingParagraph && m_run.Length == 0 &&
+      //m_parsingParagraph should be sufficient, shouldn't need m_run.Length check.
+      if (m_blankLine && !m_parsingParagraph && m_run.Length == 0 &&
           (m_state == MarkdownState.None || m_state == MarkdownState.Newline1))
       {
         m_state = MarkdownState.Paragraph;
@@ -110,6 +116,7 @@ namespace RCL.Kernel
           m_state == MarkdownState.MaybeBR ||
           m_state == MarkdownState.ListItem)
       {
+        /*
         if (text.EndsWith ("  "))
         {
           Console.Out.WriteLine ("Two spaces... MaybeBR?");
@@ -119,12 +126,16 @@ namespace RCL.Kernel
         {
           m_state = MarkdownState.Paragraph;
         }
+        */
         run.Append (text);
       }
       else if (m_state == MarkdownState.Newline1)
       {
         text = text.TrimStart ();
-        run.Append (" ");
+        if (m_parsingParagraph || run.Length > 0)
+        {
+          run.Append (" ");
+        }
         run.Append (text);
         m_state = MarkdownState.Paragraph;
       }
@@ -132,11 +143,23 @@ namespace RCL.Kernel
       {
         run.Append (text);
       }
+      
+      if (text.EndsWith ("  "))
+      {
+        Console.Out.WriteLine ("Two spaces... MaybeBR?");
+        m_state = MarkdownState.MaybeBR;
+      }
+      else
+      {
+        m_state = MarkdownState.Paragraph;
+      }
     }
 
     public override void AcceptEndOfLine (RCToken token)
     {
       Console.Out.WriteLine ("AcceptEndOfLine({0})", m_state);
+      Console.Out.WriteLine ("m_parsingParagraph: {0}", m_parsingParagraph);
+      Console.Out.WriteLine ("m_parsingList: {0}", m_parsingList);
       if (token.Index == 0)
       {
         return;
@@ -145,20 +168,26 @@ namespace RCL.Kernel
       {
         if (m_parsingList)
         {
-          return;
+          //fall through to the end...
+          //m_parsingParagraph = false;
+          m_blankLine = true;
+          m_state = MarkdownState.None;
+          //remain in the Newline1 state for any number of blank lines
         }
         else if (m_quoteRun.Length > 0)
         {
           FinishQuote (true);
           EndBlock ();
           m_quoteLevel = 0;
+          m_parsingParagraph = false;
+          m_state = MarkdownState.None;
         }
         else
         {
           EndBlock ();
+          m_parsingParagraph = false;
+          m_state = MarkdownState.None;
         }
-        m_parsingParagraph = false;
-        m_state = MarkdownState.None;
       }
       else if (m_state == MarkdownState.MaybeBR)
       {
@@ -286,6 +315,10 @@ namespace RCL.Kernel
 
     public override void AcceptMarkdownHeader (RCToken token)
     {
+      if (m_parsingList)
+      {
+        m_blankLine = false;
+      }
       Console.Out.WriteLine ("AcceptMarkdownHeader({0}): '{1}'", m_state, token.Text);
       //Do break out of a p for a header
       FinishRuns (true);
@@ -372,19 +405,24 @@ namespace RCL.Kernel
     public override void AcceptMarkdownULItem (RCToken token)
     {
       Console.Out.WriteLine ("AcceptMarkdownULItem({0}): '{1}'", m_state, token.Text);
+      Console.Out.WriteLine ("m_parsingParagraph: {0}", m_parsingParagraph);
+      Console.Out.WriteLine ("m_parsingList: {0}", m_parsingList);
+      Console.Out.WriteLine ("m_blankLine: {0}", m_blankLine);
       MarkdownState oldState = m_state;
       m_state = MarkdownState.ListItem;
       if (m_parsingList)
       {
         FinishRuns (false);
+        WrapLITextIfNeeded (oldState);
         while (m_names.Peek () != "li")
         {
           EndBlock ();
         }
         EndBlock ();
         m_parsingParagraph = false;
+        m_blankLine = false;
       }
-      if (oldState == MarkdownState.None)
+      if (!m_parsingList && oldState == MarkdownState.None)
       {
         m_parsingList = true;
         m_name = "ul";
@@ -392,6 +430,16 @@ namespace RCL.Kernel
       }
       m_name = "li";
       StartBlock ();
+    }
+
+    protected void WrapLITextIfNeeded (MarkdownState oldState)
+    {
+      if (m_blankLine && !m_parsingParagraph && oldState == MarkdownState.None)
+      {
+        //insert a new item
+        Console.Out.WriteLine ("INSERTING P TAG!");
+        m_value = new RCBlock (RCBlock.Empty, "p", ":", m_value);
+      }
     }
 
     protected void FinishRuns (bool endBlock)
