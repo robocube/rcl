@@ -64,9 +64,8 @@ namespace RCL.Kernel
       fragment = false;
 
       Console.Out.WriteLine ("Done parsing. Doing cleanup ({0})", m_state);
-      //FinishRuns (true);
       FinishQuote (true);
-      //WrapLITextIfNeeded (m_state);
+      WrapLITextIfNeeded (m_state);
       while (m_values.Count > 0)
       {
         EndBlock ();
@@ -88,6 +87,7 @@ namespace RCL.Kernel
       Console.Out.WriteLine ("AcceptMarkdownContent({0}): '{1}'", m_state, token.Text);
       Console.Out.WriteLine ("m_parsingParagraph: {0}", m_parsingParagraph);
       Console.Out.WriteLine ("m_parsingList: {0}", m_parsingList);
+      Console.Out.WriteLine ("m_blankLine: {0}", m_blankLine);
       string text = token.Text;
       //m_parsingParagraph should be sufficient, shouldn't need m_run.Length check.
       if (m_blankLine && !m_parsingParagraph && m_run.Length == 0 &&
@@ -116,17 +116,6 @@ namespace RCL.Kernel
           m_state == MarkdownState.MaybeBR ||
           m_state == MarkdownState.ListItem)
       {
-        /*
-        if (text.EndsWith ("  "))
-        {
-          Console.Out.WriteLine ("Two spaces... MaybeBR?");
-          m_state = MarkdownState.MaybeBR;
-        }
-        else
-        {
-          m_state = MarkdownState.Paragraph;
-        }
-        */
         run.Append (text);
       }
       else if (m_state == MarkdownState.Newline1)
@@ -171,8 +160,9 @@ namespace RCL.Kernel
           //fall through to the end...
           //m_parsingParagraph = false;
           m_blankLine = true;
+          AppendRun ();
+          WrapLITextIfNeeded (m_state);
           m_state = MarkdownState.None;
-          //remain in the Newline1 state for any number of blank lines
         }
         else if (m_quoteRun.Length > 0)
         {
@@ -434,7 +424,10 @@ namespace RCL.Kernel
 
     protected void WrapLITextIfNeeded (MarkdownState oldState)
     {
-      if (m_blankLine && !m_parsingParagraph && oldState == MarkdownState.None)
+      if (m_parsingList &&
+          m_blankLine &&
+          !m_parsingParagraph &&
+          oldState == MarkdownState.None)
       {
         //insert a new item
         Console.Out.WriteLine ("INSERTING P TAG!");
