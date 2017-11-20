@@ -20,9 +20,9 @@ namespace RCL.Kernel
       types.Write (RCTokenType.MarkdownEndBoldToken);
       types.Write (RCTokenType.MarkdownBeginItalicToken);
       types.Write (RCTokenType.MarkdownEndItalicToken);
-      types.Write (RCTokenType.MarkdownContentToken);
-      types.Write (RCTokenType.MarkdownOLItemToken);
       types.Write (RCTokenType.MarkdownULItemToken);
+      types.Write (RCTokenType.MarkdownOLItemToken);
+      types.Write (RCTokenType.MarkdownContentToken);
       m_markdownLexer = new RCLexer (types);
     }
 
@@ -331,12 +331,6 @@ namespace RCL.Kernel
       StartBlock ();
       m_value = text;
       EndBlock ();
-      /*
-      if (m_parsingList)
-      {
-        EndBlock ();
-      }
-      */
     }
 
     protected int m_quoteLevel = 0;
@@ -392,12 +386,17 @@ namespace RCL.Kernel
 
     public override void AcceptMarkdownOLItem (RCToken token)
     {
-      Console.Out.WriteLine ("AcceptMarkdownOLItem({0}): '{1}'", m_state, token.Text);
+      AcceptListItem (token, "ol");
     }
 
     public override void AcceptMarkdownULItem (RCToken token)
     {
-      Console.Out.WriteLine ("AcceptMarkdownULItem({0}): '{1}'", m_state, token.Text);
+      AcceptListItem (token, "ul");
+    }
+
+    protected void AcceptListItem (RCToken token, string listTagName)
+    {
+      Console.Out.WriteLine ("AcceptListItem({0}): '{1}'", m_state, token.Text);
       Console.Out.WriteLine ("m_parsingParagraph: {0}", m_parsingParagraph);
       Console.Out.WriteLine ("m_parsingList: {0}", m_parsingList);
       Console.Out.WriteLine ("m_blankLine: {0}", m_blankLine);
@@ -417,7 +416,7 @@ namespace RCL.Kernel
       if (!m_parsingList && oldState == MarkdownState.None)
       {
         m_parsingList = true;
-        m_name = "ul";
+        m_name = listTagName;
         StartBlock ();
       }
       m_name = "li";

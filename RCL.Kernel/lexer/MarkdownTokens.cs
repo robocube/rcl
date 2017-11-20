@@ -358,8 +358,10 @@ namespace RCL.Kernel
       {
         ++current;
       }
+      else return null;
       if (current < code.Length && code[current] == ' ')
       {
+        ++current;
         string text = code.Substring (start, current - start);
         return new RCToken (text, this, start, index);
       }
