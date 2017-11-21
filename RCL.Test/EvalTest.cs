@@ -765,9 +765,15 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestEachNamesEmpty ()
+    {
+      DoEvalTest ("{<-$L} each {a:1 :2 c:3}", "{a:\"a\" :\"\" c:\"c\"}");
+    }
+
+    [Test]
     public void TestEachIndices ()
     {
-      DoEvalTest ("{<-$L} each {:1 :2 :3}", "{:0 :1 :2}");
+      DoEvalTest ("{<-$I} each {:1 :2 :3}", "{:0 :1 :2}");
     }
 
     [Test]

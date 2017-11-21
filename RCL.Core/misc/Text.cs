@@ -8,18 +8,6 @@ namespace RCL.Core
 {
   public class Text
   {
-    /*
-    [RCVerb ("diff")]
-    public void EvalDiff (RCRunner runner, RCClosure closure, RCString left, RCString right)
-    {
-      diff_match_patch dmp = new diff_match_patch ();
-      List<Diff> diffs = dmp.diff_main (left[0], right[0]);
-      List<Patch> patch = dmp.patch_make (diffs);
-      string text = dmp.patch_toText (patch);
-      runner.Yield (closure, new RCString (text));
-    }
-    */
-
     [RCVerb ("diff")]
     public void EvalDiff (RCRunner runner, RCClosure closure, RCString left, RCString right)
     {
