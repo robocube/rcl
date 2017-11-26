@@ -1174,7 +1174,34 @@ namespace RCL.Test
     {
       DoTest ("-4 sum [S|x #a,b,x 0 #a,b,y 1 #a,b,x 2 #a,b,y 3 #a,b,x 4 #a,b,y 5]", "[S|x # 15 #a 15 #a,b 15 #a,b,x 6 #a,b,y 9]");
     }
-      
+
+    [Test]
+    public void TestAny ()
+    {
+      DoTest ("any [S|x #a false #a false #a true #a false #a false]", "[S|x # true #a true]");
+      DoTest ("any [S|x #a false #a false #b true #b false #a false]", "[S|x # true #a false #b true]");
+      DoTest ("any [S|x #a,x false #a,x false #b,x true #b,x false #a,x false]",
+              "[S|x # true #a false #a,x false #b true #b,x true]");
+    }
+
+    [Test]
+    public void TestAll ()
+    {
+      DoTest ("all [S|x #a false #a false #a true #a false #a false]", "[S|x # false #a false]");
+      DoTest ("all [S|x #a false #a false #b true #b true #a false]", "[S|x # false #a false #b true]");
+      DoTest ("all [S|x #a,x false #a,x false #b,x true #b,x true #a,x false]",
+              "[S|x # false #a false #a,x false #b true #b,x true]");
+    }
+
+    [Test]
+    public void TestNone ()
+    {
+      DoTest ("none [S|x #a false #a false #a true #a false #a false]", "[S|x # false #a false]");
+      DoTest ("none [S|x #a false #a false #b true #b true #a false]", "[S|x # false #a true #b false]");
+      DoTest ("none [S|x #a,x false #a,x false #b,x true #b,x true #a,x false]",
+              "[S|x # false #a true #a,x true #b false #b,x false]");
+    }
+
     [Test]
     public void TestAvg ()
     {

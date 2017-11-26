@@ -289,7 +289,8 @@ namespace RCL.Core
     [RCVerb ("and")] [RCVerb ("or")]
     [RCVerb ("==")] [RCVerb ("!=")] [RCVerb ("<")] [RCVerb (">")] [RCVerb ("<=")] [RCVerb (">=")]
     [RCVerb ("min")] [RCVerb ("max")]
-    [RCVerb ("long")] [RCVerb ("double")] [RCVerb ("decimal")] [RCVerb ("byte")] [RCVerb ("string")] [RCVerb ("symbol")] [RCVerb ("boolean")] [RCVerb ("time")]
+    [RCVerb ("long")] [RCVerb ("double")] [RCVerb ("decimal")] [RCVerb ("byte")]
+    [RCVerb ("string")] [RCVerb ("symbol")] [RCVerb ("boolean")] [RCVerb ("time")]
     public void EvalDyadic (
       RCRunner runner, RCClosure closure, object left, object right)
     {
@@ -308,6 +309,7 @@ namespace RCL.Core
     }
 
     [RCVerb ("sum")] [RCVerb ("avg")] [RCVerb ("high")] [RCVerb ("low")]
+    [RCVerb ("any")] [RCVerb ("all")] [RCVerb ("none")]
     public void EvalSequential (
       RCRunner runner, RCClosure closure, object right)
     {
@@ -317,10 +319,14 @@ namespace RCL.Core
     }
 
     [RCVerb ("not")] [RCVerb ("sqrt")] [RCVerb ("abs")]
-    [RCVerb ("long")] [RCVerb ("double")] [RCVerb ("decimal")] [RCVerb ("byte")] [RCVerb ("string")] [RCVerb ("symbol")] [RCVerb ("boolean")] [RCVerb ("time")]
+    [RCVerb ("long")] [RCVerb ("double")] [RCVerb ("decimal")]
+    [RCVerb ("byte")] [RCVerb ("string")] [RCVerb ("symbol")]
+    [RCVerb ("boolean")] [RCVerb ("time")]
     [RCVerb ("upper")] [RCVerb ("lower")] [RCVerb ("length")]
-    [RCVerb ("day")] [RCVerb ("hour")] [RCVerb ("minute")] [RCVerb ("second")] [RCVerb ("nano")]
-    [RCVerb ("date")] [RCVerb ("daytime")] [RCVerb ("datetime")] [RCVerb ("timestamp")] [RCVerb ("timespan")]
+    [RCVerb ("day")] [RCVerb ("hour")] [RCVerb ("minute")]
+    [RCVerb ("second")] [RCVerb ("nano")]
+    [RCVerb ("date")] [RCVerb ("daytime")] [RCVerb ("datetime")]
+    [RCVerb ("timestamp")] [RCVerb ("timespan")]
     public void EvalMonadic (
       RCRunner runner, RCClosure closure, object right)
     {

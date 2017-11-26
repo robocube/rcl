@@ -950,12 +950,16 @@ namespace RCL.Core
         closure, Invoke (closure, op.Name, left, (RCVectorBase) right));
     }
 
-    [RCVerb ("sqrt")] [RCVerb ("abs")]
-    [RCVerb ("high")] [RCVerb ("low")] [RCVerb ("sum")] [RCVerb ("sums")] [RCVerb ("avg")]
-    [RCVerb ("long")] [RCVerb ("double")] [RCVerb ("decimal")] [RCVerb ("byte")] [RCVerb ("string")] [RCVerb ("symbol")] [RCVerb ("boolean")]
-    [RCVerb ("not")] [RCVerb ("upper")] [RCVerb ("lower")] [RCVerb ("length")]
-    [RCVerb ("day")] [RCVerb ("hour")] [RCVerb ("minute")] [RCVerb ("second")] [RCVerb ("nano")]
-    [RCVerb ("date")] [RCVerb ("daytime")] [RCVerb ("datetime")] [RCVerb ("timestamp")] [RCVerb ("timespan")]
+    [RCVerb ("sqrt")] [RCVerb ("abs")] [RCVerb ("high")] [RCVerb ("low")]
+    [RCVerb ("sum")] [RCVerb ("sums")] [RCVerb ("avg")]
+    [RCVerb ("long")] [RCVerb ("double")] [RCVerb ("decimal")]
+    [RCVerb ("byte")] [RCVerb ("string")] [RCVerb ("symbol")]
+    [RCVerb ("boolean")] [RCVerb ("not")] [RCVerb ("upper")]
+    [RCVerb ("lower")] [RCVerb ("length")] [RCVerb ("day")]
+    [RCVerb ("hour")] [RCVerb ("minute")] [RCVerb ("second")]
+    [RCVerb ("nano")] [RCVerb ("date")] [RCVerb ("daytime")]
+    [RCVerb ("datetime")] [RCVerb ("timestamp")] [RCVerb ("timespan")]
+    [RCVerb ("any")] [RCVerb ("all")] [RCVerb ("none")]
     public void EvalMonadic (
       RCRunner runner, RCClosure closure, RCCube right)
     {

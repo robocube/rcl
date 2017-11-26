@@ -853,6 +853,18 @@ namespace RCL.Test
     public void TestHighM() { DoTest("high -1 -2 -3m", "-1m"); }
     [Test]
     public void TestHighX() { DoTest("high \\x01 \\x02 \\x03", "\\x03"); }
+    [Test]
+    public void TestAny1 () { DoTest ("any false true false", "true"); }
+    [Test]
+    public void TestAny2 () { DoTest ("any false false false", "false"); }
+    [Test]
+    public void TestAll1 () { DoTest ("all true true true", "true"); }
+    [Test]
+    public void TestAll2 () { DoTest ("all false false false", "false"); }
+    [Test]
+    public void TestNone1 () { DoTest ("none false false false", "true"); }
+    [Test]
+    public void TestNone2 () { DoTest ("none false false true", "false"); }
 
     [Test]
     public void TestMinDD() { DoTest("3.0 2.0 1.0 min 1.0 2.0 3.0", "1.0 2.0 1.0"); }

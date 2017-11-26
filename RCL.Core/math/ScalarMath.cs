@@ -670,6 +670,54 @@ namespace RCL.Core
     public static decimal Low (ref LowState<decimal> s, decimal r)
       { s.l = s.i == 0 || r < s.l ? r : s.l; ++s.i; return s.l; }
 
+    public struct AllState<T> { public int i; public T b; }
+    [Primitive ("all", Profile.Sequential)]
+    public static bool All (ref AllState<bool> s, bool r)
+    {
+      if (s.i == 0)
+      {
+        s.b = r;
+      }
+      else
+      {
+        s.b &= r;
+      }
+      ++s.i;
+      return s.b;
+    }
+
+    public struct AnyState<T> { public int i; public T b; }
+    [Primitive ("any", Profile.Sequential)]
+    public static bool Any (ref AnyState<bool> s, bool r)
+    {
+      if (s.i == 0)
+      {
+        s.b = r;
+      }
+      else
+      {
+        s.b |= r;
+      }
+      ++s.i;
+      return s.b;
+    }
+
+    public struct NoneState<T> { public int i; public T b; }
+    [Primitive ("none", Profile.Sequential)]
+    public static bool None (ref NoneState<bool> s, bool r)
+    {
+      if (s.i == 0)
+      {
+        s.b = ! r;
+      }
+      else
+      {
+        s.b &= !r;
+      }
+      ++s.i;
+      return s.b;
+    }
+
     //Coercion operators
     [Primitive ("string", Profile.Monadic)]
     public static string String (string r) { return r; }
