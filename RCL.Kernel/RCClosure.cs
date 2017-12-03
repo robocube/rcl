@@ -225,8 +225,9 @@ namespace RCL.Kernel
           if (result.Value != null)
           {
             string value = result.Value.Format (RCFormat.Default);
-            value = value.Substring (0, Math.Min (100, value.Length));
-            lines.Push (string.Format ("{0}:{1}", result.Name, value));
+            value = string.Format ("{0}:{1}", result.Name, value);
+            value = value.Substring (0, Math.Min (80, value.Length));
+            lines.Push (value);
           }
           result = result.Previous;
         }

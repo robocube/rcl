@@ -266,14 +266,14 @@ namespace RCL.Core
     public void EvalOperator (
       RCRunner runner, RCClosure closure, RCBlock left, RCString right)
     {
-      runner.Yield (closure, DoAt(left, right));
+      runner.Yield (closure, DoAt (closure, left, right));
     }
 
     [RCVerb ("at")]
     public void EvalOperator (
       RCRunner runner, RCClosure closure, RCBlock left, RCSymbol right)
     {
-      runner.Yield (closure, DoAt(left, right));
+      runner.Yield (closure, DoAt (closure, left, right));
     }
 
     [RCVerb ("from")]
@@ -532,14 +532,14 @@ namespace RCL.Core
     public void EvalFrom (
       RCRunner runner, RCClosure closure, RCString left, RCBlock right)
     {
-      runner.Yield (closure, DoAt (right, left));
+      runner.Yield (closure, DoAt (closure, right, left));
     }
 
     [RCVerb ("from")]
     public void EvalFrom (
       RCRunner runner, RCClosure closure, RCSymbol left, RCBlock right)
     {
-      runner.Yield (closure, DoAt (right, left));
+      runner.Yield (closure, DoAt (closure, right, left));
     }
 
     public static RCBlock DoAt (RCBlock left, RCLong right)
@@ -590,18 +590,24 @@ namespace RCL.Core
       return result;
     }
 
-    public static RCBlock DoAt (RCBlock left, RCString right)
+    public static RCBlock DoAt (RCClosure closure, RCBlock left, RCString right)
     {
       RCBlock result = RCBlock.Empty;
       for (int i = 0; i < right.Count; ++i)
       {
-        RCBlock next = left.GetName (right[i]);
+        string name = right[i];
+        RCBlock next = left.GetName (name);
+        if (next == null)
+        {
+          string message = string.Format ("at: Name '{0}' not found within block", name);
+          throw new RCException (closure, RCErrors.Name, message);
+        }
         result = new RCBlock (result, next.Name, next.Evaluator, next.Value);
       }
       return result;
     }
 
-    public static RCBlock DoAt (RCBlock left, RCSymbol right)
+    public static RCBlock DoAt (RCClosure closure, RCBlock left, RCSymbol right)
     {
       RCBlock result = RCBlock.Empty;
       for (int i = 0; i < right.Count; ++i)
@@ -611,7 +617,13 @@ namespace RCL.Core
         {
           throw new Exception ("at only supports block lookups using tuples of count 1.  But this could change.");
         }
-        RCBlock next = left.GetName ((string)right[i].Key);
+        string name = (string) right[i].Key;
+        RCBlock next = left.GetName (name);
+        if (next == null)
+        {
+          string message = string.Format ("at: Name '{0}' not found within block", name);
+          throw new RCException (closure, RCErrors.Name, message);
+        }
         result = new RCBlock (result, next.Name, next.Evaluator, next.Value);
       }
       return result;

@@ -92,10 +92,12 @@ namespace RCL.Kernel
       Error = error;
     }
 
+    protected static readonly bool fullStackAlways = false;
     public override string ToString ()
     {
+      //Console.Out.WriteLine ("fullStackAlways: '{0}'", fullStackAlways);
       StringBuilder builder = new StringBuilder ();
-      if (Error != RCErrors.Native)
+      if (!fullStackAlways && Error != RCErrors.Native)
       {
         if (Output != null)
         {

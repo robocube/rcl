@@ -1148,6 +1148,16 @@ namespace RCL.Test
     public void TestFromSK1 () { DoTest ("\"a b c\" from {'a b c':1}", "{'a b c':1}"); }
     [Test]
     public void TestFromSK2 () { DoTest ("\"'a b c'\" from {'a b c':1}", "{'a b c':1}"); }
+    [Test]
+    public void TestFromSKNameError ()
+    {
+      Assert.Throws<RCException> (delegate () { DoTest ("\"a\" \"b\" \"c\" from {a:1 b:2}", ""); });
+    }
+    [Test]
+    public void TestFromYKNameError ()
+    {
+      Assert.Throws<RCException> (delegate () { DoTest ("#a #b #c from {a:1 b:2}", ""); });
+    }
 
     [Test]
     public void TestFirst() { DoTest ("first {:0 :1 :2}", "0"); }
