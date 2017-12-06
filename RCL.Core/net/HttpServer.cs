@@ -663,6 +663,10 @@ namespace RCL.Core
             info.Context.Response.AppendHeader (header.RawName, val[0]);
           }
         }
+        if (body == null)
+        {
+          body = new RCString ("");
+        }
         byte[] bytes = Encoding.UTF8.GetBytes (body[0]);
         byte[] buffer = new byte[1024 * 16];
         MemoryStream stream = new MemoryStream (bytes);
@@ -671,6 +675,10 @@ namespace RCL.Core
         {
           info.Context.Response.OutputStream.Write (buffer, 0, nbytes);
         }
+      }
+      catch (Exception)
+      {
+        info.Context.Response.StatusCode = 400;
       }
       finally
       {
