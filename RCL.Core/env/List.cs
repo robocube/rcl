@@ -87,7 +87,7 @@ namespace RCL.Core
       Queue<string> todo = new Queue<string> ();
       string top = Command.PathSymbolToString (spec);
       todo.Enqueue (top);
-      RCSymbolScalar prefix = RCSymbolScalar.From ("root");
+      RCSymbolScalar prefix = RCSymbolScalar.From (spec.Part (0));
       while (todo.Count > 0)
       {
         string path = todo.Dequeue ();
