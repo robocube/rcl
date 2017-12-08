@@ -105,8 +105,10 @@ namespace RCL.Core
             result.WriteCell ("size", symbol, file.Length);
             result.WriteCell ("name", symbol, file.Name);
             result.WriteCell ("ext", symbol, file.Extension);
-            result.WriteCell ("access", symbol, new RCTimeScalar (file.LastAccessTime, RCTimeType.Datetime));
-            result.WriteCell ("write", symbol, new RCTimeScalar (file.LastWriteTime, RCTimeType.Datetime));
+            result.WriteCell ("access", symbol, new RCTimeScalar (file.LastAccessTime,
+                                                                  RCTimeType.Datetime));
+            result.WriteCell ("write", symbol, new RCTimeScalar (file.LastWriteTime,
+                                                                 RCTimeType.Datetime));
             result.Axis.Write (symbol); 
           }
         }
@@ -119,8 +121,10 @@ namespace RCL.Core
           {
             string [] parts = dirs[i].Split (Path.DirectorySeparatorChar);
             RCSymbolScalar symbol = RCSymbolScalar.From (startPart, prefix, parts);
-            result.WriteCell ("access", symbol, new RCTimeScalar (dir.LastAccessTime, RCTimeType.Datetime));
-            result.WriteCell ("write", symbol, new RCTimeScalar (dir.LastWriteTime, RCTimeType.Datetime));
+            result.WriteCell ("access", symbol, new RCTimeScalar (dir.LastAccessTime,
+                                                                  RCTimeType.Datetime));
+            result.WriteCell ("write", symbol, new RCTimeScalar (dir.LastWriteTime,
+                                                                 RCTimeType.Datetime));
             result.Axis.Write (symbol);
             if (deep)
             {

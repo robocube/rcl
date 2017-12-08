@@ -219,8 +219,23 @@ namespace RCL.Core
       if (cookie == null || !cookie.Value.Equals (left[1]))
       {
         info.Context.Response.StatusCode = 401;
+        if (cookie != null)
+        {
+          //I wanted to add a Set-Cookie header to blow away any bad
+          //cookies and force the user to log out, but it simply refuses
+          //to add it (or other headers such as Location)
+          //This problem goes away if you don't return an Error status.
+          //This is a bug in HttpListener according to this:
+          //https://stackoverflow.com/questions/21554280/can-cookies-be-set-from-4xx-responses
+          //Otherwise something like this ought to work
+          //cookie.Name = left[0];
+          //cookie.Value = "";
+          //cookie.Expires = DateTime.Now.AddDays (-1);
+          //info.Context.Response.AppendCookie (cookie);
+        }
         info.Context.Response.OutputStream.Close ();
-        runner.Log.Record (runner, closure, "http", right[0], "session", cookie != null ? cookie.Value : "null");
+        runner.Log.Record (runner, closure, "http", right[0], "session",
+          cookie != null ? cookie.Value : "null");
         throw new RCException (closure, RCErrors.Session, "Invalid session id");
       }
       runner.Yield (closure, right);
@@ -621,8 +636,7 @@ namespace RCL.Core
       return result;
     }
 
-    protected void DoHttpSend (
-      RCRunner runner, RCClosure closure, RCLong left, RCBlock right)
+    protected void DoHttpSend (RCRunner runner, RCClosure closure, RCLong left, RCBlock right)
     {
       if (left.Count > 1)
       {
