@@ -232,6 +232,36 @@ namespace RCL.Core
           //cookie.Value = "";
           //cookie.Expires = DateTime.Now.AddDays (-1);
           //info.Context.Response.AppendCookie (cookie);
+          //Here is also an rclt test for this if it comes time to implement
+          //httpcheck_cookie_invalid:{
+          //  src:{
+          //    ID1:"id" & guid 1
+          //    ID2:"id" & guid 1
+          //    serve:{
+          //      loop:{
+          //        :($ID2 httpcheck httprecv $R) httpsend {
+          //          status:200
+          //          body:"super content"
+          //        }
+          //        <-loop $R
+          //      }
+          //      :try {<-loop $R}
+          //      <-serve $R
+          //    }
+          //    b:bot {<-serve httpstart "http://*:6235/foo/"}
+          //    junk:"; Expires=Fri, 08-Dec-2017 00:45:41 GMT; Path=/"
+          //    response:(eval {
+          //      Cookie:"=" delimit $ID1
+          //    }) getw "http://localhost:6235/foo"
+          //    :"$response.status assert 400"
+          //    :"$response.body assert \"Unauthorized\""
+          //    :$response.head assert {'Set-Cookie':""}
+          //    response:(eval {Cookie:"=" delimit $ID2}) getw "http://localhost:6235/foo"
+          //    :$response.status assert 401
+          //    :$response.body assert "Unauthorized"
+          //    :kill $b
+          //  }
+          //}
         }
         info.Context.Response.OutputStream.Close ();
         runner.Log.Record (runner, closure, "http", right[0], "session",
