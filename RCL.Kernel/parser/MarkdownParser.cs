@@ -22,6 +22,7 @@ namespace RCL.Kernel
       types.Write (RCTokenType.MarkdownEndItalicToken);
       types.Write (RCTokenType.MarkdownULItemToken);
       types.Write (RCTokenType.MarkdownOLItemToken);
+      types.Write (RCTokenType.MarkdownLIIndentToken);
       types.Write (RCTokenType.MarkdownContentToken);
       m_markdownLexer = new RCLexer (types);
     }
@@ -40,6 +41,7 @@ namespace RCL.Kernel
     protected string m_name = null;
     protected internal bool m_reentered = false;
     protected bool m_parsingList = false;
+    protected int m_liLength = -1;
     protected bool m_parsingParagraph = false;
     protected bool m_blankLine = false;
 
@@ -87,8 +89,10 @@ namespace RCL.Kernel
       //Console.Out.WriteLine ("AcceptMarkdownContent({0}): '{1}'", m_state, token.Text);
       //Console.Out.WriteLine ("m_parsingParagraph: {0}", m_parsingParagraph);
       //Console.Out.WriteLine ("m_parsingList: {0}", m_parsingList);
+      //Console.Out.WriteLine ("m_liLength: {0}", m_liLength);
       //Console.Out.WriteLine ("m_blankLine: {0}", m_blankLine);
       string text = token.Text;
+      FinishList ();
       if (m_parsingList && m_parsingParagraph &&
           m_blankLine && m_state == MarkdownState.None)
       {
@@ -113,6 +117,30 @@ namespace RCL.Kernel
         text = text.TrimStart ();
       }
       UpdateTextRun (m_run, text);
+    }
+
+    protected void FinishList ()
+    {
+      if (m_parsingList && m_liLength <= 0 &&
+          m_state != MarkdownState.ListItem &&
+          m_state != MarkdownState.Paragraph &&
+          m_state != MarkdownState.Link)
+      {
+        while (true)
+        {
+          EndBlock ();
+          string tag = m_names.Peek ();
+          if (tag == "ol" || tag == "ul") //|| tag == "li")
+          {
+            EndBlock ();
+            break;
+          }
+        }
+        //Console.Out.WriteLine ("Done parsing list");
+        m_parsingList = false;
+        m_parsingParagraph = false;
+        m_state = MarkdownState.None;
+      }
     }
 
     protected void UpdateTextRun (StringBuilder run, string text)
@@ -206,6 +234,7 @@ namespace RCL.Kernel
       {
         m_state = MarkdownState.Newline1;
       }
+      m_liLength = -1;
     }
 
     public override void AcceptMarkdownBeginBold (RCToken token)
@@ -313,8 +342,10 @@ namespace RCL.Kernel
     public override void AcceptMarkdownHeader (RCToken token)
     {
       //Console.Out.WriteLine ("AcceptMarkdownHeader({0}): '{1}'", m_state, token.Text);
-      //Do break out of a p for a header
+      //Console.Out.WriteLine ("m_liLength: " + m_liLength);
+      FinishList ();
       FinishRuns (true);
+      //Do break out of a p for a header
       int space = token.Text.IndexOf (' ');
       int headerTextStart = space + 1;
       int headerTextLength = token.Text.TrimEnd ().Length - headerTextStart;
@@ -420,7 +451,17 @@ namespace RCL.Kernel
         StartBlock ();
       }
       m_name = "li";
+      //This may need to go onto the stack to do nested lists.
       StartBlock ();
+    }
+
+    public override void AcceptMarkdownLIIndent (RCToken token)
+    {
+      //Console.Out.WriteLine ("AcceptLIIndent({0}): '{1}'", m_state, token.Text);
+      if (m_parsingList)
+      {
+        m_liLength = token.Text.Length;
+      }
     }
 
     protected void WrapLITextIfNeeded (MarkdownState oldState)
@@ -448,6 +489,13 @@ namespace RCL.Kernel
           m_run.Append (" ");
         }
         AppendRun ();
+        if (endBlock)
+        {
+          EndBlock ();
+        }
+      }
+      else if (m_value != null && m_value.Count > 0)
+      {
         if (endBlock)
         {
           EndBlock ();
@@ -555,7 +603,7 @@ namespace RCL.Kernel
         m_state = m_states.Pop ();
         m_value = new RCBlock (m_value, m_name, ":", child);
         m_name = "";
-        //Console.Out.WriteLine ("m_value: {0}", m_value.Format (RCFormat.Pretty));
+        //Console.Out.WriteLine ("EndBlock: m_value: {0}", m_value.Format (RCFormat.Pretty));
       }
       //else
       //{

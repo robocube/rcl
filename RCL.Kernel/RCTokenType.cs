@@ -149,6 +149,7 @@ namespace RCL.Kernel
     public static readonly RCTokenType MarkdownBlockquoteToken = new MarkdownBlockquoteToken ();
     public static readonly RCTokenType MarkdownULItemToken = new MarkdownULItemToken ();
     public static readonly RCTokenType MarkdownOLItemToken = new MarkdownOLItemToken ();
+    public static readonly RCTokenType MarkdownLIIndentToken = new MarkdownLIIndentToken ();
 
     /// <summary>
     /// Is this the right spot for a visitor? not really sure...
