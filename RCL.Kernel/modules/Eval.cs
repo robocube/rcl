@@ -496,7 +496,10 @@ namespace RCL.Kernel
                 indent = parentIndent + lastPiece.Substring (0, w);
                 if (i < right.Count - 1)
                 {
-                  builder.Append (indent);
+                  if (section.Length > 0)
+                  {
+                    builder.Append (indent);
+                  }
                 }
                 string end = lastPiece.Substring (w, lastPiece.Length - w);
                 builder.Append (end);
