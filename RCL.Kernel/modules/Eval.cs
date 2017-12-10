@@ -388,6 +388,7 @@ namespace RCL.Kernel
         }
         else
         {
+          bool somethingAdded = false;
           for (int j = 0; j < text.Count; ++j)
           {
             string section = text [j];
@@ -407,7 +408,12 @@ namespace RCL.Kernel
                   {
                     line = section.Substring (start, k - start);
                   }
-                  if (j > 0 || start > 0)
+                  //if (j > 0 || start > 0)
+                  // Using j and start here didn't work because sometimes empty strings
+                  // are added. Instead keep track of whether a line has been added.
+                  // We may need this variable to handle other cases as well, but
+                  // they haven't cropped yet.
+                  if (somethingAdded)
                   {
                     //Notice below in the section with w. If there is extra content
                     //before the code section on the same line, it will have been 
@@ -415,6 +421,7 @@ namespace RCL.Kernel
                     builder.Append (indent);
                   }
                   builder.AppendLine (line);
+                  somethingAdded = true;
                 }
                 else
                 {
@@ -491,7 +498,8 @@ namespace RCL.Kernel
                 {
                   builder.Append (indent);
                 }
-                builder.Append (lastPiece.Substring (w, lastPiece.Length - w));
+                string end = lastPiece.Substring (w, lastPiece.Length - w);
+                builder.Append (end);
               }
             }
             else
