@@ -444,6 +444,19 @@ namespace RCL.Kernel
                       {
                         builder.Append (indent);
                       }
+                      else if (start > 1 && i < right.Count - 1)
+                      {
+                        builder.Append (indent);
+                        //Console.Out.WriteLine ("builder: '{0}'", builder.ToString ());
+                        //Console.Out.WriteLine ("New indent before: '{0}'", line.ToString ());
+                        //Console.Out.WriteLine ("k: {0}", k);
+                        //Console.Out.WriteLine ("start: {0}", start);
+                        //Console.Out.WriteLine ("i: {0}", i);
+                        //Console.Out.WriteLine ("right.Count: {0}", right.Count);
+                        //Console.Out.WriteLine ("section: '{0}'", section);
+                        //Console.Out.WriteLine ("section.Length: {0}", section.Length);
+                        //Console.Out.WriteLine ("right:\n" + right.ToString ());
+                      }
                     }
                     builder.AppendLine (line);
                   }
