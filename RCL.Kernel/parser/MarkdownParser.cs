@@ -88,7 +88,7 @@ namespace RCL.Kernel
     protected StringBuilder m_run = new StringBuilder ();
     public override void AcceptMarkdownContent (RCToken token) 
     {
-      Console.Out.WriteLine ("AcceptMarkdownContent({0}): '{1}'", m_state, token.Text);
+      //Console.Out.WriteLine ("AcceptMarkdownContent({0}): '{1}'", m_state, token.Text);
       //Console.Out.WriteLine ("m_parsingParagraph: {0}", m_parsingParagraph);
       //Console.Out.WriteLine ("m_parsingList: {0}", m_parsingList);
       //Console.Out.WriteLine ("m_liLength: {0}", m_liLength);
