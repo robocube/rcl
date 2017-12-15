@@ -164,7 +164,6 @@ namespace RCL.Kernel
         text = text.TrimStart ();
         if (m_parsingParagraph || run.Length > 0)
         {
-          Console.Out.WriteLine ("Adding a space -- run:'{0}'", run.ToString ());
           run.Append (" ");
         }
         run.Append (text);
@@ -188,7 +187,7 @@ namespace RCL.Kernel
 
     public override void AcceptEndOfLine (RCToken token)
     {
-      Console.Out.WriteLine ("AcceptEndOfLine({0})", m_state);
+      //Console.Out.WriteLine ("AcceptEndOfLine({0})", m_state);
       //Console.Out.WriteLine ("m_parsingParagraph: {0}", m_parsingParagraph);
       //Console.Out.WriteLine ("m_parsingList: {0}", m_parsingList);
       if (token.Index == 0)
@@ -614,7 +613,7 @@ namespace RCL.Kernel
         m_state = m_states.Pop ();
         m_value = new RCBlock (m_value, m_name, ":", child);
         m_name = "";
-        Console.Out.WriteLine ("EndBlock: m_value: {0}", m_value.Format (RCFormat.Pretty));
+        //Console.Out.WriteLine ("EndBlock: m_value: {0}", m_value.Format (RCFormat.Pretty));
       }
       //else
       //{
