@@ -1069,6 +1069,13 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestForceWithMonadicRead ()
+    {
+      DoEvalTest ("{:#a write {x:1 y:2} :#a write {y:2 z:3} :(read #a) assert [S|x y z #a 1 2 -- #a -- -- 3] <-0}", "0");
+      DoEvalTest ("{:#a force {x:1 y:2} :#a force {y:2 z:3} :(read #a) assert [S|x y z #a 1 2 -- #a -- 2 3] <-0}", "0");
+    }
+
+    [Test]
     public void TestWriteReadSuspended()
     {
       DoEvalTest ("{reader:fiber {<-#x read 0} :#x #x write {a:1 10 b:2 20 c:3 30} :(wait $reader) assert [S|a b c #x 1 2 3 #x 10 20 30] <-0}", "0");

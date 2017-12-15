@@ -53,7 +53,9 @@ namespace RCL.Kernel
       MaybeBR,
       Newline1,
       Blockquote,
-      ListItem
+      ListItem,
+      Em,
+      Bold
     }
 
     public override RCValue Parse (RCArray<RCToken> tokens, out bool fragment)
@@ -86,7 +88,7 @@ namespace RCL.Kernel
     protected StringBuilder m_run = new StringBuilder ();
     public override void AcceptMarkdownContent (RCToken token) 
     {
-      //Console.Out.WriteLine ("AcceptMarkdownContent({0}): '{1}'", m_state, token.Text);
+      Console.Out.WriteLine ("AcceptMarkdownContent({0}): '{1}'", m_state, token.Text);
       //Console.Out.WriteLine ("m_parsingParagraph: {0}", m_parsingParagraph);
       //Console.Out.WriteLine ("m_parsingList: {0}", m_parsingList);
       //Console.Out.WriteLine ("m_liLength: {0}", m_liLength);
@@ -122,6 +124,8 @@ namespace RCL.Kernel
     protected void FinishList ()
     {
       if (m_parsingList && m_liLength <= 0 &&
+          m_state != MarkdownState.Em &&
+          m_state != MarkdownState.Bold &&
           m_state != MarkdownState.ListItem &&
           m_state != MarkdownState.Paragraph &&
           m_state != MarkdownState.Link)
@@ -146,6 +150,8 @@ namespace RCL.Kernel
     protected void UpdateTextRun (StringBuilder run, string text)
     {
       if (m_state == MarkdownState.Paragraph ||
+          m_state == MarkdownState.Em ||
+          m_state == MarkdownState.Bold ||
           m_state == MarkdownState.Link ||
           m_state == MarkdownState.Blockquote ||
           m_state == MarkdownState.MaybeBR ||
@@ -158,6 +164,7 @@ namespace RCL.Kernel
         text = text.TrimStart ();
         if (m_parsingParagraph || run.Length > 0)
         {
+          Console.Out.WriteLine ("Adding a space -- run:'{0}'", run.ToString ());
           run.Append (" ");
         }
         run.Append (text);
@@ -181,7 +188,7 @@ namespace RCL.Kernel
 
     public override void AcceptEndOfLine (RCToken token)
     {
-      //Console.Out.WriteLine ("AcceptEndOfLine({0})", m_state);
+      Console.Out.WriteLine ("AcceptEndOfLine({0})", m_state);
       //Console.Out.WriteLine ("m_parsingParagraph: {0}", m_parsingParagraph);
       //Console.Out.WriteLine ("m_parsingList: {0}", m_parsingList);
       if (token.Index == 0)
@@ -240,11 +247,13 @@ namespace RCL.Kernel
     public override void AcceptMarkdownBeginBold (RCToken token)
     {
       //Console.Out.WriteLine ("AcceptMarkdownBeginBold: '{0}'", token.Text);
+      UpdateTextRun (m_run, "");
       AppendRun ();
       m_name = "strong";
       StartBlock ();
       m_name = "";
       m_value = RCBlock.Empty;
+      m_state = MarkdownState.Bold;
     }
 
     public override void AcceptMarkdownEndBold (RCToken token)
@@ -255,12 +264,14 @@ namespace RCL.Kernel
 
     public override void AcceptMarkdownBeginItalic (RCToken token)
     {
-      //Console.Out.WriteLine ("AcceptMarkdownBeginItalic: '{0}'", token.Text);
+      //Console.Out.WriteLine ("AcceptMarkdownBeginItalic({0}): '{1}'", m_state, token.Text);
+      UpdateTextRun (m_run, "");
       AppendRun ();
       m_name = "em";
       StartBlock ();
       m_name = "";
       m_value = RCBlock.Empty;
+      m_state = MarkdownState.Em;
     }
 
     public override void AcceptMarkdownEndItalic (RCToken token)
@@ -603,7 +614,7 @@ namespace RCL.Kernel
         m_state = m_states.Pop ();
         m_value = new RCBlock (m_value, m_name, ":", child);
         m_name = "";
-        //Console.Out.WriteLine ("EndBlock: m_value: {0}", m_value.Format (RCFormat.Pretty));
+        Console.Out.WriteLine ("EndBlock: m_value: {0}", m_value.Format (RCFormat.Pretty));
       }
       //else
       //{

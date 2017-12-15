@@ -15,9 +15,9 @@ namespace RCL.Kernel
     //A null here will indicate that the counter is for reading not dispatching.
     protected readonly List<bool> m_dispatched = new List<bool>();
   
-    public ReadSpec GetReadSpec (RCSymbol symbol, int limit)
+    public ReadSpec GetReadSpec (RCSymbol symbol, int limit, bool force, bool fill)
     {
-      ReadSpec result = new ReadSpec (limit);
+      ReadSpec result = new ReadSpec (limit, force, fill);
       if (limit == 0)
       {
         limit = int.MaxValue;
@@ -40,9 +40,9 @@ namespace RCL.Kernel
       return result;
     }
   
-    public ReadSpec GetReadSpec (RCSymbol symbol, RCLong starts)
+    public ReadSpec GetReadSpec (RCSymbol symbol, RCLong starts, bool force, bool fill)
     {
-      ReadSpec result = new ReadSpec (0);
+      ReadSpec result = new ReadSpec (0, force, fill);
       for (int i = 0; i < symbol.Count; ++i)
       {
         result.Add (symbol[i], (int) starts[i], int.MaxValue);

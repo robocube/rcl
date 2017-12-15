@@ -53,7 +53,9 @@ namespace RCL.Kernel
       int length = LengthOfKeyword (code, start, "**");
       if (length > 0)
       {
-        if (previous == null || previous.Text.EndsWith (" "))
+        if (previous == null ||
+            previous.Text.EndsWith (" ") ||
+            previous.Text.EndsWith ("\n"))
         {
           return new RCToken ("**", this, start, index);  
         }
@@ -113,7 +115,9 @@ namespace RCL.Kernel
       int length = LengthOfKeyword (code, start, "_");
       if (length > 0)
       {
-        if (previous == null || previous.Text.EndsWith (" "))
+        if (previous == null ||
+            previous.Text.EndsWith (" ") ||
+            previous.Text.EndsWith ("\n"))
         {
           return new RCToken ("_", this, start, index);  
         }

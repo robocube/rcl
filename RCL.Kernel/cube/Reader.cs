@@ -157,7 +157,7 @@ namespace RCL.Kernel
       m_fill = false;
       //if inCount is one then this is the first row and we need to fill in values from prior states.
       //if symbol == null then every single row and column needs to be included in the output.
-      if (inCount == 1)
+      if (m_spec.Fill && inCount == 1)
       {
         m_fill = true;
       }
@@ -180,7 +180,7 @@ namespace RCL.Kernel
       }
       m_target.Write (g, e, t, s);
     }
-  
+ 
     public override void VisitNull<T> (string name, Column<T> column, int row)
     {
       if (!m_accept)
@@ -206,7 +206,7 @@ namespace RCL.Kernel
         return;
       }
       RCSymbolScalar symbol = m_source.Axis.SymbolAt (column.Index[row]);
-      m_target.WriteCell (name, symbol, column.Data[row]);
+      m_target.WriteCell (name, symbol, column.Data[row], -1, false, m_spec.Force);
     }
   }
 }

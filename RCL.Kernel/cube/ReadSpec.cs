@@ -11,6 +11,8 @@ namespace RCL.Kernel
     protected readonly bool m_forward = true;
     protected readonly bool m_ignoreDispatchedRows = true;
     protected int m_start = int.MaxValue;
+    protected bool m_force = false;
+    protected bool m_fill = true;
 
     protected bool m_unlimited;
     protected int m_symbolLimit;
@@ -37,16 +39,19 @@ namespace RCL.Kernel
     }
 
     //This is for read and its ilk
-    public ReadSpec (int defaultLimit)
+    public ReadSpec (int defaultLimit, bool force, bool fill)
     {
       m_forward = defaultLimit >= 0;
       m_unlimited = defaultLimit == 0;
       m_symbolLimit = Math.Abs (m_unlimited ? int.MaxValue : defaultLimit);
+      m_force = force;
     }
   
-    public ReadSpec (RCSymbol left, RCLong right, int defaultLimit, bool ignoreDispatchedRows)
+    public ReadSpec (RCSymbol left, RCLong right, int defaultLimit, bool ignoreDispatchedRows, bool force, bool fill)
     {
       m_ignoreDispatchedRows = ignoreDispatchedRows;
+      m_force = force;
+      m_fill = fill;
       if (right.Count == 1)
       {
         //Its the start point.
@@ -112,6 +117,16 @@ namespace RCL.Kernel
       get { return m_totalLimit; }
     }
   
+    public bool Force
+    {
+      get { return m_force; }
+    }
+
+    public bool Fill
+    {
+      get { return m_fill; }
+    }
+
     public void Add (RCSymbolScalar scalar, int start, int limit)
     {
       SpecRecord record = new SpecRecord (scalar);

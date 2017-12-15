@@ -867,7 +867,8 @@ namespace RCL.Kernel
     public RCArray<RCSymbolScalar> Write (ReadCounter counter,
                                           RCSymbol symbol,
                                           RCBlock data,
-                                          long initg)
+                                          long initg,
+                                          bool force)
     {
       HashSet<RCSymbolScalar> result = new HashSet<RCSymbolScalar> ();
       for (int i = 0; i < symbol.Count; ++i)
@@ -883,7 +884,7 @@ namespace RCL.Kernel
             throw new Exception ("All columns must have the same count.");
           }
           object box = column.Value.Child (i);
-          if (WriteCell (column.Name, symbol[i], box) != null)
+          if (WriteCell (column.Name, symbol[i], box, -1, false, force) != null)
           {
             result.Add (symbol[i]);
           }
