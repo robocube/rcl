@@ -75,6 +75,37 @@ namespace RCL.Core
         //fill causes prior values to be filled into the results.
         //This read gives you exactly what exists in the blackboard.
         RCLong args = new RCLong (0, 0);
+        Read (runner, closure, right, new ReadSpec (right, args, 0, false, false, true));
+      }
+      catch (Exception)
+      {
+        throw;
+      }
+    }
+
+    [RCVerb ("trace")]
+    public void EvalTrace (RCRunner runner, RCClosure closure, RCLong left, RCSymbol right)
+    {
+      try
+      {
+        Read (runner, closure, right, new ReadSpec (right, left, 0, false, true, false));
+      }
+      catch (Exception)
+      {
+        throw;
+      }
+    }
+
+    [RCVerb ("trace")]
+    public void EvalTrace (RCRunner runner, RCClosure closure, RCSymbol right)
+    {
+      try
+      {
+        //This read is different from all others in that it has force on and fill off.
+        //force causes duplicate values to be written.
+        //fill causes prior values to be filled into the results.
+        //This read gives you exactly what exists in the blackboard.
+        RCLong args = new RCLong (0, 0);
         Read (runner, closure, right, new ReadSpec (right, args, 0, false, true, false));
       }
       catch (Exception)

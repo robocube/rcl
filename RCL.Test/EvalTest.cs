@@ -1069,10 +1069,16 @@ namespace RCL.Test
     }
 
     [Test]
-    public void TestForceWithMonadicRead ()
+    public void TestForceWithMonadicTrace ()
     {
-      DoEvalTest ("{:#a write {x:1 y:2} :#a write {y:2 z:3} :(read #a) assert [S|x y z #a 1 2 -- #a -- -- 3] <-0}", "0");
-      DoEvalTest ("{:#a force {x:1 y:2} :#a force {y:2 z:3} :(read #a) assert [S|x y z #a 1 2 -- #a -- 2 3] <-0}", "0");
+      DoEvalTest ("{:#a write {x:1 y:2} :#a write {y:2 z:3} :(trace #a) assert [S|x y z #a 1 2 -- #a -- -- 3] <-0}", "0");
+      DoEvalTest ("{:#a force {x:1 y:2} :#a force {y:2 z:3} :(trace #a) assert [S|x y z #a 1 2 -- #a -- 2 3] <-0}", "0");
+    }
+
+    [Test]
+    public void TestForceWithDyadicTrace ()
+    {
+      DoEvalTest ("{:#a force {x:1 y:2} :#a force {y:2 z:3} :(1 0 trace #a) assert [S|y z #a 2 3] <-0}", "0");
     }
 
     [Test]
