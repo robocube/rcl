@@ -184,7 +184,20 @@ namespace RCL.Kernel
         int severity = 6;
         if (info is Exception)
         {
-          severity = 3;
+          if (type == "fiber" && state == "killed")
+          {
+            //It's important to use an exception here because this is
+            //a non-standard termination; it relies on the regular process
+            //for non-standard terminations.
+            //But we assume you are killing the fiber because you want it dead,
+            //so it shouldn't be treated like an error.
+            //An important use case is canceling read commands over http
+            severity = 6;
+          }
+          else
+          {
+            severity = 3;
+          }
         }
         m_output.WriteLine ("<{0}>{1} {2} {3} {4} {5} {6}",
                             severity, bot, fiber, type, instance, state, info.ToString ());

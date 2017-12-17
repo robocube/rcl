@@ -12,28 +12,28 @@ namespace RCL.Core
     public void EvalSleep (
       RCRunner runner, RCClosure closure, RCByte right)
     {
-      SetTimer(runner, closure, right, (int) right[0]);
+      SetTimer (runner, closure, right, (int) right[0]);
     }
 
     [RCVerb ("sleep")]
     public void EvalSleep (
       RCRunner runner, RCClosure closure, RCLong right)
     {
-      SetTimer(runner, closure, right, (int) right[0]);
+      SetTimer (runner, closure, right, (int) right[0]);
     }
 
     [RCVerb ("sleep")]
     public void EvalSleep (
       RCRunner runner, RCClosure closure, RCDouble right)
     {
-      SetTimer(runner, closure, right, (int) right[0]);
+      SetTimer (runner, closure, right, (int) right[0]);
     }
 
     [RCVerb ("sleep")]
     public void EvalSleep (
       RCRunner runner, RCClosure closure, RCDecimal right)
     {
-      SetTimer(runner, closure, right, (int) right[0]);
+      SetTimer (runner, closure, right, (int) right[0]);
     }
 
     protected virtual void SetTimer (
