@@ -428,6 +428,17 @@ namespace RCL.Core
     [RCVerb ("write")]
     public void EvalWrite (RCRunner runner, RCClosure closure, RCCube right)
     {
+      Write (runner, closure, right, false);
+    }
+
+    [RCVerb ("force")]
+    public void EvalForce (RCRunner runner, RCClosure closure, RCCube right)
+    {
+      Write (runner, closure, right, true);
+    }
+
+    protected void Write (RCRunner runner, RCClosure closure, RCCube right, bool force)
+    {
       try
       {
         RCArray<RCSymbolScalar> symbols;
@@ -441,23 +452,13 @@ namespace RCL.Core
         }
         RCSymbol symbol = new RCSymbol (right.Axis.Symbol);
         Dictionary<long, RCClosure> all = null;
-        //long G, E;
-        //RCTimeScalar T;
-        //RCSymbolScalar S;
         lock (m_readWriteLock)
         {
           Section s = GetSection (symbol);
-          symbols = s.m_blackboard.Write (s.m_counter, right, false, false, s.m_g);
+          symbols = s.m_blackboard.Write (s.m_counter, right, false, force, s.m_g);
           line = s.m_g + s.m_blackboard.Count;
           s.m_readWaiters.GetReadersForSymbol (ref all, symbols);
           s.m_dispatchWaiters.GetReadersForSymbol (ref all, symbols);
-          /*
-          int last = s.m_blackboard.Axis.Count;
-          G = s.m_blackboard.Axis.Global[last];
-          E = s.m_blackboard.Axis.Event[last];
-          T = s.m_blackboard.Axis.Time[last];
-          S = s.m_blackboard.Axis.Symbol[last];
-          */
         }
         ContinueWaiters (runner, all);
         //I really want to see what was written including G and T and i cols.

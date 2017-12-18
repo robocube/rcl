@@ -1082,6 +1082,18 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestForceCubeDyadicTrace ()
+    {
+      DoEvalTest ("{:force [S|x y #a 1 2] :force [S|y z #a 2 3] :(1 0 trace #a) assert [S|y z #a 2 3] <-0}", "0");
+    }
+
+    [Test]
+    public void TestForceCubeMonadicTrace ()
+    {
+      DoEvalTest ("{:force [S|x y #a 1 2] :force [S|y z #a 2 3] :(trace #a) assert [S|x y z #a 1 2 -- #a -- 2 3] <-0}", "0");
+    }
+
+    [Test]
     public void TestWriteReadSuspended()
     {
       DoEvalTest ("{reader:fiber {<-#x read 0} :#x #x write {a:1 10 b:2 20 c:3 30} :(wait $reader) assert [S|a b c #x 1 2 3 #x 10 20 30] <-0}", "0");
