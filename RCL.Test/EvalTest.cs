@@ -777,6 +777,12 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestEachArrays ()
+    {
+      DoEvalTest ("{<-$I} each 3 4 5", "{:0 :1 :2}");
+    }
+
+    [Test]
     public void TestEmptyEval ()
     {
       DoEvalTest ("count eval {}", "0");

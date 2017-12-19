@@ -119,7 +119,8 @@ namespace RCL.Core
       int i = closure.Index - 2;
       if (i < right.Count)
       {
-        RCBlock result = new RCBlock ("R", ":",
+        RCBlock result = new RCBlock ("I", ":", new RCLong (i));
+        result = new RCBlock (result, "R", ":",
                                       RCVectorBase.FromArray (new RCArray<T> (right[i])));
         left.Eval (runner,
                    new RCClosure (closure, closure.Bot, left, closure.Left, result, 0));
