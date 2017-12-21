@@ -1989,8 +1989,8 @@ namespace RCL.Test
     [Test]
     public void TestSelfExecWithExit ()
     {
-      DoEvalTest ("\"exit.rcl\" save #pretty format {go:exit 1}", "\"exit.rcl\"");
-      DoEvalTest ("unwrap #status from try {<-exec \"mono --debug rcl.exe --program=exit.rcl --action=go\"}", "1");
+      DoEvalTest ("\"exit.rcl\" save #pretty format {go:exit 21}", "\"exit.rcl\"");
+      DoEvalTest ("unwrap #status from try {<-exec \"mono --debug rcl.exe --program=exit.rcl --action=go\"}", "21");
     }
 
     RCRunner runner = new RCRunner (RCActivator.Default, new RCLog (new RCLogger ()), 1, new RCLArgv ());

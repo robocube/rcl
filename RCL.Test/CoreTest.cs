@@ -13,6 +13,7 @@ namespace RCL.Test
     protected RCRunner runner = new RCRunner (RCActivator.Default,
                                               new RCLog (), 1,
                                               new RCLArgv ("--output=test"));
+
     public void DoTest (string code, string expected)
     {
       try
@@ -2162,6 +2163,30 @@ namespace RCL.Test
     public void TestKillAfterThrow ()
     {
       DoTest ("{b:bot {:assert false} :wait $b :kill $b <-0}", "0");
+    }
+
+    [Test]
+    public void TestWaitFiberTimeout ()
+    {
+      DoTest ("#status get try {<-500 wait fiber {<-read #a}}", "1");
+    }
+
+    [Test]
+    public void TestWaitBotTimeout ()
+    {
+      DoTest ("#status get try {<-500 wait bot {<-read #a}}", "1");
+    }
+
+    [Test]
+    public void TestWaitFiberNoTimeout ()
+    {
+      DoTest ("{f:fiber {<-try {<-500 wait fiber {<-read #a}}} :#a write {x:1} <-#status get wait $f}", "0");
+    }
+
+    [Test]
+    public void TestWaitBotNoTimeout ()
+    {
+      DoTest ("#status get try {<-500 wait bot {f:fiber {<-read #a} :#a write {x:1} <-wait $f}}", "0");
     }
 
     //These three tests are still important but the module operator itself

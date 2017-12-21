@@ -269,6 +269,7 @@ namespace RCL.Kernel
 
     protected RCClosure m_root = null;
     protected long m_bot = 1;
+    protected long m_reset = 0;
     protected RCArray<Thread> m_workers = new RCArray<Thread> ();
     protected int m_exit = -1;
     protected volatile RCValue m_result = null;
@@ -337,7 +338,6 @@ namespace RCL.Kernel
       RCClosure closure = new RCClosure (
         parent, m_bots[0], program, null, RCBlock.Empty, 0, null, null);
       
-      //RCClosure closure = new RCClosure (m_bots[0], program);
       RCValue result = Run (closure);
       return result;
     }
@@ -371,7 +371,7 @@ namespace RCL.Kernel
         m_exception = null;
         throw exception;
       }
-      //The final result is assigned by the worker in Finish().
+      //The final result is assigned by the worker in Finish ().
       RCValue result = m_result;
       m_result = null;
       return result;
@@ -395,7 +395,8 @@ namespace RCL.Kernel
     //This is done in an atomic fashion so that all fibers will be
     //represented in m_pending or m_queue at all times.
     //previous will be null in cases where Continue is used to retry or fork streams of execution.
-    //next will be null in cases where the executing fiber is finished and all that remains is to remove it from m_pending.
+    //next will be null in cases where the executing fiber is finished and all
+    //that remains is to remove it from m_pending.
     public void Continue (RCClosure previous, RCClosure next)
     {
       bool live = false;
@@ -589,6 +590,7 @@ namespace RCL.Kernel
           m_bots = new Dictionary<long, RCBot> ();
           m_bots[0] = new RCBot (this, 0);
           m_output[0] = new Queue<RCAsyncState> ();
+          ++m_reset;
         }
       }
     }
@@ -942,6 +944,164 @@ namespace RCL.Kernel
               waiters.Enqueue (closure);
               fiber.m_fiberWaiters.Add (fibers[1], waiters);
             }
+          }
+        }
+        if (result != null)
+        {
+          Yield (closure, result);
+        }
+      }
+      else
+      {
+        throw new Exception ();
+      }
+    }
+
+    protected class Wakeup
+    {
+      protected readonly RCAsyncState m_state;
+      protected readonly long m_resetCount;
+
+      public Wakeup (RCAsyncState state, long resetCount)
+      {
+        m_state = state;
+        m_resetCount = resetCount;
+      }
+
+      public virtual void ContinueBot (Object obj)
+      {
+        Timer timer = (Timer) obj;
+        RCLong fibers = (RCLong) m_state.Other;
+        try
+        {
+          lock (m_state.Runner.m_botLock)
+          {
+            if (m_state.Runner.m_reset != m_resetCount) return;
+            Queue<RCClosure> waiters;
+            //Since the results are not stored anywhere, we time out if there are waiters
+            //But what if there are multiple waiters? Seems like an issue.
+            if (m_state.Runner.m_botWaiters.TryGetValue (fibers[0], out waiters))
+            {
+              Exception ex = new Exception ("Timed out waiting for bot " + fibers[0]);
+              m_state.Runner.Finish (m_state.Closure, ex, 1);
+            }
+          }
+        }
+        catch (Exception ex)
+        {
+          m_state.Runner.Report (m_state.Closure, ex);
+        }
+        finally
+        {
+          timer.Dispose ();
+        }
+      }
+
+      public virtual void ContinueFiber (Object obj)
+      {
+        Timer timer = (Timer) obj;
+        RCLong fibers = (RCLong) m_state.Other;
+        try
+        {
+          Fiber fiber;
+          lock (m_state.Runner.m_botLock)
+          {
+            if (m_state.Runner.m_reset != m_resetCount) return;
+            fiber = (Fiber) m_state.Runner.m_bots[fibers[0]].GetModule (typeof (Fiber));
+          }
+          lock (fiber.m_fiberLock)
+          {
+            RCValue result = null;
+            if (!fiber.m_fiberResults.TryGetValue (fibers[1], out result))
+            {
+              Exception ex = new Exception ("Timed out waiting for fiber " + fibers[1]);
+              m_state.Runner.Finish (m_state.Closure, ex, 1);
+            }
+          }
+        }
+        catch (Exception ex)
+        {
+          m_state.Runner.Report (m_state.Closure, ex);
+        }
+        finally
+        {
+          timer.Dispose ();
+        }
+      }
+    }
+
+    public void Wait (RCClosure closure, RCLong timeout, RCLong fibers)
+    {
+      //At some point I want this to work for multiple fibers,
+      //but the current version will only wait on a single fiber.
+      if (fibers.Count == 1)
+      {
+        Fiber fiber;
+        lock (m_botLock)
+        {
+          fiber = (Fiber) m_bots[fibers[0]].GetModule (typeof (Fiber));
+        }
+        RCValue result = null;
+        lock (fiber.m_fiberLock)
+        {
+          if (fiber.m_fiberResults.Count == fiber.m_fibers.Count)
+          {
+            fiber.m_fiberResults.TryGetValue (0, out result);
+          }
+        }
+        if (result == null)
+        {
+          lock (m_botLock)
+          {
+            Queue<RCClosure> waiters;
+            if (m_botWaiters.TryGetValue (fibers[0], out waiters))
+            {
+              waiters.Enqueue (closure);
+            }
+            else
+            {
+              waiters = new Queue<RCClosure> ();
+              waiters.Enqueue (closure);
+              m_botWaiters.Add (fibers[0], waiters);
+            }
+            RCAsyncState state = new RCAsyncState (this, closure, fibers);
+            Wakeup wakeup = new Wakeup (state, m_reset);
+            Timer timer = new Timer (wakeup.ContinueBot);
+            timer.Change (timeout[0], Timeout.Infinite);
+          }
+        }
+        else
+        {
+          Yield (closure, result);
+        }
+      }
+      else if (fibers.Count == 2)
+      {
+        RCValue result = null;
+        Fiber fiber;
+        lock (m_botLock)
+        {
+          fiber = (Fiber) m_bots[fibers[0]].GetModule (typeof (Fiber));
+        }
+        lock (fiber.m_fiberLock)
+        {
+          if (!fiber.m_fiberResults.TryGetValue (fibers[1], out result))
+          {
+            Queue<RCClosure> waiters;
+            if (fiber.m_fiberWaiters.TryGetValue (fibers[1], out waiters))
+            {
+              waiters.Enqueue (closure);
+            }
+            else
+            {
+              waiters = new Queue<RCClosure> ();
+              waiters.Enqueue (closure);
+              fiber.m_fiberWaiters.Add (fibers[1], waiters);
+            }
+            RCAsyncState state = new RCAsyncState (this, closure, fibers);
+            Wakeup wakeup = new Wakeup (state, m_reset);
+            Timer timer = new Timer (wakeup.ContinueFiber);
+            timer.Change (timeout[0], Timeout.Infinite);
           }
         }
         if (result != null)
