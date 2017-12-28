@@ -5,4 +5,5 @@ obj/
 RCL.userprefs
 gauntlet_results.rcl
 nunit_results.xml
+TestResult.xml
 RCL.Core/obj/

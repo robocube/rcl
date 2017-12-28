@@ -21,15 +21,7 @@ namespace RCL.Test
         runner.Reset ();
         RCValue program = runner.Read (code);
         RCValue result = runner.Run (program);
-        /*
-        System.Console.Out.WriteLine ("code:");
-        System.Console.Out.WriteLine (code);
-        System.Console.Out.WriteLine ("expected:");
-        System.Console.Out.WriteLine (expected);
-        System.Console.Out.WriteLine ("actual:");
-        */
         Assert.IsNotNull (result, "RCRunner.Run result was null");
-        //System.Console.Out.WriteLine (result.ToString ());
         Assert.AreEqual (expected, result.ToString ());
       }
       catch (RCException ex)
@@ -1931,7 +1923,6 @@ namespace RCL.Test
     public void TestTypenameU () { DoTest ("typename [x 0 1 2]", "\"cube\""); }
     [Test]
     public void TestTypenameK () { DoTest ("typename {a:1 b:2 c:3}", "\"block\""); }
-
   }
 
   [TestFixture]
@@ -2187,6 +2178,20 @@ namespace RCL.Test
     public void TestWaitBotNoTimeout ()
     {
       DoTest ("#status get try {<-500 wait bot {f:fiber {<-read #a} :#a write {x:1} <-wait $f}}", "0");
+    }
+
+    [Test]
+    public void TestWaitWithConflictingResult ()
+    {
+      DoTest ("{f1:fiber {:read #a} f2:fiber {:try {<-200 wait $f1} :try {<-kill $f1}} :wait $f2 <-0}", "0");
+      Assert.AreEqual (1, runner.ExceptionCount);
+    }
+
+    [Test]
+    public void TestWaitWithConflictingResult1 ()
+    {
+      DoTest ("{p:{f1:fiber {:read #a} f2:fiber {:try {<-200 wait $f1} :try {<-kill $f1}} :wait $f2} :p {} :p {} <-0}", "0");
+      Assert.AreEqual (2, runner.ExceptionCount);
     }
 
     //These three tests are still important but the module operator itself

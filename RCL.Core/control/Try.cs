@@ -57,20 +57,18 @@ namespace RCL.Core
     {
       if (previous.Index == 1)
       {
-        RCBlock wrapper = new RCBlock ("status", ":", new RCLong (0));
+        long status = 0;
+        if (result is RCNative)
+        {
+          status = 1;
+        }
+        RCBlock wrapper = new RCBlock ("status", ":", new RCLong (status));
         wrapper = new RCBlock (wrapper, "data", ":", result);
         RCClosure next = base.Next (runner, tail, previous, wrapper);
         return next;
       }
       else return base.Next (runner, tail, previous, result);
     }
-
-    /*
-    public override bool IsHigherOrder ()
-    {
-      return false;
-    }
-    */
 
     public override RCValue Finish (RCValue result)
     {

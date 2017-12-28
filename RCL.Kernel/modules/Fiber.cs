@@ -200,7 +200,7 @@ public class Fiber : RCOperator
         //to do next.
         if (!m_fiberResults[fiber].Equals (result))
         {
-          throw new Exception ("Conflicting results for fiber.");
+          throw new Exception ("Conflicting results for fiber " + fiber);
         }
       }
       if (m_fiberResults.Count == m_fibers.Count)

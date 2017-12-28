@@ -215,7 +215,6 @@ namespace RCL.Kernel
       if (options)
       {
         Console.WriteLine ();
-        //Console.Write ("Arguments:");
         if (Arguments.Count > 0)
         {
           for (int i = 0; i < Arguments.Count; ++i)
@@ -228,7 +227,6 @@ namespace RCL.Kernel
           }
           Console.WriteLine ();
         }
-        //Console.WriteLine ("Options:");
         Console.WriteLine (Options.Format (RCFormat.Pretty));
       }
       if (options || copyright)
@@ -274,6 +272,7 @@ namespace RCL.Kernel
     protected int m_exit = -1;
     protected volatile RCValue m_result = null;
     protected volatile Exception m_exception = null;
+    protected volatile int m_exceptionCount = 0;
     protected RCParser m_parser;
 
     protected readonly object m_queueLock = new object ();
@@ -497,6 +496,7 @@ namespace RCL.Kernel
             catch (Exception sysex)
             {
               m_exception = sysex;
+              ++m_exceptionCount;
               m_done.Set ();
             }
           }
@@ -584,6 +584,7 @@ namespace RCL.Kernel
           m_root = null;
           m_result = null;
           m_exception = null;
+          m_exceptionCount = 0;
           m_queue = new Queue<RCClosure> ();
           m_pending = new Dictionary<long, Dictionary<long, RCClosure>> ();
           m_bot = 1;
@@ -697,6 +698,7 @@ namespace RCL.Kernel
         {
           closure.Bot.ChangeFiberState (closure.Fiber, "caught");
           Log.Record (this, closure, "fiber", closure.Fiber, "caught", exception);
+          ++m_exceptionCount;
           return;
         }
         parent = parent.Parent;
@@ -707,6 +709,7 @@ namespace RCL.Kernel
         string state = status == 1 ? "failed" : "killed";
         closure.Bot.ChangeFiberState (closure.Fiber, state);
         Log.Record (this, closure, "fiber", closure.Fiber, state, exception);
+        ++m_exceptionCount;
         if (closure.Fiber == 0 && closure.Bot.Id == 0)
         {
           m_exception = exception;
@@ -978,8 +981,8 @@ namespace RCL.Kernel
           {
             if (m_state.Runner.m_reset != m_resetCount) return;
             Queue<RCClosure> waiters;
-            //Since the results are not stored anywhere, we time out if there are waiters
-            //But what if there are multiple waiters? Seems like an issue.
+            //Since the bot results are not stored anywhere, we time out if there are waiters
+            //But what if there are multiple waiters? This seems like an issue.
             if (m_state.Runner.m_botWaiters.TryGetValue (fibers[0], out waiters))
             {
               Exception ex = new Exception ("Timed out waiting for bot " + fibers[0]);
@@ -1014,8 +1017,11 @@ namespace RCL.Kernel
             RCValue result = null;
             if (!fiber.m_fiberResults.TryGetValue (fibers[1], out result))
             {
-              Exception ex = new Exception ("Timed out waiting for fiber " + fibers[1]);
-              m_state.Runner.Finish (m_state.Closure, ex, 1);
+              //Exception ex = new Exception ("Timed out waiting for fiber " + fibers[1]);
+              //m_state.Runner.Finish (m_state.Closure, ex, 1);
+              //m_state.Runner.Yield (m_state.Closure, new RCString ("Timed out waiting for fiber"));
+              m_state.Runner.Kill (fibers[0], fibers[1],
+                                   new Exception ("Timed out waiting for fiber " + fibers[1]), 1);
             }
           }
         }
@@ -1250,11 +1256,13 @@ namespace RCL.Kernel
     {
       closure.Bot.ChangeFiberState (closure.Fiber, "reported");
       Log.Record (this, closure, "fiber", closure.Fiber, "reported", ex);
+      ++m_exceptionCount;
     }
 
     public void Report (Exception ex)
     {
       Log.Record (this, null, "fiber", 0, "reported", ex);
+      ++m_exceptionCount;
     }
 
     public RCOperator New (string op, RCValue right)
@@ -1269,6 +1277,11 @@ namespace RCL.Kernel
       if (right == null)
         throw new ArgumentNullException ("R");
       return Activator.New (op, left, right);
+    }
+
+    public int ExceptionCount
+    {
+      get { return m_exceptionCount; }
     }
   }
 }
