@@ -68,6 +68,12 @@ namespace RCL.Kernel
       module.ChangeFiberState (fiber, state);
     }
 
+    public bool IsFiberDone (long fiber)
+    {
+      Fiber module = (Fiber) GetModule (typeof (Fiber));
+      return module.IsFiberDone (fiber);
+    }
+
     //This does not really implement the dispose pattern it just
     //calls dispose on the objects that do.
     public void Dispose ()

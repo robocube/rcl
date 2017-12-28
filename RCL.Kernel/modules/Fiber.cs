@@ -164,6 +164,14 @@ public class Fiber : RCOperator
     return done;
   }
 
+  public bool IsFiberDone (long fiber)
+  {
+    lock (m_fiberLock)
+    {
+      return m_fiberResults.ContainsKey (fiber);
+    }
+  }
+
   public void ChangeFiberState (long handle, string state)
   {
     FiberState fiberState;

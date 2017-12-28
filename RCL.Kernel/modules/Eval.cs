@@ -711,7 +711,9 @@ namespace RCL.Kernel
         {
           runner.Finish (closure, result);
         }
-        else
+        //This will handle fibers that wake up from some suspended state
+        //without realizing that they have been killed.
+        else if (!closure.Bot.IsFiberDone (closure.Fiber))
         {
           closure.Bot.FiberDone (runner, closure.Bot.Id, closure.Fiber, result);
         }

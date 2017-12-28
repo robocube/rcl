@@ -2184,6 +2184,7 @@ namespace RCL.Test
     public void TestWaitWithConflictingResult ()
     {
       DoTest ("{f1:fiber {:read #a} f2:fiber {:try {<-200 wait $f1} :try {<-kill $f1}} :wait $f2 <-0}", "0");
+      // The single exception is for the killed fiber
       Assert.AreEqual (1, runner.ExceptionCount);
     }
 
@@ -2191,6 +2192,13 @@ namespace RCL.Test
     public void TestWaitWithConflictingResult1 ()
     {
       DoTest ("{p:{f1:fiber {:read #a} f2:fiber {:try {<-200 wait $f1} :try {<-kill $f1}} :wait $f2} :p {} :p {} <-0}", "0");
+      Assert.AreEqual (2, runner.ExceptionCount);
+    }
+
+    [Test]
+    public void TestWaitWithConflictingResult2 ()
+    {
+      DoTest ("{p:{f1:fiber {out:#a read 0 <-$out} f2:fiber {:kill $f1 :wait $f1 :#a write {x:0}} :wait $f2 <-0} :p {} :clear #a :p {} <-0}", "0");
       Assert.AreEqual (2, runner.ExceptionCount);
     }
 
