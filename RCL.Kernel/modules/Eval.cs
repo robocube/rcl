@@ -699,6 +699,12 @@ namespace RCL.Kernel
       {
         throw new ArgumentNullException ("result");
       }
+      //Check to see if this fiber was killed before moving on
+      if (closure.Bot.IsFiberDone (closure.Fiber))
+      {
+        runner.Continue (closure, null);
+        return;
+      }
       //Do not permit any further changes to result or its children values.
       result.Lock ();
       RCClosure next = closure.Code.Next (runner, closure, closure, result);
@@ -713,7 +719,7 @@ namespace RCL.Kernel
         }
         //This will handle fibers that wake up from some suspended state
         //without realizing that they have been killed.
-        else if (!closure.Bot.IsFiberDone (closure.Fiber))
+        else
         {
           closure.Bot.FiberDone (runner, closure.Bot.Id, closure.Fiber, result);
         }

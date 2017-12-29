@@ -2202,6 +2202,12 @@ namespace RCL.Test
       Assert.AreEqual (2, runner.ExceptionCount);
     }
 
+    [Test]
+    public void TestWaitWithConflictingResult3 ()
+    {
+      DoTest ("{f:fiber {:#a read 0 :#m putm 1} :200 wait $f :kill $f :#a write {x:1} :wait $f :assert not hasm #m <-0}", "0");
+    }
+
     //These three tests are still important but the module operator itself
     //can be removed since it was an abomination. Should work "out of the box" now.
     [Test]
