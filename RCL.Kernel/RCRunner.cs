@@ -272,7 +272,15 @@ namespace RCL.Kernel
     protected int m_exit = -1;
     protected volatile RCValue m_result = null;
     protected volatile Exception m_exception = null;
-    protected volatile int m_exceptionCount = 0;
+
+    /// <summary>
+    /// Keeps a count of exceptions reported, mostly for unit testing purposes
+    /// </summary>
+    public volatile int m_exceptionCount = 0;
+
+    /// <summary>
+    /// The parser used for any parsing operations by this runner
+    /// </summary>
     protected RCParser m_parser;
 
     protected readonly object m_queueLock = new object ();
