@@ -986,9 +986,14 @@ namespace RCL.Kernel
             if (m_state.Runner.m_botWaiters.TryGetValue (fibers[0], out waiters))
             {
               Exception ex = new Exception ("Timed out waiting for bot " + fibers[0]);
-              m_state.Runner.Finish (m_state.Closure, ex, 1);
+              m_state.Runner.Kill (fibers[0], -1, ex, 2);
             }
           }
+        }
+        catch (ThreadAbortException)
+        {
+          //This often happens as the runtime is shutting down,
+          //because this code runs on a thread pool thread.
         }
         catch (Exception ex)
         {
@@ -1017,13 +1022,15 @@ namespace RCL.Kernel
             RCValue result = null;
             if (!fiber.m_fiberResults.TryGetValue (fibers[1], out result))
             {
-              //Exception ex = new Exception ("Timed out waiting for fiber " + fibers[1]);
-              //m_state.Runner.Finish (m_state.Closure, ex, 1);
-              //m_state.Runner.Yield (m_state.Closure, new RCString ("Timed out waiting for fiber"));
-              m_state.Runner.Kill (fibers[0], fibers[1],
-                                   new Exception ("Timed out waiting for fiber " + fibers[1]), 1);
+              Exception ex = new Exception ("Timed out waiting for fiber " + fibers[1]);
+              m_state.Runner.Kill (fibers[0], fibers[1], ex, 2);
             }
           }
+        }
+        catch (ThreadAbortException)
+        {
+          //This often happens as the runtime is shutting down,
+          //because this code runs on a thread pool thread.
         }
         catch (Exception ex)
         {
