@@ -1995,6 +1995,9 @@ namespace RCL.Test
 
     RCRunner runner = new RCRunner (RCActivator.Default, new RCLog (new RCLogger ()), 1, new RCLArgv ());
 
+    /// <summary>
+    /// Run the test using RCFormat.DefaultNoT (No timestamps on cubes)
+    /// </summary>
     public void DoEvalTest (string code, string expected)
     {
       DoEvalTest (code, expected, RCFormat.DefaultNoT);
