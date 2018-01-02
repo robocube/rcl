@@ -10,13 +10,22 @@ using RCL.Core;
 
 namespace RCL.Exe
 {
+  /// <summary>
+  /// The rcl Interpreter
+  /// </summary>
   public class Program
   {
+    /// <summary>
+    /// Autocomplete handler for Mono.Terminal (Not Implemented Yet)
+    /// </summary>
     static LineEditor.Completion AutoComplete (string text, int pos)
     {
       return new LineEditor.Completion ("RCL>", new string[] {text, text + "foo"});
     }
 
+    /// <summary>
+    /// Entry point for the rcl interpreter
+    /// </summary>
     static void Main (string[] argv)
     {
       string flags = Environment.GetEnvironmentVariable ("RCL_FLAGS");
@@ -188,6 +197,9 @@ namespace RCL.Exe
       Environment.Exit (0);
     }
 
+    /// <summary>
+    /// Remember if we have already received one SIGINT
+    /// </summary>
     protected static volatile bool m_firstSigint = false;
     static void InstallSignalHandler (RCRunner runner)
     {
