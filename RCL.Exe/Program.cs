@@ -6,7 +6,6 @@ using System.Threading;
 using Mono.Terminal;
 using Mono.Unix;
 using RCL.Kernel;
-using RCL.Core;
 
 namespace RCL.Exe
 {
@@ -200,10 +199,10 @@ namespace RCL.Exe
     /// <summary>
     /// Remember if we have already received one SIGINT
     /// </summary>
-    protected static volatile bool m_firstSigint = false;
+    protected static volatile bool m_firstSigint;
     static void InstallSignalHandler (RCRunner runner)
     {
-      UnixSignal[] signals = new UnixSignal [] {
+      UnixSignal[] signals = {
         new UnixSignal (Mono.Unix.Native.Signum.SIGTERM),
         new UnixSignal (Mono.Unix.Native.Signum.SIGINT)
       };
