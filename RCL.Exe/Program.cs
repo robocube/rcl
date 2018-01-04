@@ -15,7 +15,7 @@ namespace RCL.Exe
   public class Program
   {
     /// <summary>
-    /// Autocomplete handler for Mono.Terminal (Not Implemented Yet)
+    /// Autocomplete handler for Mono.Terminal (Autocomplete is not implemented yet)
     /// </summary>
     static LineEditor.Completion AutoComplete (string text, int pos)
     {
@@ -51,7 +51,7 @@ namespace RCL.Exe
       //string message = "\x1b[0;33mYELLOW\x1b[0;31m RED\x1b[0;34m BLUE\x1b[0;37m";
       //Console.Out.WriteLine (message);
       AppDomain.CurrentDomain.UnhandledException += 
-        new UnhandledExceptionEventHandler(UnhandledException);
+        new UnhandledExceptionEventHandler (UnhandledException);
       
       string prompt = "RCL>";
       LineEditor editor = new LineEditor ("RCL");
@@ -200,6 +200,11 @@ namespace RCL.Exe
     /// Remember if we have already received one SIGINT
     /// </summary>
     protected static volatile bool m_firstSigint;
+
+    /// <summary>
+    /// Launches a background thread to listen for POSIX signals. Exit on two signal 2's
+    /// or one signal 15.
+    /// </summary>
     static void InstallSignalHandler (RCRunner runner)
     {
       UnixSignal[] signals = {
@@ -250,11 +255,18 @@ namespace RCL.Exe
       signalThread.Start ();
     }
 
+    /// <summary>
+    /// Write to the Console. Do not exit.
+    /// </summary>
     static void UnhandledException (object sender, UnhandledExceptionEventArgs e)
     {
       Console.Out.WriteLine ("RCL Unhandled:\n" + e.ExceptionObject.ToString ());
     }
 
+    /// <summary>
+    /// Some corny bash-like aliases for various things. We should get rid of this or do
+    /// something better.
+    /// </summary>
     static string Alias (string trimmed, RCRunner runner, RCLogger output, RCLArgv cmd)
     {
       string line = trimmed;
@@ -341,6 +353,9 @@ namespace RCL.Exe
       return line;
     }
 
+    /// <summary>
+    /// Handle paths expressed in unescaped syntax.
+    /// </summary>
     static string GetPathArgument (string alias, string trimmed)
     {
       for (int i = alias.Length; i < trimmed.Length; ++i)
