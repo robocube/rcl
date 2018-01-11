@@ -643,6 +643,8 @@ namespace RCL.Test
     [Test]
     public void TestDoubleS1() { DoTest ("double \"foo\" \"1\" \"2.34\"", "NaN 1.0 2.34"); }
     [Test]
+    public void TestDoubleS2() { DoTest ("0.0 double \"\" \"1\" \"2.34\"", "0.0 1.0 2.34"); }
+    [Test]
     public void TestDoubleK() { DoTest("double {x:0.0 y:1.0 z:2.0}", "0.0 1.0 2.0"); }
 
     [Test]

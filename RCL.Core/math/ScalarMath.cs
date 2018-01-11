@@ -812,6 +812,8 @@ namespace RCL.Core
       }
     }
 
+    [Primitive ("double", Profile.Contextual)]
+    public static double Double (ParseContext<double> c, string r) { return r.Length == 0 ? c.Def : double.Parse (r); }
 
     [Primitive ("byte", Profile.Monadic)]
     public static byte Byte (byte r) { return r; }
