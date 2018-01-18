@@ -1868,6 +1868,15 @@ namespace RCL.Test
     [Test]
     public void TestGetKY1 () { DoTest ("{a:#x b:#y c:#z} get #1", "#y"); }
 
+    [Test]
+    public void TestMergeK0 () { DoTest ("{a:3 b:4} merge {a:2}", "{a:2 b:4}"); }
+    [Test]
+    public void TestMergeK1 () { DoTest ("{x:1 y:2 z:{a:3 b:4}} merge {z:{a:2}}", "{x:1 y:2 z:{a:2 b:4}}"); }
+    [Test]
+    public void TestMergeK2 () { DoTest ("{x:1 y:2 z:{a:3 b:4}} merge {z:{}}", "{x:1 y:2 z:{a:3 b:4}}"); }
+    [Test]
+    public void TestMergeK3 () { DoTest ("{x:1 y:{a:3 b:4} z:2} merge {y:{b:5}}", "{x:1 y:{a:3 b:5} z:2}"); }
+
     //Still need to think about how set should work in the case of a timeline.
     [Test]
     public void TestHasY () { DoTest ("{x:1 y:2 z:3} has #a #y #z", "false true true"); }
