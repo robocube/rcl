@@ -94,6 +94,14 @@ namespace RCL.Core
                                     InnerMerge (lblock, rblock));
               handled.Add (rname.Name);
             }
+            else if (lname.Value is RCOperator)
+            {
+              result = new RCBlock (result,
+                                    rname.Name,
+                                    rname.Evaluator,
+                                    rname.Value);
+              handled.Add (rname.Name);
+            }
             else
             {
               throw new Exception (rname.Name + " must be a block. Was " + lname.Value.TypeName);
