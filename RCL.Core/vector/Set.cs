@@ -101,8 +101,7 @@ namespace RCL.Core
           }
           else
           {
-            result = new RCBlock (
-              result, rname.Name, rname.Evaluator, rname.Value);
+            result = new RCBlock (result, rname.Name, rname.Evaluator, rname.Value);
             handled.Add (rname.Name);
           }
         }
