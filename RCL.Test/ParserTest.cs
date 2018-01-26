@@ -100,7 +100,7 @@ namespace RCL.Test
     [Test]
     public void TestIncr ()
     {
-      DoParserTest ("++ ++ ++");
+      DoParserTest ("++ +- +~");
     }
 
     [Test]

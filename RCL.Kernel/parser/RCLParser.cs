@@ -14,7 +14,7 @@ namespace RCL.Kernel
   /// </summary>
   public class RCLParser : RCParser
   {
-    protected static RCLexer m_o2Lexer;
+    protected internal static RCLexer m_o2Lexer;
     static RCLParser ()
     {
       RCArray<RCTokenType> types = new RCArray<RCTokenType> ();
@@ -26,8 +26,8 @@ namespace RCL.Kernel
       types.Write (RCTokenType.Number);
       types.Write (RCTokenType.Boolean);
       types.Write (RCTokenType.Symbol);
-      types.Write (RCTokenType.Literal);
       types.Write (RCTokenType.Incr);
+      types.Write (RCTokenType.Literal);
       types.Write (RCTokenType.Paren);
       types.Write (RCTokenType.Block);
       types.Write (RCTokenType.Cube);
@@ -38,7 +38,7 @@ namespace RCL.Kernel
       types.Write (RCTokenType.Junk);
       m_o2Lexer = new RCLexer (types);
     }
-  
+
     public RCLParser (RCActivator activator)
     {
       if (activator == null)
@@ -50,7 +50,7 @@ namespace RCL.Kernel
       m_operators.Push (new Stack<RCValue> ());
       m_lexer = m_o2Lexer;
     }
-  
+
     /// <summary>
     /// Parse a given set of tokens, generally aquired using RCLexer.
     /// </summary>

@@ -242,6 +242,7 @@ namespace RCL.Kernel
         {
           case RCIncrScalar.Increment: result.Write (0x00); break;
           case RCIncrScalar.Decrement: result.Write (0x01); break;
+          case RCIncrScalar.Delete:    result.Write (0x02); break;
         }
       }
     }
@@ -510,6 +511,7 @@ namespace RCL.Kernel
         {
           case 0x00: result[i] = RCIncrScalar.Increment; break;
           case 0x01: result[i] = RCIncrScalar.Decrement; break;
+          case 0x02: result[i] = RCIncrScalar.Delete; break;
         }
         start += sizeof (byte);
       }

@@ -83,9 +83,9 @@ namespace RCL.Test
     [Test]
     public void TestIncr ()
     {
-      RCArray<RCToken> tokens = Lex("++");
-      CheckTokens (tokens, "++");
-      CheckTypes (tokens, RCTokenType.Incr);
+      RCArray<RCToken> tokens = Lex ("++ +- +~");
+      CheckTokens (tokens, "++", " ", "+-", " ", "+~");
+      CheckTypes (tokens, RCTokenType.Incr, RCTokenType.WhiteSpace, RCTokenType.Incr, RCTokenType.WhiteSpace, RCTokenType.Incr);
     }
 
     [Test]
@@ -355,8 +355,8 @@ namespace RCL.Test
     [Test]
     public void TestConsecutiveSpecialOperators ()
     {
-      RCArray<RCToken> tokens = Lex("!*%+-/");
-      CheckTokens(tokens, "!", "*", "%", "+", "-", "/");
+      RCArray<RCToken> tokens = Lex("!*%-+/");
+      CheckTokens(tokens, "!", "*", "%", "-", "+", "/");
       CheckTypes(tokens, RCTokenType.Name, RCTokenType.Name, RCTokenType.Name, RCTokenType.Name, RCTokenType.Name, RCTokenType.Name);
     }
 

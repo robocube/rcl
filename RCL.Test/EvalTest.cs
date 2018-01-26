@@ -1910,6 +1910,12 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestLex ()
+    {
+      DoEvalTest ("lex \"{x:1 y:2}\"", "\"{\" \"x\" \":\" \"1\" \" \" \"y\" \":\" \"2\" \"}\"");
+    }
+
+    [Test]
     public void TestStringTemplateCoercionMulti ()
     {
       DoEvalTest ("template \"foo\nbar\nbaz\n\"", "[?\n  foo\n  bar\n  baz\n?]");

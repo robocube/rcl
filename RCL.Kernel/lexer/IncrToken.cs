@@ -14,10 +14,12 @@ namespace RCL.Kernel
     {
       int length = LengthOfKeyword (text, start, "++");
       if (length > 0) return new RCToken ("++", this, start, index);
+      length = LengthOfKeyword (text, start, "+-");
+      if (length > 0) return new RCToken ("+-", this, start, index);
+      length = LengthOfKeyword (text, start, "+~");
+      if (length > 0) return new RCToken ("+~", this, start, index);
       //do not allow decrement as of yet, because I will first need to decide on a suitable replacement
       //for null, which is currently --.
-      //length = LengthOfKeyword(text, start, "---");
-      //if (length > 0) return new RCToken("---", this, start, index);
       return null;
     }
 
@@ -34,12 +36,24 @@ namespace RCL.Kernel
     public override RCIncrScalar ParseIncr (RCLexer lexer, RCToken token)
     {
       //Assume it is always ++ because we don't do -- yet.
-      return RCIncrScalar.Increment;
+      if (token.Text == "++")
+      {
+        return RCIncrScalar.Increment;
+      }
+      else if (token.Text == "+-")
+      {
+        return RCIncrScalar.Decrement;
+      }
+      else if (token.Text == "+~")
+      {
+        return RCIncrScalar.Delete;
+      }
+      else throw new Exception ("Unrecognized incr token: " + token.Text);
     }
 
     public override object Parse (RCLexer lexer, RCToken token)
     {
-      return RCIncrScalar.Increment;
+      return ParseIncr (lexer, token);
     }
   }
 }

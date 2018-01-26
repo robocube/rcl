@@ -9,7 +9,8 @@ namespace RCL.Kernel
   public enum RCIncrScalar
   {
     Increment = 0,
-    Decrement = 1
+    Decrement = 1,
+    Delete = 2
   }
 
   public class RCIncr : RCVector<RCIncrScalar>
@@ -33,7 +34,8 @@ namespace RCL.Kernel
       switch (scalar)
       {
         case RCIncrScalar.Increment : return "++";
-        case RCIncrScalar.Decrement : return "--";
+        case RCIncrScalar.Decrement : return "+-";
+        case RCIncrScalar.Delete    : return "+~";
       }
       throw new InvalidOperationException ();
     }
