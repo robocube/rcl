@@ -25,6 +25,7 @@ namespace RCL.Core
       internal Dictionary<RCSymbolScalar, long> m_dispatchLines = new Dictionary<RCSymbolScalar, long> ();
       internal ReadCounter m_counter = new ReadCounter ();
       internal RCCube m_blackboard = new RCCube (new RCArray<string> ("G", "E", "S"));
+      //internal RCCube m_blackboard = new RCCube (new RCArray<string> ("G", "S"));
 
       internal void Clear ()
       {
@@ -32,6 +33,9 @@ namespace RCL.Core
         m_g += m_blackboard.Count;
         //blackboard cube is dumped.
         m_blackboard = new RCCube (new RCArray<string> ("G", "E", "S"));
+        //Uncomment this to disable the E column I think
+        //I want it to be G or E in the blackboard, not both
+        //m_blackboard = new RCCube (new RCArray<string> ("G", "S"));
         //waiters keep on waiting.
         //But what about m_counter?
         //Shouldn't we just reset it?
@@ -115,8 +119,7 @@ namespace RCL.Core
     }
 
     [RCVerb ("select")]
-    public void EvalSelect (
-      RCRunner runner, RCClosure closure, RCSymbol left, RCCube right)
+    public void EvalSelect (RCRunner runner, RCClosure closure, RCSymbol left, RCCube right)
     {
       RCLong args = new RCLong (0, 0);
       ReadCounter counter = new ReadCounter ();
@@ -125,8 +128,7 @@ namespace RCL.Core
       runner.Yield (closure, result);
     }
 
-    public void Read (
-      RCRunner runner, RCClosure closure, RCSymbol symbol, ReadSpec spec)
+    public void Read (RCRunner runner, RCClosure closure, RCSymbol symbol, ReadSpec spec)
     {
       lock (m_readWriteLock)
       {
@@ -182,8 +184,7 @@ namespace RCL.Core
     }
 
     [RCVerb ("peek")]
-    public void EvalPeek (
-      RCRunner runner, RCClosure closure, RCSymbol left, RCLong right)
+    public void EvalPeek (RCRunner runner, RCClosure closure, RCSymbol left, RCLong right)
     {
       int limit = (int) right[0];
       lock (m_readWriteLock)
@@ -216,8 +217,7 @@ namespace RCL.Core
     }
 
     [RCVerb ("last")]
-    public void EvalLast (
-      RCRunner runner, RCClosure closure, RCSymbol left, RCLong right)
+    public void EvalLast (RCRunner runner, RCClosure closure, RCSymbol left, RCLong right)
     {
       //right now last defaults to -1 and read defaults to long.MaxValue; thats kind of weird.
       //but seems to fit with the way i use it those operators.
@@ -225,8 +225,7 @@ namespace RCL.Core
     }
 
     [RCVerb ("gawk")]
-    public void EvalGawk (
-      RCRunner runner, RCClosure closure, RCSymbol symbol, RCLong right)
+    public void EvalGawk (RCRunner runner, RCClosure closure, RCSymbol symbol, RCLong right)
     {
       int limit = (int) right[0];
       lock (m_readWriteLock)
@@ -258,8 +257,7 @@ namespace RCL.Core
     }
 
     [RCVerb ("poll")]
-    public void EvalPoll (
-      RCRunner runner, RCClosure closure, RCSymbol symbol, RCLong starts)
+    public void EvalPoll (RCRunner runner, RCClosure closure, RCSymbol symbol, RCLong starts)
     {
       //Poll is like read but it will never block.
       lock (m_readWriteLock)
@@ -273,8 +271,7 @@ namespace RCL.Core
     }
 
     [RCVerb ("snap")]
-    public void EvalSnap (
-      RCRunner runner, RCClosure closure, RCSymbol left, RCLong right)
+    public void EvalSnap (RCRunner runner, RCClosure closure, RCSymbol left, RCLong right)
     {
       //With snap, the read instructions apply to each symbol in a family of symbols.
       //Not only to the symbol explcitly noted in the left argument.

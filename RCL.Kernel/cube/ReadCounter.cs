@@ -11,10 +11,10 @@ namespace RCL.Kernel
       new Dictionary<RCSymbolScalar, CountRecord> ();
     protected readonly Dictionary<RCSymbolScalar, CountRecord> m_abstracts =
       new Dictionary<RCSymbolScalar, CountRecord> ();
-  
+
     //A null here will indicate that the counter is for reading not dispatching.
     protected readonly List<bool> m_dispatched = new List<bool>();
-  
+
     public ReadSpec GetReadSpec (RCSymbol symbol, int limit, bool force, bool fill)
     {
       ReadSpec result = new ReadSpec (limit, force, fill);
@@ -39,7 +39,7 @@ namespace RCL.Kernel
       }
       return result;
     }
-  
+
     public ReadSpec GetReadSpec (RCSymbol symbol, RCLong starts, bool force, bool fill)
     {
       ReadSpec result = new ReadSpec (0, force, fill);
@@ -109,23 +109,41 @@ namespace RCL.Kernel
     {
       CountRecord record;
       Dictionary<RCSymbolScalar, CountRecord> map = m_records;
-      while (scalar != null)
+      if (line < 0)
       {
-        if (!map.TryGetValue (scalar, out record))
-        {
-          record = new CountRecord (scalar, map == m_records);
-          map[scalar] = record;
-          record.start = line;
-        }
-        //I have to take stuff into account here when clearing...
-        //But How? Can I just blow away the counters?
-        ++record.count;
-        ++record.total;
-        record.end = line;
+        map.Remove (scalar);
         scalar = scalar.Previous;
-        map = m_abstracts;
+        while (scalar != null)
+        {
+          if (map.TryGetValue (scalar, out record))
+          {
+            --record.count;
+            --record.total;
+            record.end = Math.Abs (line);
+          }
+          scalar = scalar.Previous;
+        }
       }
-      m_dispatched.Add (false);
+      else
+      {
+        while (scalar != null)
+        {
+          if (!map.TryGetValue (scalar, out record))
+          {
+            record = new CountRecord (scalar, map == m_records);
+            map[scalar] = record;
+            record.start = line;
+          }
+          //I have to take stuff into account here when clearing...
+          //But How? Can I just blow away the counters?
+          ++record.count;
+          ++record.total;
+          record.end = line;
+          scalar = scalar.Previous;
+          map = m_abstracts;
+        }
+        m_dispatched.Add (false);
+      }
     }
 
     public RCSymbol ConcreteSymbols (RCSymbol symbol)
@@ -140,7 +158,7 @@ namespace RCL.Kernel
           {
             scalar = scalar.Previous;
           }
-          //I think it should only return children if there was an asterisk.
+          //It only returns children if there was an asterisk.
           if (count.Concrete && (count.symbol.IsConcreteOf (scalar) || count.symbol.Equals (scalar)))
           {
             result.Write (count.symbol);

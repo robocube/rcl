@@ -10,7 +10,8 @@ namespace RCL.Kernel
   {
     Increment = 0,
     Decrement = 1,
-    Delete = 2
+    Delete = 2,
+    None = 3
   }
 
   public class RCIncr : RCVector<RCIncrScalar>

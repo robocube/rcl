@@ -143,6 +143,11 @@ namespace RCL.Kernel
       return m_last.TryGetValue (key, out val);
     }
 
+    public override bool Delete (RCSymbolScalar key)
+    {
+      return m_last.Remove (key);
+    }
+
     public override object BoxCell (int i) { return m_data[i]; }
     public override object Array { get { return m_data; } }
     public override RCArray<int> Index { get { return m_index; } }

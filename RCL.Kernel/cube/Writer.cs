@@ -14,9 +14,10 @@ namespace RCL.Kernel
     protected bool m_writeAxis;
     protected bool m_keepIncrs;
     protected bool m_force;
+    protected bool m_delete;
     protected long m_initg;
     protected long m_e;
-  
+
     public Writer (RCCube target, ReadCounter counter, bool keepIncrs, bool force, long initg)
     {
       //counter may be null;
@@ -28,7 +29,7 @@ namespace RCL.Kernel
       m_keepIncrs = keepIncrs;
       m_force = force;
     }
-  
+ 
     public RCArray<RCSymbolScalar> Write (RCCube source)
     {
       m_source = source;
@@ -49,6 +50,7 @@ namespace RCL.Kernel
     public override void BeforeRow (long e, RCTimeScalar t, RCSymbolScalar s, int row)
     {
       m_writeAxis = false;
+      m_delete = false;
     }
   
     public override void AfterRow (long e, RCTimeScalar t, RCSymbolScalar symbol, int row)
@@ -58,10 +60,6 @@ namespace RCL.Kernel
         return;
       }
       long g = m_initg + row;
-      if (m_counter != null)
-      {
-        m_counter.Write (symbol, (int) g);
-      }
       //I think this needs to change to a sequence number. 2015.06.03
       e = m_e;
       //I need a unit test for not incrementing this after each row.
@@ -76,7 +74,7 @@ namespace RCL.Kernel
       //Things I do not understand, why doesn't every row have the same g?
       //Why does G reset to zero after clearing, even though initg > 0?
       //I think it is probably correct internally but that the reader below assigns G 
-      //based on it's own count.
+      //based on its own count.
       //No it's even worse than that, there isn't and never has been any G row at all on the 
       //blackboard cubes. Wow.
       //So to solve this initially I can add m_initg to row to get g.
@@ -86,7 +84,7 @@ namespace RCL.Kernel
       if (m_target.Axis.Global != null &&
           m_target.Axis.Global.Count > 0)
       {
-        targetLastG = m_target.Axis.Global[m_target.Axis.Global.Count - 1];
+        targetLastG = Math.Abs (m_target.Axis.Global[m_target.Axis.Global.Count - 1]);
       }
       if (m_source.Axis.Has ("G"))
       {
@@ -102,17 +100,29 @@ namespace RCL.Kernel
       {
         g = targetLastG + 1;
       }
+      if (m_delete)
+      {
+        g = -g;
+      }
+      //I just moved this from the top of the function to the bottom
+      //The tests are ok but I keep this note til all the concurrency examples run
+      if (m_counter != null)
+      {
+        m_counter.Write (symbol, (int) g);
+      }
       m_target.Axis.Write (g, e, t, symbol);
     }
   
     public override void VisitScalar<T> (string name, Column<T> column, int i)
     {
       //Can I turn this into WriteCell<T> and get rid of the boxing?
+      bool delete;
       RCSymbolScalar result = m_target.WriteCell (name,
                                                   m_source.Axis.SymbolAt (column.Index[i]),
                                                   column.Data[i], -1,
                                                   m_keepIncrs,
-                                                  m_force);
+                                                  m_force, out delete);
+      m_delete = m_delete || delete;
 
       if (result != null || m_target.Axis.ColCount == 0)
       {

@@ -824,8 +824,7 @@ namespace RCL.Core
       }
     }
 
-    public static RCValue Invoke (
-      RCClosure closure, string name, RCCube left, RCCube right)
+    public static RCValue Invoke (RCClosure closure, string name, RCCube left, RCCube right)
     {
       //If the scalar type is used as the key it is assumed that the
       //argument will be a cube whose first column will be a vector of that scalar type.
@@ -840,8 +839,7 @@ namespace RCL.Core
       return result;
     }
 
-    public static RCValue Invoke (
-      RCClosure closure, string name, RCVectorBase left, RCCube right)
+    public static RCValue Invoke (RCClosure closure, string name, RCVectorBase left, RCCube right)
     {
       //Here BaseType is always RCVector<T>.
       //This is a bit fragile.
@@ -856,8 +854,7 @@ namespace RCL.Core
       return result;
     }
 
-    public static RCValue Invoke (
-      RCClosure closure, string name, RCCube left, RCVectorBase right)
+    public static RCValue Invoke (RCClosure closure, string name, RCCube left, RCVectorBase right)
     {
       //RCVectorBase lvector = left.GetVector (0);
       //Here BaseType is always RCVector<T>.
@@ -873,8 +870,7 @@ namespace RCL.Core
       return result;
     }
 
-    public static RCValue Invoke (
-      RCClosure closure, string name, RCCube right)
+    public static RCValue Invoke (RCClosure closure, string name, RCCube right)
     {
       //RCVectorBase rvector = right.GetVector (0);
       RCActivator.OverloadKey key = new RCActivator.OverloadKey (
@@ -892,8 +888,7 @@ namespace RCL.Core
     [RCVerb ("and")] [RCVerb ("or")]
     [RCVerb ("==")] [RCVerb ("!=")] [RCVerb ("<")] [RCVerb (">")] [RCVerb ("<=")] [RCVerb (">=")]
     [RCVerb ("min")] [RCVerb ("max")]
-    public void EvalDyadic (
-      RCRunner runner, RCClosure closure, RCCube left, RCCube right)
+    public void EvalDyadic (RCRunner runner, RCClosure closure, RCCube left, RCCube right)
     {
       RCOperator op = (RCOperator) closure.Code;
       if (left.Count == 0 && right.Count == 0)
@@ -1108,9 +1103,10 @@ namespace RCL.Core
       {
         throw new Exception ("New symbol column must have the same length as the old one.");
       }
-      Timeline axis = new Timeline (
-        cube.Axis.Global, cube.Axis.Event, cube.Axis.Time, key);
-      //axis.Symbol = key;
+      Timeline axis = new Timeline (cube.Axis.Global,
+                                    cube.Axis.Event,
+                                    cube.Axis.Time,
+                                    key);
       axis.Count = cube.Count;
       RCArray<ColumnBase> columns = new RCArray<ColumnBase> ();
       RCArray<string> names = new RCArray<string> ();
@@ -1240,8 +1236,7 @@ namespace RCL.Core
     }
 
     [RCVerb ("join")]
-    public void EvalJoin (
-      RCRunner runner, RCClosure closure, RCCube left, RCCube right)
+    public void EvalJoin (RCRunner runner, RCClosure closure, RCCube left, RCCube right)
     {
       HashSet<string> leftCols = new HashSet<string> (left.Names);
       HashSet<string> rightCols = new HashSet<string> (right.Names);
@@ -1304,12 +1299,6 @@ namespace RCL.Core
       RCCube result = new RCCube (left);
       foreach (string rightCol in rightCols)
       {
-        /*
-        if (left.Names.BinarySearch (rightCol) > -1)
-        {
-          continue;
-        }
-        */
         ColumnBase column = right.GetColumn (rightCol);
         for (int i = 0; i < leftSyms.Length; ++i)
         {
@@ -1322,6 +1311,14 @@ namespace RCL.Core
           }
         }
       }
+      runner.Yield (closure, result);
+    }
+
+    [RCVerb ("delta")]
+    public void EvalDelta (RCRunner runner, RCClosure closure, RCCube left, RCCube right)
+    {
+      Deltafier deltafier = new Deltafier (left, right);
+      RCCube result = deltafier.Delta ();
       runner.Yield (closure, result);
     }
 
@@ -1409,7 +1406,10 @@ namespace RCL.Core
       runner.Yield (closure, result);
     }
 
-
+    ///insert    - result will contain symbols from right that were missing from left
+    ///dedup     - only one row per symbol
+    ///force     - create new symbol row
+    ///keepIncrs - do not evaluate incrops
     protected RCCube Bang (RCCube left, RCCube right, 
                            string colname, bool insert, bool dedup, bool force, bool keepIncrs)
     {
@@ -1503,7 +1503,6 @@ namespace RCL.Core
       leftOnly.ExceptWith (rightCols);
       rightOnly.ExceptWith (leftCols);
       both.IntersectWith (rightCols);
-
       RCCube result = new RCCube (new RCArray<string> ("S"));
       HashSet<RCSymbolScalar> existing = new HashSet<RCSymbolScalar> ();
       for (int i = 0; i < left.Axis.Count; ++i)

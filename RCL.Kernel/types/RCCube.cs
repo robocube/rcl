@@ -5,7 +5,6 @@ using System.Collections.Generic;
 
 namespace RCL.Kernel
 {
-  //We should just call it RoboCube.Cube.
   public class RCCube : RCValue, IRefable
   {
     public static readonly RCCube Empty = new RCCube ();
@@ -629,6 +628,7 @@ namespace RCL.Kernel
     public ColumnBase GetColumn (string name)
     {
       int column = m_names.IndexOf (name);
+      if (column < 0) return null;
       return m_columns[column];
     }
 
@@ -873,6 +873,7 @@ namespace RCL.Kernel
       HashSet<RCSymbolScalar> result = new HashSet<RCSymbolScalar> ();
       for (int i = 0; i < symbol.Count; ++i)
       {
+        bool delete = false;
         long dups = 0;
         for (int j = 0; j < data.Count; ++j)
         {
@@ -884,7 +885,7 @@ namespace RCL.Kernel
             throw new Exception ("All columns must have the same count.");
           }
           object box = column.Value.Child (i);
-          if (WriteCell (column.Name, symbol[i], box, -1, false, force) != null)
+          if (WriteCell (column.Name, symbol[i], box, -1, false, force, out delete) != null)
           {
             result.Add (symbol[i]);
           }
@@ -893,9 +894,14 @@ namespace RCL.Kernel
             ++dups;
           }
         }
-        if (dups < data.Count)
+        if (delete || dups < data.Count)
         {
           long g = initg + Axis.Count;
+          if (delete)
+          {
+            ++g;
+            g = -g;
+          }
           counter.Write (symbol[i], (int) g);
           long now = DateTime.Now.Ticks;
           Write (g, now, new RCTimeScalar (new DateTime (now), RCTimeType.Timestamp), symbol[i]);
@@ -925,13 +931,31 @@ namespace RCL.Kernel
     public RCSymbolScalar WriteCell (
       string name, RCSymbolScalar symbol, object box)
     {
-      return WriteCell (name, symbol, box, -1, false, false);
+      bool delete;
+      return WriteCell (name, symbol, box, -1, false, false, out delete);
     }
 
-    public RCSymbolScalar WriteCell (
-      string name, RCSymbolScalar symbol, object box, int index, bool parsing, bool force)
+    public RCSymbolScalar WriteCell (string name,
+                                     RCSymbolScalar symbol,
+                                     object box,
+                                     int index,
+                                     bool parsing,
+                                     bool force)
+    {
+      bool delete;
+      return WriteCell (name, symbol, box, index, parsing, force, out delete);
+    }
+
+    public RCSymbolScalar WriteCell (string name,
+                                     RCSymbolScalar symbol,
+                                     object box,
+                                     int index,
+                                     bool parsing,
+                                     bool force,
+                                     out bool delete)
     {
       ColumnBase old = null;
+      delete = false;
       int col = m_names.IndexOf (name);
       if (col > -1)
       {
@@ -944,7 +968,7 @@ namespace RCL.Kernel
         RCIncrScalar? incr = box as RCIncrScalar?;
         if (!parsing && incr != null)
         {
-          if (incr == RCIncrScalar.Increment)
+          if (incr == RCIncrScalar.Increment || incr == RCIncrScalar.Delete)
           {
             if (old == null)
             {
@@ -968,9 +992,49 @@ namespace RCL.Kernel
             if (m != null)
             {
               decimal val = 0;
-              if (m.Last(symbol, out val)) ++val;
+              if (m.Last (symbol, out val)) ++val;
               box = val;
             }
+          }
+          else if (incr == RCIncrScalar.Decrement)
+          {
+            if (old == null)
+            {
+              box = 0L;
+            }
+            Column<double> d = old as Column<double>;
+            if (d != null)
+            {
+              double val = 0;
+              if (d.Last (symbol, out val)) --val;
+              box = val;
+            }
+            Column<long> l = old as Column<long>;
+            if (l != null)
+            {
+              long val = 0;
+              if (l.Last (symbol, out val)) --val;
+              box = val;
+            }
+            Column<decimal> m = old as Column<decimal>;
+            if (m != null)
+            {
+              decimal val = 0;
+              if (m.Last (symbol, out val)) --val;
+              box = val;
+            }
+          }
+          // Actually delete (note that +~ incrop also increments the column like ++)
+          if (incr == RCIncrScalar.Delete)
+          {
+            for (int i = 0; i < m_columns.Count; ++i)
+            {
+              if (m_columns[i] != null)
+              {
+                m_columns[i].Delete (symbol);
+              }
+            }
+            delete = true;
           }
         }
       }

@@ -389,62 +389,67 @@ namespace RCL.Kernel
 
     public virtual string ParseString (RCLexer lexer, RCToken token)
     {
-      throw new Exception ("cannot convert " + Name + " to string");
+      throw new Exception (Message (Name.ToString (), token.Text, "string"));
     }
 
     public virtual double ParseDouble (RCLexer lexer, RCToken token)
     {
-      throw new Exception ("cannot convert " + Name + " to double");
+      throw new Exception (Message (Name.ToString (), token.Text, "double"));
     }
 
     public virtual long ParseLong (RCLexer lexer, RCToken token)
     {
-      throw new Exception ("cannot convert " + Name + " to long");
+      throw new Exception (Message (Name.ToString (), token.Text, "long"));
     }
 
     public virtual decimal ParseDecimal (RCLexer lexer, RCToken token)
     {
-      throw new Exception ("cannot convert " + Name + " to decimal");
+      throw new Exception (Message (Name.ToString (), token.Text, "decimal"));
     }
 
     public virtual float ParseFloat (RCLexer lexer, RCToken token)
     {
-      throw new Exception ("cannot convert " + Name + " to float");
+      throw new Exception (Message (Name.ToString (), token.Text, "double"));
     }
 
     public virtual int ParseInt (RCLexer lexer, RCToken token)
     {
-      throw new Exception ("cannot convert " + Name + " to int");
+      throw new Exception (Message (Name.ToString (), token.Text, "int"));
     }
 
     public virtual bool ParseBoolean (RCLexer lexer, RCToken token)
     {
-      throw new Exception ("cannot convert " + Name + " to boolean");
+      throw new Exception (Message (Name.ToString (), token.Text, "bool"));
     }
 
     public virtual RCSymbolScalar ParseSymbol (RCLexer lexer, RCToken token)
     {
-      throw new Exception ("cannot convert " + Name + " to symbol");
+      throw new Exception (Message (Name.ToString (), token.Text, "symbol"));
     }
 
     public virtual RCBlock ParseLink (RCLexer lexer, RCToken token)
     {
-      throw new Exception ("cannot convert " + Name + " to symbol");
+      throw new Exception (Message (Name.ToString (), token.Text, "link"));
     }
 
     public virtual RCIncrScalar ParseIncr (RCLexer lexer, RCToken token)
     {
-      throw new Exception ("cannot convert " + Name + " to incr");
+      throw new Exception (Message (Name.ToString (), token.Text, "incr"));
     }
 
     public virtual byte ParseByte (RCLexer lexer, RCToken token)
     {
-      throw new Exception ("cannot convert " + Name + " to byte");
+      throw new Exception (Message (Name.ToString (), token.Text, "byte"));
     }
 
     public virtual RCTimeScalar ParseTime (RCLexer lexer, RCToken token)
     {
-      throw new Exception ("cannot convert " + Name + " to time");
+      throw new Exception (Message (Name.ToString (), token.Text, "time"));
+    }
+
+    protected string Message (string tokenType, string tokenText, string typeName)
+    {
+      return "Cannot convert (" + tokenType + ") " + tokenText + " to " + typeName;
     }
   }
 }

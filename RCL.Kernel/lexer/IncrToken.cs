@@ -13,13 +13,20 @@ namespace RCL.Kernel
       string text, int start, int index, RCToken previous)
     {
       int length = LengthOfKeyword (text, start, "++");
-      if (length > 0) return new RCToken ("++", this, start, index);
+      if (length > 0)
+      {
+        return new RCToken ("++", this, start, index);
+      }
       length = LengthOfKeyword (text, start, "+-");
-      if (length > 0) return new RCToken ("+-", this, start, index);
+      if (length > 0)
+      {
+        return new RCToken ("+-", this, start, index);
+      }
       length = LengthOfKeyword (text, start, "+~");
-      if (length > 0) return new RCToken ("+~", this, start, index);
-      //do not allow decrement as of yet, because I will first need to decide on a suitable replacement
-      //for null, which is currently --.
+      if (length > 0)
+      {
+        return new RCToken ("+~", this, start, index);
+      }
       return null;
     }
 

@@ -127,6 +127,7 @@
     <Compile Include="lexer\LogContentToken.cs" />
     <Compile Include="lexer\MarkdownTokens.cs" />
     <Compile Include="parser\MarkdownParser.cs" />
+    <Compile Include="cube\Deltafier.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

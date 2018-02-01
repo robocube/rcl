@@ -44,6 +44,7 @@ namespace RCL.Kernel
     public abstract string ScalarToCsvString (int vrow);
     public abstract object BoxCell (int vrow);
     public abstract bool BoxLast (RCSymbolScalar key, out object box);
+    public abstract bool Delete (RCSymbolScalar key);
 
     public int CountBefore (int tlcount)
     {

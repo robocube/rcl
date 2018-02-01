@@ -157,7 +157,8 @@ namespace RCL.Kernel
       {
         T val = this[i];
         RCSymbolScalar symboli = new RCSymbolScalar (symbol, (long) i);
-        target.WriteCell (this.TypeCode.ToString (), symboli, val);
+        //Do not try to evaluate incrs during cubification
+        target.WriteCell (this.TypeCode.ToString (), symboli, val, -1, true, false);
         target.Write (0, symboli);
       }
     }
