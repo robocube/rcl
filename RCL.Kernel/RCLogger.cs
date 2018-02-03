@@ -182,6 +182,7 @@ namespace RCL.Kernel
 				// 6 Informational: informational messages
 				// 7 Debug: debug-level messages
         int severity = 6;
+        string message;
         if (info is Exception)
         {
           if (type == "fiber" && state == "killed")
@@ -198,9 +199,14 @@ namespace RCL.Kernel
           {
             severity = 3;
           }
+          message = new RCString (info.ToString ()).ToString ();
+        }
+        else
+        {
+          message = info.ToString ();
         }
         m_output.WriteLine ("<{0}>{1} {2} {3} {4} {5} {6}",
-                            severity, bot, fiber, type, instance, state, info.ToString ());
+                            severity, bot, fiber, type, instance, state, message);
       }
       else if (m_level == RCOutput.Multi || m_level == RCOutput.Full)
       {
