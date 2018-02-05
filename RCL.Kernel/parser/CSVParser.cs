@@ -15,21 +15,28 @@ namespace RCL.Kernel
       types.Write (RCTokenType.CSVContent);
       m_csvLexer = new RCLexer (types);
     }
-  
+
     public CSVParser ()
     {
       m_lexer = m_csvLexer;
     }
-  
+
     protected bool m_header = true;
     protected int m_column = 0;
     protected RCArray<string> m_names = new RCArray<string> ();
     protected RCArray<RCArray<string>> m_data = new RCArray<RCArray<string>> ();
-  
+
     public override RCValue Parse (RCArray<RCToken> tokens, out bool fragment)
     {
+      if (tokens.Count == 0)
+      {
+        fragment = false;
+        return RCCube.Empty;
+      }
       for (int i = 0; i < tokens.Count; ++i)
+      {
         tokens[i].Type.Accept (this, tokens[i]);
+      }
   
       RCBlock result = null;
       for (int i = 0; i < m_names.Count; ++i)
@@ -41,7 +48,7 @@ namespace RCL.Kernel
       fragment = false;
       return result;
     }
-  
+
     public override void AcceptColumnData (RCToken token)
     {
       if (m_header)
@@ -55,7 +62,7 @@ namespace RCL.Kernel
         m_column = (m_column + 1) % m_data.Count;
       }
     }
-  
+
     protected RCToken m_lastSeparator = null;
     public override void AcceptSeparator (RCToken token)
     {

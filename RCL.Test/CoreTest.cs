@@ -2273,6 +2273,12 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestParseCSVEmpty ()
+    {
+      DoTest ("#csv parse \"\"", "[]");
+    }
+
+    [Test]
     public void TestParseJSON ()
     {
       //JSON parsing test cases are from:
