@@ -2275,7 +2275,10 @@ namespace RCL.Test
     [Test]
     public void TestParseCSVEmpty ()
     {
-      DoTest ("#csv parse \"\"", "[]");
+      DoTest ("#csv parse \"\"", "{}");
+      DoTest ("#csv parse \"\n\"", "{}");
+      DoTest ("#csv parse \"\n\n\"", "{}");
+      DoTest ("#csv parse \"\n\n\n\"", "{}");
     }
 
     [Test]

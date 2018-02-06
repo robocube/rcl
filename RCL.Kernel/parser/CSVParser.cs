@@ -22,23 +22,17 @@ namespace RCL.Kernel
     }
 
     protected bool m_header = true;
-    protected int m_column = 0;
+    protected int m_column = -1;
     protected RCArray<string> m_names = new RCArray<string> ();
     protected RCArray<RCArray<string>> m_data = new RCArray<RCArray<string>> ();
 
     public override RCValue Parse (RCArray<RCToken> tokens, out bool fragment)
     {
-      if (tokens.Count == 0)
-      {
-        fragment = false;
-        return RCCube.Empty;
-      }
       for (int i = 0; i < tokens.Count; ++i)
       {
         tokens[i].Type.Accept (this, tokens[i]);
       }
-  
-      RCBlock result = null;
+      RCBlock result = RCBlock.Empty;
       for (int i = 0; i < m_names.Count; ++i)
       {
         RCString column = new RCString (m_data[i]);
@@ -69,11 +63,19 @@ namespace RCL.Kernel
       if (m_header)
       {
         if (token.Text.Equals ("\n") || token.Text.Equals ("\r\n"))
+        {
           m_header = false;
+          if (m_names.Count > 0)
+          {
+            m_column = 0;
+          }
+        }
       }
       //Handle empty strings between separators like ",,"
       //The parser will not see the empty string as a token so it needs a little massaging.
-      if (m_lastSeparator != null && m_lastSeparator.Start == (token.Start - m_lastSeparator.Text.Length))
+      if (m_column >= 0 &&
+          m_lastSeparator != null &&
+          m_lastSeparator.Start == (token.Start - m_lastSeparator.Text.Length))
       {
         m_data[m_column].Write ("");
         m_column = (m_column + 1) % m_data.Count;
