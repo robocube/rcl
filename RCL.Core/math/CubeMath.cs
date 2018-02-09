@@ -1937,6 +1937,28 @@ namespace RCL.Core
       throw new Exception ("rename needs a new implementation specifically for cubes.");
     }
 
+    [RCVerb ("has")]
+    public void EvalHas (RCRunner runner, RCClosure closure, RCCube left, RCString right)
+    {
+      RCArray<bool> result = new RCArray<bool> (right.Count);
+      for (int i = 0; i < right.Count; ++i)
+      {
+        result.Write (left.Has (right[i]));
+      }
+      runner.Yield (closure, new RCBoolean (result));
+    }
+
+    [RCVerb ("has")]
+    public void EvalHas (RCRunner runner, RCClosure closure, RCCube left, RCSymbol right)
+    {
+      RCArray<bool> result = new RCArray<bool> (right.Count);
+      for (int i = 0; i < right.Count; ++i)
+      {
+        result.Write (left.Has (right[i].Part (0).ToString ()));
+      }
+      runner.Yield (closure, new RCBoolean (result));
+    }
+
     [RCVerb ("from")]
     public void EvalFrom (
       RCRunner runner, RCClosure closure, RCSymbol left, RCCube right)

@@ -694,7 +694,11 @@ namespace RCL.Kernel
 
     public bool Has (string name)
     {
-      return FindColumn (name) > -1;
+      if (Axis.Has (name))
+      {
+        return true;
+      }
+      else return FindColumn (name) > -1;
     }
 
     public override int Count

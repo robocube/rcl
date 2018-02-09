@@ -200,6 +200,7 @@ namespace RCL.Kernel
             severity = 3;
           }
           message = new RCString (info.ToString ()).ToString ();
+          //message = info.ToString ();
         }
         else
         {
