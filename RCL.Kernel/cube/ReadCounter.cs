@@ -15,9 +15,31 @@ namespace RCL.Kernel
     //A null here will indicate that the counter is for reading not dispatching.
     protected readonly List<bool> m_dispatched = new List<bool>();
 
+    public ReadCounter () {}
+    public ReadCounter (RCCube cube)
+    {
+      if (cube.Axis.Symbol == null) //no S col
+      {
+      }
+      else if (cube.Axis.Global == null) //no G col
+      {
+        for (int i = 0; i < cube.Axis.Count; i++)
+        {
+          Write (cube.Axis.Symbol[i], i);
+        }
+      }
+      else //S and G cols
+      {
+        for (int i = 0; i < cube.Axis.Count; i++)
+        {
+          Write (cube.Axis.Symbol[i], (int) cube.Axis.Global[i]);
+        }
+      }
+    }
+
     public ReadSpec GetReadSpec (RCSymbol symbol, int limit, bool force, bool fill)
     {
-      ReadSpec result = new ReadSpec (limit, force, fill);
+      ReadSpec result = new ReadSpec (this, limit, force, fill);
       if (limit == 0)
       {
         limit = int.MaxValue;
@@ -42,7 +64,7 @@ namespace RCL.Kernel
 
     public ReadSpec GetReadSpec (RCSymbol symbol, RCLong starts, bool force, bool fill)
     {
-      ReadSpec result = new ReadSpec (0, force, fill);
+      ReadSpec result = new ReadSpec (this, 0, force, fill);
       for (int i = 0; i < symbol.Count; ++i)
       {
         result.Add (symbol[i], (int) starts[i], int.MaxValue);
@@ -146,7 +168,7 @@ namespace RCL.Kernel
       }
     }
 
-    public RCSymbol ConcreteSymbols (RCSymbol symbol)
+    public RCSymbol ConcreteSymbols (RCSymbol symbol, bool returnAll)
     {
       RCArray<RCSymbolScalar> result = new RCArray<RCSymbolScalar> (8);
       foreach (CountRecord count in m_records.Values)
@@ -154,20 +176,44 @@ namespace RCL.Kernel
         for (int i = 0; i < symbol.Count; ++i)
         {
           RCSymbolScalar scalar = symbol[i];
-          if (scalar.Key.Equals ("*"))
+          if (scalar.Key.Equals ("'*'") || symbol[i].Key.Equals ("*"))
           {
             scalar = scalar.Previous;
+            if (count.Concrete && !result.Contains (count.symbol))
+            {
+              if (count.symbol.IsConcreteOf (scalar))
+              {
+                result.Write (count.symbol);
+              }
+              else if (count.symbol.Equals (scalar))
+              {
+                result.Write (count.symbol);
+              }
+            }
           }
-          //It only returns children if there was an asterisk.
-          if (count.Concrete && (count.symbol.IsConcreteOf (scalar) || count.symbol.Equals (scalar)))
+        }
+      }
+      if (returnAll)
+      {
+        for (int i = 0; i < symbol.Count; ++i)
+        {
+          if ((symbol[i].Key.Equals ("'*'") || symbol[i].Key.Equals ("*")))
           {
-            result.Write (count.symbol);
+            RCSymbolScalar scalar = symbol[i].Previous;
+            if (!result.Contains (scalar))
+            {
+              result.Write (scalar);
+            }
+          }
+          else if (!result.Contains (symbol[i]))
+          {
+            result.Write (symbol[i]);
           }
         }
       }
       return new RCSymbol (result);
     }
-  
+
     public bool WasDispatched (long line)
     {
       return m_dispatched[(int) line];

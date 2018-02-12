@@ -61,7 +61,8 @@ namespace RCL.Core
     {
       try
       {
-        Read (runner, closure, left, new ReadSpec (left, right, 0, false, false, true));
+        Section section = GetSection (left);
+        Read (runner, closure, left, new ReadSpec (section.m_counter, left, right, 0, false, false, true));
       }
       catch (Exception)
       {
@@ -74,12 +75,9 @@ namespace RCL.Core
     {
       try
       {
-        //This read is different from all others in that it has force on and fill off.
-        //force causes duplicate values to be written.
-        //fill causes prior values to be filled into the results.
-        //This read gives you exactly what exists in the blackboard.
         RCLong args = new RCLong (0, 0);
-        Read (runner, closure, right, new ReadSpec (right, args, 0, false, false, true));
+        Section section = GetSection (right);
+        Read (runner, closure, right, new ReadSpec (section.m_counter, right, args, 0, false, false, true));
       }
       catch (Exception)
       {
@@ -92,7 +90,12 @@ namespace RCL.Core
     {
       try
       {
-        Read (runner, closure, right, new ReadSpec (right, left, 0, false, true, false));
+        //This read is different from all others in that it has force on and fill off.
+        //force causes duplicate values to be written.
+        //fill causes prior values to be filled into the results.
+        //This read gives you exactly what exists in the blackboard.
+        Section section = GetSection (right);
+        Read (runner, closure, right, new ReadSpec (section.m_counter, right, left, 0, false, true, false));
       }
       catch (Exception)
       {
@@ -110,7 +113,8 @@ namespace RCL.Core
         //fill causes prior values to be filled into the results.
         //This read gives you exactly what exists in the blackboard.
         RCLong args = new RCLong (0, 0);
-        Read (runner, closure, right, new ReadSpec (right, args, 0, false, true, false));
+        Section section = GetSection (right);
+        Read (runner, closure, right, new ReadSpec (section.m_counter, right, args, 0, false, true, false));
       }
       catch (Exception)
       {
@@ -122,8 +126,8 @@ namespace RCL.Core
     public void EvalSelect (RCRunner runner, RCClosure closure, RCSymbol left, RCCube right)
     {
       RCLong args = new RCLong (0, 0);
-      ReadCounter counter = new ReadCounter ();
-      ReadSpec spec = new ReadSpec (left, args, 0, false, false, true);
+      ReadCounter counter = new ReadCounter (right);
+      ReadSpec spec = new ReadSpec (counter, left, args, 0, false, false, true);
       RCCube result = right.Read (spec, counter, true, right.Count);
       runner.Yield (closure, result);
     }
@@ -132,7 +136,11 @@ namespace RCL.Core
     {
       lock (m_readWriteLock)
       {
+        //Make abstract symbols concrete
         Section section = GetSection (symbol);
+        //Console.Out.WriteLine ("BEFORE SYM: " + symbol);
+        symbol = section.m_counter.ConcreteSymbols (symbol, true);
+        //Console.Out.WriteLine ("AFTER SYM: " + symbol);
         Satisfy canSatisfy = section.m_counter.CanSatisfy (spec);
         RCCube result = section.m_blackboard.Read (spec,
                                                    section.m_counter,
@@ -192,8 +200,7 @@ namespace RCL.Core
         Section s = GetSection (left);
         ReadSpec spec = s.m_counter.GetReadSpec (left, limit, false, true);
         Satisfy canSatisfy = s.m_counter.CanSatisfy (spec);
-        RCCube result = s.m_blackboard.Read (spec,
-                                             s.m_counter, true, s.m_blackboard.Count);
+        RCCube result = s.m_blackboard.Read (spec, s.m_counter, true, s.m_blackboard.Count);
 
         if ((spec.SymbolUnlimited && result.Count > 0) ||
             (!spec.SymbolUnlimited && result.Count >= left.Count * Math.Abs (spec.SymbolLimit)))
@@ -221,7 +228,8 @@ namespace RCL.Core
     {
       //right now last defaults to -1 and read defaults to long.MaxValue; thats kind of weird.
       //but seems to fit with the way i use it those operators.
-      Read (runner, closure, left, new ReadSpec (left, right, -1, false, false, true));
+      Section section = GetSection (left);
+      Read (runner, closure, left, new ReadSpec (section.m_counter, left, right, -1, false, false, true));
     }
 
     [RCVerb ("gawk")]
@@ -233,8 +241,7 @@ namespace RCL.Core
         Section s = GetSection (symbol);
         ReadSpec spec = s.m_counter.GetReadSpec (symbol, limit, false, true);
         Satisfy canSatisfy = s.m_counter.CanSatisfy (spec);
-        RCCube result = s.m_blackboard.Read (spec,
-                                             s.m_counter, true, s.m_blackboard.Count);
+        RCCube result = s.m_blackboard.Read (spec, s.m_counter, true, s.m_blackboard.Count);
 
         if ((spec.SymbolUnlimited && result.Count > 0) ||
             (!spec.SymbolUnlimited && result.Count >= symbol.Count * Math.Abs (spec.SymbolLimit)))
@@ -264,8 +271,7 @@ namespace RCL.Core
       {
         Section s = GetSection (symbol);
         ReadSpec spec = s.m_counter.GetReadSpec (symbol, starts, false, true);
-        RCCube result = s.m_blackboard.Read (spec,
-                                             s.m_counter, true, s.m_blackboard.Count);
+        RCCube result = s.m_blackboard.Read (spec, s.m_counter, true, s.m_blackboard.Count);
         runner.Yield (closure, result);
       }
     }
@@ -278,10 +284,11 @@ namespace RCL.Core
       lock (m_readWriteLock)
       {
         Section s = GetSection (left);
-        RCSymbol concretes = s.m_counter.ConcreteSymbols (left);
-        ReadSpec spec = new ReadSpec (concretes, right, -1, false, false, true);
-        RCCube result = s.m_blackboard.Read (spec,
-                                             s.m_counter, true, s.m_blackboard.Count);
+        //This line with the ConcreteSymbols should be added to other operators
+        //RCSymbol concretes = s.m_counter.ConcreteSymbols (left, false);
+        ReadSpec spec = new ReadSpec (s.m_counter, left, right, -1, false, false, true);
+        //RCCube result = s.m_blackboard.Read (spec, s.m_counter, true, s.m_blackboard.Count);
+        RCCube result = s.m_blackboard.Read (spec, s.m_counter, true, s.m_blackboard.Count);
         runner.Yield (closure, result);
       }
     }
@@ -307,10 +314,8 @@ namespace RCL.Core
         Section s = GetSection (symbol);
         int skipFirst = pageNumber * pageSize;
         int stopAfter = pageSize;
-
-        ReadSpec spec = new ReadSpec (symbol, skipFirst, stopAfter);
-        RCCube result = s.m_blackboard.Read (spec,
-                                             s.m_counter, true, s.m_blackboard.Count);
+        ReadSpec spec = new ReadSpec (s.m_counter, symbol, skipFirst, stopAfter);
+        RCCube result = s.m_blackboard.Read (spec, s.m_counter, true, s.m_blackboard.Count);
         runner.Yield (closure, result);
       }
     }

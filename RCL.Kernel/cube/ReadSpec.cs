@@ -7,6 +7,7 @@ namespace RCL.Kernel
 {
   public class ReadSpec
   {
+    protected readonly ReadCounter m_counter;
     protected readonly Dictionary<RCSymbolScalar, SpecRecord> m_records = new Dictionary<RCSymbolScalar, SpecRecord> ();
     protected readonly bool m_forward = true;
     protected readonly bool m_ignoreDispatchedRows = true;
@@ -20,9 +21,10 @@ namespace RCL.Kernel
     protected int m_totalLimit = int.MaxValue;
 
     //This is for page.
-    public ReadSpec (RCSymbol left, int skipFirst, int totalLimit)
+    public ReadSpec (ReadCounter counter, RCSymbol left, int skipFirst, int totalLimit)
     {
       //For paging.
+      m_counter = counter;
       m_forward = totalLimit >= 0;
       m_ignoreDispatchedRows = false;
       m_start = 0;
@@ -31,7 +33,7 @@ namespace RCL.Kernel
       m_symbolLimit = int.MaxValue;
       m_skipFirst = Math.Abs (skipFirst);
       m_totalLimit = Math.Abs (totalLimit);
-
+      left = m_counter.ConcreteSymbols (left, true);
       for (int i = 0; i < left.Count; ++i)
       {
         Add (left[i], 0, m_symbolLimit);
@@ -39,16 +41,19 @@ namespace RCL.Kernel
     }
 
     //This is for read and its ilk
-    public ReadSpec (int defaultLimit, bool force, bool fill)
+    //In this case symbols are added by the client
+    public ReadSpec (ReadCounter counter, int defaultLimit, bool force, bool fill)
     {
+      m_counter = counter;
       m_forward = defaultLimit >= 0;
       m_unlimited = defaultLimit == 0;
       m_symbolLimit = Math.Abs (m_unlimited ? int.MaxValue : defaultLimit);
       m_force = force;
     }
-  
-    public ReadSpec (RCSymbol left, RCLong right, int defaultLimit, bool ignoreDispatchedRows, bool force, bool fill)
+
+    public ReadSpec (ReadCounter counter, RCSymbol left, RCLong right, int defaultLimit, bool ignoreDispatchedRows, bool force, bool fill)
     {
+      m_counter = counter;
       m_ignoreDispatchedRows = ignoreDispatchedRows;
       m_force = force;
       m_fill = fill;
@@ -58,6 +63,7 @@ namespace RCL.Kernel
         m_forward = defaultLimit >= 0;
         m_unlimited = defaultLimit == 0;
         m_symbolLimit = Math.Abs (m_unlimited ? int.MaxValue : defaultLimit);
+        left = m_counter.ConcreteSymbols (left, true);
         for (int i = 0; i < left.Count; ++i)
         {
           Add (left[i], (int) right[0], m_symbolLimit);
@@ -68,7 +74,8 @@ namespace RCL.Kernel
         //Its the start point and the limit.
         m_forward = right[1] >= 0;
         m_unlimited = right[1] == 0;
-        m_symbolLimit = Math.Abs (m_unlimited ? int.MaxValue : (int)right[1]);
+        m_symbolLimit = Math.Abs (m_unlimited ? int.MaxValue : (int) right[1]);
+        left = m_counter.ConcreteSymbols (left, true);
         for (int i = 0; i < left.Count; ++i)
         {
           Add (left[i], (int) right[0], m_symbolLimit);

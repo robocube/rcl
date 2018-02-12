@@ -1,4 +1,5 @@
 
+using System;
 using RCL.Kernel;
 using NUnit.Framework;
 
@@ -12,27 +13,38 @@ namespace RCL.Test
     //together.
     protected RCRunner runner = new RCRunner (RCActivator.Default,
                                               new RCLog (), 1,
-                                              new RCLArgv ("--output=test"));
+                                              new RCLArgv ("--output=test", "--show=print"));
 
-    public void DoTest (string code, string expected)
+    public static void DoTest (RCRunner runner, RCFormat args, string code, string expected)
     {
       try
       {
         runner.Reset ();
+        string method = new System.Diagnostics.StackFrame (2).GetMethod ().Name;
+        Console.Out.Write (method + ": ");
         RCValue program = runner.Read (code);
         RCValue result = runner.Run (program);
         Assert.IsNotNull (result, "RCRunner.Run result was null");
-        Assert.AreEqual (expected, result.ToString ());
+        string actual = result.Format (args);
+        Assert.AreEqual (expected, actual);
+        Console.Out.WriteLine ("P");
       }
       catch (RCException ex)
       {
-        System.Console.Out.WriteLine (ex.ToString ());
+        Console.Out.WriteLine ("F");
+        Console.Out.WriteLine (ex.ToString ());
         throw;
       }
-      catch (System.Exception ex)
+      catch (Exception ex)
       {
+        Console.Out.WriteLine ("F");
         Assert.Fail (ex.ToString ());
       }
+    }
+
+    public void DoTest (string code, string expected)
+    {
+      DoTest (runner, RCFormat.Default, code, expected);
     }
 
     public void DoTestException (string code, string expectedException)
@@ -48,7 +60,7 @@ namespace RCL.Test
       {
         Assert.AreEqual (expectedException, ex.ToString ());
       }
-      catch (System.Exception ex)
+      catch (Exception ex)
       {
         Assert.Fail (ex.ToString ());
       }

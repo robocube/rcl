@@ -1004,7 +1004,7 @@ namespace RCL.Test
       //DoEvalTest ("{:write [S|dockto #items,i0 \"\" #items,i1 \"\" #items,i0 -- #items,i2 --] <-#items snap 0 -1l}", "");
       //DoEvalTest ("{:write [S|x #items,i0 100d #items,i1 200d #items,i0 -- #items,i2 589d] <-#items snap 0 -1l}", "");
 
-      DoEvalTest ("{:write [S|x y #s,1 100 1 #s,2 200 2 #s,1 -- -- #s,3 300 --] <-#s snap 0 -1}", "[S|x y #s,1 100 1 #s,2 200 2 #s,3 300 --]");
+      DoEvalTest ("{:write [S|x y #s,1 100 1 #s,2 200 2 #s,1 -- -- #s,3 300 --] <-#s,* snap 0 -1}", "[S|x y #s,1 100 1 #s,2 200 2 #s,3 300 --]");
       //DoEvalTest ("{:write [S|x y #s,0l 100d 1d #s,1l 200d 2d #s,0l -- -- #s,2l 589d --] <-#s snap 0 -1l}", "");
       //DoEvalTest ("{:write [S|x dockto #items,i0 100d \"\" #items,i1 200d \"\" #items,i0 -- -- #items,i2 589d --] <-#items snap 0 -1l}", "");
       //DoEvalTest ("{:write [S|x selected dockto #items,i0 100d true \"\" #items,i1 200d false \"\" #items,i0 -- false -- #items,i2 589d true --] <-#items snap 0 -1l}", "");
@@ -1349,7 +1349,7 @@ namespace RCL.Test
     [Test]
     public void TestWriteSnapColumnRemoval ()
     {
-      DoEvalTest ("{:#x,y write {a:1 b:2} :#x,z write {c:3} :(#x snap 1) assert [S|c #x,z 3] <-0}", "0");
+      DoEvalTest ("{:#x,y write {a:1 b:2} :#x,z write {c:3} :(#x,* snap 1) assert [S|c #x,z 3] <-0}", "0");
     }
 
     [Test]
@@ -1415,38 +1415,38 @@ namespace RCL.Test
     [Test]
     public void TestSnapDups ()
     {
-      DoEvalTest ("{:#s,a write {x:1} :#s,b write {x:10} :#s,c write {x:100} :#s,c write {x:100} :#s,d write {x:1000} :(#s snap 0 -1) assert [S|x #s,a 1 #s,b 10 #s,c 100 #s,d 1000] <-0}", "0");
+      DoEvalTest ("{:#s,a write {x:1} :#s,b write {x:10} :#s,c write {x:100} :#s,c write {x:100} :#s,d write {x:1000} :(#s,* snap 0 -1) assert [S|x #s,a 1 #s,b 10 #s,c 100 #s,d 1000] <-0}", "0");
       //DoEvalTest ("{:#s,a write {x:1l y:10l z:100l} :#s,b write {x:2l y:20l z:200l} :#s,c write {x:3l y:30l z:300l} :#s,d write {x:4l y:40l z:400l} :#s,c write {x:3l y:30l z:300l} :(#s snap 0 -1l) assert [S|x y z #s,a 1l 10l 100l #s,b 2l 20l 200l #s,c 3l 30l 300l #s,d 4l 40l 400l] <-0l}", "0l");
     }
 
     [Test]
     public void TestSnapChanges1Level ()
     {
-      DoEvalTest ("{:#s,a write {x:1} :#s,b write {x:10} :#s,a write {x:2} :(#s snap 0 -1) assert [S|x #s,b 10 #s,a 2] <-0}", "0");
+      DoEvalTest ("{:#s,a write {x:1} :#s,b write {x:10} :#s,a write {x:2} :(#s,* snap 0 -1) assert [S|x #s,b 10 #s,a 2] <-0}", "0");
     }
 
     [Test]
     public void TestSnapChanges2Level ()
     {
-      DoEvalTest ("{:#s,a,0 write {x:1} :#s,b,0 write {x:10} :#s,a,0 write {x:2} :(#s snap 0 -1) assert [S|x #s,b,0 10 #s,a,0 2] <-0}", "0");
+      DoEvalTest ("{:#s,a,0 write {x:1} :#s,b,0 write {x:10} :#s,a,0 write {x:2} :(#s,* snap 0 -1) assert [S|x #s,b,0 10 #s,a,0 2] <-0}", "0");
     }
 
     [Test]
     public void TestSnapSparseFirstRow ()
     {
-      DoEvalTest ("{:write [S|x y #s,a 1 -- #s,b -- 2] <-#s snap 0}", "[S|x y #s,a 1 -- #s,b -- 2]");
+      DoEvalTest ("{:write [S|x y #s,a 1 -- #s,b -- 2] <-#s,* snap 0}", "[S|x y #s,a 1 -- #s,b -- 2]");
     }
 
     [Test]
     public void TestSnapSparseFirstRow1 ()
     {
-      DoEvalTest ("{:write [S|x y #s,a 1 -- #s,b 2 -- #s,c -- 3] <-#s snap 0}", "[S|x y #s,a 1 -- #s,b 2 -- #s,c -- 3]");
+      DoEvalTest ("{:write [S|x y #s,a 1 -- #s,b 2 -- #s,c -- 3] <-#s,* snap 0}", "[S|x y #s,a 1 -- #s,b 2 -- #s,c -- 3]");
     }
 
     [Test]
     public void TestSnapSparseFirstRow2 ()
     {
-      DoEvalTest ("{:write [S|x #s,a 0 #s,b 1] :write [S|y #s,c 2 #s,d 3] <-#s snap 0}", "[S|x y #s,a 0 -- #s,b 1 -- #s,c -- 2 #s,d -- 3]");
+      DoEvalTest ("{:write [S|x #s,a 0 #s,b 1] :write [S|y #s,c 2 #s,d 3] <-#s,* snap 0}", "[S|x y #s,a 0 -- #s,b 1 -- #s,c -- 2 #s,d -- 3]");
     }
 
     [Test]
@@ -1999,44 +1999,19 @@ namespace RCL.Test
       DoEvalTest ("unwrap #status from try {<-exec \"mono --debug rcl.exe --program=exit.rcl --action=go\"}", "21");
     }
 
-    RCRunner runner = new RCRunner (RCActivator.Default, new RCLog (new RCLogger ()), 1, new RCLArgv ());
+    RCRunner runner = new RCRunner (RCActivator.Default, new RCLog (new RCLogger ()), 1, new RCLArgv ("--output=test", "--show=print"));
 
     /// <summary>
     /// Run the test using RCFormat.DefaultNoT (No timestamps on cubes)
     /// </summary>
     public void DoEvalTest (string code, string expected)
     {
-      DoEvalTest (code, expected, RCFormat.DefaultNoT);
+      CoreTest.DoTest (runner, RCFormat.DefaultNoT, code, expected);
     }
 
     public void DoEvalTest (string code, string expected, RCFormat format)
     {
-      try
-      {
-        runner.Reset ();
-        RCValue program = runner.Read (code);
-        RCValue result = runner.Run (program);
-        /*
-        System.Console.Out.WriteLine ("code:");
-        System.Console.Out.WriteLine (code);
-        System.Console.Out.WriteLine ("expected:");
-        System.Console.Out.WriteLine (expected);
-        System.Console.Out.WriteLine ("actual:");
-        */
-        string actual = result.Format (format);
-        //System.Console.Out.WriteLine (actual);
-        Assert.IsNotNull (result, "RCRunner.Run result was null");
-        Assert.AreEqual (expected, actual);
-      }
-      catch (RCException ex)
-      {
-        System.Console.Out.WriteLine (ex.ToString ());
-        throw;
-      }
-      catch (System.Exception ex)
-      {
-        Assert.Fail (ex.ToString ());
-      }
+      CoreTest.DoTest (runner, format, code, expected);
     }
   }
 }

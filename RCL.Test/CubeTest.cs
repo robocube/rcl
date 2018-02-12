@@ -1,4 +1,5 @@
 
+using System;
 using RCL.Kernel;
 using NUnit.Framework;
 
@@ -2302,39 +2303,25 @@ namespace RCL.Test
     [Ignore ("because")]
     public void TestRetimeline2 ()
     {
-      //These don't work quite write because of the weird behavoir with S and T.
+      //These don't work quite right because of the weird behavoir with S and T.
       //DoTest ("\"G\" retimeline [G|T|S|x 0 0 #a 0]", "[G|x 0 0]");
       //DoTest ("\"S\" retimeline [G|T|S|x 0 0 #a 0]", "[S|x #a 0]");
       //DoTest ("\"T\" retimeline [G|T|S|x 0 0 #a 0]", "[T|x 0 0]");
       //DoTest ("\"G\" \"S\" retimeline [G|T|S|x 0 0 #a 0]", "[G|S|x 0 #a 0]");
     }
 
-    //Gui Operators? Are gui operators like gui controls?
-    //We could have operators that yield strings and in the 
-    //end you just traverse the document and cat all the strings
-    //together.
-    protected RCRunner runner = new RCRunner ();
+    protected RCRunner runner = new RCRunner (RCActivator.Default,
+                                              new RCLog (), 1,
+                                              new RCLArgv ("--output=test", "--show=print"));
+
     public void DoTest (string code, string expected)
     {
-      DoTest (RCFormat.Default, code, expected);
+      CoreTest.DoTest (runner, RCFormat.Default, code, expected);
     }
 
     public void DoTest (RCFormat args, string code, string expected)
     {
-      runner.Reset ();
-      RCValue program = runner.Read (code);
-      RCValue result = runner.Run (program);
-      /*
-      System.Console.Out.WriteLine ("code:");
-      System.Console.Out.WriteLine (code);
-      System.Console.Out.WriteLine ("expected:");
-      System.Console.Out.WriteLine (expected);
-      System.Console.Out.WriteLine ("actual:");
-      */
-      Assert.IsNotNull (result, "RCRunner.Run result was null");
-      string actual = result.Format (args);
-      //System.Console.Out.WriteLine (actual);
-      Assert.AreEqual (expected, actual);
+      CoreTest.DoTest (runner, args, code, expected);
     }
   }
 }
