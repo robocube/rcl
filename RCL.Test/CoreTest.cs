@@ -1901,6 +1901,10 @@ namespace RCL.Test
     [Test]
     [Ignore ("reason")]
     public void TestHasL () { DoTest ("{x:1 y:2 z:3} has 0 1 4", "true true false"); }
+    [Test]
+    public void TestHasUS () { DoTest ("[S|x y #a 1 10 #b 2 20] has \"S\" \"x\" \"z\"", "true true false"); }
+    [Test]
+    public void TestHasUY () { DoTest ("[S|x y #a 1 10 #b 2 20] has #S #x #z", "true true false"); }
 
     [Test]
     public void TestUnflipK () { DoTest ("unflip {x:1 2 3 4 y:5 6 7 8 z:9 10 11 12}", "{:{x:1 y:5 z:9} :{x:2 y:6 z:10} :{x:3 y:7 z:11} :{x:4 y:8 z:12}}"); }

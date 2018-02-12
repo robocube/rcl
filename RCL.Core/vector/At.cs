@@ -11,538 +11,462 @@ namespace RCL.Core
   public class At
   {
     [RCVerb ("at")]
-    public void EvalOperator (
-      RCRunner runner, RCClosure closure, RCByte left, RCByte right)
+    public void EvalOperator (RCRunner runner, RCClosure closure, RCByte left, RCByte right)
     {
-      runner.Yield (closure, DoAt<byte>(left, right));
+      runner.Yield (closure, DoAt<byte> (closure, left, right));
     }
 
     [RCVerb ("at")]
-    public void EvalOperator (
-      RCRunner runner, RCClosure closure, RCByte left, RCLong right)
+    public void EvalOperator (RCRunner runner, RCClosure closure, RCByte left, RCLong right)
     {
-      runner.Yield (closure, DoAt<byte>(left, right));
+      runner.Yield (closure, DoAt<byte> (closure, left, right));
     }
 
     [RCVerb ("at")]
-    public void EvalOperator (
-      RCRunner runner, RCClosure closure, RCByte left, RCDouble right)
+    public void EvalOperator (RCRunner runner, RCClosure closure, RCByte left, RCDouble right)
     {
-      runner.Yield (closure, DoAt<byte>(left, right));
+      runner.Yield (closure, DoAt<byte> (closure, left, right));
     }
 
     [RCVerb ("at")]
-    public void EvalOperator (
-      RCRunner runner, RCClosure closure, RCByte left, RCDecimal right)
+    public void EvalOperator (RCRunner runner, RCClosure closure, RCByte left, RCDecimal right)
     {
-      runner.Yield (closure, DoAt<byte>(left, right));
+      runner.Yield (closure, DoAt<byte> (closure, left, right));
     }
 
     [RCVerb ("at")]
-    public void EvalOperator (
-      RCRunner runner, RCClosure closure, RCBoolean left, RCLong right)
+    public void EvalOperator (RCRunner runner, RCClosure closure, RCBoolean left, RCLong right)
     {
-      runner.Yield (closure, DoAt<bool>(left, right));
+      runner.Yield (closure, DoAt<bool> (closure, left, right));
     }
 
     [RCVerb ("at")]
-    public void EvalOperator (
-      RCRunner runner, RCClosure closure, RCBoolean left, RCDouble right)
+    public void EvalOperator (RCRunner runner, RCClosure closure, RCBoolean left, RCDouble right)
     {
-      runner.Yield (closure, DoAt<bool>(left, right));
+      runner.Yield (closure, DoAt<bool> (closure, left, right));
     }
 
     [RCVerb ("at")]
-    public void EvalOperator (
-      RCRunner runner, RCClosure closure, RCBoolean left, RCDecimal right)
+    public void EvalOperator (RCRunner runner, RCClosure closure, RCBoolean left, RCDecimal right)
     {
-      runner.Yield (closure, DoAt<bool>(left, right));
+      runner.Yield (closure, DoAt<bool> (closure, left, right));
     }
 
     [RCVerb ("at")]
-    public void EvalOperator (
-      RCRunner runner, RCClosure closure, RCBoolean left, RCByte right)
+    public void EvalOperator (RCRunner runner, RCClosure closure, RCBoolean left, RCByte right)
     {
-      runner.Yield (closure, DoAt<bool>(left, right));
+      runner.Yield (closure, DoAt<bool> (closure, left, right));
     }
 
     [RCVerb ("at")]
-    public void EvalOperator (
-      RCRunner runner, RCClosure closure, RCDouble left, RCLong right)
+    public void EvalOperator (RCRunner runner, RCClosure closure, RCDouble left, RCLong right)
     {
-      runner.Yield (closure, DoAt<double>(left, right));
+      runner.Yield (closure, DoAt<double> (closure, left, right));
     }
 
     [RCVerb ("at")]
-    public void EvalOperator (
-      RCRunner runner, RCClosure closure, RCDouble left, RCDouble right)
+    public void EvalOperator (RCRunner runner, RCClosure closure, RCDouble left, RCDouble right)
     {
-      runner.Yield (closure, DoAt<double>(left, right));
+      runner.Yield (closure, DoAt<double> (closure, left, right));
     }
 
     [RCVerb ("at")]
-    public void EvalOperator (
-      RCRunner runner, RCClosure closure, RCDouble left, RCDecimal right)
+    public void EvalOperator (RCRunner runner, RCClosure closure, RCDouble left, RCDecimal right)
     {
-      runner.Yield (closure, DoAt<double>(left, right));
+      runner.Yield (closure, DoAt<double> (closure, left, right));
     }
 
     [RCVerb ("at")]
-    public void EvalOperator (
-      RCRunner runner, RCClosure closure, RCDouble left, RCByte right)
+    public void EvalOperator (RCRunner runner, RCClosure closure, RCDouble left, RCByte right)
     {
-      runner.Yield (closure, DoAt<double>(left, right));
+      runner.Yield (closure, DoAt<double> (closure, left, right));
     }
 
     [RCVerb ("at")]
-    public void EvalOperator (
-      RCRunner runner, RCClosure closure, RCLong left, RCLong right)
+    public void EvalOperator (RCRunner runner, RCClosure closure, RCLong left, RCLong right)
     {
-      runner.Yield (closure, DoAt<long>(left, right));
+      runner.Yield (closure, DoAt<long> (closure, left, right));
     }
 
     [RCVerb ("at")]
-    public void EvalOperator (
-      RCRunner runner, RCClosure closure, RCLong left, RCDouble right)
+    public void EvalOperator (RCRunner runner, RCClosure closure, RCLong left, RCDouble right)
     {
-      runner.Yield (closure, DoAt<long>(left, right));
+      runner.Yield (closure, DoAt<long> (closure, left, right));
     }
 
     [RCVerb ("at")]
-    public void EvalOperator (
-      RCRunner runner, RCClosure closure, RCLong left, RCDecimal right)
+    public void EvalOperator (RCRunner runner, RCClosure closure, RCLong left, RCDecimal right)
     {
-      runner.Yield (closure, DoAt<long>(left, right));
+      runner.Yield (closure, DoAt<long> (closure, left, right));
     }
 
     [RCVerb ("at")]
-    public void EvalOperator (
-      RCRunner runner, RCClosure closure, RCLong left, RCByte right)
+    public void EvalOperator (RCRunner runner, RCClosure closure, RCLong left, RCByte right)
     {
-      runner.Yield (closure, DoAt<long>(left, right));
+      runner.Yield (closure, DoAt<long> (closure, left, right));
     }
 
     [RCVerb ("at")]
-    public void EvalOperator (
-      RCRunner runner, RCClosure closure, RCDecimal left, RCLong right)
+    public void EvalOperator (RCRunner runner, RCClosure closure, RCDecimal left, RCLong right)
     {
-      runner.Yield (closure, DoAt<decimal>(left, right));
+      runner.Yield (closure, DoAt<decimal> (closure, left, right));
     }
 
     [RCVerb ("at")]
-    public void EvalOperator (
-      RCRunner runner, RCClosure closure, RCDecimal left, RCDouble right)
+    public void EvalOperator (RCRunner runner, RCClosure closure, RCDecimal left, RCDouble right)
     {
-      runner.Yield (closure, DoAt<decimal>(left, right));
+      runner.Yield (closure, DoAt<decimal> (closure, left, right));
     }
 
     [RCVerb ("at")]
-    public void EvalOperator (
-      RCRunner runner, RCClosure closure, RCDecimal left, RCDecimal right)
+    public void EvalOperator (RCRunner runner, RCClosure closure, RCDecimal left, RCDecimal right)
     {
-      runner.Yield (closure, DoAt<decimal>(left, right));
+      runner.Yield (closure, DoAt<decimal> (closure, left, right));
     }
 
     [RCVerb ("at")]
-    public void EvalOperator (
-      RCRunner runner, RCClosure closure, RCDecimal left, RCByte right)
+    public void EvalOperator (RCRunner runner, RCClosure closure, RCDecimal left, RCByte right)
     {
-      runner.Yield (closure, DoAt<decimal>(left, right));
+      runner.Yield (closure, DoAt<decimal> (closure, left, right));
     }
 
     [RCVerb ("at")]
-    public void EvalOperator (
-      RCRunner runner, RCClosure closure, RCString left, RCLong right)
+    public void EvalOperator (RCRunner runner, RCClosure closure, RCString left, RCLong right)
     {
-      runner.Yield (closure, DoAt<string>(left, right));
+      runner.Yield (closure, DoAt<string> (closure, left, right));
     }
 
     [RCVerb ("at")]
-    public void EvalOperator (
-      RCRunner runner, RCClosure closure, RCString left, RCDouble right)
+    public void EvalOperator (RCRunner runner, RCClosure closure, RCString left, RCDouble right)
     {
-      runner.Yield (closure, DoAt<string>(left, right));
+      runner.Yield (closure, DoAt<string> (closure, left, right));
     }
 
     [RCVerb ("at")]
-    public void EvalOperator (
-      RCRunner runner, RCClosure closure, RCString left, RCDecimal right)
+    public void EvalOperator (RCRunner runner, RCClosure closure, RCString left, RCDecimal right)
     {
-      runner.Yield (closure, DoAt<string>(left, right));
+      runner.Yield (closure, DoAt<string> (closure, left, right));
     }
 
     [RCVerb ("at")]
-    public void EvalOperator (
-      RCRunner runner, RCClosure closure, RCString left, RCByte right)
+    public void EvalOperator (RCRunner runner, RCClosure closure, RCString left, RCByte right)
     {
-      runner.Yield (closure, DoAt<string>(left, right));
+      runner.Yield (closure, DoAt<string> (closure, left, right));
     }
 
     [RCVerb ("at")]
-    public void EvalOperator (
-      RCRunner runner, RCClosure closure, RCSymbol left, RCLong right)
+    public void EvalOperator (RCRunner runner, RCClosure closure, RCSymbol left, RCLong right)
     {
-      runner.Yield (closure, DoAt<RCSymbolScalar>(left, right));
+      runner.Yield (closure, DoAt<RCSymbolScalar> (closure, left, right));
     }
 
     [RCVerb ("at")]
-    public void EvalOperator (
-      RCRunner runner, RCClosure closure, RCSymbol left, RCDouble right)
+    public void EvalOperator (RCRunner runner, RCClosure closure, RCSymbol left, RCDouble right)
     {
-      runner.Yield (closure, DoAt<RCSymbolScalar>(left, right));
+      runner.Yield (closure, DoAt<RCSymbolScalar> (closure, left, right));
     }
 
     [RCVerb ("at")]
-    public void EvalOperator (
-      RCRunner runner, RCClosure closure, RCSymbol left, RCDecimal right)
+    public void EvalOperator (RCRunner runner, RCClosure closure, RCSymbol left, RCDecimal right)
     {
-      runner.Yield (closure, DoAt<RCSymbolScalar>(left, right));
+      runner.Yield (closure, DoAt<RCSymbolScalar> (closure, left, right));
     }
 
     [RCVerb ("at")]
-    public void EvalOperator (
-      RCRunner runner, RCClosure closure, RCSymbol left, RCByte right)
+    public void EvalOperator (RCRunner runner, RCClosure closure, RCSymbol left, RCByte right)
     {
-      runner.Yield (closure, DoAt<RCSymbolScalar>(left, right));
+      runner.Yield (closure, DoAt<RCSymbolScalar> (closure, left, right));
     }
 
     [RCVerb ("at")]
-    public void EvalOperator (
-      RCRunner runner, RCClosure closure, RCTime left, RCLong right)
+    public void EvalOperator (RCRunner runner, RCClosure closure, RCTime left, RCLong right)
     {
-      runner.Yield (closure, DoAt<RCTimeScalar>(left, right));
+      runner.Yield (closure, DoAt<RCTimeScalar> (closure, left, right));
     }
 
     [RCVerb ("at")]
-    public void EvalOperator (
-      RCRunner runner, RCClosure closure, RCTime left, RCDouble right)
+    public void EvalOperator (RCRunner runner, RCClosure closure, RCTime left, RCDouble right)
     {
-      runner.Yield (closure, DoAt<RCTimeScalar>(left, right));
+      runner.Yield (closure, DoAt<RCTimeScalar> (closure, left, right));
     }
 
     [RCVerb ("at")]
-    public void EvalOperator (
-      RCRunner runner, RCClosure closure, RCTime left, RCDecimal right)
+    public void EvalOperator (RCRunner runner, RCClosure closure, RCTime left, RCDecimal right)
     {
-      runner.Yield (closure, DoAt<RCTimeScalar>(left, right));
+      runner.Yield (closure, DoAt<RCTimeScalar> (closure, left, right));
     }
 
     [RCVerb ("at")]
-    public void EvalOperator (
-      RCRunner runner, RCClosure closure, RCTime left, RCByte right)
+    public void EvalOperator (RCRunner runner, RCClosure closure, RCTime left, RCByte right)
     {
-      runner.Yield (closure, DoAt<RCTimeScalar>(left, right));
+      runner.Yield (closure, DoAt<RCTimeScalar> (closure, left, right));
     }
 
     [RCVerb ("at")]
-    public void EvalOperator (
-      RCRunner runner, RCClosure closure, RCBlock left, RCLong right)
-    {
-      runner.Yield (closure, DoAt (left, right));
-    }
-
-    [RCVerb ("at")]
-    public void EvalOperator (
-      RCRunner runner, RCClosure closure, RCBlock left, RCDouble right)
-    {
-      runner.Yield (closure, DoAt (left, right));
-    }
-
-    [RCVerb ("at")]
-    public void EvalOperator (
-      RCRunner runner, RCClosure closure, RCBlock left, RCDecimal right)
-    {
-      runner.Yield (closure, DoAt (left, right));
-    }
-
-    [RCVerb ("at")]
-    public void EvalOperator (
-      RCRunner runner, RCClosure closure, RCBlock left, RCByte right)
-    {
-      runner.Yield (closure, DoAt (left, right));
-    }
-
-    [RCVerb ("at")]
-    public void EvalOperator (
-      RCRunner runner, RCClosure closure, RCBlock left, RCString right)
+    public void EvalOperator (RCRunner runner, RCClosure closure, RCBlock left, RCLong right)
     {
       runner.Yield (closure, DoAt (closure, left, right));
     }
 
     [RCVerb ("at")]
-    public void EvalOperator (
-      RCRunner runner, RCClosure closure, RCBlock left, RCSymbol right)
+    public void EvalOperator (RCRunner runner, RCClosure closure, RCBlock left, RCDouble right)
+    {
+      runner.Yield (closure, DoAt (closure, left, right));
+    }
+
+    [RCVerb ("at")]
+    public void EvalOperator (RCRunner runner, RCClosure closure, RCBlock left, RCDecimal right)
+    {
+      runner.Yield (closure, DoAt (closure, left, right));
+    }
+
+    [RCVerb ("at")]
+    public void EvalOperator (RCRunner runner, RCClosure closure, RCBlock left, RCByte right)
+    {
+      runner.Yield (closure, DoAt (closure, left, right));
+    }
+
+    [RCVerb ("at")]
+    public void EvalOperator (RCRunner runner, RCClosure closure, RCBlock left, RCString right)
+    {
+      runner.Yield (closure, DoAt (closure, left, right));
+    }
+
+    [RCVerb ("at")]
+    public void EvalOperator (RCRunner runner, RCClosure closure, RCBlock left, RCSymbol right)
     {
       runner.Yield (closure, DoAt (closure, left, right));
     }
 
     [RCVerb ("from")]
-    public void EvalFrom (
-      RCRunner runner, RCClosure closure, RCLong left, RCByte right)
+    public void EvalFrom (RCRunner runner, RCClosure closure, RCLong left, RCByte right)
     {
-      runner.Yield (closure, DoAt<byte> (right, left));
+      runner.Yield (closure, DoAt<byte> (closure, right, left));
     }
 
     [RCVerb ("from")]
-    public void EvalFrom (
-      RCRunner runner, RCClosure closure, RCDouble left, RCByte right)
+    public void EvalFrom (RCRunner runner, RCClosure closure, RCDouble left, RCByte right)
     {
-      runner.Yield (closure, DoAt<byte> (right, left));
+      runner.Yield (closure, DoAt<byte> (closure, right, left));
     }
 
     [RCVerb ("from")]
-    public void EvalFrom (
-      RCRunner runner, RCClosure closure, RCDecimal left, RCByte right)
+    public void EvalFrom (RCRunner runner, RCClosure closure, RCDecimal left, RCByte right)
     {
-      runner.Yield (closure, DoAt<byte> (right, left));
+      runner.Yield (closure, DoAt<byte> (closure, right, left));
     }
 
     [RCVerb ("from")]
-    public void EvalFrom (
-      RCRunner runner, RCClosure closure, RCByte left, RCByte right)
+    public void EvalFrom (RCRunner runner, RCClosure closure, RCByte left, RCByte right)
     {
-      runner.Yield (closure, DoAt<byte> (right, left));
+      runner.Yield (closure, DoAt<byte> (closure, right, left));
     }
 
     [RCVerb ("from")]
-    public void EvalFrom (
-      RCRunner runner, RCClosure closure, RCLong left, RCBoolean right)
+    public void EvalFrom (RCRunner runner, RCClosure closure, RCLong left, RCBoolean right)
     {
-      runner.Yield (closure, DoAt<bool> (right, left));
+      runner.Yield (closure, DoAt<bool> (closure, right, left));
     }
 
     [RCVerb ("from")]
-    public void EvalFrom (
-      RCRunner runner, RCClosure closure, RCDouble left, RCBoolean right)
+    public void EvalFrom (RCRunner runner, RCClosure closure, RCDouble left, RCBoolean right)
     {
-      runner.Yield (closure, DoAt<bool> (right, left));
+      runner.Yield (closure, DoAt<bool> (closure, right, left));
     }
 
     [RCVerb ("from")]
-    public void EvalFrom (
-      RCRunner runner, RCClosure closure, RCDecimal left, RCBoolean right)
+    public void EvalFrom (RCRunner runner, RCClosure closure, RCDecimal left, RCBoolean right)
     {
-      runner.Yield (closure, DoAt<bool> (right, left));
+      runner.Yield (closure, DoAt<bool> (closure, right, left));
     }
 
     [RCVerb ("from")]
-    public void EvalFrom (
-      RCRunner runner, RCClosure closure, RCByte left, RCBoolean right)
+    public void EvalFrom (RCRunner runner, RCClosure closure, RCByte left, RCBoolean right)
     {
-      runner.Yield (closure, DoAt<bool> (right, left));
+      runner.Yield (closure, DoAt<bool> (closure, right, left));
     }
 
     [RCVerb ("from")]
-    public void EvalFrom (
-      RCRunner runner, RCClosure closure, RCLong left, RCDouble right)
+    public void EvalFrom (RCRunner runner, RCClosure closure, RCLong left, RCDouble right)
     {
-      runner.Yield (closure, DoAt<double> (right, left));
+      runner.Yield (closure, DoAt<double> (closure, right, left));
     }
 
     [RCVerb ("from")]
-    public void EvalFrom (
-      RCRunner runner, RCClosure closure, RCDouble left, RCDouble right)
+    public void EvalFrom (RCRunner runner, RCClosure closure, RCDouble left, RCDouble right)
     {
-      runner.Yield (closure, DoAt<double> (right, left));
+      runner.Yield (closure, DoAt<double> (closure, right, left));
     }
 
     [RCVerb ("from")]
-    public void EvalFrom (
-      RCRunner runner, RCClosure closure, RCDecimal left, RCDouble right)
+    public void EvalFrom (RCRunner runner, RCClosure closure, RCDecimal left, RCDouble right)
     {
-      runner.Yield (closure, DoAt<double> (right, left));
+      runner.Yield (closure, DoAt<double> (closure, right, left));
     }
 
     [RCVerb ("from")]
-    public void EvalFrom (
-      RCRunner runner, RCClosure closure, RCByte left, RCDouble right)
+    public void EvalFrom (RCRunner runner, RCClosure closure, RCByte left, RCDouble right)
     {
-      runner.Yield (closure, DoAt<double> (right, left));
+      runner.Yield (closure, DoAt<double> (closure, right, left));
     }
 
     [RCVerb ("from")]
-    public void EvalFrom (
-      RCRunner runner, RCClosure closure, RCLong left, RCLong right)
+    public void EvalFrom (RCRunner runner, RCClosure closure, RCLong left, RCLong right)
     {
-      runner.Yield (closure, DoAt<long> (right, left));
+      runner.Yield (closure, DoAt<long> (closure, right, left));
     }
 
     [RCVerb ("from")]
-    public void EvalFrom (
-      RCRunner runner, RCClosure closure, RCDouble left, RCLong right)
+    public void EvalFrom (RCRunner runner, RCClosure closure, RCDouble left, RCLong right)
     {
-      runner.Yield (closure, DoAt<long> (right, left));
+      runner.Yield (closure, DoAt<long> (closure, right, left));
     }
 
     [RCVerb ("from")]
-    public void EvalFrom (
-      RCRunner runner, RCClosure closure, RCDecimal left, RCLong right)
+    public void EvalFrom (RCRunner runner, RCClosure closure, RCDecimal left, RCLong right)
     {
-      runner.Yield (closure, DoAt<long> (right, left));
+      runner.Yield (closure, DoAt<long> (closure, right, left));
     }
 
     [RCVerb ("from")]
-    public void EvalFrom (
-      RCRunner runner, RCClosure closure, RCByte left, RCLong right)
+    public void EvalFrom (RCRunner runner, RCClosure closure, RCByte left, RCLong right)
     {
-      runner.Yield (closure, DoAt<long> (right, left));
+      runner.Yield (closure, DoAt<long> (closure, right, left));
     }
 
     [RCVerb ("from")]
-    public void EvalFrom (
-      RCRunner runner, RCClosure closure, RCLong left, RCDecimal right)
+    public void EvalFrom (RCRunner runner, RCClosure closure, RCLong left, RCDecimal right)
     {
-      runner.Yield (closure, DoAt<decimal> (right, left));
+      runner.Yield (closure, DoAt<decimal> (closure, right, left));
     }
 
     [RCVerb ("from")]
-    public void EvalFrom (
-      RCRunner runner, RCClosure closure, RCDouble left, RCDecimal right)
+    public void EvalFrom (RCRunner runner, RCClosure closure, RCDouble left, RCDecimal right)
     {
-      runner.Yield (closure, DoAt<decimal> (right, left));
+      runner.Yield (closure, DoAt<decimal> (closure, right, left));
     }
 
     [RCVerb ("from")]
-    public void EvalFrom (
-      RCRunner runner, RCClosure closure, RCDecimal left, RCDecimal right)
+    public void EvalFrom (RCRunner runner, RCClosure closure, RCDecimal left, RCDecimal right)
     {
-      runner.Yield (closure, DoAt<decimal> (right, left));
+      runner.Yield (closure, DoAt<decimal> (closure, right, left));
     }
 
     [RCVerb ("from")]
-    public void EvalFrom (
-      RCRunner runner, RCClosure closure, RCByte left, RCDecimal right)
+    public void EvalFrom (RCRunner runner, RCClosure closure, RCByte left, RCDecimal right)
     {
-      runner.Yield (closure, DoAt<decimal> (right, left));
+      runner.Yield (closure, DoAt<decimal> (closure, right, left));
     }
 
     [RCVerb ("from")]
-    public void EvalFrom (
-      RCRunner runner, RCClosure closure, RCLong left, RCString right)
+    public void EvalFrom (RCRunner runner, RCClosure closure, RCLong left, RCString right)
     {
-      runner.Yield (closure, DoAt<string> (right, left));
+      runner.Yield (closure, DoAt<string> (closure, right, left));
     }
 
     [RCVerb ("from")]
-    public void EvalFrom (
-      RCRunner runner, RCClosure closure, RCDouble left, RCString right)
+    public void EvalFrom (RCRunner runner, RCClosure closure, RCDouble left, RCString right)
     {
-      runner.Yield (closure, DoAt<string> (right, left));
+      runner.Yield (closure, DoAt<string> (closure, right, left));
     }
 
     [RCVerb ("from")]
-    public void EvalFrom (
-      RCRunner runner, RCClosure closure, RCDecimal left, RCString right)
+    public void EvalFrom (RCRunner runner, RCClosure closure, RCDecimal left, RCString right)
     {
-      runner.Yield (closure, DoAt<string> (right, left));
+      runner.Yield (closure, DoAt<string> (closure, right, left));
     }
 
     [RCVerb ("from")]
-    public void EvalFrom (
-      RCRunner runner, RCClosure closure, RCByte left, RCString right)
+    public void EvalFrom (RCRunner runner, RCClosure closure, RCByte left, RCString right)
     {
-      runner.Yield (closure, DoAt<string> (right, left));
+      runner.Yield (closure, DoAt<string> (closure, right, left));
     }
 
     [RCVerb ("from")]
-    public void EvalFrom (
-      RCRunner runner, RCClosure closure, RCLong left, RCSymbol right)
+    public void EvalFrom (RCRunner runner, RCClosure closure, RCLong left, RCSymbol right)
     {
-      runner.Yield (closure, DoAt<RCSymbolScalar> (right, left));
+      runner.Yield (closure, DoAt<RCSymbolScalar> (closure, right, left));
     }
 
     [RCVerb ("from")]
-    public void EvalFrom (
-      RCRunner runner, RCClosure closure, RCDouble left, RCSymbol right)
+    public void EvalFrom (RCRunner runner, RCClosure closure, RCDouble left, RCSymbol right)
     {
-      runner.Yield (closure, DoAt<RCSymbolScalar> (right, left));
+      runner.Yield (closure, DoAt<RCSymbolScalar> (closure, right, left));
     }
 
     [RCVerb ("from")]
-    public void EvalFrom (
-      RCRunner runner, RCClosure closure, RCDecimal left, RCSymbol right)
+    public void EvalFrom (RCRunner runner, RCClosure closure, RCDecimal left, RCSymbol right)
     {
-      runner.Yield (closure, DoAt<RCSymbolScalar> (right, left));
+      runner.Yield (closure, DoAt<RCSymbolScalar> (closure, right, left));
     }
 
     [RCVerb ("from")]
-    public void EvalFrom (
-      RCRunner runner, RCClosure closure, RCByte left, RCSymbol right)
+    public void EvalFrom (RCRunner runner, RCClosure closure, RCByte left, RCSymbol right)
     {
-      runner.Yield (closure, DoAt<RCSymbolScalar> (right, left));
+      runner.Yield (closure, DoAt<RCSymbolScalar> (closure, right, left));
     }
 
     [RCVerb ("from")]
-    public void EvalFrom (
-      RCRunner runner, RCClosure closure, RCLong left, RCTime right)
+    public void EvalFrom (RCRunner runner, RCClosure closure, RCLong left, RCTime right)
     {
-      runner.Yield (closure, DoAt<RCTimeScalar> (right, left));
+      runner.Yield (closure, DoAt<RCTimeScalar> (closure, right, left));
     }
 
     [RCVerb ("from")]
-    public void EvalFrom (
-      RCRunner runner, RCClosure closure, RCDouble left, RCTime right)
+    public void EvalFrom (RCRunner runner, RCClosure closure, RCDouble left, RCTime right)
     {
-      runner.Yield (closure, DoAt<RCTimeScalar> (right, left));
+      runner.Yield (closure, DoAt<RCTimeScalar> (closure, right, left));
     }
 
     [RCVerb ("from")]
-    public void EvalFrom (
-      RCRunner runner, RCClosure closure, RCDecimal left, RCTime right)
+    public void EvalFrom (RCRunner runner, RCClosure closure, RCDecimal left, RCTime right)
     {
-      runner.Yield (closure, DoAt<RCTimeScalar> (right, left));
+      runner.Yield (closure, DoAt<RCTimeScalar> (closure, right, left));
     }
 
     [RCVerb ("from")]
-    public void EvalFrom (
-      RCRunner runner, RCClosure closure, RCByte left, RCTime right)
+    public void EvalFrom (RCRunner runner, RCClosure closure, RCByte left, RCTime right)
     {
-      runner.Yield (closure, DoAt<RCTimeScalar> (right, left));
+      runner.Yield (closure, DoAt<RCTimeScalar> (closure, right, left));
     }
 
     [RCVerb ("from")]
-    public void EvalFrom (
-      RCRunner runner, RCClosure closure, RCLong left, RCBlock right)
-    {
-      runner.Yield (closure, DoAt (right, left));
-    }
-
-    [RCVerb ("from")]
-    public void EvalFrom (
-      RCRunner runner, RCClosure closure, RCDouble left, RCBlock right)
-    {
-      runner.Yield (closure, DoAt (right, left));
-    }
-
-    [RCVerb ("from")]
-    public void EvalFrom (
-      RCRunner runner, RCClosure closure, RCDecimal left, RCBlock right)
-    {
-      runner.Yield (closure, DoAt (right, left));
-    }
-
-    [RCVerb ("from")]
-    public void EvalFrom (
-      RCRunner runner, RCClosure closure, RCByte left, RCBlock right)
-    {
-      runner.Yield (closure, DoAt (right, left));
-    }
-
-    [RCVerb ("from")]
-    public void EvalFrom (
-      RCRunner runner, RCClosure closure, RCString left, RCBlock right)
+    public void EvalFrom (RCRunner runner, RCClosure closure, RCLong left, RCBlock right)
     {
       runner.Yield (closure, DoAt (closure, right, left));
     }
 
     [RCVerb ("from")]
-    public void EvalFrom (
-      RCRunner runner, RCClosure closure, RCSymbol left, RCBlock right)
+    public void EvalFrom (RCRunner runner, RCClosure closure, RCDouble left, RCBlock right)
     {
       runner.Yield (closure, DoAt (closure, right, left));
     }
 
-    public static RCBlock DoAt (RCBlock left, RCLong right)
+    [RCVerb ("from")]
+    public void EvalFrom (RCRunner runner, RCClosure closure, RCDecimal left, RCBlock right)
+    {
+      runner.Yield (closure, DoAt (closure, right, left));
+    }
+
+    [RCVerb ("from")]
+    public void EvalFrom (RCRunner runner, RCClosure closure, RCByte left, RCBlock right)
+    {
+      runner.Yield (closure, DoAt (closure, right, left));
+    }
+
+    [RCVerb ("from")]
+    public void EvalFrom (RCRunner runner, RCClosure closure, RCString left, RCBlock right)
+    {
+      runner.Yield (closure, DoAt (closure, right, left));
+    }
+
+    [RCVerb ("from")]
+    public void EvalFrom (RCRunner runner, RCClosure closure, RCSymbol left, RCBlock right)
+    {
+      runner.Yield (closure, DoAt (closure, right, left));
+    }
+
+    public static RCBlock DoAt (RCClosure closure, RCBlock left, RCLong right)
     {
       RCBlock result = RCBlock.Empty;
       for (int i = 0; i < right.Count; ++i)
@@ -554,7 +478,7 @@ namespace RCL.Core
       return result;
     }
 
-    public static RCBlock DoAt (RCBlock left, RCDouble right)
+    public static RCBlock DoAt (RCClosure closure, RCBlock left, RCDouble right)
     {
       RCBlock result = RCBlock.Empty;
       for (int i = 0; i < right.Count; ++i)
@@ -566,7 +490,7 @@ namespace RCL.Core
       return result;
     }
 
-    public static RCBlock DoAt (RCBlock left, RCDecimal right)
+    public static RCBlock DoAt (RCClosure closure, RCBlock left, RCDecimal right)
     {
       RCBlock result = RCBlock.Empty;
       for (int i = 0; i < right.Count; ++i)
@@ -578,7 +502,7 @@ namespace RCL.Core
       return result;
     }
 
-    public static RCBlock DoAt (RCBlock left, RCByte right)
+    public static RCBlock DoAt (RCClosure closure, RCBlock left, RCByte right)
     {
       RCBlock result = RCBlock.Empty;
       for (int i = 0; i < right.Count; ++i)
@@ -629,62 +553,97 @@ namespace RCL.Core
       return result;
     }
 
-    public static RCVector<L> DoAt<L> (RCVector<L> left, RCVector<byte> right)
+    public static RCVector<L> DoAt<L> (RCClosure closure, RCVector<L> left, RCVector<byte> right)
     {
       L[] result = new L[right.Count];
       for (int i = 0; i < right.Count; ++i)
       {
-        result[i] = left[right[i]];
+        int j = right[i];
+        if (j < 0 || j >= left.Count)
+        {
+          throw RCException.Range (closure, right[i], right.Count);
+        }
+        result[i] = left[j];
       }
       return (RCVector<L>) RCVectorBase.FromArray (new RCArray<L> (result));
     }
 
-    public static RCVector<L> DoAt<L> (RCVector<L> left, RCVector<long> right)
+    public static RCVector<L> DoAt<L> (RCClosure closure, RCVector<L> left, RCVector<long> right)
     {
       L[] result = new L[right.Count];
       for (int i = 0; i < right.Count; ++i)
       {
         if (right[i] < 0)
         {
-          result[i] = left[(int)(left.Count + right[i])];
+          int j = (int) (left.Count + right[i]);
+          if (j < 0 || j >= left.Count)
+          {
+            throw RCException.Range (closure, right[i], right.Count);
+          }
+          result[i] = left[j];
         }
         else
         {
-          result[i] = left[(int)right[i]];
+          int j = (int) right[i];
+          if (j < 0 || j >= left.Count)
+          {
+            throw RCException.Range (closure, right[i], right.Count);
+          }
+          result[i] = left[j];
         }
       }
       return (RCVector<L>) RCVectorBase.FromArray (new RCArray<L> (result));
     }
 
-    public static RCVector<L> DoAt<L>(RCVector<L> left, RCVector<double> right)
+    public static RCVector<L> DoAt<L> (RCClosure closure, RCVector<L> left, RCVector<double> right)
     {
       L[] result = new L[right.Count];
       for (int i = 0; i < right.Count; ++i)
       {
         if (right[i] < 0)
         {
-          result[i] = left[(int)(left.Count + right[i])];
+          int j = (int) (left.Count + right[i]);
+          if (j < 0 || j >= left.Count)
+          {
+            throw RCException.Range (closure, (long) right[i], right.Count);
+          }
+          result[i] = left[j];
         }
         else
         {
-          result[i] = left[(int)right[i]];
+          int j = (int) right[i];
+          if (j < 0 || j >= left.Count)
+          {
+            throw RCException.Range (closure, (long) right[i], right.Count);
+          }
+          result[i] = left[j];
         }
       }
       return (RCVector<L>) RCVectorBase.FromArray (new RCArray<L> (result));
     }
 
-    public static RCVector<L> DoAt<L> (RCVector<L> left, RCVector<decimal> right)
+    public static RCVector<L> DoAt<L> (RCClosure closure, RCVector<L> left, RCVector<decimal> right)
     {
       L[] result = new L[right.Count];
       for (int i = 0; i < right.Count; ++i)
       {
         if (right[i] < 0)
         {
-          result[i] = left[(int)(left.Count + right[i])];
+          int j = (int) (left.Count + right[i]);
+          if (j < 0 || j >= left.Count)
+          {
+            throw RCException.Range (closure, (long) right[i], right.Count);
+          }
+          result[i] = left[j];
         }
         else
         {
-          result[i] = left[(int)right[i]];
+          int j = (int) right[i];
+          if (j < 0 || j >= left.Count)
+          {
+            throw RCException.Range (closure, (long) right[i], right.Count);
+          }
+          result[i] = left[j];
         }
       }
       return (RCVector<L>) RCVectorBase.FromArray (new RCArray<L> (result));

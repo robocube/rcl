@@ -50,6 +50,13 @@ namespace RCL.Kernel
       return new RCException (closure, RCErrors.Type, message);
     }
 
+    public static RCException Range (RCClosure closure, long i, long count)
+    {
+      return new RCException (closure,
+                              RCErrors.Range,
+                              string.Format ("Index {0} is out of range. Count is {1}", i, count));
+    }
+
     public static RCException LockViolation (RCClosure closure)
     {
       return new RCException (
