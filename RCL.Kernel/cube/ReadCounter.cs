@@ -173,7 +173,7 @@ namespace RCL.Kernel
       }
     }
 
-    public RCSymbol ConcreteSymbols (RCSymbol symbol, bool showDeleted) //bool returnAll)
+    public RCSymbol ConcreteSymbols (RCSymbol symbol, bool showDeleted)
     {
       bool returnAll = true;
       RCArray<RCSymbolScalar> result = new RCArray<RCSymbolScalar> (8);
@@ -200,22 +200,12 @@ namespace RCL.Kernel
           }
         }
       }
-      if (returnAll)
+      for (int i = 0; i < symbol.Count; ++i)
       {
-        for (int i = 0; i < symbol.Count; ++i)
+        if (!(symbol[i].Key.Equals ("'*'") || symbol[i].Key.Equals ("*")) && 
+            !result.Contains (symbol[i]))
         {
-          if ((symbol[i].Key.Equals ("'*'") || symbol[i].Key.Equals ("*")))
-          {
-            RCSymbolScalar scalar = symbol[i].Previous;
-            if (!result.Contains (scalar))
-            {
-              result.Write (scalar);
-            }
-          }
-          else if (!result.Contains (symbol[i]))
-          {
-            result.Write (symbol[i]);
-          }
+          result.Write (symbol[i]);
         }
       }
       //Console.Out.WriteLine ("ConcreteSymbols: " + new RCSymbol (result));
@@ -308,7 +298,6 @@ namespace RCL.Kernel
         {
           foreach (SpecRecord specRecord in spec)
           {
-            //CountRecord countRecord = Get (specRecord.symbol);
             CountRecord countRecord = Get (specRecord);
             //The symbol is missing entirely.
             if (countRecord == null)

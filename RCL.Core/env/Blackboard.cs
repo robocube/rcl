@@ -62,6 +62,7 @@ namespace RCL.Core
       try
       {
         Section section = GetSection (left);
+        //ReadSpec spec = new ReadSpec (s.m_counter, left, right, -1, false, false, true, false);
         Read (runner, closure, left, new ReadSpec (section.m_counter, left, right, 0, false, false, true, false));
       }
       catch (Exception)
@@ -138,9 +139,6 @@ namespace RCL.Core
       {
         //Make abstract symbols concrete
         Section section = GetSection (symbol);
-        //Console.Out.WriteLine ("BEFORE SYM: " + symbol);
-        symbol = section.m_counter.ConcreteSymbols (symbol, spec.ShowDeleted);
-        //Console.Out.WriteLine ("AFTER SYM: " + symbol);
         Satisfy canSatisfy = section.m_counter.CanSatisfy (spec);
         RCCube result = section.m_blackboard.Read (spec,
                                                    section.m_counter,
