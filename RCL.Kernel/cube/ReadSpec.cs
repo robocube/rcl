@@ -14,6 +14,7 @@ namespace RCL.Kernel
     protected int m_start = int.MaxValue;
     protected bool m_force = false;
     protected bool m_fill = true;
+    public readonly bool ShowDeleted;
 
     protected bool m_unlimited;
     protected int m_symbolLimit;
@@ -21,7 +22,7 @@ namespace RCL.Kernel
     protected int m_totalLimit = int.MaxValue;
 
     //This is for page.
-    public ReadSpec (ReadCounter counter, RCSymbol left, int skipFirst, int totalLimit)
+    public ReadSpec (ReadCounter counter, RCSymbol left, int skipFirst, int totalLimit, bool showDeleted)
     {
       //For paging.
       m_counter = counter;
@@ -33,7 +34,8 @@ namespace RCL.Kernel
       m_symbolLimit = int.MaxValue;
       m_skipFirst = Math.Abs (skipFirst);
       m_totalLimit = Math.Abs (totalLimit);
-      left = m_counter.ConcreteSymbols (left, true);
+      ShowDeleted = showDeleted;
+      left = m_counter.ConcreteSymbols (left, showDeleted);
       for (int i = 0; i < left.Count; ++i)
       {
         Add (left[i], 0, m_symbolLimit);
@@ -51,9 +53,10 @@ namespace RCL.Kernel
       m_force = force;
     }
 
-    public ReadSpec (ReadCounter counter, RCSymbol left, RCLong right, int defaultLimit, bool ignoreDispatchedRows, bool force, bool fill)
+    public ReadSpec (ReadCounter counter, RCSymbol left, RCLong right, int defaultLimit, bool ignoreDispatchedRows, bool force, bool fill, bool showDeleted)
     {
       m_counter = counter;
+      ShowDeleted = showDeleted;
       m_ignoreDispatchedRows = ignoreDispatchedRows;
       m_force = force;
       m_fill = fill;
@@ -63,7 +66,7 @@ namespace RCL.Kernel
         m_forward = defaultLimit >= 0;
         m_unlimited = defaultLimit == 0;
         m_symbolLimit = Math.Abs (m_unlimited ? int.MaxValue : defaultLimit);
-        left = m_counter.ConcreteSymbols (left, true);
+        left = m_counter.ConcreteSymbols (left, showDeleted);
         for (int i = 0; i < left.Count; ++i)
         {
           Add (left[i], (int) right[0], m_symbolLimit);
@@ -75,7 +78,7 @@ namespace RCL.Kernel
         m_forward = right[1] >= 0;
         m_unlimited = right[1] == 0;
         m_symbolLimit = Math.Abs (m_unlimited ? int.MaxValue : (int) right[1]);
-        left = m_counter.ConcreteSymbols (left, true);
+        left = m_counter.ConcreteSymbols (left, showDeleted);
         for (int i = 0; i < left.Count; ++i)
         {
           Add (left[i], (int) right[0], m_symbolLimit);

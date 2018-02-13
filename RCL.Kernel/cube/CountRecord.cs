@@ -25,5 +25,7 @@ namespace RCL.Kernel
     public int count = 0;
     //The total number of rows written whether dispatched or not.
     public int total = 0;
+    //True if the symbol has been deleted
+    public bool deleted = false;
   }
 }

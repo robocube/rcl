@@ -2073,7 +2073,7 @@ namespace RCL.Core
       try
       {
         ReadCounter counter = new ReadCounter ();
-        ReadSpec spec = new ReadSpec (counter, RCSymbol.Wild, (int) left[0], (int) left[1] + 1);
+        ReadSpec spec = new ReadSpec (counter, RCSymbol.Wild, (int) left[0], (int) left[1] + 1, false);
         result = right.Read (spec, counter, false, right.Count);
         for (int i = 0; i < result.Cols; ++i)
         {

@@ -131,9 +131,14 @@ namespace RCL.Kernel
     {
       CountRecord record;
       Dictionary<RCSymbolScalar, CountRecord> map = m_records;
+      //It's a delete
       if (line < 0)
       {
-        map.Remove (scalar);
+        if (map.TryGetValue (scalar, out record))
+        {
+          record.deleted = true;
+        }
+        //map.Remove (scalar);
         scalar = scalar.Previous;
         while (scalar != null)
         {
@@ -168,11 +173,13 @@ namespace RCL.Kernel
       }
     }
 
-    public RCSymbol ConcreteSymbols (RCSymbol symbol, bool returnAll)
+    public RCSymbol ConcreteSymbols (RCSymbol symbol, bool showDeleted) //bool returnAll)
     {
+      bool returnAll = true;
       RCArray<RCSymbolScalar> result = new RCArray<RCSymbolScalar> (8);
       foreach (CountRecord count in m_records.Values)
       {
+        if (count.deleted && !showDeleted) continue;
         for (int i = 0; i < symbol.Count; ++i)
         {
           RCSymbolScalar scalar = symbol[i];
@@ -211,6 +218,7 @@ namespace RCL.Kernel
           }
         }
       }
+      //Console.Out.WriteLine ("ConcreteSymbols: " + new RCSymbol (result));
       return new RCSymbol (result);
     }
 
