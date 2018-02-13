@@ -175,7 +175,6 @@ namespace RCL.Kernel
 
     public RCSymbol ConcreteSymbols (RCSymbol symbol, bool showDeleted)
     {
-      bool returnAll = true;
       RCArray<RCSymbolScalar> result = new RCArray<RCSymbolScalar> (8);
       foreach (CountRecord count in m_records.Values)
       {

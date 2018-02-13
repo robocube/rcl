@@ -52,7 +52,7 @@ namespace RCL.Exe
       //Console.Out.WriteLine (message);
       AppDomain.CurrentDomain.UnhandledException += 
         new UnhandledExceptionEventHandler (UnhandledException);
-      
+
       string prompt = "RCL>";
       LineEditor editor = new LineEditor ("RCL");
       RCLogger consoleLog = new RCLogger (cmd.Nokeys, cmd.Show);
@@ -60,7 +60,7 @@ namespace RCL.Exe
       RCRunner runner = new RCRunner (RCActivator.Default, log, 1, cmd);
       InstallSignalHandler (runner);
       cmd.PrintStartup ();
-  
+
       string line = "";
       if (cmd.Program != "")
       {
