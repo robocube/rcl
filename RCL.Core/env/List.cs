@@ -107,58 +107,70 @@ namespace RCL.Core
     {
       RCAsyncState state = (RCAsyncState) obj;
       ListArgs args = (ListArgs) state.Other;
-      RCCube result = new RCCube (new RCArray<string> ("S"));
-      Queue<string> todo = new Queue<string> ();
-      string top = Command.PathSymbolToString (args.Spec);
-      string[] topParts = top.Split (Path.DirectorySeparatorChar);
-      int startPart = (int) (topParts.Length - args.Spec.Length) + 1;
-      todo.Enqueue (top);
-      RCSymbolScalar prefix = RCSymbolScalar.From (args.Spec.Part (0));
-      while (todo.Count > 0)
+      try
       {
-        string path = todo.Dequeue ();
-        string[] files = Directory.GetFiles (path);
-        for (int i = 0; i < files.Length; ++i)
+        RCCube result = new RCCube (new RCArray<string> ("S"));
+        Queue<string> todo = new Queue<string> ();
+        string top = Command.PathSymbolToString (args.Spec);
+        string[] topParts = top.Split (Path.DirectorySeparatorChar);
+        int startPart = (int) (topParts.Length - args.Spec.Length) + 1;
+        todo.Enqueue (top);
+        RCSymbolScalar prefix = RCSymbolScalar.From (args.Spec.Part (0));
+        while (todo.Count > 0)
         {
-          FileInfo file = new FileInfo (files [i]);
-          if (args.All || file.Name[0] != '.')
+          string path = todo.Dequeue ();
+          string[] files = Directory.GetFiles (path);
+          for (int i = 0; i < files.Length; ++i)
           {
-            string [] parts = files[i].Split (Path.DirectorySeparatorChar);
-            RCSymbolScalar symbol = RCSymbolScalar.From (startPart, prefix, parts);
-            result.WriteCell ("name", symbol, file.Name);
-            result.WriteCell ("size", symbol, file.Length);
-            result.WriteCell ("type", symbol, "f");
-            result.WriteCell ("ext", symbol, file.Extension);
-            result.WriteCell ("access", symbol,
-                              new RCTimeScalar (file.LastAccessTime, RCTimeType.Datetime));
-            result.WriteCell ("write", symbol,
-                              new RCTimeScalar (file.LastWriteTime, RCTimeType.Datetime));
-            result.Axis.Write (symbol);
-          }
-        }
-        RCArray<string> dirs = new RCArray<string> (Directory.GetDirectories (path));
-        for (int i = 0; i < dirs.Count; ++i) 
-        {
-          DirectoryInfo dir = new DirectoryInfo (dirs [i]);
-          if (args.All || dir.Name[0] != '.')
-          {
-            string [] parts = dirs[i].Split (Path.DirectorySeparatorChar);
-            RCSymbolScalar symbol = RCSymbolScalar.From (startPart, prefix, parts);
-            result.WriteCell ("name", symbol, dir.Name);
-            result.WriteCell ("type", symbol, "d");
-            result.WriteCell ("access", symbol,
-                              new RCTimeScalar (dir.LastAccessTime, RCTimeType.Datetime));
-            result.WriteCell ("write", symbol,
-                               new RCTimeScalar (dir.LastWriteTime, RCTimeType.Datetime));
-            result.Axis.Write (symbol);
-            if (args.Deep)
+            FileInfo file = new FileInfo (files [i]);
+            if (args.All || file.Name[0] != '.')
             {
-              todo.Enqueue (dirs [i]);
+              string [] parts = files[i].Split (Path.DirectorySeparatorChar);
+              RCSymbolScalar symbol = RCSymbolScalar.From (startPart, prefix, parts);
+              result.WriteCell ("name", symbol, file.Name);
+              result.WriteCell ("size", symbol, file.Length);
+              result.WriteCell ("type", symbol, "f");
+              result.WriteCell ("ext", symbol, file.Extension);
+              result.WriteCell ("access", symbol,
+                                new RCTimeScalar (file.LastAccessTime, RCTimeType.Datetime));
+              result.WriteCell ("write", symbol,
+                                new RCTimeScalar (file.LastWriteTime, RCTimeType.Datetime));
+              result.Axis.Write (symbol);
+            }
+          }
+          RCArray<string> dirs = new RCArray<string> (Directory.GetDirectories (path));
+          for (int i = 0; i < dirs.Count; ++i)
+          {
+            DirectoryInfo dir = new DirectoryInfo (dirs [i]);
+            if (args.All || dir.Name[0] != '.')
+            {
+              string [] parts = dirs[i].Split (Path.DirectorySeparatorChar);
+              RCSymbolScalar symbol = RCSymbolScalar.From (startPart, prefix, parts);
+              result.WriteCell ("name", symbol, dir.Name);
+              result.WriteCell ("type", symbol, "d");
+              result.WriteCell ("access", symbol,
+                                new RCTimeScalar (dir.LastAccessTime, RCTimeType.Datetime));
+              result.WriteCell ("write", symbol,
+                                 new RCTimeScalar (dir.LastWriteTime, RCTimeType.Datetime));
+              result.Axis.Write (symbol);
+              if (args.Deep)
+              {
+                todo.Enqueue (dirs [i]);
+              }
             }
           }
         }
+        state.Runner.Yield (state.Closure, result);
       }
-      state.Runner.Yield (state.Closure, result);
+      catch (DirectoryNotFoundException ex)
+      {
+        state.Runner.Finish (state.Closure,
+                             new RCException (state.Closure, RCErrors.File, ex.Message), 1);
+      }
+      catch (Exception ex)
+      {
+        state.Runner.Report (state.Closure, ex);
+      }
     }
 
     /*

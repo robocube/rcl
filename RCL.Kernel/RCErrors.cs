@@ -15,6 +15,7 @@ namespace RCL.Kernel
     Exec    = 9,  //Non-zero exit status on external process
     Handle  = 10, //Bad handle number
     Session = 11, //Bad session cookie
-    Range   = 12  //Bad array index
+    Range   = 12, //Bad array index
+    File    = 13  //Bad file name
   }
 }
