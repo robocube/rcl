@@ -102,14 +102,15 @@ namespace RCL.Core
           {
             string [] parts = files[i].Split (Path.DirectorySeparatorChar);
             RCSymbolScalar symbol = RCSymbolScalar.From (startPart, prefix, parts);
-            result.WriteCell ("size", symbol, file.Length);
             result.WriteCell ("name", symbol, file.Name);
+            result.WriteCell ("size", symbol, file.Length);
+            result.WriteCell ("type", symbol, "f");
             result.WriteCell ("ext", symbol, file.Extension);
-            result.WriteCell ("access", symbol, new RCTimeScalar (file.LastAccessTime,
-                                                                  RCTimeType.Datetime));
-            result.WriteCell ("write", symbol, new RCTimeScalar (file.LastWriteTime,
-                                                                 RCTimeType.Datetime));
-            result.Axis.Write (symbol); 
+            result.WriteCell ("access", symbol,
+                              new RCTimeScalar (file.LastAccessTime, RCTimeType.Datetime));
+            result.WriteCell ("write", symbol,
+                              new RCTimeScalar (file.LastWriteTime, RCTimeType.Datetime));
+            result.Axis.Write (symbol);
           }
         }
         //Needs to be async. CHEATER!
@@ -121,10 +122,12 @@ namespace RCL.Core
           {
             string [] parts = dirs[i].Split (Path.DirectorySeparatorChar);
             RCSymbolScalar symbol = RCSymbolScalar.From (startPart, prefix, parts);
-            result.WriteCell ("access", symbol, new RCTimeScalar (dir.LastAccessTime,
-                                                                  RCTimeType.Datetime));
-            result.WriteCell ("write", symbol, new RCTimeScalar (dir.LastWriteTime,
-                                                                 RCTimeType.Datetime));
+            result.WriteCell ("name", symbol, dir.Name);
+            result.WriteCell ("type", symbol, "d");
+            result.WriteCell ("access", symbol,
+                              new RCTimeScalar (dir.LastAccessTime, RCTimeType.Datetime));
+            result.WriteCell ("write", symbol,
+                               new RCTimeScalar (dir.LastWriteTime, RCTimeType.Datetime));
             result.Axis.Write (symbol);
             if (deep)
             {
