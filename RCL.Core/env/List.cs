@@ -1,6 +1,7 @@
 
 using System;
 using System.IO;
+using System.Threading;
 using System.Collections.Generic;
 using System.Net;
 using System.Web;
@@ -21,18 +22,18 @@ namespace RCL.Core
       string target = (string) right[0].Part (0);
       if (target == "" || target == "work")
       {
-        ListFilesCube (runner, closure, right[0], options.Contains (all), 
-                                                  options.Contains (deep));
+        BeginListFilesCube (runner, closure, right[0], options.Contains (all),
+                                                       options.Contains (deep));
       }
       else if (target == "home")
       {
-        ListFilesCube (runner, closure, right[0], options.Contains (all), 
-                                                  options.Contains (deep));
+        BeginListFilesCube (runner, closure, right[0], options.Contains (all),
+                                                       options.Contains (deep));
       }
       else if (target == "root")
       {
-        ListFilesCube (runner, closure, right[0], options.Contains (all),
-                                                  options.Contains (deep));
+        BeginListFilesCube (runner, closure, right[0], options.Contains (all),
+                                                       options.Contains (deep));
       }
       else if (target == "fibers")
       {
@@ -77,28 +78,50 @@ namespace RCL.Core
       EvalList (runner, closure, DefaultLeft, right);
     }
 
-    public static void ListFilesCube (RCRunner runner, 
-                                      RCClosure closure, 
-                                      RCSymbolScalar spec,
-                                      bool all, 
-                                      bool deep)
+    protected void BeginListFilesCube (RCRunner runner,
+                                       RCClosure closure,
+                                       RCSymbolScalar spec,
+                                       bool all,
+                                       bool deep)
     {
+      ThreadPool.QueueUserWorkItem (ListFilesCube,
+                                    new RCAsyncState (runner, closure, new ListArgs (spec, all, deep)));
+    }
+
+    public class ListArgs
+    {
+      public readonly RCSymbolScalar Spec;
+      public readonly bool All;
+      public readonly bool Deep;
+      public ListArgs (RCSymbolScalar spec,
+                       bool all,
+                       bool deep)
+      {
+        Spec = spec;
+        All = all;
+        Deep = deep;
+      }
+    }
+
+    protected static void ListFilesCube (object obj)
+    {
+      RCAsyncState state = (RCAsyncState) obj;
+      ListArgs args = (ListArgs) state.Other;
       RCCube result = new RCCube (new RCArray<string> ("S"));
       Queue<string> todo = new Queue<string> ();
-      string top = Command.PathSymbolToString (spec);
+      string top = Command.PathSymbolToString (args.Spec);
       string[] topParts = top.Split (Path.DirectorySeparatorChar);
-      int startPart = (int) (topParts.Length - spec.Length) + 1;
+      int startPart = (int) (topParts.Length - args.Spec.Length) + 1;
       todo.Enqueue (top);
-      RCSymbolScalar prefix = RCSymbolScalar.From (spec.Part (0));
+      RCSymbolScalar prefix = RCSymbolScalar.From (args.Spec.Part (0));
       while (todo.Count > 0)
       {
         string path = todo.Dequeue ();
-        //Needs to be async. LIAR!
         string[] files = Directory.GetFiles (path);
         for (int i = 0; i < files.Length; ++i)
         {
           FileInfo file = new FileInfo (files [i]);
-          if (all || file.Name[0] != '.')
+          if (args.All || file.Name[0] != '.')
           {
             string [] parts = files[i].Split (Path.DirectorySeparatorChar);
             RCSymbolScalar symbol = RCSymbolScalar.From (startPart, prefix, parts);
@@ -113,12 +136,11 @@ namespace RCL.Core
             result.Axis.Write (symbol);
           }
         }
-        //Needs to be async. CHEATER!
         RCArray<string> dirs = new RCArray<string> (Directory.GetDirectories (path));
         for (int i = 0; i < dirs.Count; ++i) 
         {
           DirectoryInfo dir = new DirectoryInfo (dirs [i]);
-          if (all || dir.Name[0] != '.') 
+          if (args.All || dir.Name[0] != '.')
           {
             string [] parts = dirs[i].Split (Path.DirectorySeparatorChar);
             RCSymbolScalar symbol = RCSymbolScalar.From (startPart, prefix, parts);
@@ -129,14 +151,14 @@ namespace RCL.Core
             result.WriteCell ("write", symbol,
                                new RCTimeScalar (dir.LastWriteTime, RCTimeType.Datetime));
             result.Axis.Write (symbol);
-            if (deep)
+            if (args.Deep)
             {
               todo.Enqueue (dirs [i]);
             }
           }
         }
       }
-      runner.Yield (closure, result);
+      state.Runner.Yield (state.Closure, result);
     }
 
     /*
