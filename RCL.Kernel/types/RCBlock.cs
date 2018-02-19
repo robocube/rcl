@@ -238,14 +238,10 @@ namespace RCL.Kernel
     }
 
     public RCBlock (RCBlock previous, string name, string instr, RCValue val)
-      : this (previous, name, RCEvaluator.For (instr), val)
-    {
-    }
+      : this (previous, name, RCEvaluator.For (instr), val) {}
 
     public RCBlock (string name, string op, RCValue value)
-      : this (null, name, op, value)
-    {
-    }
+      : this (null, name, op, value) {}
 
     public override string TypeName
     {
@@ -266,7 +262,9 @@ namespace RCL.Kernel
         //The empty block has a null name.
         //This may not be for the best.
         if (current.Name != null && current.Name.Equals (name))
+        {
           return current;
+        }
         current = current.Previous;
       }
       return null;
@@ -365,7 +363,9 @@ namespace RCL.Kernel
     {
       RCBlock obj = GetName (index);
       if (obj == null)
+      {
         return null;
+      }
       return obj.Value;
     }
 
@@ -389,8 +389,7 @@ namespace RCL.Kernel
                 result = RCBlock.Empty;
               }
             }
-            result = new RCBlock (
-              result, name.Name, Evaluator, val);
+            result = new RCBlock (result, name.Name, Evaluator, val);
           }
           else
           {
@@ -402,8 +401,7 @@ namespace RCL.Kernel
             }
             else
             {
-              result = new RCBlock (
-                result, name.Name, name.Evaluator, name.Value);
+              result = new RCBlock (result, name.Name, name.Evaluator, name.Value);
             }
           }
         }
