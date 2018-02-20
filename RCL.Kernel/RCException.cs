@@ -99,12 +99,30 @@ namespace RCL.Kernel
       Error = error;
     }
 
-    protected static readonly bool fullStackAlways = false;
     public override string ToString ()
     {
-      //Console.Out.WriteLine ("fullStackAlways: '{0}'", fullStackAlways);
+      return ToStringInner (messageOnTop:false, noStackOnNonNativeErrors:false);
+    }
+
+    public string ToSystemdString ()
+    {
+      return ToStringInner (messageOnTop:true, noStackOnNonNativeErrors:false);
+    }
+
+    public string ToTestString ()
+    {
+      return string.Format ("<<{0}>>", Error.ToString ());
+    }
+
+    public string ToStringInner (bool messageOnTop, bool noStackOnNonNativeErrors)
+    {
       StringBuilder builder = new StringBuilder ();
-      if (!fullStackAlways && Error != RCErrors.Native)
+      //Never show stack on asserts
+      //Always show stack on native exceptions
+      if (Error == RCErrors.Assert ||
+          Error == RCErrors.Exec ||
+          Error == RCErrors.File ||
+          (noStackOnNonNativeErrors && Error != RCErrors.Native))
       {
         if (Output != null)
         {
@@ -117,47 +135,26 @@ namespace RCL.Kernel
         return builder.ToString ();
       }
       string br = new String ('-', 80);
-      builder.AppendLine (br);
-      builder.AppendLine (Closure.ToString ());
-      builder.AppendLine (br);
-      builder.AppendLine (Message);
+      if (messageOnTop)
+      {
+        builder.AppendLine (br);
+        builder.AppendLine (Message);
+      }
       builder.AppendLine (br);
       if (Exception != null)
       {
         builder.AppendLine (Exception.GetBaseException ().ToString ());
         builder.AppendLine (br);
       }
+      builder.AppendLine (Closure.ToString ());
+      builder.AppendLine (br);
+      if (!messageOnTop)
+      {
+        builder.AppendLine (Message);
+        builder.AppendLine (br);
+      }
       return builder.ToString ();
     }
-      
-      /*
-      if (Exception == null)
-      {
-        StringBuilder builder = new StringBuilder ();
-        if (Output != null)
-        {
-          for (int i = 0; i < Output.Count; ++i)
-          {
-            builder.AppendLine (Output[i]);
-          }
-        }
-        builder.AppendFormat ("<<{0},{1}>>", Error, Message);
-        return builder.ToString ();
-      }
-      else
-      {
-        return string.Format ("{3}\n{0}{3}\n{1}\n{3}\n{2}\n{3}",
-                              Closure.ToString (),
-                              Message,
-                              Exception.GetBaseException ().ToString (),
-                              new String ('-', 80));
-      }
-    }
-    */
 
-    public string ToTestString ()
-    {
-      return string.Format ("<<{0}>>", Error.ToString ());
-    }
   }
 }

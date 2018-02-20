@@ -199,8 +199,17 @@ namespace RCL.Kernel
           {
             severity = 3;
           }
-          message = new RCString (info.ToString ()).ToString ();
-          //message = info.ToString ();
+          RCException ex = info as RCException;
+          if (ex != null)
+          {
+            message = ex.ToSystemdString ();
+          }
+          else
+          {
+            //If you do it like this it shows more stack but it is hard to read
+            //message = new RCString (info.ToString ()).ToString ();
+            message = info.ToString ();
+          }
         }
         else
         {

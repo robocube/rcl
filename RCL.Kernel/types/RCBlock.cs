@@ -207,7 +207,6 @@ namespace RCL.Kernel
   public class RCBlock : RCValue, IRefable
   {
     public readonly static RCBlock Empty = new RCBlock ();
-
     public readonly RCBlock Previous;
     public readonly RCValue Value;
     public readonly bool EscapeName = false;
@@ -298,10 +297,15 @@ namespace RCL.Kernel
       {
         value = block.Get (name[i]);
         block = value as IRefable;
-        //This is confusing. Is it necessary?
         if (block == null)
         {
-          return value;
+          //if it is the last value return it
+          if (i == name.Count - 1)
+          {
+            return value;
+          }
+          //if not, something is wrong
+          else return null;
         }
         if (@this != null && i < name.Count - 1)
         {

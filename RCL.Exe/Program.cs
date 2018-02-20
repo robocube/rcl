@@ -96,9 +96,9 @@ namespace RCL.Exe
           runner.Dispose ();
           Environment.Exit (status);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-          RCLogger.RecordFilter (0, 0, "fiber", 0, "reported", ex);
+          RCLogger.RecordFilter (0, 0, "runner", 0, "failed", "unhandled exception on fiber 0");
           status = 1;
         }
         finally

@@ -1,7 +1,4 @@
 
-using System;
-using System.Collections.Generic;
-using System.Threading;
 using RCL.Kernel;
 
 namespace RCL.Core
@@ -17,9 +14,10 @@ namespace RCL.Core
       {
         if (!right[i])
         {
-          throw new RCException (closure, 
-                                 RCErrors.Assert, 
-                                 "Element " + i.ToString () + " was false");
+          string expression = closure.Code.ToString ();
+          throw new RCException (closure,
+                                 RCErrors.Assert,
+                                 "Failed: " + expression);
         }
       }
       runner.Yield (closure, new RCBoolean (true));
@@ -33,6 +31,7 @@ namespace RCL.Core
     {
       if (!left.Equals (right))
       {
+        string expression = closure.Code.ToString ();
         throw new RCException (closure, 
                                RCErrors.Assert, "" +
                                "Expected: " + right.ToString () +

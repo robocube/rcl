@@ -43,6 +43,7 @@ namespace RCL.Kernel
       RCLogger.RecordFilter (runner, closure, type, instance, state, info, true);
     }
 
+    /*
     public virtual void Record (RCRunner runner,
                                 RCClosure closure,
                                 string type,
@@ -53,6 +54,7 @@ namespace RCL.Kernel
     {
       RCLogger.RecordFilter (runner, closure, type, instance, state, info, forceDoc);
     }
+    */
   }
 }
 

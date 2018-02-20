@@ -907,10 +907,52 @@ namespace RCL.Test
     }
 
     [Test]
-    [Ignore ("because")]
+    [Ignore ("syntax didn't work out")]
     public void TestMonadicInlineWithBlockRight()
     {
       DoEvalTest ("{z:$R.x y:$R.y x:$R.z} {x:1.0 y:2.0 z:3.0}", "{z:1.0 y:2.0 x:3.0}");
+    }
+
+    [Test]
+    public void TestRDotWithoutBlock ()
+    {
+      Assert.Throws<RCException> (delegate () { DoEvalTest ("{f:{<-$R.x} <-f 11}", "0"); });
+    }
+
+    [Test]
+    public void TestRGetMissingName ()
+    {
+      //Barely recognize the syntax of c# anymore
+      Assert.That(() => DoEvalTest ("{f:{<-$R get \"x\"} <-f {}}", "0"),
+        Throws.TypeOf<RCException> ()
+          .With.Message.EqualTo ("Unable to resolve name x"));
+    }
+
+    [Test]
+    public void TestLGetMissingName ()
+    {
+      //Barely recognize the syntax of c# anymore
+      Assert.That(() => DoEvalTest ("{f:{<-\"x\" get $R} <-f {}}", "0"),
+        Throws.TypeOf<RCException> ()
+          .With.Message.EqualTo ("Unable to resolve name x"));
+    }
+
+    [Test]
+    public void TestRGetMissingIndex ()
+    {
+      //Barely recognize the syntax of c# anymore
+      Assert.That(() => DoEvalTest ("{f:{<-1 get $R} <-f {}}", "0"),
+        Throws.TypeOf<RCException> ()
+          .With.Message.EqualTo ("Index 1 is out of range"));
+    }
+
+    [Test]
+    public void TestLGetMissingIndex ()
+    {
+      //Barely recognize the syntax of c# anymore
+      Assert.That(() => DoEvalTest ("{f:{<-$R get 1} <-f {}}", "0"),
+        Throws.TypeOf<RCException> ()
+          .With.Message.EqualTo ("Index 1 is out of range"));
     }
 
     [Test]

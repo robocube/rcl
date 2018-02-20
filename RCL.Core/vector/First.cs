@@ -41,7 +41,12 @@ namespace RCL.Core
       {
         throw new Exception ("right argument may only contain a single index");
       }
-      runner.Yield (closure, left.Get (right[0]));
+      RCValue result = left.Get (right[0]);
+      if (result == null)
+      {
+        throw new RCException (closure, RCErrors.Range, "Index " + right[0] + " is out of range");
+      }
+      runner.Yield (closure, result);
     }
 
     [RCVerb ("get")]
@@ -51,7 +56,12 @@ namespace RCL.Core
       {
         throw new Exception ("left argument may only contain a single index");
       }
-      runner.Yield (closure, right.Get (left[0]));
+      RCValue result = right.Get (left[0]);
+      if (result == null)
+      {
+        throw new RCException (closure, RCErrors.Range, "Index " + left[0] + " is out of range");
+      }
+      runner.Yield (closure, result);
     }
 
     [RCVerb ("get")]
@@ -61,7 +71,12 @@ namespace RCL.Core
       {
         throw new Exception ("right argument may only contain a single name");
       }
-      runner.Yield (closure, left.Get (right[0]));
+      RCValue result = left.Get (right[0]);
+      if (result == null)
+      {
+        throw new RCException (closure, RCErrors.Name, "Unable to resolve name " + right[0]);
+      }
+      runner.Yield (closure, result);
     }
 
     [RCVerb ("get")]
@@ -71,7 +86,12 @@ namespace RCL.Core
       {
         throw new Exception ("left argument may only contain a single name");
       }
-      runner.Yield (closure, right.Get (left[0]));
+      RCValue result = right.Get (left[0]);
+      if (result == null)
+      {
+        throw new RCException (closure, RCErrors.Name, "Unable to resolve name " + left[0]);
+      }
+      runner.Yield (closure, result);
     }
 
     [RCVerb ("get")]
