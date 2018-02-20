@@ -923,36 +923,36 @@ namespace RCL.Test
     public void TestRGetMissingName ()
     {
       //Barely recognize the syntax of c# anymore
-      Assert.That(() => DoEvalTest ("{f:{<-$R get \"x\"} <-f {}}", "0"),
-        Throws.TypeOf<RCException> ()
-          .With.Message.EqualTo ("Unable to resolve name x"));
+      //Assert.That(() => DoEvalTest ("{f:{<-$R get \"x\"} <-f {}}", "0"),
+      //  Throws.TypeOf<RCException> ()
+      //    .With.Message.EqualTo ("Unable to resolve name x"));
+      DoTestException ("{f:{<-$R get \"x\"} <-f {}}",
+                      RCErrors.Name,
+                      "Unable to resolve name x");
     }
 
     [Test]
     public void TestLGetMissingName ()
     {
-      //Barely recognize the syntax of c# anymore
-      Assert.That(() => DoEvalTest ("{f:{<-\"x\" get $R} <-f {}}", "0"),
-        Throws.TypeOf<RCException> ()
-          .With.Message.EqualTo ("Unable to resolve name x"));
+      DoTestException ("{f:{<-\"x\" get $R} <-f {}}",
+                      RCErrors.Name,
+                      "Unable to resolve name x");
     }
 
     [Test]
     public void TestRGetMissingIndex ()
     {
-      //Barely recognize the syntax of c# anymore
-      Assert.That(() => DoEvalTest ("{f:{<-1 get $R} <-f {}}", "0"),
-        Throws.TypeOf<RCException> ()
-          .With.Message.EqualTo ("Index 1 is out of range"));
+      DoTestException ("{f:{<-1 get $R} <-f {}}",
+                       RCErrors.Range,
+                       "Index 1 is out of range");
     }
 
     [Test]
     public void TestLGetMissingIndex ()
     {
-      //Barely recognize the syntax of c# anymore
-      Assert.That(() => DoEvalTest ("{f:{<-$R get 1} <-f {}}", "0"),
-        Throws.TypeOf<RCException> ()
-          .With.Message.EqualTo ("Index 1 is out of range"));
+      DoTestException ("{f:{<-$R get 1} <-f {}}",
+                       RCErrors.Range,
+                       "Index 1 is out of range");
     }
 
     [Test]
@@ -2049,6 +2049,11 @@ namespace RCL.Test
     public void DoEvalTest (string code, string expected)
     {
       CoreTest.DoTest (runner, RCFormat.DefaultNoT, code, expected);
+    }
+
+    public void DoTestException (string code, RCErrors error, string message)
+    {
+      CoreTest.DoTestException (runner, code, error, message);
     }
 
     public void DoEvalTest (string code, string expected, RCFormat format)

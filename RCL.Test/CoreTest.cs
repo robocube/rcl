@@ -47,7 +47,7 @@ namespace RCL.Test
       DoTest (runner, RCFormat.Default, code, expected);
     }
 
-    public void DoTestException (string code, RCErrors error, string message)
+    public static void DoTestException (RCRunner runner, string code, RCErrors error, string message)
     {
       try
       {
@@ -58,8 +58,8 @@ namespace RCL.Test
       }
       catch (RCException ex)
       {
-        Assert.AreEqual (ex.Message, message);
-        Assert.AreEqual (ex.Error, error);
+        Assert.AreEqual (message, ex.Message);
+        Assert.AreEqual (error, ex.Error);
       }
       catch (Exception ex)
       {
@@ -2557,7 +2557,7 @@ namespace RCL.Test
     [Test]
     public void TestGetm ()
     {
-      DoTestException ("getm #foo", RCErrors.Varname, "No such variable: #foo");
+      DoTestException (runner, "getm #foo", RCErrors.Varname, "No such variable: #foo");
     }
 
     [Test]
