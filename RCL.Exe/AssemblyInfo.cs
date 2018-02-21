@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Robocube Corporation")]
 [assembly: AssemblyProduct("RCL")]
-[assembly: AssemblyCopyright("Copyright © 2015 Robocube Corporation")]
+[assembly: AssemblyCopyright("Copyright © 2018 Robocube Corporation")]
 [assembly: AssemblyTrademark("Robocube")]
 [assembly: AssemblyCulture("")]
 
