@@ -301,7 +301,11 @@ namespace RCL.Exe
       {
         line = "pwd {}";
       }
-      else if (trimmed == "quiet" || trimmed == "single" || trimmed == "multi" || trimmed == "full" || trimmed == "clean")
+      else if (trimmed == "quiet" ||
+               trimmed == "single" ||
+               trimmed == "multi" ||
+               trimmed == "full" ||
+               trimmed == "clean")
       {
         RCOutput level = (RCOutput) Enum.Parse (typeof (RCOutput), trimmed, true);
         output.SetVerbosity (level);
