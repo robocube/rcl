@@ -31,8 +31,7 @@ namespace RCL.Core
     protected Dictionary <long, RCClosure> m_waiters = new Dictionary<long, RCClosure> ();
 
     [RCVerb ("watchfs")]
-    public void EvalWatchd (
-      RCRunner runner, RCClosure closure, RCString right)
+    public void EvalWatchd (RCRunner runner, RCClosure closure, RCString right)
     {
       long handle = Interlocked.Increment (ref m_handle);
       RCLFileSystemWatcher watcher = new RCLFileSystemWatcher (runner, handle, right[0], "*");
