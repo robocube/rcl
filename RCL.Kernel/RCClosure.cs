@@ -160,51 +160,12 @@ namespace RCL.Kernel
 
     public override string ToString ()
     {
-      //This is the old way to ToString() a closure, it might still be useful.
-      //return "Code:" + Code.ToString() + ", Depth:" + Depth + ", Result:" + Result.ToString();
       StringBuilder builder = new StringBuilder ();
-      ToString (builder, 0);
+      ToString (builder, indent:0, firstOnTop:true);
       return builder.ToString ();
     }
-      
-    /*
-    protected void ToStringOld (StringBuilder builder, int indent)
-    {
-      RCClosure closure = this;
-      while (closure != null)
-      {
-        RCOperator op = closure.Code as RCOperator;
-        if (op != null)
-        {
-          builder.Append (op.Name);
-          builder.Append (" ");
-          //closure.Result.Format (builder, RCFormat.Default, indent);
-          builder.AppendLine ();
-        }
 
-        RCBlock block = closure.Code as RCBlock;
-        if (block != null)
-        {
-          RCBlock line = block.GetName (closure.Index);
-          if (line.Name != "")
-          {
-            builder.AppendFormat ("{0} (@ {1}) ", line.Name, closure.Index);
-            //closure.Code.Format (builder, RCFormat.Default, indent);
-            //closure.Result.Format (builder, RCFormat.Default, indent);
-          }
-          else
-          {
-            //builder.AppendFormat ("{0}", "program...");
-            line.Value.Format (builder, RCFormat.Pretty, indent);
-          }
-          builder.AppendLine ();
-        }
-        closure = closure.Parent;
-      }
-    }
-    */
-
-    protected void ToString (StringBuilder builder, int indent)
+    public void ToString (StringBuilder builder, int indent, bool firstOnTop)
     {
       RCClosure closure = this;
       Stack<string> lines = new Stack<string> ();
@@ -233,9 +194,26 @@ namespace RCL.Kernel
         }
         closure = closure.Parent;
       }
-      while (lines.Count > 0)
+      if (firstOnTop)
       {
-        builder.AppendLine (lines.Pop ());
+        builder.AppendFormat ("--- BEGIN STACK (bot:{0},fiber:{1},lines:{2}) ---\n",
+                              closure.Bot.Id, closure.Fiber, lines.Count);
+        while (lines.Count > 0)
+        {
+          builder.AppendLine (lines.Pop ());
+        }
+        builder.AppendFormat ("--- END STACK ---\n");
+      }
+      else
+      {
+        builder.AppendFormat ("--- END STACK (bot:{0},fiber:{1},lines:{2}) ---\n",
+                              closure.Bot.Id, closure.Fiber, lines.Count);
+        string[] linesInOrder = lines.ToArray ();
+        for (int i = linesInOrder.Length - 1; i >= 0; --i)
+        {
+          builder.AppendLine (linesInOrder[i]);
+        }
+        builder.AppendFormat ("--- BEGIN STACK ---\n");
       }
     }
   }

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Text;
 using RCL.Kernel;
 
 namespace RCL.Core
@@ -16,13 +17,15 @@ namespace RCL.Core
       runner.Yield (closure, result);
     }
 
-    [RCVerb ("show_stack")]
-    public void EvalShowStack (RCRunner runner, RCClosure closure, RCBlock right)
+    [RCVerb ("stack_trace")]
+    public void EvalStackTrace (RCRunner runner, RCClosure closure, RCBlock right)
     {
-      string.Format ("depth: {0} fiber: {1}\n{2}",
-        closure.Depth, closure.Fiber, closure.ToString ());
-      runner.Log.Record (runner, closure, "stack", 0, "show", closure);
-      runner.Yield (closure, new RCString (closure.ToString ()));
+      bool firstOnTop = runner.Argv.OutputEnum != RCOutput.Systemd;
+      StringBuilder builder = new StringBuilder ();
+      closure.ToString (builder:builder, indent:0, firstOnTop:firstOnTop);
+      string stack = builder.ToString ();
+      runner.Log.Record (runner, closure, "stack", 0, "show", stack);
+      runner.Yield (closure, new RCString (stack));
     }
   }
 }

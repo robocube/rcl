@@ -101,12 +101,12 @@ namespace RCL.Kernel
 
     public override string ToString ()
     {
-      return ToStringInner (messageOnTop:false, noStackOnNonNativeErrors:false);
+      return ToStringInner (messageOnTop:false, noStackOnNonNativeErrors:false, firstOnTop:true);
     }
 
     public string ToSystemdString ()
     {
-      return ToStringInner (messageOnTop:true, noStackOnNonNativeErrors:false);
+      return ToStringInner (messageOnTop:true, noStackOnNonNativeErrors:false, firstOnTop:false);
     }
 
     public string ToTestString ()
@@ -114,7 +114,7 @@ namespace RCL.Kernel
       return string.Format ("<<{0}>>", Error.ToString ());
     }
 
-    public string ToStringInner (bool messageOnTop, bool noStackOnNonNativeErrors)
+    public string ToStringInner (bool messageOnTop, bool noStackOnNonNativeErrors, bool firstOnTop)
     {
       StringBuilder builder = new StringBuilder ();
       //Never show stack on asserts
@@ -137,16 +137,15 @@ namespace RCL.Kernel
       string br = new String ('-', 80);
       if (messageOnTop)
       {
-        builder.AppendLine (br);
         builder.AppendLine (Message);
       }
-      builder.AppendLine (br);
       if (Exception != null)
       {
         builder.AppendLine (Exception.GetBaseException ().ToString ());
         builder.AppendLine (br);
       }
-      builder.AppendLine (Closure.ToString ());
+      //Most recent stack frames should appear on top, not on bottom
+      Closure.ToString (builder:builder, indent:0, firstOnTop:firstOnTop);
       builder.AppendLine (br);
       if (!messageOnTop)
       {
