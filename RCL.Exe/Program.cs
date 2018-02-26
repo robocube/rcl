@@ -96,9 +96,12 @@ namespace RCL.Exe
           runner.Dispose ();
           Environment.Exit (status);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
           RCLogger.RecordFilter (0, 0, "runner", 0, "failed", "unhandled exception on fiber 0");
+          // Does this result in duplicate exception reports on the console?
+          // I don't want it to, but without this there are errors that do not show up at all
+          RCLogger.RecordFilter (0, 0, "runner", 0, "terminal", ex);
           status = 1;
         }
         finally

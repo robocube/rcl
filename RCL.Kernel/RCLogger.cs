@@ -213,7 +213,8 @@ namespace RCL.Kernel
         }
         else
         {
-          message = info.ToString ();
+          bool singleLine;
+          message = IndentMessage (CreateMessage (info), false, out singleLine);
         }
         m_output.WriteLine ("<{0}>{1} {2} {3} {4} {5} {6}",
                             severity, bot, fiber, type, instance, state, message);
