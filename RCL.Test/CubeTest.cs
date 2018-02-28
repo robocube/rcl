@@ -161,6 +161,12 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestIdentityCube ()
+    {
+      DoTest ("cube []", "[]");
+    }
+
+    [Test]
     public void TestCubeReplaceSymbol ()
     {
       //Replace the symbol column

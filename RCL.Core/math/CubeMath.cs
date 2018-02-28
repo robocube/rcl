@@ -1123,31 +1123,37 @@ namespace RCL.Core
     }
 
     [RCVerb ("cube")]
-    public void EvalCube (
-      RCRunner runner, RCClosure closure, RCBlock right)
+    public void EvalCube (RCRunner runner, RCClosure closure, RCBlock right)
     {
       runner.Yield (closure, Bang (right));
     }
 
     [RCVerb ("cube")]
-    public void EvalCube (
-      RCRunner runner, RCClosure closure, RCCube left, RCBlock right)
+    public void EvalCube (RCRunner runner, RCClosure closure, RCCube right)
+    {
+      // This overload is here specifically to accomodate the case where
+      // you want to use cube & $my_op_yields_a_cube each {}
+      // when the block is not empty & will yield a cube, otherwise it will yield a block
+      // Another way would be to consider this as a bug in &
+      runner.Yield (closure, right);
+    }
+
+    [RCVerb ("cube")]
+    public void EvalCube (RCRunner runner, RCClosure closure, RCCube left, RCBlock right)
     {
       RCCube result = Bang (left, right, false, false, true, true);
       runner.Yield (closure, result);
     }
 
     [RCVerb ("cube")]
-    public void EvalCube (
-      RCRunner runner, RCClosure closure, RCCube left, RCCube right)
+    public void EvalCube (RCRunner runner, RCClosure closure, RCCube left, RCCube right)
     {
       RCCube result = Bang (left, right, null, false, false, true, true);
       runner.Yield (closure, result);
     }
 
     [RCVerb ("cube")]
-    public void EvalCube (
-      RCRunner runner, RCClosure closure, RCSymbol left, RCBlock right)
+    public void EvalCube (RCRunner runner, RCClosure closure, RCSymbol left, RCBlock right)
     {
       RCCube result = new RCCube (new RCArray<string> ("S"));
       for (int i = 0; i < left.Count; ++i)
@@ -1159,8 +1165,7 @@ namespace RCL.Core
     }
 
     [RCVerb ("cube")]
-    public void EvalCube (
-      RCRunner runner, RCClosure closure, RCSymbol left, RCCube right)
+    public void EvalCube (RCRunner runner, RCClosure closure, RCSymbol left, RCCube right)
     {
       RCCube result = new RCCube (new RCArray<string> ("S"));
       for (int i = 0; i < left.Count; ++i)
@@ -1172,15 +1177,14 @@ namespace RCL.Core
     }
 
     [RCVerb ("where")]
-    public void EvalWhere (
-      RCRunner runner, RCClosure closure, RCCube left, RCCube right)
+    public void EvalWhere (RCRunner runner, RCClosure closure, RCCube left, RCCube right)
     {
       if (right.Columns.Count == 0)
       {
         runner.Yield (closure, RCCube.Empty);
         return;
       }
-      Column<bool> wherecol = (Column<bool>) right.GetColumn (0);
+      Column<bool> wherecol = (Column<bool>)right.GetColumn (0);
       if (left.Axis.ColCount == 0)
       {
         WhereIndicator wherer = new WhereIndicator (left, wherecol.Data);
@@ -1712,8 +1716,9 @@ namespace RCL.Core
                         string colname, bool force, bool keepIncrs)
     {
       if (colname == null)
+      {
         throw new Exception ();
-
+      }
       if (left == null)
       {
         left = new RCCube (new RCArray<string> ());
@@ -1726,8 +1731,11 @@ namespace RCL.Core
         return left;
       }
       int col = left.FindColumn (colname);
+      //Console.WriteLine("colname: " + colname);
       if (col < 0)
       {
+        //Console.WriteLine("colname was not found");
+        //Console.WriteLine("right.Count:" + right.Count + " left.Count:" + left.Count);
         if (right.Count == 1)
         {
           object box = right.Child (0);
