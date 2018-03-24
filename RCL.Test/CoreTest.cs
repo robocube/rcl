@@ -260,6 +260,10 @@ namespace RCL.Test
     [Test]
     public void TestDivideMX() { DoTest("4m/\\x02", "2m"); }
 
+    //Modulo division
+    [Test]
+    public void TestModulo() { DoTest ("10 % 3", "1"); }
+
     //Logic Operators
     [Test]
     public void TestAndXX() { DoTest("\\xF0 and \\xAA", "\\xA0"); }

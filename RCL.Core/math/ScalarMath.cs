@@ -243,6 +243,9 @@ namespace RCL.Core
     [Primitive ("/")]
     public static decimal Divide (decimal l, decimal r) { return l / r; }
 
+    [Primitive ("%")]
+    public static long Modulo (long l, long r) { return l % r; }
+
     [Primitive ("not", Profile.Monadic)]
     public static bool Not (bool r) { return !r; }
 
