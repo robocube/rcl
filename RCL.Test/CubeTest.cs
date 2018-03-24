@@ -140,8 +140,9 @@ namespace RCL.Test
     [Test]
     public void TestCubeMathTime ()
     {
-      //I may want to change the output in this case.
-      DoTest ("[x 08:00 09:00 10:00] + [x 00:30 00:30 00:30]", "[x 0001.01.01 08:30:00.0000000 0001.01.01 09:30:00.0000000 0001.01.01 10:30:00.0000000]");
+      // I may want to change the output in this case.
+      DoTest ("[x 08:00 09:00 10:00] + [x 00:30 00:30 00:30]",
+              "[x 0001.01.01 08:30:00.0000000 0001.01.01 09:30:00.0000000 0001.01.01 10:30:00.0000000]");
     }
 
     [Test]
@@ -169,13 +170,16 @@ namespace RCL.Test
     [Test]
     public void TestCubeReplaceSymbol ()
     {
-      //Replace the symbol column
-      //DoTest ("{u:[S|x #a 0l #b 10l] <-$u join eval {S:#c #d x:$u.x}}", "[S|x #c 0l #d 10l]");
-      //Replace the symbol column with one element only.
-      //DoTest ("{u:[S|x #a 0l] <-$u join eval {S:#c x:$u.x}}", "[S|x #c 0l]");
-      //This test exposes a bug where the column indexes returned from join contained the wrong symbols.
-      //DoTest ("{u:[S|x #a 10l] <-[] merge $u join eval {S:#vars + $u.S x:$u.x}}", "[S|x #vars,a 10l]");
-      //Now we replace symbols like this.
+      // Replace the symbol column
+      // DoTest ("{u:[S|x #a 0l #b 10l] <-$u join eval {S:#c #d x:$u.x}}", "[S|x #c 0l #d 10l]");
+      
+      // Replace the symbol column with one element only.
+      // DoTest ("{u:[S|x #a 0l] <-$u join eval {S:#c x:$u.x}}", "[S|x #c 0l]");
+     
+      // This test exposes a bug where the column indexes returned from join contained the wrong symbols.
+      // DoTest ("{u:[S|x #a 10l] <-[] merge $u join eval {S:#vars + $u.S x:$u.x}}", "[S|x #vars,a 10l]");
+      
+      // Now we replace symbols like this.
       DoTest ("{u:[S|x #a 10] <-(#vars + $u.S) key $u}", "[S|x #vars,a 10]");
       DoTest ("{u:[S|x #a 10] <-(#vars + $u.S) key cube eval {x:$u.x + 1}}", "[S|x #vars,a 11]");
     }
@@ -185,6 +189,7 @@ namespace RCL.Test
     {
       //Tests for simple cubes with no timeline.
       DoTest ("[x y z 1 2 3 10 20 30] cube [z 4 40]", "[x y z 1 2 4 10 20 40]");
+      
       //This test is to ensure that interior columns can also be replaced.
       DoTest ("[x y z 1 2 4 10 20 40] cube [y 3 30]", "[x y z 1 3 4 10 30 40]");
     }
@@ -1050,29 +1055,37 @@ namespace RCL.Test
     [Test]
     public void TestInitialValue ()
     {
-      //The first value in a time series must be included in the output even if its value is equal to the inital value
-      //for the corresponding data type.  Booleans are particularly problematic because they are equal to false by default.
-
-      //Simultaneous initial values.
-      DoTest (RCFormat.Default, "[E|S|x 0 #a -1 1 #a 0 2 #a 1] > [E|S|x 0 #a 1 1 #a 0 2 #a -1]", "[E|S|x 0 #a false 2 #a true]");
-
-      //Inital value on left.
-      DoTest (RCFormat.Default, "[E|S|x 0 #a -1 2 #a 0 3 #a 1] > [E|S|x 1 #a 1 2 #a 0 3 #a -1]", "[E|S|x 1 #a false 3 #a true]");
-
-      //Initial value on right.
-      DoTest (RCFormat.Default, "[E|S|x 1 #a -1 2 #a 0 3 #a 1] > [E|S|x 0 #a 1 2 #a 0 3 #a -1]", "[E|S|x 1 #a false 3 #a true]");
+      // The first value in a time series must be included in the output
+      // even if its value is equal to the inital value for the corresponding data type.
+      // Booleans are particularly problematic because they are equal to false by default.
+      
+      // Simultaneous initial values.
+      DoTest (RCFormat.Default, "[E|S|x 0 #a -1 1 #a 0 2 #a 1] > [E|S|x 0 #a 1 1 #a 0 2 #a -1]",
+              "[E|S|x 0 #a false 2 #a true]");
+      
+      // Inital value on left.
+      DoTest (RCFormat.Default, "[E|S|x 0 #a -1 2 #a 0 3 #a 1] > [E|S|x 1 #a 1 2 #a 0 3 #a -1]",
+              "[E|S|x 1 #a false 3 #a true]");
+      
+      // Initial value on right.
+      DoTest (RCFormat.Default, "[E|S|x 1 #a -1 2 #a 0 3 #a 1] > [E|S|x 0 #a 1 2 #a 0 3 #a -1]",
+              "[E|S|x 1 #a false 3 #a true]");
     }
 
     [Test]
     public void TestLatestTimestamp ()
     {
-      //Make sure that the timestamp in the result is the one with the greatest value from the right and left.
-
-      //In this example the value x changes at T==3l on the RIGHT side.
-      DoTest (RCFormat.Default, "[E|S|x 0 #a true 2 #a false] or [E|S|x 0 #a true 1 #a false 2 #a true 3 #a false]", "[E|S|x 0 #a true 3 #a false]");
-
-      //In this example the value x changes at T==3l on the LEFT side.
-      DoTest (RCFormat.Default, "[E|S|x 0 #a true 1 #a false 2 #a true 3 #a false] or [E|S|x 0 #a true 2 #a false]", "[E|S|x 0 #a true 3 #a false]");
+      // Make sure that the timestamp in the result is the one with the greatest value from the right and left.
+      
+      // In this example the value x changes at T==3l on the RIGHT side.
+      DoTest (RCFormat.Default,
+              "[E|S|x 0 #a true 2 #a false] or [E|S|x 0 #a true 1 #a false 2 #a true 3 #a false]",
+              "[E|S|x 0 #a true 3 #a false]");
+      
+      // In this example the value x changes at T==3l on the LEFT side.
+      DoTest (RCFormat.Default,
+              "[E|S|x 0 #a true 1 #a false 2 #a true 3 #a false] or [E|S|x 0 #a true 2 #a false]",
+              "[E|S|x 0 #a true 3 #a false]");
     }
 
     //We should do tests for duplicates as well...
