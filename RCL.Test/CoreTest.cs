@@ -26,6 +26,7 @@ namespace RCL.Test
         RCValue result = runner.Run (program);
         Assert.IsNotNull (result, "RCRunner.Run result was null");
         string actual = result.Format (args);
+        actual = actual.Replace ("\\r\\n", "\\n");
         Assert.AreEqual (expected, actual);
         Console.Out.WriteLine ("P");
       }
@@ -40,6 +41,31 @@ namespace RCL.Test
         Console.Out.WriteLine ("F");
         Assert.Fail (ex.ToString ());
       }
+    }
+
+    public static string DoEval (RCRunner runner, string code)
+    {
+      try
+      {
+        runner.Reset ();
+        string method = new System.Diagnostics.StackFrame (2).GetMethod ().Name;
+        Console.Out.Write (method + ": ");
+        RCValue program = runner.Read (code);
+        RCValue result = runner.Run (program);
+        return result.ToString ();
+      }
+      catch (RCException ex)
+      {
+        Console.Out.WriteLine ("F");
+        Console.Out.WriteLine (ex.ToString ());
+        throw;
+      }
+      catch (Exception ex)
+      {
+        Console.Out.WriteLine ("F");
+        Assert.Fail (ex.ToString ());
+      }
+      throw new Exception ("WTF");
     }
 
     public void DoTest (string code, string expected)
@@ -1964,6 +1990,19 @@ namespace RCL.Test
   [TestFixture]
   public class CoreTest3 : CoreTest
   {
+#if !__MonoCS__
+    [SetUp]
+    public void Setup ()
+    {
+      // This is to make tests involving file access work on Windows (under Parallels)
+      // It would be better to do this by controlling the working directory from the .runsettings
+      // file but I have yet to see any evidence that the runsettings file is honored at all by the Test Explorer.
+      Environment.SetEnvironmentVariable ("RCL_HOME", "Y:\\dev");
+      // This operator alters the runtime environment, not just the current runner state.
+      DoEval (runner, "cd #home,src,rcl,RCL.Test,bin,Debug");
+    }
+#endif
+
     //Messaging/Stream Operators
     [Test]
     [Ignore ("because")]
@@ -2000,13 +2039,13 @@ namespace RCL.Test
     [Test]
     public void TestPath ()
     {
-      DoTest ("(path #home,env,env.rclb) like \"*/env/env.rclb\"", "true");
+      DoTest("(path #home,env,env.rclb) like \"*/env/env.rclb\"", "true");
     }
 
     [Test]
     public void TestFile ()
     {
-      DoTest ("{before:file \"file\" :\"file\" save #pretty format {a:1 b:2 c:3} after:file \"file\" :delete \"file\" <-$before & $after}", "false true"); 
+      DoTest ("{before:file \"file\" :\"file\" save #pretty format {a:1 b:2 c:3} after:file \"file\" :delete \"file\" <-$before & $after}", "false true");
     }
 
     [Test]
@@ -2576,6 +2615,7 @@ namespace RCL.Test
       DoTest ("{:#foo putm 1 :assert hasm #foo :delm #foo :assert not hasm #foo <-0}", "0");
     }
 
+#if __MonoCS__
     [Test]
     public void TestTryWaitx ()
     {
@@ -2604,5 +2644,6 @@ namespace RCL.Test
       DoTest ("{:exec \"touch foo/bar\" <-exec \"ls foo\"}", "\"bar\"");
       DoTest ("{:exec \"rm foo/bar\" :exec \"rmdir foo\" <-0}", "0");
     }
+#endif
   }
 }

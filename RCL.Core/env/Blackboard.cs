@@ -459,7 +459,6 @@ namespace RCL.Core
           line = s.m_g + s.m_blackboard.Count;
           //write should always return the last G value and that G value needs
           //to be the correct one. This is not the case. Need to fix it.
-          //Console.WriteLine("RESULT OF WRITE (cube): " + line);
           s.m_readWaiters.GetReadersForSymbol (ref all, symbols);
           s.m_dispatchWaiters.GetReadersForSymbol (ref all, symbols);
         }
@@ -507,7 +506,6 @@ namespace RCL.Core
         result = s.m_blackboard.Count;
         //write should always return the last G value and that G value needs
         //to be the correct one. This is not the case. Need to fix it.
-        //Console.WriteLine("RESULT OF WRITE (block): " + result);
         s.m_readWaiters.GetReadersForSymbol (ref all, symbols);
         s.m_dispatchWaiters.GetReadersForSymbol (ref all, symbols);
       }

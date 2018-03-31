@@ -2,7 +2,9 @@
 using System;
 using System.Text;
 using System.IO;
+#if __MonoCS__
 using Mono.Posix;
+#endif
 using System.Collections.Generic;
 using System.Threading;
 using System.Diagnostics;
@@ -389,8 +391,12 @@ namespace RCL.Core
             m_state.Runner, null, "exec", Handle, "killx", signal[0]);
           lock (this)
           {
+#if __MonoCS__
             Mono.Unix.Native.Syscall.kill (
               (int) m_pid, (Mono.Unix.Native.Signum) signal[0]);
+#else
+            Console.Out.WriteLine ("Killing exec'd processes is not implemented on Windows");
+#endif
           }
           state.Runner.Yield (state.Closure, signal);
         }
@@ -428,9 +434,13 @@ namespace RCL.Core
         {
           if (m_pid >= 0 && !m_finished)
           {
+#if __MonoCS__
             Mono.Unix.Native.Syscall.kill (
               (int) m_pid, Mono.Unix.Native.Signum.SIGTERM);
-          }
+#else
+            Console.Out.WriteLine ("Closing exec'd processes is not implemented on Windows");
+#endif
+            }
           else return;
         }
         DateTime timeout = DateTime.Now + new TimeSpan (0, 0, 0, 0, 2000);

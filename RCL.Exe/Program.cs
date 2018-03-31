@@ -4,7 +4,9 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using Mono.Terminal;
+#if __MonoCS__
 using Mono.Unix;
+#endif
 using RCL.Kernel;
 
 namespace RCL.Exe
@@ -210,6 +212,7 @@ namespace RCL.Exe
     /// </summary>
     static void InstallSignalHandler (RCRunner runner)
     {
+#if __MonoCS__
       UnixSignal[] signals = {
         new UnixSignal (Mono.Unix.Native.Signum.SIGTERM),
         new UnixSignal (Mono.Unix.Native.Signum.SIGINT)
@@ -256,6 +259,7 @@ namespace RCL.Exe
       });
       signalThread.IsBackground = true;
       signalThread.Start ();
+#endif
     }
 
     /// <summary>

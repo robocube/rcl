@@ -908,7 +908,9 @@ namespace RCL.Kernel
           }
           counter.Write (symbol[i], (int) g);
           long now = DateTime.Now.Ticks;
-          Write (g, now, new RCTimeScalar (new DateTime (now), RCTimeType.Timestamp), symbol[i]);
+          long e = Math.Abs (g);
+          RCTimeScalar t = new RCTimeScalar (new DateTime (now), RCTimeType.Timestamp);
+          Write (g, e, t, symbol[i]);
         }
       }
       return new RCArray<RCSymbolScalar> (result);

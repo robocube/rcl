@@ -178,7 +178,8 @@ namespace RCL.Kernel
               if (str[j][end] == '\n')
               {
                 string line = str[j].Substring (start, end - start);
-                builder.AppendLine (line);
+                builder.Append (line);
+                builder.Append ("\n");
                 if (i < template.Count - 2 || end < str[j].Length - 1)
                 {
                   for (int tab = 0; tab < level; ++tab)

@@ -884,7 +884,7 @@ namespace RCL.Core
       return result;
     }
 
-    [RCVerb ("+")] [RCVerb ("-")] [RCVerb ("*")] [RCVerb ("/")]
+    [RCVerb ("+")] [RCVerb ("-")] [RCVerb ("*")] [RCVerb ("/")] [RCVerb ("%")]
     [RCVerb ("and")] [RCVerb ("or")]
     [RCVerb ("==")] [RCVerb ("!=")] [RCVerb ("<")] [RCVerb (">")] [RCVerb ("<=")] [RCVerb (">=")]
     [RCVerb ("min")] [RCVerb ("max")]

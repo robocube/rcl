@@ -16,6 +16,7 @@ namespace RCL.Kernel
     Handle  = 10, //Bad handle number
     Session = 11, //Bad session cookie
     Range   = 12, //Bad array index
-    File    = 13  //Bad file name
+    File    = 13, //Bad file name
+    Access  = 14  //Inadequete file access
   }
 }

@@ -51,7 +51,16 @@ namespace RCL.Kernel
       m_modules = new HashSet<Type> ();
       foreach (Assembly lib in m_libs.Values)
       {
-        Type[] types = lib.GetTypes ();
+        Type[] types = null;
+        try
+        {
+          types = lib.GetTypes ();
+        }
+        catch (Exception ex)
+        {
+          Console.Out.WriteLine (ex);
+          continue;
+        }
         foreach (Type type in types)
         {
           bool module;

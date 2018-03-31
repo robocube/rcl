@@ -1117,9 +1117,14 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestWriteWithMonadicTrace()
+    {
+      DoEvalTest("{:#a write {x:1 y:2} :#a write {y:2 z:3} :(trace #a) assert [S|x y z #a 1 2 -- #a -- -- 3] <-0}", "0");
+    }
+
+    [Test]
     public void TestForceWithMonadicTrace ()
     {
-      DoEvalTest ("{:#a write {x:1 y:2} :#a write {y:2 z:3} :(trace #a) assert [S|x y z #a 1 2 -- #a -- -- 3] <-0}", "0");
       DoEvalTest ("{:#a force {x:1 y:2} :#a force {y:2 z:3} :(trace #a) assert [S|x y z #a 1 2 -- #a -- 2 3] <-0}", "0");
     }
 
@@ -1754,7 +1759,7 @@ namespace RCL.Test
       DoEvalTest ("{t:[?\na\n          [!\"w\" \"x\" \"y\" \"z\"!]\n?] <-t {}}", 
                   "\"a\\n          wxyz\\n\"");
     }
-      
+
     [Test]
     public void TestEvalTemplateIndent2 ()
     {
@@ -2034,12 +2039,14 @@ namespace RCL.Test
       DoEvalTest ("{a:1 b:2 c:$a + $b f:{<-$c}}", "{a:1 b:2 c:3 f:{<-$c}}");
     }
 
+#if __MonoCS__
     [Test]
     public void TestSelfExecWithExit ()
     {
       DoEvalTest ("\"exit.rcl\" save #pretty format {go:exit 21}", "\"exit.rcl\"");
       DoEvalTest ("unwrap #status from try {<-exec \"mono --debug rcl.exe --program=exit.rcl --action=go\"}", "21");
     }
+#endif
 
     RCRunner runner = new RCRunner (RCActivator.Default, new RCLog (new RCLogger ()), 1, new RCLArgv ("--output=test", "--show=print"));
 

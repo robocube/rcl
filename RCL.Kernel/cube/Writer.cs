@@ -123,7 +123,6 @@ namespace RCL.Kernel
                                                   m_keepIncrs,
                                                   m_force, out delete);
       m_delete = m_delete || delete;
-
       if (result != null || m_target.Axis.ColCount == 0)
       {
         m_result.Add (result);

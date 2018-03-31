@@ -21,7 +21,21 @@ namespace RCL.Core
       runner.Yield (closure, new RCString (result));
     }
 
+    public static string PathSymbolToLocalString (RCSymbolScalar symbol)
+    {
+      string path = PathSymbolToString (Path.DirectorySeparatorChar, symbol);
+      // I think I might need to do something with GetPathRoot
+      //string root = Path.GetPathRoot (path);
+      //return root + path;
+      return path;
+    }
+
     public static string PathSymbolToString (RCSymbolScalar symbol)
+    {
+      return PathSymbolToString ('/', symbol);
+    }
+
+    public static string PathSymbolToString (char separator, RCSymbolScalar symbol)
     {
       object[] parts = symbol.ToArray ();
       string path = "";
@@ -30,20 +44,20 @@ namespace RCL.Core
       if (zero == "home")
       {
         string home = Environment.GetEnvironmentVariable ("RCL_HOME");
-        if (home == null) 
+        if (home == null)
         {
-          home = Environment.GetFolderPath (Environment.SpecialFolder.UserProfile);
+          home = Environment.GetFolderPath (Environment.SpecialFolder.UserProfile) + separator + "dev";
         }
         path += home;
         if (parts.Length > 1)
         {
-          path += Path.DirectorySeparatorChar;
+          path += separator;
         }
         startIndex = 1;
       }
       else if (zero == "root")
       {         
-        path += Path.DirectorySeparatorChar;
+        path += separator;
         startIndex = 1;
       }
       else if (zero == "work")
@@ -60,7 +74,7 @@ namespace RCL.Core
         path += parts[i].ToString ();
         if (i < parts.Length - 1)
         {
-          path += Path.DirectorySeparatorChar;
+          path += separator;
         }
       }
       return path;
@@ -173,7 +187,18 @@ namespace RCL.Core
       //Then I could use writeAllLines and readAllLines to get around the terminal line issue.
       //But that would mean changing that parser to interpret string breaks as line breaks.
       //So, not today.
-      WriteAllLinesBetter (path, lines);
+      try
+      {
+        WriteAllLinesBetter (path, lines);
+      }
+      catch (UnauthorizedAccessException ex)
+      {
+        throw new RCException (closure, RCErrors.Access, ex.Message);
+      }
+      catch (FileNotFoundException ex)
+      {
+        throw new RCException (closure, RCErrors.File, ex.Message);
+      }
 
       runner.Log.Record (runner, closure,
                          "save", Interlocked.Increment (ref m_handle), path, lines);
@@ -182,7 +207,7 @@ namespace RCL.Core
     }
 
     //http://stackoverflow.com/questions/11689337/net-file-writealllines-leaves-empty-line-at-the-end-of-file
-    public static void WriteAllLinesBetter(string path, params string[] lines)
+    public static void WriteAllLinesBetter (string path, params string[] lines)
     {
       if (path == null)
       {
@@ -193,17 +218,18 @@ namespace RCL.Core
         throw new ArgumentNullException ("lines");
       }
 
-      //using (var stream = File.OpenWrite (path))
       using (var stream = File.Open (path, FileMode.Create, FileAccess.Write))
-        using (StreamWriter writer = new StreamWriter (stream))
       {
-        if (lines.Length > 0)
+        using (StreamWriter writer = new StreamWriter (stream))
         {
-          for (int i = 0; i < lines.Length - 1; i++)
+          if (lines.Length > 0)
           {
-            writer.WriteLine (lines[i]);
+            for (int i = 0; i < lines.Length - 1; i++)
+            {
+              writer.WriteLine (lines[i]);
+            }
+            writer.Write (lines[lines.Length - 1]);
           }
-          writer.Write (lines[lines.Length - 1]);
         }
       }
     }
@@ -223,7 +249,18 @@ namespace RCL.Core
       //BRIAN READ THIS WHEN YOU GET BACK HERE.
       //Should not be doing sync io like this.
       //The least I can do is use a thread pool thread.
-      File.WriteAllBytes (left[0], right.ToArray ());
+      try
+      {
+        File.WriteAllBytes (left[0], right.ToArray ());
+      }
+      catch (UnauthorizedAccessException ex)
+      {
+        throw new RCException (closure, RCErrors.Access, ex.Message);
+      }
+      catch (FileNotFoundException ex)
+      {
+        throw new RCException (closure, RCErrors.File, ex.Message);
+      }
       runner.Log.Record (runner, closure,
                          "save", Interlocked.Increment (ref m_handle), left[0], right);
       runner.Yield (closure, new RCString (left[0]));
@@ -255,14 +292,25 @@ namespace RCL.Core
     }
 
     [RCVerb ("cd")]
-    public void EvalCd (
-      RCRunner runner, RCClosure closure, RCString right)
+    public void EvalCd (RCRunner runner, RCClosure closure, RCString right)
     {
       if (right.Count > 1)
+      {
         throw new Exception ("cd can only change into one directory");
-
+      }
       Environment.CurrentDirectory = right[0];
       runner.Yield (closure, new RCString (Environment.CurrentDirectory));
+    }
+
+    [RCVerb ("cd")]
+    public void EvalCd (RCRunner runner, RCClosure closure, RCSymbol right)
+    {
+      if (right.Count > 1)
+      {
+        throw new Exception ("cd can only change into one directory");
+      }
+      Environment.CurrentDirectory = Command.PathSymbolToLocalString (right[0]);
+      runner.Yield (closure, right);
     }
 
     [RCVerb ("pwd")]

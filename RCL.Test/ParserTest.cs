@@ -885,6 +885,7 @@ namespace RCL.Test
       string actual = result.Format (format);
       //Console.Out.WriteLine ("actual:{0}", actual);
       Assert.IsNotNull (actual, "RCParser.Parse result was null");
+      actual = actual.Replace("\\r\\n", "\\n");
       Assert.AreEqual (expected, actual);
     }
   }

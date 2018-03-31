@@ -400,8 +400,6 @@ namespace RCL.Kernel
   
     public override void VisitScalar<T> (string name, Column<T> column, int row)
     {
-      //string scalar = m_args.ParsableScalars ? column.ScalarToString (row) : column.Data[row].ToString ();
-      //string scalar = m_args.ParsableScalars ? column.ScalarToCsvString (row) : column.Data[row].ToString ();
       string scalar = m_args.ParsableScalars ? column.ScalarToString (row) : column.ScalarToCsvString (row);
       int max = m_max[m_col];
       if (scalar.Length > max)

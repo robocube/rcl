@@ -420,7 +420,8 @@ namespace RCL.Kernel
                     //inserted/indented already.
                     builder.Append (indent);
                   }
-                  builder.AppendLine (line);
+                  builder.Append (line);
+                  builder.Append ("\n");
                   somethingAdded = true;
                 }
                 else
@@ -430,7 +431,8 @@ namespace RCL.Kernel
                   line = section.Substring (start, k - start);
                   if (I + i == 0)
                   {
-                    builder.AppendLine (line);
+                    builder.Append (line);
+                    builder.Append ("\n");
                   }
                   else if (line != "")
                   {
@@ -447,23 +449,16 @@ namespace RCL.Kernel
                       else if (start > 1 && i < right.Count - 1)
                       {
                         builder.Append (indent);
-                        //Console.Out.WriteLine ("builder: '{0}'", builder.ToString ());
-                        //Console.Out.WriteLine ("New indent before: '{0}'", line.ToString ());
-                        //Console.Out.WriteLine ("k: {0}", k);
-                        //Console.Out.WriteLine ("start: {0}", start);
-                        //Console.Out.WriteLine ("i: {0}", i);
-                        //Console.Out.WriteLine ("right.Count: {0}", right.Count);
-                        //Console.Out.WriteLine ("section: '{0}'", section);
-                        //Console.Out.WriteLine ("section.Length: {0}", section.Length);
-                        //Console.Out.WriteLine ("right:\n" + right.ToString ());
                       }
                     }
-                    builder.AppendLine (line);
+                    builder.Append (line);
+                    builder.Append ("\n");
                   }
                   else if (k > 0 || 
                            (builder.Length > 0 && builder [builder.Length - 1] != '\n'))
                   {
-                    builder.AppendLine (line);
+                    builder.Append (line);
+                    builder.Append ("\n");
                   }
                 }
                 start = k + 1;
@@ -532,7 +527,7 @@ namespace RCL.Kernel
       {
         if (builder.Length > 0 && builder [builder.Length - 1] != '\n')
         {
-          builder.AppendLine ();
+          builder.Append ("\n");
         }
       }
       return new RCString (builder.ToString ());

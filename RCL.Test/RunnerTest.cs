@@ -152,6 +152,14 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestTryError()
+    {
+      RCRunner runner = new RCRunner ("--output=test");
+      Assert.AreEqual ("{status:1 data:\"<<Assert>>\"}", runner.Rep ("try {<-assert false}").ToString ());
+    }
+
+#if __MonoCS__
+    [Test]
     public void TestExitFromShellRemote ()
     {
       RCRunner runner = new RCRunner ();
@@ -193,13 +201,6 @@ namespace RCL.Test
       runner.Rep ("\"exit.o2\" save #pretty format {:exit 1}");
       runner.Rep ("p:startx \"mono rcl.exe --output=clean --show=print --nokeys --program=exit.o2\"");
       Assert.AreEqual ("{status:1 data:\"<<Exec,exit status 1>>\"}", runner.Rep ("try {<-waitx $p}").ToString ());
-    }
-
-    [Test]
-    public void TestTryError ()
-    {
-      RCRunner runner = new RCRunner ("--output=test");
-      Assert.AreEqual ("{status:1 data:\"<<Assert>>\"}", runner.Rep ("try {<-assert false}").ToString ());
     }
 
     [Test]
@@ -245,6 +246,7 @@ namespace RCL.Test
       string after = pwdAfter [0].TrimEnd ('"');
       Assert.IsTrue (before.StartsWith (after));
     }
+#endif
 
     protected string RepString (RCRunner runner, string code)
     {

@@ -285,7 +285,7 @@ namespace RCL.Core
       return RCVectorBase.FromArray (array);
     }
 
-    [RCVerb ("+")] [RCVerb ("-")] [RCVerb ("*")] [RCVerb ("/")]
+    [RCVerb ("+")] [RCVerb ("-")] [RCVerb ("*")] [RCVerb ("/")] [RCVerb ("%")]
     [RCVerb ("and")] [RCVerb ("or")]
     [RCVerb ("==")] [RCVerb ("!=")] [RCVerb ("<")] [RCVerb (">")] [RCVerb ("<=")] [RCVerb (">=")]
     [RCVerb ("min")] [RCVerb ("max")]

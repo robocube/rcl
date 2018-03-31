@@ -542,7 +542,8 @@ namespace RCL.Kernel
               }
               if (end < content.Length && end > 1 && content [end - 2] == '\r')
               {
-                builder.AppendLine (content.Substring (start, (end - 2) - start));
+                builder.Append (content.Substring (start, (end - 2) - start));
+                builder.Append ("\n");
               }
               else
               {
@@ -577,7 +578,8 @@ namespace RCL.Kernel
               {
                 if (content.Length > 1 && content [end - 2] == '\r')
                 {
-                  builder.AppendLine (content.Substring (start, (end - 2) - start));
+                  builder.Append (content.Substring (start, (end - 2) - start));
+                  builder.Append ("\n");
                 }
                 else
                 {
