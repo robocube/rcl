@@ -2,6 +2,7 @@
 bin/
 obj/
 .vscode/
+.suo
 RCL.userprefs
 gauntlet_results.rcl
 nunit_results.xml
