@@ -8,9 +8,9 @@ namespace RCL.Kernel
   public class Formatter : Visitor
   {
     protected static readonly int MIN_WIDTH = 2;
-  
     protected StringBuilder m_builder;
     protected RCFormat m_args;
+    protected RCColmap m_colmap;
 
     //Names of the columns.
     protected List<string> m_names;
@@ -25,12 +25,16 @@ namespace RCL.Kernel
     //The indent level.
     protected int m_level = 0;
   
-    public Formatter (StringBuilder builder, RCFormat args, int level)
-                      
+    public Formatter (StringBuilder builder, RCFormat args, RCColmap colmap, int level)     
     {
       m_builder = builder;
       m_args = args;
       m_level = level;
+      m_colmap = colmap;
+      if (m_colmap == null)
+      {
+        m_colmap = new RCColmap ();
+      }
     }
   
     public void Format (RCCube source)
@@ -400,7 +404,8 @@ namespace RCL.Kernel
   
     public override void VisitScalar<T> (string name, Column<T> column, int row)
     {
-      string scalar = m_args.ParsableScalars ? column.ScalarToString (row) : column.ScalarToCsvString (row);
+      string format = m_colmap.GetDisplayFormat (name);
+      string scalar = m_args.ParsableScalars ? column.ScalarToString (format, row) : column.ScalarToCsvString (format, row);
       int max = m_max[m_col];
       if (scalar.Length > max)
       {

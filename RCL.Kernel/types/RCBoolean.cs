@@ -45,14 +45,14 @@ namespace RCL.Kernel
       builder.Append (ScalarToString (scalar));
     }
 
-    public static string FormatScalar (bool scalar)
+    public static string FormatScalar (string format, bool scalar)
     {
       return scalar ? "true" : "false";
     }
 
-    public override string ScalarToString (bool scalar)
+    public override string ScalarToString (string format, bool scalar)
     {
-      return FormatScalar (scalar);
+      return FormatScalar (format, scalar);
     }
 
     public override void Write (object box)

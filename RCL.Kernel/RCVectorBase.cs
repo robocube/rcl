@@ -29,6 +29,8 @@ namespace RCL.Kernel
         return new RCByte ((RCArray<byte>) array);
       else if (arrayType == typeof (RCArray<long>))
         return new RCLong ((RCArray<long>) array);
+      //else if (arrayType == typeof (int))
+      //  return new RCLong ((RCArray<long>) array);
       else if (arrayType == typeof (RCArray<double>))
         return new RCDouble ((RCArray<double>) array);
       else if (arrayType == typeof (RCArray<decimal>))
@@ -53,6 +55,8 @@ namespace RCL.Kernel
         return new RCByte ((byte) scalar);
       else if (scalarType == typeof (long))
         return new RCLong ((long) scalar);
+      //else if (scalarType == typeof (int))
+      //  return new RCLong ((long) (int) scalar);
       else if (scalarType == typeof (double))
         return new RCDouble ((double) scalar);
       else if (scalarType == typeof (decimal))

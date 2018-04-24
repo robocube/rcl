@@ -23,6 +23,16 @@ namespace RCL.Kernel
       m_logger.SetVerbosity (output);
     }
 
+    public void Colmap (RCArray<string> column, RCArray<string> format)
+    {
+      m_logger.UpdateColmap (column, format);
+    }
+
+    public RCColmap GetColmap ()
+    {
+      return m_logger.GetColmap ();
+    }
+
     public virtual void Record (RCRunner runner, 
                                 RCClosure closure, 
                                 string type, 
@@ -42,19 +52,6 @@ namespace RCL.Kernel
     {
       RCLogger.RecordFilter (runner, closure, type, instance, state, info, true);
     }
-
-    /*
-    public virtual void Record (RCRunner runner,
-                                RCClosure closure,
-                                string type,
-                                long instance,
-                                string state,
-                                object info,
-                                bool forceDoc)
-    {
-      RCLogger.RecordFilter (runner, closure, type, instance, state, info, forceDoc);
-    }
-    */
   }
 }
 

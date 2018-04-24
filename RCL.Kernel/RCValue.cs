@@ -88,14 +88,22 @@ namespace RCL.Kernel
       return Format (RCL.Kernel.RCFormat.Default);
     }
 
+    public virtual string Format (RCFormat args, RCColmap colmap)
+    {
+      StringBuilder builder = new StringBuilder ();
+      Format (builder, args, colmap, 0);
+      return builder.ToString ();
+    }
+
     public virtual string Format (RCFormat args)
     {
       StringBuilder builder = new StringBuilder ();
-      Format (builder, args, 0);
+      Format (builder, args, null, 0);
       return builder.ToString ();
     }
 
     public abstract void Format (StringBuilder builder, RCFormat args, int level);
+    public abstract void Format (StringBuilder builder, RCFormat args, RCColmap colmap, int level);
 
     public virtual void ToByte (RCArray<byte> result)
     {

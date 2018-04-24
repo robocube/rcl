@@ -37,100 +37,101 @@ namespace RCL.Core
     [RCVerb ("colofx")]
     public void EvalColofx (RCRunner runner, RCClosure closure, RCCube right)
     {
-      runner.Yield (closure, new RCByte (DoColof<byte> (0, right, false)));
+      runner.Yield (closure, new RCByte (right.DoColof<byte> (0, 0, false)));
     }
 
     [RCVerb ("colofx")]
     public void EvalColofx (RCRunner runner, RCClosure closure, RCByte left, RCCube right)
     {
-      runner.Yield (closure, new RCByte (DoColof<byte> (left[0], right, true)));
+      runner.Yield (closure, new RCByte (right.DoColof<byte> (0, left[0], true)));
     }
 
     [RCVerb ("colofd")]
     public void EvalColofd (RCRunner runner, RCClosure closure, RCCube right)
     {
-      runner.Yield (closure, new RCDouble (DoColof<double> (0.0, right, false)));
+      runner.Yield (closure, new RCDouble (right.DoColof<double> (0, 0.0, false)));
     }
 
     [RCVerb ("colofd")]
     public void EvalColofd (RCRunner runner, RCClosure closure, RCDouble left, RCCube right)
     {
-      runner.Yield (closure, new RCDouble (DoColof<double> (left[0], right, true)));
+      runner.Yield (closure, new RCDouble (right.DoColof<double> (0, left[0], true)));
     }
 
     [RCVerb ("colofl")]
     public void EvalColofl (RCRunner runner, RCClosure closure, RCCube right)
     {
-      runner.Yield (closure, new RCLong (DoColof<long> (0L, right, false)));
+      runner.Yield (closure, new RCLong (right.DoColof<long> (0, 0L, false)));
     }
 
     [RCVerb ("colofl")]
     public void EvalColofl (RCRunner runner, RCClosure closure, RCLong left, RCCube right)
     {
-      runner.Yield (closure, new RCLong (DoColof<long> (left[0], right, true)));
+      runner.Yield (closure, new RCLong (right.DoColof<long> (0, left[0], true)));
     }
 
     [RCVerb ("colofs")]
     public void EvalColofs (RCRunner runner, RCClosure closure, RCCube right)
     {
-      runner.Yield (closure, new RCString (DoColof<string> ("", right, false)));
+      runner.Yield (closure, new RCString (right.DoColof<string> (0, "", false)));
     }
 
     [RCVerb ("colofs")]
     public void EvalColofs (RCRunner runner, RCClosure closure, RCString left, RCCube right)
     {
-      runner.Yield (closure, new RCString (DoColof<string> (left[0], right, true)));
+      runner.Yield (closure, new RCString (right.DoColof<string> (0, left[0], true)));
     }
 
     [RCVerb ("colofm")]
     public void EvalColofm (RCRunner runner, RCClosure closure, RCCube right)
     {
-      runner.Yield (closure, new RCDecimal (DoColof<decimal> (0, right, false)));
+      runner.Yield (closure, new RCDecimal (right.DoColof<decimal> (0, 0, false)));
     }
 
     [RCVerb ("colofm")]
     public void EvalColofm (RCRunner runner, RCClosure closure, RCDecimal left, RCCube right)
     {
-      runner.Yield (closure, new RCDecimal (DoColof<decimal> (left[0], right, true)));
+      runner.Yield (closure, new RCDecimal (right.DoColof<decimal> (0, left[0], true)));
     }
 
     [RCVerb ("colofb")]
     public void EvalColofb (RCRunner runner, RCClosure closure, RCCube right)
     {
-      runner.Yield (closure, new RCBoolean (DoColof<bool> (false, right, false)));
+      runner.Yield (closure, new RCBoolean (right.DoColof<bool> (0, false, false)));
     }
 
     [RCVerb ("colofb")]
     public void EvalColofb (RCRunner runner, RCClosure closure, RCBoolean left, RCCube right)
     {
-      runner.Yield (closure, new RCBoolean (DoColof<bool> (left[0], right, true)));
+      runner.Yield (closure, new RCBoolean (right.DoColof<bool> (0, left[0], true)));
     }
 
     [RCVerb ("colofy")]
     public void EvalColofy (RCRunner runner, RCClosure closure, RCCube right)
     {
-      runner.Yield (closure, new RCSymbol (DoColof<RCSymbolScalar> (RCSymbolScalar.Empty, right, false)));
+      runner.Yield (closure, new RCSymbol (right.DoColof<RCSymbolScalar> (0, RCSymbolScalar.Empty, false)));
     }
 
     [RCVerb ("colofy")]
     public void EvalColofy (RCRunner runner, RCClosure closure, RCSymbol left, RCCube right)
     {
-      runner.Yield (closure, new RCSymbol (DoColof<RCSymbolScalar> (left[0], right, true)));
+      runner.Yield (closure, new RCSymbol (right.DoColof<RCSymbolScalar> (0, left[0], true)));
     }
 
     [RCVerb ("coloft")]
     public void EvalColoft (RCRunner runner, RCClosure closure, RCCube right)
     {
-      runner.Yield (closure, new RCTime (DoColof<RCTimeScalar> (RCTimeScalar.Empty, right, true)));
+      runner.Yield (closure, new RCTime (right.DoColof<RCTimeScalar> (0, RCTimeScalar.Empty, true)));
     }
 
     [RCVerb ("coloft")]
     public void EvalColoft (RCRunner runner, RCClosure closure, RCTime left, RCCube right)
     {
-      runner.Yield (closure, new RCTime (DoColof<RCTimeScalar> (left[0], right, true)));
+      runner.Yield (closure, new RCTime (right.DoColof<RCTimeScalar> (0, left[0], true)));
     }
 
-    protected RCArray<T> DoColof<T> (T def, RCCube right, bool allowSparse)
+    /*
+    public static RCArray<T> DoColof<T> (T def, RCCube right, bool allowSparse)
     {
       if (right.Count == 0)
       {
@@ -161,5 +162,6 @@ namespace RCL.Core
       }
       return result;
     }
+    */
   }
 }

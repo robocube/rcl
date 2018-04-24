@@ -58,7 +58,7 @@ namespace RCL.Kernel
     }
 
     public static void DoFormat<T> (
-      RCVector<T> vector, StringBuilder builder, RCFormat args, int level)
+      RCVector<T> vector, StringBuilder builder, RCFormat args, RCColmap colmap, int level)
     {
       if (vector.Count == 0)
       {
@@ -78,30 +78,30 @@ namespace RCL.Kernel
     }
 
     public static void DoFormat (
-      RCOperator op, StringBuilder builder, RCFormat args, int level)
+      RCOperator op, StringBuilder builder, RCFormat args, RCColmap colmap, int level)
     {
       if (op.Left != null)
       {
         if (op.Left.IsOperator)
         {
           builder.Append ("(");
-          op.Left.Format (builder, args, level);
+          op.Left.Format (builder, args, colmap, level);
           builder.Append (")");
         }
         else
         {
-          op.Left.Format (builder, args, level);
+          op.Left.Format (builder, args, colmap, level);
         }
         builder.Append (" ");
       }
       op.BodyToString (builder, args, level);
       builder.Append (" ");
       //Note Right is not allowed to be null.
-      op.Right.Format (builder, args, level);
+      op.Right.Format (builder, args, colmap, level);
     }
 
     public static void DoFormat (
-      RCBlock block, StringBuilder builder, RCFormat args, int level)
+      RCBlock block, StringBuilder builder, RCFormat args, RCColmap colmap, int level)
     {
       if (block.Count == 0)
       {
@@ -122,9 +122,9 @@ namespace RCL.Kernel
           builder.Append (args.Indent);
         if (child.EscapeName)
         {
-          builder.Append ("'");
+          //builder.Append ("'");
           builder.Append (child.Name);
-          builder.Append ("'");
+          //builder.Append ("'");
         }
         else
         {
@@ -133,7 +133,7 @@ namespace RCL.Kernel
         builder.Append (child.Evaluator.Symbol);
 
         if (child.Value != null)
-          child.Value.Format (builder, args, level);
+          child.Value.Format (builder, args, colmap, level);
         else //Only the empty block has no value.
           builder.Append("{}");
         if (i < block.Count - 1)
@@ -147,7 +147,7 @@ namespace RCL.Kernel
     }
 
     public static void DoFormat (
-      RCTemplate template, StringBuilder builder, RCFormat args, int level)
+      RCTemplate template, StringBuilder builder, RCFormat args, RCColmap colmap, int level)
     {
       //templates need to follow the same indenting rules as everyone else please.
       builder.Append ("[");
@@ -227,7 +227,7 @@ namespace RCL.Kernel
           builder.Append ("[");
           builder.Append ('!', template.EscapeCount);
           builder.Append (' ');
-          child.Format (builder, RCFormat.Default, level);
+          child.Format (builder, RCFormat.Default, colmap, level);
           builder.Append (' ');
           builder.Append ('!', template.EscapeCount);
           builder.Append ("]");
@@ -244,7 +244,7 @@ namespace RCL.Kernel
     }
 
     public static void DoFormat (
-      RCReference reference, StringBuilder builder, RCFormat args, int level)
+      RCReference reference, StringBuilder builder, RCFormat args, RCColmap colmap, int level)
     {
       builder.Append ("$");
       builder.Append (reference.Name);

@@ -14,6 +14,15 @@ namespace RCL.Kernel
     public static RCTime Empty = new RCTime ();
 
     /// <summary>
+    /// The timezone to use for display purposes only.
+    /// Note this is a non-volatile multithreaded read.
+    /// The intent is to avoid slowing down FormatScalar on the memory barrier.
+    /// A slowdown would be worse than having a stale read since displayTimezone is 
+    /// expected to be set at program launch and not changed.
+    /// </summary>
+    public static TimeZoneInfo DisplayTimeZone = TimeZoneInfo.Utc;
+
+    /// <summary>
     /// Defines formats for each type of RCTimeScalar.
     /// </summary>
     public static readonly string[] FORMATS = new string[] {
@@ -85,28 +94,46 @@ namespace RCL.Kernel
     /// <summary>
     /// Conversion of time scalars to strings.
     /// </summary>
-    public override string ScalarToString (RCTimeScalar scalar)
+    public override string ScalarToString (string format, RCTimeScalar scalar)
     {
-      return FormatScalar (scalar);
+      return FormatScalar (format, scalar);
     }
 
     /// <summary>
     /// Standard time formatting method.
     /// </summary>
-    public static string FormatScalar (RCTimeScalar scalar)
+    public static string FormatScalar (string format, RCTimeScalar scalar)
     {
-      if (scalar.Type == RCTimeType.Timespan)
+      if (format == null)
       {
-        TimeSpan ts = new TimeSpan (scalar.Ticks);
-        int fraction = (int) (scalar.Ticks % TimeSpan.TicksPerSecond);
-        return string.Format ("{0}.{1:00}:{2:00}:{3:00}.{4:0000000}", 
-                              ts.Days,
-                              Math.Abs (ts.Hours),
-                              Math.Abs (ts.Minutes),
-                              Math.Abs (ts.Seconds),
-                              Math.Abs (fraction));
+        if (scalar.Type == RCTimeType.Timespan)
+        {
+          TimeSpan ts = new TimeSpan (scalar.Ticks);
+          int fraction = (int) (scalar.Ticks % TimeSpan.TicksPerSecond);
+          return string.Format ("{0}.{1:00}:{2:00}:{3:00}.{4:0000000}",
+                                ts.Days,
+                                Math.Abs (ts.Hours),
+                                Math.Abs (ts.Minutes),
+                                Math.Abs (ts.Seconds),
+                                Math.Abs (fraction));
+        }
+        DateTime displayTime = TimeZoneInfo.ConvertTimeFromUtc (new DateTime (scalar.Ticks),
+                                                                RCTime.DisplayTimeZone);
+        return displayTime.ToString (FORMATS[(int) scalar.Type]);
       }
-      return new DateTime (scalar.Ticks).ToString (FORMATS[(int) scalar.Type]);
+      else
+      {
+        if (scalar.Type == RCTimeType.Timespan)
+        {
+          throw new NotImplementedException ("Custom formats for RCTimeType.Timespan are not implemented. Please fix.");
+        }
+        else
+        {
+          DateTime displayTime = TimeZoneInfo.ConvertTimeFromUtc (new DateTime (scalar.Ticks),
+                                                                  RCTime.DisplayTimeZone);
+          return displayTime.ToString (format);
+        }
+      }
     }
 
     /// <summary>

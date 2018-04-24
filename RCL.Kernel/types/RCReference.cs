@@ -79,7 +79,13 @@ namespace RCL.Kernel
     public override void Format (
       StringBuilder builder, RCFormat args, int level)
     {
-      RCL.Kernel.Format.DoFormat (this, builder, args, level);
+      RCL.Kernel.Format.DoFormat (this, builder, args, null, level);
+    }
+
+    public override void Format (
+      StringBuilder builder, RCFormat args, RCColmap colmap, int level)
+    {
+      RCL.Kernel.Format.DoFormat (this, builder, args, colmap, level);
     }
 
     public void SetStatic (RCBlock context)

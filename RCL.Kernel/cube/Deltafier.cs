@@ -38,7 +38,7 @@ namespace RCL.Kernel
         {
           //Still unsure whether I really want to hardcode "i" here...
           m_target.WriteCell ("i", sym, RCIncrScalar.Delete, -1, true, false);
-          m_target.Write (-1, -1, new RCTimeScalar (DateTime.Now.Ticks, RCTimeType.Timestamp), sym);
+          m_target.Write (-1, -1, new RCTimeScalar (DateTime.UtcNow.Ticks, RCTimeType.Timestamp), sym);
         }
       }
       m_after.VisitCellsForward (this, 0, m_after.Count);

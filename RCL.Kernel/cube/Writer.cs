@@ -66,7 +66,6 @@ namespace RCL.Kernel
       ++m_e;
       //This needs to change to a sequence number but 
       //the m_e logic is not quite right yet. 2015.09.17
-      //e = DateTime.Now.Ticks;
       if (m_source.Axis.Has ("E"))
       {
         e = m_source.Axis.Event [row];

@@ -475,6 +475,20 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestNumericNamesInBlock ()
+    {
+      DoParserTest ("{'0':1 '2':3 '4':5}");
+    }
+
+    /*
+    [Test]
+    public void TestNumericNamesInBlockShorthand ()
+    {
+      DoParserTest ("{0:1 2:3 4:5}", "{'0':1 '2':3 '4':5}");
+    }
+    */
+
+    [Test]
     public void TestQuotedNamesInReferences ()
     {
       DoParserTest ("{'a b c':1 2 3 '!@#$%^&*':4 5 6}");
@@ -837,10 +851,17 @@ namespace RCL.Test
     public void TestProgrammaticSymbolBuilding ()
     {
       Assert.AreEqual ("#1,2,3", RCSymbolScalar.From ((long) 1, (long) 2, (long) 3).ToString ());
+      Assert.AreEqual ("#1,2,3", RCSymbolScalar.From ((long) 1, (int) 2, (long) 3).ToString ());
       Assert.AreEqual ("#a,b,c", RCSymbolScalar.From ("a", "b", "c").ToString ());
       Assert.AreEqual ("#'a-b',c,d", RCSymbolScalar.From ("a-b", "c", "d").ToString ());
       Assert.AreEqual ("#a_b,c,d", RCSymbolScalar.From ("a_b", "c", "d").ToString ());
       Assert.AreEqual ("#'1','2','3'", RCSymbolScalar.From ("1", "2", "3").ToString ());
+    }
+
+    [Test]
+    public void TestProgrammaticSymbolBuildingWithIntFirst ()
+    {
+      Assert.AreEqual ("#1,2,3", RCSymbolScalar.From ((int) 1, (long) 2, (long) 3).ToString ());
     }
 
     [Test]

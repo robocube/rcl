@@ -33,7 +33,7 @@ namespace RCL.Kernel
       return From (0, key);
     }
 
-    public static RCSymbolScalar From (int startIndex, params object[] key) 
+    protected static RCSymbolScalar From (int startIndex, params object[] key) 
     {
       RCSymbolScalar prev = null;
       for (int i = startIndex; i < key.Length; ++i) 
@@ -125,6 +125,10 @@ namespace RCL.Kernel
             else throw new Exception ("Invalid symbol part: " + str);
           }
         }
+      }
+      if (key.GetType () == typeof (int))
+      {
+        key = (long) (int) key;
       }
       Key = key;
       Type = RCVectorBase.EmptyOf (Key.GetType ());

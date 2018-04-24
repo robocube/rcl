@@ -57,7 +57,7 @@ namespace RCL.Core
         //RequestTimer = new Timer (AbortWebRequest);
         RetryTimer = new Timer (RetryWebRequest);
         OverallTimer = new Timer (AbortWebRequestAndFail);
-        StartTime = DateTime.Now;
+        StartTime = DateTime.UtcNow;
         Timeout = new TimeSpan (0, 0, 0, 0, (int) timeout);
         Retry = new TimeSpan (0, 0, 0, 0, (int) retry);
         ShouldRetry = shouldRetry;
@@ -65,7 +65,7 @@ namespace RCL.Core
 
       protected void RetryOrFail (Exception ex)
       {
-        if (!Aborting && ShouldRetry && Retry.Ticks >= 0) //Timeout.Ticks > 0 && DateTime.Now < StartTime + Timeout)
+        if (!Aborting && ShouldRetry && Retry.Ticks >= 0)
         {
           RetryTimer.Change (Retry, NoPeriodicSignal);
         }

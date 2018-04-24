@@ -443,9 +443,9 @@ namespace RCL.Core
             }
           else return;
         }
-        DateTime timeout = DateTime.Now + new TimeSpan (0, 0, 0, 0, 2000);
+        DateTime timeout = DateTime.UtcNow + new TimeSpan (0, 0, 0, 0, 2000);
         //You understand I don't normally do things like this.
-        while (DateTime.Now < timeout)
+        while (DateTime.UtcNow < timeout)
         {
           lock (this)
           {

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 
 namespace RCL.Kernel
 {
+  /*
   public class RCArrayStorage<T>
   {
     public T[] m_source;
@@ -22,6 +23,7 @@ namespace RCL.Kernel
       m_count = count;
     }
   }
+  */
   
   public class RCArray<T> : IEnumerable<T>
   {
@@ -46,9 +48,8 @@ namespace RCL.Kernel
       }
       m_source = source;
       m_count = source.Length;
-      //m_storage = new RCArrayStorage<T> (source, source.Length);
     }
-
+    
     public RCArray (ICollection<T> source)
     {
       m_source = new T[source.Count];

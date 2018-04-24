@@ -20,18 +20,19 @@ namespace RCL.Kernel
 
     static RCName ()
     {
-      RCName empty = new RCName ("", 0);
+      RCName empty = new RCName ("", 0, false);
       m_names.Add ("", empty);
       m_index.Write (empty);
     }
 
-    static RCName GetName (string text)
+    public static RCName GetName (string text)
     {
       if (text == null) 
       {
         text = "";    
       }
       string name = null;
+      bool escaped = false;
       RCName result;
       lock (m_lock)
       {
@@ -43,19 +44,30 @@ namespace RCL.Kernel
             {
               throw new Exception ("Unmatched single quote in name: " + text);
             }
-            //remove quotes if not necessary          
+            // Remove quotes if not necessary
+            // They are necessary when the name begins with a number
+            if (text.Length > 1 && text[1] >= '0' && text[1] <= '9')
+            {
+              name = text;
+            }
             for (int i = 1; i < text.Length - 1; ++i)
             {
               if (!RCTokenType.IsIdentifierChar (text[i]))
               { 
                 name = text;
-                break;  
+                escaped = true;
+                break;
               }
             }
             if (name == null)
             {
               name = text.Substring (1, text.Length - 2);
             }
+          }
+          else if (text[0] >= '0' && text[0] <= '9')
+          {
+            name = "'" + text + "'";
+            escaped = true;
           }
           else
           {
@@ -65,6 +77,7 @@ namespace RCL.Kernel
               if (!RCTokenType.IsIdentifierChar (text[i]))
               {
                 name = "'" + text + "'";
+                escaped = true;
                 break;
               }
             }
@@ -81,7 +94,7 @@ namespace RCL.Kernel
           }
           else
           {
-            result = new RCName (name, m_names.Count);
+            result = new RCName (name, m_names.Count, escaped);
             m_names.Add (result.Text, result);
             m_index.Write (result);
             return result;
@@ -120,12 +133,14 @@ namespace RCL.Kernel
       }
     }
 
-    protected readonly string Text;
-    protected readonly long Index;
-    public RCName (string text, long index)
+    public readonly string Text;
+    public readonly long Index;
+    public readonly bool Escaped;
+    public RCName (string text, long index, bool escaped)
     {
       Text = text;
       Index = index;
+      Escaped = escaped;
     }
   }
 
@@ -230,7 +245,9 @@ namespace RCL.Kernel
       }
 
       Previous = previous != null ? previous : Empty;
-      Name = RCName.Get (name);
+      RCName nameInfo = RCName.GetName (name);
+      Name = nameInfo.Text;
+      EscapeName = nameInfo.Escaped;
       Evaluator = evaluator;
       Value = val;
       m_count = Previous.Count + 1;
@@ -432,11 +449,19 @@ namespace RCL.Kernel
       return RCL.Kernel.Eval.DoIsLastCall (closure, arg, this);
     }
 
-    public override void Format (StringBuilder builder, 
-                                 RCFormat args, 
+    public override void Format (StringBuilder builder,
+                                 RCFormat args,
                                  int level)
     {
-      RCL.Kernel.Format.DoFormat (this, builder, args, level);
+      RCL.Kernel.Format.DoFormat (this, builder, args, null, level);
+    }
+
+    public override void Format (StringBuilder builder, 
+                                 RCFormat args,
+                                 RCColmap colmap,
+                                 int level)
+    {
+      RCL.Kernel.Format.DoFormat (this, builder, args, colmap, level);
     }
 
     public override int Count
@@ -481,6 +506,129 @@ namespace RCL.Kernel
         child.Value.Cubify (target, names);
         names.Pop ();
       }
+    }
+
+    // Convenience functions for extracting individual values
+    // in ordinary cases.
+    // Useful for integrating with external apis and data.
+    public string GetString (string name, string def)
+    {
+      RCString val = (RCString) Get (name);
+      if (val == null)
+      {
+        return def;
+      }
+      else return val[0];
+    }
+
+    public string GetString (string name)
+    {
+      RCString val = (RCString) Get (name);
+      if (val == null)
+      {
+        throw new Exception ("Required value " + name + " not found in block");
+      }
+      else return val[0];
+    }
+
+    public bool GetBoolean (string name, bool def)
+    {
+      RCBoolean val = (RCBoolean) Get (name);
+      if (val == null)
+      {
+        return def;
+      }
+      else return val[0];
+    }
+
+    public bool GetBoolean (string name)
+    {
+      RCBoolean val = (RCBoolean) Get (name);
+      if (val == null)
+      {
+        throw new Exception ("Required value " + name + " not found in block");
+      }
+      else return val[0];
+    }
+
+    public long GetLong (string name, long def)
+    {
+      RCLong val = (RCLong) Get (name);
+      if (val == null)
+      {
+        return def;
+      }
+      else return val[0];
+    }
+
+    public long GetLong (string name)
+    {
+      RCLong val = (RCLong) Get (name);
+      if (val == null)
+      {
+        throw new Exception ("Required value " + name + " not found in block");
+      }
+      else return val[0];
+    }
+
+    public double GetDouble (string name, double def)
+    {
+      RCDouble val = (RCDouble) Get (name);
+      if (val == null)
+      {
+        return def;
+      }
+      else return val[0];
+    }
+
+    public double GetDouble (string name)
+    {
+      RCDouble val = (RCDouble) Get (name);
+      if (val == null)
+      {
+        throw new Exception ("Required value " + name + " not found in block");
+      }
+      else return val[0];
+    }
+
+    public decimal GetDecimal (string name, decimal def)
+    {
+      RCDecimal val = (RCDecimal) Get (name);
+      if (val == null)
+      {
+        return def;
+      }
+      else return val[0];
+    }
+
+    public decimal GetDecimal (string name)
+    {
+      RCDecimal val = (RCDecimal) Get (name);
+      if (val == null)
+      {
+        throw new Exception ("Required value " + name + " not found in block");
+      }
+      else return val[0];
+    }
+
+    public RCTimeScalar GetTime (string name, RCTimeScalar def)
+    {
+      RCTime val = (RCTime) Get (name);
+      if (val == null)
+      {
+        return def;
+      }
+      else return val[0];
+    }
+
+    public RCTimeScalar GetTime (string name)
+    {
+      RCTime val = (RCTime) Get (name);
+      if (val == null)
+      {
+        throw new Exception ("Required value " + name + " not found in block");
+      }
+      else return val[0];
     }
   }
 }

@@ -40,12 +40,12 @@ namespace RCL.Kernel
       get { return -1; }
     }
 
-    public override string ScalarToString (RCSymbolScalar scalar)
+    public override string ScalarToString (string format, RCSymbolScalar scalar)
     {
       return scalar.ToString ();
     }
 
-    public override string ScalarToCsvString (RCSymbolScalar scalar)
+    public override string ScalarToCsvString (string format, RCSymbolScalar scalar)
     {
       return scalar.ToCsvString ();
     }

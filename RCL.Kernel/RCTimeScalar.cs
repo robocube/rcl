@@ -21,6 +21,11 @@ namespace RCL.Kernel
     public readonly long Ticks;
     public readonly RCTimeType Type;
 
+    public static RCTimeScalar Now ()
+    {
+      return new RCTimeScalar (DateTime.UtcNow, RCTimeType.Timestamp);
+    }
+
     public RCTimeScalar (long ticks, RCTimeType type)
     {
       Ticks = ticks;
@@ -51,7 +56,7 @@ namespace RCL.Kernel
 
     public override string ToString ()
     {
-      return RCTime.FormatScalar (this);
+      return RCTime.FormatScalar (null, this);
     }
   }
 }

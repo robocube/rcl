@@ -4,6 +4,7 @@ using System.Text;
 using System.IO;
 using System.Threading;
 using System.Diagnostics;
+using System.Collections.ObjectModel;
 using RCL.Kernel;
 
 namespace RCL.Core
@@ -519,6 +520,66 @@ namespace RCL.Core
     {
       runner.Log.Record (runner, closure, "runner", 0, "exit", right);
       runner.Abort ((int) right[0]);
+    }
+
+    /// <summary>
+    /// colout modifies the format used when printing cubes to customize
+    /// the appearance of columns, especially number columns.
+    /// It is no fun crunching numbers at the command line if they don't 
+    /// look right.
+    /// </summary>
+    [RCVerb ("display_format")]
+    public void DisplayFormat (RCRunner runner, RCClosure closure, RCCube right)
+    {
+      RCArray<string> column = right.DoColof<string> ("column", "");
+      RCArray<string> format = right.DoColof<string> ("format", "");
+      runner.Log.Colmap (column, format);
+      runner.Yield (closure, right);
+    }
+
+    [RCVerb ("display_format")]
+    public void DisplayFormat (RCRunner runner, RCClosure closure, RCBlock right)
+    {
+      //RCArray<string> column = right.DoColof<string> ("column", "");
+      //RCArray<string> format = right.DoColof<string> ("format", "");
+      throw new NotImplementedException ("This should yield a cube describing the defined formats");
+    }
+
+    [RCVerb ("display_timezone")]
+    public void DisplayTimezone (RCRunner runner, RCClosure closure, RCString right)
+    {
+      RCTime.DisplayTimeZone = TimeZoneInfo.FindSystemTimeZoneById (right[0]);
+      runner.Log.Record (runner, closure, "system", 0, "display_timezone", "set to " + right[0]);
+      runner.Yield (closure, right);
+      //TimeZoneInfo timezone = TimeZoneInfo.FindSystemTimeZoneById (displayTimezone);
+      //displayTime = TimeZoneInfo.ConvertTimeFromUtc (new DateTime (scalar.Ticks), DisplayTimeZone);
+    }
+
+    [RCVerb ("display_timezone")]
+    public void DisplayTimezone (RCRunner runner, RCClosure closure, RCBlock right)
+    {
+      string id = RCTime.DisplayTimeZone.Id;
+      runner.Yield (closure, new RCString (id));
+    }
+
+    [RCVerb ("timezones")]
+    public void Timezones (RCRunner runner, RCClosure closure, RCBlock right)
+    {
+      RCCube result = new RCCube ("S");
+      DateTime now = DateTime.UtcNow;
+      ReadOnlyCollection<TimeZoneInfo> timezones = TimeZoneInfo.GetSystemTimeZones ();
+      foreach (TimeZoneInfo timezone in timezones)
+      {
+        RCSymbolScalar sym = RCSymbolScalar.From ("timezones", timezone.Id);
+        result.WriteCell ("displayName", sym, timezone.DisplayName);
+        result.WriteCell ("standardName", sym, timezone.StandardName);
+        result.WriteCell ("daylightName", sym, timezone.DaylightName);
+        result.WriteCell ("utcOffset", sym, new RCTimeScalar (timezone.GetUtcOffset (now)));
+        result.WriteCell ("isDaylightSavingTime", sym, timezone.IsDaylightSavingTime (now));
+        result.WriteCell ("supportsDaylightSavingTime", sym, timezone.SupportsDaylightSavingTime);
+        result.Axis.Write (sym);
+      }
+      runner.Yield (closure, result);
     }
 
     private static RCBlock m_options = null;

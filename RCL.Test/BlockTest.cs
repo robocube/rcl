@@ -227,6 +227,16 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestEscapedNumberNames ()
+    {
+      r.Reset ();
+      RCBlock k = new RCBlock (RCBlock.Empty, "0", ":", new RCString ("foo"));
+      Assert.AreEqual ("'0'", k.GetName (0).Name);
+      Assert.AreEqual ("0", k.GetName (0).RawName);
+      Assert.AreEqual ("{'0':\"foo\"}", k.Format (RCFormat.Default));
+    }
+
+    [Test]
     public void TestMacroCtor ()
     {
       r.Reset ();

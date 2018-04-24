@@ -5,6 +5,53 @@ using System.Text;
 
 namespace RCL.Kernel
 {
+  public class RCColmap
+  {
+    protected class DisplayCol
+    {
+      public readonly string Display;
+      public readonly string Format;
+
+      public DisplayCol (string display, string format)
+      {
+        Display = display;
+        Format = format;
+      }
+    }
+
+    protected Dictionary<string, DisplayCol> m_displayCols = new Dictionary<string, DisplayCol> ();
+
+    public RCColmap Update (RCArray<string> column, RCArray<string> format)
+    {
+      RCColmap result = new RCColmap ();
+      result.m_displayCols = this.m_displayCols;
+      foreach (string key in m_displayCols.Keys)
+      {
+        result.m_displayCols[key] = m_displayCols[key];
+      }
+      m_displayCols = new Dictionary<string, DisplayCol> ();
+      for (int i = 0; i < column.Count; i++)
+      {
+        result.m_displayCols[column[i]] = new DisplayCol (column[i], format[i]);
+      }
+      return result;
+    }
+
+    public string GetDisplayFormat (string column)
+    {
+      if (column == null)
+      {
+        throw new ArgumentNullException ("column");
+      }
+      DisplayCol col;
+      if (m_displayCols.TryGetValue (column, out col))
+      {
+        return col.Format;
+      }
+      return null;
+    }
+  }
+
   public class RCLogger
   {
     protected static object m_lock = new object ();
@@ -14,6 +61,7 @@ namespace RCL.Kernel
     protected static RCOutput m_level = RCOutput.Full;
     protected readonly static string TimeFormat = "yyyy.MM.dd HH:mm:ss.ffffff";
     protected static HashSet<string> m_show;
+    protected static RCColmap m_colmap = new RCColmap ();
 
     public RCLogger () : this (true, "*") {}
 
@@ -40,6 +88,22 @@ namespace RCL.Kernel
     public void SetVerbosity (RCOutput level)
     {
       m_level = level;
+    }
+
+    public void UpdateColmap (RCArray<string> column, RCArray<string> format)
+    {
+      lock (m_lock)
+      {
+        m_colmap = m_colmap.Update (column, format);
+      }
+    }
+
+    /// <summary>
+    /// This is threadsafe because the RCColmap instances are immutable
+    /// </summary>
+    public RCColmap GetColmap ()
+    {
+      return m_colmap;
     }
 
     public static void RecordFilter (RCRunner runner,
@@ -221,7 +285,8 @@ namespace RCL.Kernel
       }
       else if (m_level == RCOutput.Multi || m_level == RCOutput.Full)
       {
-        string time = DateTime.UtcNow.ToString (TimeFormat);
+        DateTime now = TimeZoneInfo.ConvertTimeFromUtc (DateTime.UtcNow, RCTime.DisplayTimeZone);
+        string time = now.ToString (TimeFormat);
         bool singleLine;
         string message = IndentMessage (CreateMessage (info), forceDoc, out singleLine);
         string optionalSpace = (singleLine && message.Length > 0) ? " " : "";
@@ -256,16 +321,16 @@ namespace RCL.Kernel
       {
         if (block.Count == 1 && block.Evaluator == RCEvaluator.Yield)
         {
-          message = block.Format (RCFormat.Default);
+          message = block.Format (RCFormat.Default, m_colmap);
         }
         else
         {
-          message = block.Format (RCFormat.Pretty);
+          message = block.Format (RCFormat.Pretty, m_colmap);
         }
       }
       else if (info is RCCube)
       {
-        message = ((RCValue) info).Format (RCFormat.Pretty);
+        message = ((RCValue) info).Format (RCFormat.Pretty, m_colmap);
       }
       else if (info is RCException && (m_level == RCOutput.Test || m_level == RCOutput.Single))
       {

@@ -25,12 +25,12 @@ namespace RCL.Kernel
       return x == y;
     }
 
-    public override string ScalarToString (RCIncrScalar scalar)
+    public override string ScalarToString (string format, RCIncrScalar scalar)
     {
-      return FormatScalar (scalar);
+      return FormatScalar (format, scalar);
     }
 
-    public static string FormatScalar (RCIncrScalar scalar)
+    public static string FormatScalar (string format, RCIncrScalar scalar)
     {
       switch (scalar)
       {

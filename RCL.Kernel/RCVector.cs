@@ -74,10 +74,14 @@ namespace RCL.Kernel
       return ToString ().GetHashCode ();
     }
 
-    public override void Format (
-      StringBuilder builder, RCFormat args, int level)
+    public override void Format (StringBuilder builder, RCFormat args, int level)
     {
-      RCL.Kernel.Format.DoFormat<T> (this, builder, args, level);
+      RCL.Kernel.Format.DoFormat (this, builder, args, null, level);
+    }
+
+    public override void Format (StringBuilder builder, RCFormat args, RCColmap colmap, int level)
+    {
+      RCL.Kernel.Format.DoFormat (this, builder, args, colmap, level);
     }
 
     public virtual T[] ToArray ()
@@ -108,15 +112,15 @@ namespace RCL.Kernel
 
     public override string ScalarToString (object scalar)
     {
-      return ScalarToString ((T) scalar);
+      return ScalarToString ((string) null, (T) scalar);
     }
 
-    public virtual string ScalarToString (T scalar)
+    public virtual string ScalarToString (string format, T scalar)
     {
       return scalar.ToString ();
     }
 
-    public virtual string ScalarToCsvString (T scalar)
+    public virtual string ScalarToCsvString (string format, T scalar)
     {
       return scalar.ToString ();
     }

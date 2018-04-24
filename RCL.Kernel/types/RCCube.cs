@@ -205,12 +205,12 @@ namespace RCL.Kernel
         return false;
       }
 
-      public override string ScalarToString (int i)
+      public override string ScalarToString (string format, int i)
       {
         throw new NotImplementedException ();
       }
 
-      public override string ScalarToCsvString (int vrow)
+      public override string ScalarToCsvString (string format, int vrow)
       {
         throw new NotImplementedException ();
       }
@@ -232,14 +232,14 @@ namespace RCL.Kernel
                            RCArray<int> index, object data)
         : base (timeline, index, data) {}
 
-      public override string ScalarToString (int i)
+      public override string ScalarToString (string format, int i)
       {
         return RCByte.FormatScalar (m_data[i]);
       }
 
-      public override string ScalarToCsvString (int i)
+      public override string ScalarToCsvString (string format, int i)
       {
-        return ScalarToString (i);
+        return ScalarToString (format, i);
       }
 
       public override char TypeCode { get { return 'x'; } }
@@ -254,14 +254,14 @@ namespace RCL.Kernel
                            RCArray<int> index, object data)
         : base (timeline, index, data) {}
 
-      public override string ScalarToString (int i)
+      public override string ScalarToString (string format, int i)
       {
         return RCLong.FormatScalar (m_data[i]);
       }
 
-      public override string ScalarToCsvString (int i)
+      public override string ScalarToCsvString (string format, int i)
       {
-        return ScalarToString (i);
+        return ScalarToString (format, i);
       }
 
       public override char TypeCode { get { return 'l'; } }
@@ -275,14 +275,14 @@ namespace RCL.Kernel
                              RCArray<int> index, object data)
         : base (timeline, index, data) {}
 
-      public override string ScalarToString (int i)
+      public override string ScalarToString (string format, int i)
       {
-        return RCDouble.FormatScalar (m_data[i]);
+        return RCDouble.FormatScalar (format, m_data[i]);
       }
 
-      public override string ScalarToCsvString (int i)
+      public override string ScalarToCsvString (string format, int i)
       {
-        return ScalarToString (i);
+        return ScalarToString (format, i);
       }
 
       public override char TypeCode { get { return 'd'; } }
@@ -296,14 +296,14 @@ namespace RCL.Kernel
                               RCArray<int> index, object data)
         : base (timeline, index, data) {}
 
-      public override string ScalarToString (int i)
+      public override string ScalarToString (string format, int i)
       {
-        return RCDecimal.FormatScalar (m_data[i]) + "m";
+        return RCDecimal.FormatScalar (format, m_data[i]) + "m";
       }
 
-      public override string ScalarToCsvString (int i)
+      public override string ScalarToCsvString (string format, int i)
       {
-        return ScalarToString (i);
+        return ScalarToString (format, i);
       }
 
       public override char TypeCode { get { return 'm'; } }
@@ -317,14 +317,14 @@ namespace RCL.Kernel
                            RCArray<int> index, object data)
         : base (timeline, index, data) {}
 
-      public override string ScalarToString (int i)
+      public override string ScalarToString (string format, int i)
       {
-        return RCBoolean.FormatScalar (m_data[i]);
+        return RCBoolean.FormatScalar (format, m_data[i]);
       }
 
-      public override string ScalarToCsvString (int i)
+      public override string ScalarToCsvString (string format, int i)
       {
-        return ScalarToString (i);
+        return ScalarToString (format, i);
       }
 
       public override char TypeCode { get { return 'b'; } }
@@ -338,12 +338,12 @@ namespace RCL.Kernel
                              RCArray<int> index, object data)
         : base (timeline, index, data) {}
 
-      public override string ScalarToString (int i)
+      public override string ScalarToString (string format, int i)
       {
-        return RCString.FormatScalar (m_data[i]);
+        return RCString.FormatScalar (format, m_data[i]);
       }
 
-      public override string ScalarToCsvString (int i)
+      public override string ScalarToCsvString (string format, int i)
       {
         return m_data[i].ToString ();
       }
@@ -359,12 +359,12 @@ namespace RCL.Kernel
                              RCArray<int> index, object data)
         : base (timeline, index, data) {}
 
-      public override string ScalarToString (int i)
+      public override string ScalarToString (string format, int i)
       {
         return RCSymbol.FormatScalar (m_data[i]);
       }
 
-      public override string ScalarToCsvString (int i)
+      public override string ScalarToCsvString (string format, int i)
       {
         return m_data[i].ToCsvString ();
       }
@@ -381,14 +381,14 @@ namespace RCL.Kernel
                            object data)
         : base (timeline, index, data) {}
 
-      public override string ScalarToString (int i)
+      public override string ScalarToString (string format, int i)
       {
-        return RCTime.FormatScalar (m_data[i]);
+        return RCTime.FormatScalar (format, m_data[i]);
       }
 
-      public override string ScalarToCsvString (int i)
+      public override string ScalarToCsvString (string format, int i)
       {
-        return ScalarToString (i);
+        return ScalarToString (format, i);
       }
 
       public override char TypeCode { get { return 't'; } }
@@ -402,14 +402,14 @@ namespace RCL.Kernel
                            RCArray<int> index, object data)
         : base (timeline, index, data) {}
 
-      public override string ScalarToString (int i)
+      public override string ScalarToString (string format, int i)
       {
-        return RCIncr.FormatScalar (m_data[i]);
+        return RCIncr.FormatScalar (format, m_data[i]);
       }
 
-      public override string ScalarToCsvString (int i)
+      public override string ScalarToCsvString (string format, int i)
       {
-        return ScalarToString (i);
+        return ScalarToString (format, i);
       }
 
       public override char TypeCode { get { return 'n'; } }
@@ -505,7 +505,13 @@ namespace RCL.Kernel
     public override void Format (
       StringBuilder builder, RCFormat args, int level)
     {
-      new Formatter (builder, args, level).Format (this);
+      new Formatter (builder, args, null, level).Format (this);
+    }
+
+    public override void Format (
+      StringBuilder builder, RCFormat args, RCColmap colmap, int level)
+    {
+      new Formatter (builder, args, colmap, level).Format (this);
     }
 
     public override string TypeName
@@ -642,6 +648,48 @@ namespace RCL.Kernel
       return m_columns[index].GetElementType ();
     }
 
+    public RCArray<T> DoColof<T> (string name, T def)
+    {
+      int col = FindColumn (name);
+      if (col < 0)
+      {
+        throw new Exception (string.Format ("Unknown column: {0}", name));
+      }
+      return DoColof<T> (col, def, true);
+    }
+
+    public RCArray<T> DoColof<T> (int col, T def, bool allowSparse)
+    {
+      if (this.Count == 0)
+      {
+        return new RCArray<T> (1);
+      }
+      RCArray<T> data = this.GetData<T> (col);
+      RCArray<T> result;
+      if (data.Count < this.Count)
+      {
+        if (!allowSparse)
+        {
+          throw new Exception ("There were missing values. Please specify a default value.");
+        }
+        result = new RCArray<T> (this.Count);
+        RCArray<int> index = this.GetIndex<T> (col);
+        for (int i = 0; i < index.Count; ++i)
+        {
+          while (result.Count < index[i])
+          {
+            result.Write (def);
+          }
+          result.Write (data[i]);
+        }
+      }
+      else
+      {
+        result = data;
+      }
+      return result;
+    }
+
     public RCVectorBase GetSimpleVector (int index)
     {
       //We need to create vectors to wrap these arrays because
@@ -654,6 +702,11 @@ namespace RCL.Kernel
       return ((Column<T>) m_columns[index]).Index;
     }
 
+    /// <summary>
+    /// Warning: These are sparse arrays, you need to call GetIndex to know
+    /// which value goes with which entry in the timeline. Use Colof
+    /// to avoid handling sparse data.
+    /// </summary>
     public RCArray<T> GetData<T> (int index)
     {
       //Twould be cool if I could get rid of this cast.
@@ -907,7 +960,7 @@ namespace RCL.Kernel
             g = -g;
           }
           counter.Write (symbol[i], (int) g);
-          long now = DateTime.Now.Ticks;
+          long now = DateTime.UtcNow.Ticks;
           long e = Math.Abs (g);
           RCTimeScalar t = new RCTimeScalar (new DateTime (now), RCTimeType.Timestamp);
           Write (g, e, t, symbol[i]);
@@ -937,6 +990,10 @@ namespace RCL.Kernel
     public RCSymbolScalar WriteCell (
       string name, RCSymbolScalar symbol, object box)
     {
+      if (box == null)
+      {
+        return null;
+      }
       bool delete;
       return WriteCell (name, symbol, box, -1, false, false, out delete);
     }
@@ -948,6 +1005,10 @@ namespace RCL.Kernel
                                      bool parsing,
                                      bool force)
     {
+      if (box == null)
+      {
+        return null;
+      }
       bool delete;
       return WriteCell (name, symbol, box, index, parsing, force, out delete);
     }
@@ -960,6 +1021,14 @@ namespace RCL.Kernel
                                      bool force,
                                      out bool delete)
     {
+      if (box == null)
+      {
+        throw new ArgumentNullException ("box");
+      }
+      else if (box is int)
+      {
+        box = (long) (int) box;
+      }
       ColumnBase old = null;
       delete = false;
       int col = m_names.IndexOf (name);
@@ -1054,6 +1123,7 @@ namespace RCL.Kernel
         if (type == typeof (byte)) column = new ColumnOfByte (Axis);
         else if (type == typeof (double)) column = new ColumnOfDouble (Axis);
         else if (type == typeof (long)) column = new ColumnOfLong (Axis);
+        //else if (type == typeof (int)) column = new ColumnOfLong (Axis);
         else if (type == typeof (decimal)) column = new ColumnOfDecimal (Axis);
         else if (type == typeof (bool)) column = new ColumnOfBool (Axis);
         else if (type == typeof (string)) column = new ColumnOfString (Axis);

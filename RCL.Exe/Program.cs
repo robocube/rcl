@@ -77,7 +77,7 @@ namespace RCL.Exe
             RCValue result = runner.Rep (string.Format ("{0} #", cmd.Action));
             if (cmd.OutputEnum != RCOutput.Clean)
             {
-              string text = result.Format (RCFormat.Pretty);
+              string text = result.Format (RCFormat.Pretty, log.GetColmap ());
               Console.Out.WriteLine (text);
             }
           }
@@ -100,10 +100,9 @@ namespace RCL.Exe
         }
         catch (Exception ex)
         {
-          RCLogger.RecordFilter (0, 0, "runner", 0, "failed", "unhandled exception on fiber 0");
           // Does this result in duplicate exception reports on the console?
           // I don't want it to, but without this there are errors that do not show up at all
-          RCLogger.RecordFilter (0, 0, "runner", 0, "terminal", ex);
+          RCLogger.RecordFilter (0, 0, "runner", 0, "fatal", ex);
           status = 1;
         }
         finally
@@ -143,7 +142,7 @@ namespace RCL.Exe
             RCValue result = runner.Rep (code);
             if (result != null)
             {
-              Console.Out.WriteLine (result.Format (RCFormat.Pretty));
+              Console.Out.WriteLine (result.Format (RCFormat.Pretty, log.GetColmap ()));
             }
             if (cmd.Exit)
             {
@@ -177,7 +176,7 @@ namespace RCL.Exe
               RCValue result = runner.Rep (line);
               if (result != null)
               {
-                Console.Out.WriteLine (result.Format (RCFormat.Pretty));
+                Console.Out.WriteLine (result.Format (RCFormat.Pretty, log.GetColmap ()));
               }
             }
             else break;

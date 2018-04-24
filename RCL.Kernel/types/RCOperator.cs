@@ -168,7 +168,13 @@ namespace RCL.Kernel
     public override void Format (
       StringBuilder builder, RCFormat args, int level)
     {
-      RCL.Kernel.Format.DoFormat (this, builder, args, level);
+      RCL.Kernel.Format.DoFormat (this, builder, args, null, level);
+    }
+
+    public override void Format (
+      StringBuilder builder, RCFormat args, RCColmap colmap, int level)
+    {
+      RCL.Kernel.Format.DoFormat (this, builder, args, colmap, level);
     }
 
     public virtual void BodyToString (
@@ -257,14 +263,12 @@ namespace RCL.Kernel
       m_code = code;
     }
 
-    public override void EvalOperator (
-      RCRunner runner, RCClosure closure)
+    public override void EvalOperator (RCRunner runner, RCClosure closure)
     {
       RCL.Kernel.Eval.DoEvalInline (runner, closure, this);
     }
 
-    public override void BodyToString (
-      StringBuilder builder, RCFormat args, int level)
+    public override void BodyToString (StringBuilder builder, RCFormat args, int level)
     {
       m_code.Format (builder, args, level);
     }
@@ -285,14 +289,14 @@ namespace RCL.Kernel
       m_multiline = multiline;
     }
 
-    public override void Format (StringBuilder builder, RCFormat args, int level)
+    public override void Format (StringBuilder builder, RCFormat args, RCColmap colmap, int level)
     {
       RCFormat format = new RCFormat (args.Syntax, "  ", 
                                       args.Newline, args.Delimeter, 
                                       args.RowDelimeter, args.Align, 
                                       args.Showt, 
                                       args.ParsableScalars);
-      RCL.Kernel.Format.DoFormat (this, builder, format, level);
+      RCL.Kernel.Format.DoFormat (this, builder, format, colmap, level);
     }
 
     public override string TypeName { get { return "template"; } }

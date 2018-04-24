@@ -244,7 +244,7 @@ namespace RCL.Kernel
     protected static void PrintCopyright ()
     {
       Console.Out.WriteLine ("Copyright (C) 2007-2015 Brian M. Andersen");
-      Console.Out.WriteLine ("Copyright (C) 2015-2017 Robocube Corporation");
+      Console.Out.WriteLine ("Copyright (C) 2015-2018 Robocube Corporation");
     }
   }
 
@@ -374,6 +374,8 @@ namespace RCL.Kernel
       //If an exception was thrown, rethrow it on this thread.
       if (m_exception != null)
       {
+        //Console.Out.WriteLine (m_exception.ToString ());
+        Log.Record (this, null, "runner", 0, "unhandled", m_exception);
         Exception exception = m_exception;
         m_exception = null;
         throw exception;

@@ -230,7 +230,7 @@ namespace RCL.Core
           //Otherwise something like this ought to work
           //cookie.Name = left[0];
           //cookie.Value = "";
-          //cookie.Expires = DateTime.Now.AddDays (-1);
+          //cookie.Expires = DateTime.UtcNow.AddDays (-1);
           //info.Context.Response.AppendCookie (cookie);
           //Here is also an rclt test for this if it comes time to implement
           //httpcheck_cookie_invalid:{
@@ -306,7 +306,7 @@ namespace RCL.Core
           context = listener.EndGetContext (result);
           m_context++;
           handle = m_context;
-          m_contexts.Add (handle, new RequestInfo (context, DateTime.Now));
+          m_contexts.Add (handle, new RequestInfo (context, DateTime.UtcNow));
         }
         state.Runner.Log.Record (state.Runner, state.Closure,
                                  "http", handle, "recieve",

@@ -361,7 +361,7 @@ namespace RCL.Test
     [Test]
     public void TextApplyKM ()
     {
-      DoEvalTest ("{<-$R where $R > 2.0m} apply 0.0 1.0 2.0 3.0 4.0 5.0m", "3.0 4.0 5.0m");
+      DoEvalTest ("{<-$R where $R > 2.0m} apply 0.0 1.0 2.0 3.0 4.0 5.0m", "3 4 5m");
     }
 
     [Test]

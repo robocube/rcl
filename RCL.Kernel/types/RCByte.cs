@@ -18,7 +18,7 @@ namespace RCL.Kernel
     }
 
     protected static string HEXCHARS = "0123456789ABCDEF";
-    public override string ScalarToString (byte scalar)
+    public override string ScalarToString (string format, byte scalar)
     {
       return FormatScalar (scalar);
     }

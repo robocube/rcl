@@ -190,16 +190,30 @@ namespace RCL.Kernel
       Write (-1, -1, new RCTimeScalar (new DateTime (0), RCTimeType.Timestamp), s);
     }
 
-    public void Write (long time, RCSymbolScalar scalar)
+    public void Write (long e, RCSymbolScalar s)
     {
       //You will get an exception if these arrays have been locked from writing.
       if (Event != null)
       {
-        Event.Write (time);
+        Event.Write (e);
       }
       if (Symbol != null)
       {
-        Symbol.Write (scalar);
+        Symbol.Write (s);
+      }
+      ++m_count;
+    }
+
+    public void Write (RCTimeScalar t, RCSymbolScalar s)
+    {
+      //You will get an exception if these arrays have been locked from writing.
+      if (Time != null)
+      {
+        Time.Write (t);
+      }
+      if (Symbol != null)
+      {
+        Symbol.Write (s);
       }
       ++m_count;
     }

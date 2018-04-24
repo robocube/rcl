@@ -18,7 +18,7 @@ namespace RCL.Core
     {
       runner.Yield (closure,
                     new RCTime (
-                      new RCTimeScalar (DateTime.Now.Ticks, 
+                      new RCTimeScalar (DateTime.UtcNow.Ticks, 
                                         RCTimeType.Timestamp)));
     }
 
@@ -28,7 +28,7 @@ namespace RCL.Core
     {
       runner.Yield (closure,
                     new RCTime (
-                      new RCTimeScalar (DateTime.Now.Ticks, 
+                      new RCTimeScalar (DateTime.UtcNow.Ticks, 
                                         RCTimeType.Timestamp)));
     }
   }

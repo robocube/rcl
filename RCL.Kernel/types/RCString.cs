@@ -9,7 +9,16 @@ namespace RCL.Kernel
   public class RCString : RCVector<string>
   {
     public static readonly RCString Empty = new RCString ();
-    public RCString (params string[] data) : base (data) { }
+    public RCString (params string[] data) : base (data)
+    {
+      for (int i = 0; i < data.Length; ++i)
+      {
+        if (m_data[i] == null)
+        {
+          m_data.Write (i, "");
+        }
+      }
+    }
     public RCString (RCArray<string> data) : base (data) { }
 
     public override char TypeCode
@@ -39,12 +48,12 @@ namespace RCL.Kernel
       builder.Append ("\"");
     }
 
-    public override string ScalarToString (string scalar)
+    public override string ScalarToString (string format, string scalar)
     {
-      return FormatScalar (scalar);
+      return FormatScalar (format, scalar);
     }
 
-    public static string FormatScalar (string scalar)
+    public static string FormatScalar (string format, string scalar)
     {
       return "\"" + RCTokenType.EscapeControlChars (scalar.ToString(), '"') + "\"";
     }

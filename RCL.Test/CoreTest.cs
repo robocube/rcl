@@ -1260,7 +1260,7 @@ namespace RCL.Test
     [Test]
     public void TestWhereDB () { DoTest ("1.0 2.0 3.0 where true false true", "1.0 3.0"); }
     [Test]
-    public void TestWhereMB () { DoTest ("1.0 2.0 3.0m where true false true", "1.0 3.0m"); }
+    public void TestWhereMB () { DoTest ("1.0 2.0 3.0m where true false true", "1 3m"); }
     [Test]
     public void TestWhereXB () { DoTest ("\\x01 \\x02 \\x03 where true false true", "\\x01 \\x03"); }
     [Test]
@@ -1671,7 +1671,7 @@ namespace RCL.Test
     [Test]
     public void TestReverseD () { DoTest ("reverse 1.0 2.0 3.0", "3.0 2.0 1.0"); }
     [Test]
-    public void TestReverseM () { DoTest ("reverse 1.0 2.0 3.0m", "3.0 2.0 1.0m"); }
+    public void TestReverseM () { DoTest ("reverse 1.0 2.0 3.0m", "3 2 1m"); }
     [Test]
     public void TestReverseX () { DoTest ("reverse \\x00 \\x01 \\x02", "\\x02 \\x01 \\x00"); }
     [Test]

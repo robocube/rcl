@@ -9,11 +9,13 @@ namespace RCL.Kernel
   public class RCDouble : RCVector<double>
   {
     public static readonly RCDouble Empty = new RCDouble ();
-    protected static readonly NumberFormatInfo IntegerFormat;
+    public static readonly CultureInfo Culture;
+    protected static readonly NumberFormatInfo FormatProvider;
     static RCDouble ()
     {
-      IntegerFormat = new NumberFormatInfo ();
-      IntegerFormat.NumberGroupSeparator = "";
+      FormatProvider = new NumberFormatInfo ();
+      FormatProvider.NumberGroupSeparator = "";
+      Culture = CultureInfo.InvariantCulture;
     }
 
     public RCDouble (params double[] data) : base (data) { }
@@ -46,20 +48,27 @@ namespace RCL.Kernel
       get { return 8; }
     }
 
-    public override string ScalarToString (double scalar)
+    public override string ScalarToString (string format, double scalar)
     {
-      return FormatScalar (scalar);
+      return FormatScalar (format, scalar);
     }
 
-    public static string FormatScalar (double scalar)
+    public static string FormatScalar (string format, double scalar)
     {
-      if ((scalar % 1) == 0)
+      if (format == null)
       {
-        return scalar.ToString ("N1", IntegerFormat);
+        if ((scalar % 1) == 0)
+        {
+          return scalar.ToString ("N1", FormatProvider);
+        }
+        else
+        {
+          return scalar.ToString (FormatProvider);
+        }
       }
       else
       {
-        return scalar.ToString ();
+        return scalar.ToString (format, FormatProvider);
       }
     }
 
