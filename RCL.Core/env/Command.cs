@@ -459,11 +459,24 @@ namespace RCL.Core
     public class Print
     {
       [RCVerb ("print")]
-      public void EvalPrint (
-        RCRunner runner, RCClosure closure, RCString right)
+      public void EvalPrint (RCRunner runner, RCClosure closure, RCString left, object right)
+      {
+        runner.Log.Record (runner, closure, "print", 0, left[0], right);
+        runner.Yield (closure, (RCValue) right);
+      }
+
+      [RCVerb ("print")]
+      public void EvalPrint (RCRunner runner, RCClosure closure, RCValue right)
       {
         runner.Log.Record (runner, closure, "print", 0, "out", right);
-        runner.Yield (closure, RCLong.Zero);
+        runner.Yield (closure, right);
+      }
+
+      [RCVerb ("print")]
+      public void EvalPrint (RCRunner runner, RCClosure closure, RCString right)
+      {
+        runner.Log.Record (runner, closure, "print", 0, "out", right);
+        runner.Yield (closure, right);
       }
 
       [RCVerb ("print")]
@@ -471,7 +484,7 @@ namespace RCL.Core
         RCRunner runner, RCClosure closure, RCString left, RCString right)
       {
         runner.Log.Record (runner, closure, "print", 0, left[0], right);
-        runner.Yield (closure, RCLong.Zero);
+        runner.Yield (closure, right);
       }
     }
 
@@ -534,6 +547,7 @@ namespace RCL.Core
       RCArray<string> column = right.DoColof<string> ("column", "");
       RCArray<string> format = right.DoColof<string> ("format", "");
       runner.Log.Colmap (column, format);
+      //runner.Log.Record (runner, closure, "display", 0, "format", "set to " + right[0]);
       runner.Yield (closure, right);
     }
 
@@ -549,7 +563,7 @@ namespace RCL.Core
     public void DisplayTimezone (RCRunner runner, RCClosure closure, RCString right)
     {
       RCTime.DisplayTimeZone = TimeZoneInfo.FindSystemTimeZoneById (right[0]);
-      runner.Log.Record (runner, closure, "system", 0, "display_timezone", "set to " + right[0]);
+      runner.Log.Record (runner, closure, "display", 0, "timezone", "set to " + right[0]);
       runner.Yield (closure, right);
       //TimeZoneInfo timezone = TimeZoneInfo.FindSystemTimeZoneById (displayTimezone);
       //displayTime = TimeZoneInfo.ConvertTimeFromUtc (new DateTime (scalar.Ticks), DisplayTimeZone);
