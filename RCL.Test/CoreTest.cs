@@ -1686,8 +1686,8 @@ namespace RCL.Test
     public void TestReverseK () { DoTest ("reverse {a:1 b:2 c:3}", "{c:3 b:2 a:1}"); }
 
     [Test]
-    public void TestPrint() { DoTest ("print \"this\" \"is\" \"some\" \"output\"", "0"); }
-
+    public void TestPrint() { DoTest ("print \"this\" \"is\" \"some\" \"output\"", "\"this\" \"is\" \"some\" \"output\""); }
+    
     [Test]
     public void TestSubX  () { DoTest ("\\x00 \\x01 \\x01 \\x02 \\x02 \\x03 sub \\x00 \\x01 \\x02", "\\x01 \\x02 \\x03"); }
     [Test]
