@@ -508,6 +508,169 @@ namespace RCL.Kernel
       }
     }
 
+    public void CheckString (string name)
+    {
+      RCValue val = Get (name);
+      if (val == null)
+      {
+        throw new Exception (string.Format ("The variable '{0}' was not found in this block.", name));
+      }
+      else if (val.TypeCode != 's')
+      {
+        throw new Exception (string.Format ("The variable '{0}' is not a string. Type is {0}.", val.TypeName));
+      }
+    }
+
+    public void CheckStringIsIn (string name, params string[] values)
+    {
+      string val = GetString (name);
+      for (int i = 0; i < values.Length; ++i)
+      {
+        if (values[i] == val)
+        {
+          return;
+        }
+      }
+      StringBuilder message = new StringBuilder ();
+      message.AppendFormat ("The variable '{0}' had value \"{1}\". Valid values are ", name, val);
+      for (int i = 0; i < values.Length; ++i)
+      {
+        message.Append (values[i]);
+        if (i < values.Length -1)
+        {
+          message.Append (", ");
+        }
+      }
+      throw new Exception (message.ToString ());
+    }
+
+    public void CheckBoolean (string name)
+    {
+      RCValue val = Get (name);
+      if (val == null)
+      {
+        throw new Exception (string.Format ("The variable '{0}' was not found in this block.", name));
+      }
+      else if (val.TypeCode != 'b')
+      {
+        throw new Exception (string.Format ("The variable '{0}' is not a boolean. Type is {0}.", val.TypeName));
+      }
+    }
+
+    public void CheckLong (string name)
+    {
+      RCValue val = Get (name);
+      if (val == null)
+      {
+        throw new Exception (string.Format ("The variable '{0}' was not found in this block.", name));
+      }
+      else if (val.TypeCode != 'l')
+      {
+        throw new Exception (string.Format ("The variable '{0}' is not a long. Type is {0}.", val.TypeName));
+      }
+    }
+
+    public void CheckLongIsBetween (string name, long min, long max)
+    {
+      long val = GetLong (name);
+      if (val < min || val > max)
+      {
+        throw new Exception (string.Format ("The variable '{0}' is not between {1} and {2}. Value is {3}.", name, min, max, val));
+      }
+    }
+
+    public void CheckDouble (string name)
+    {
+      RCValue val = Get (name);
+      if (val == null)
+      {
+        throw new Exception (string.Format ("The variable '{0}' was not found in this block.", name));
+      }
+      else if (val.TypeCode != 'd')
+      {
+        throw new Exception (string.Format ("The variable '{0}' is not a double. Type is {0}.", val.TypeName));
+      }
+    }
+
+    public void CheckDoubleIsBetween (string name, double min, double max)
+    {
+      double val = GetDouble (name);
+      if (val < min || val > max)
+      {
+        throw new Exception (string.Format ("The variable '{0}' is not between {1} and {2}. Value is {3}.", name, min, max, val));
+      }
+    }
+
+    public void CheckDecimal (string name)
+    {
+      RCValue val = Get (name);
+      if (val == null)
+      {
+        throw new Exception (string.Format ("The variable '{0}' was not found in this block.", name));
+      }
+      else if (val.TypeCode != 'm')
+      {
+        throw new Exception (string.Format ("The variable '{0}' is not a decimal. Type is {0}.", val.TypeName));
+      }
+    }
+
+    public void CheckDecimalIsBetween (string name, decimal min, decimal max)
+    {
+      decimal val = GetDecimal (name);
+      if (val < min || val > max)
+      {
+        throw new Exception (string.Format ("The variable '{0}' is not between {1} and {2}. Value is {3}.", name, min, max, val));
+      }
+    }
+
+    public void CheckTime (string name)
+    {
+      RCValue val = Get (name);
+      if (val == null)
+      {
+        throw new Exception (string.Format ("The variable '{0}' was not found in this block.", name));
+      }
+      else if (val.TypeCode != 't')
+      {
+        throw new Exception (string.Format ("The variable '{0}' is not a time. Type is {0}.", val.TypeName));
+      }
+    }
+
+    public void CheckTimeIsBetween (string name, RCTimeScalar min, RCTimeScalar max)
+    {
+      RCTimeScalar val = GetTime (name);
+      if (val.Ticks < min.Ticks || val.Ticks > max.Ticks)
+      {
+        throw new Exception (string.Format ("The variable '{0}' is not between {1} and {2}. Value is {3}.", name, min, max, val));
+      }
+    }
+
+    public void CheckSymbol (string name)
+    {
+      RCValue val = Get (name);
+      if (val == null)
+      {
+        throw new Exception (string.Format ("The variable '{0}' was not found in this block.", name));
+      }
+      else if (val.TypeCode != 'y')
+      {
+        throw new Exception (string.Format ("The variable '{0}' is not a symbol. Type is {0}.", val.TypeName));
+      }
+    }
+
+    public void CheckIncr (string name)
+    {
+      RCValue val = Get (name);
+      if (val == null)
+      {
+        throw new Exception (string.Format ("The variable '{0}' was not found in this block.", name));
+      }
+      else if (val.TypeCode != 'n')
+      {
+        throw new Exception (string.Format ("The variable '{0}' is not an incr op. Type is {0}.", val.TypeName));
+      }
+    }
+
     // Convenience functions for extracting individual values
     // in ordinary cases.
     // Useful for integrating with external apis and data.
@@ -624,6 +787,46 @@ namespace RCL.Kernel
     public RCTimeScalar GetTime (string name)
     {
       RCTime val = (RCTime) Get (name);
+      if (val == null)
+      {
+        throw new Exception ("Required value " + name + " not found in block");
+      }
+      else return val[0];
+    }
+
+    public RCSymbolScalar GetSymbol (string name, RCSymbolScalar def)
+    {
+      RCSymbol val = (RCSymbol) Get (name);
+      if (val == null)
+      {
+        return def;
+      }
+      else return val[0];
+    }
+
+    public RCSymbolScalar GetSymbol (string name)
+    {
+      RCSymbol val = (RCSymbol) Get (name);
+      if (val == null)
+      {
+        throw new Exception ("Required value " + name + " not found in block");
+      }
+      else return val[0];
+    }
+
+    public RCIncrScalar GetIncr (string name, RCIncrScalar def)
+    {
+      RCIncr val = (RCIncr) Get (name);
+      if (val == null)
+      {
+        return def;
+      }
+      else return val[0];
+    }
+
+    public RCIncrScalar GetIncr (string name)
+    {
+      RCIncr val = (RCIncr) Get (name);
       if (val == null)
       {
         throw new Exception ("Required value " + name + " not found in block");
