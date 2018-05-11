@@ -277,7 +277,10 @@ namespace RCL.Core
     public static bool Equals (byte l, decimal r) { return l == r; }
 
     [Primitive ("==")]
-    public static bool Equals (double l, double r) { return l == r; }
+    public static bool Equals (double l, double r)
+    {
+      return Math.Abs (l - r) < 0.000001;
+    }
 
     [Primitive ("==")]
     public static bool Equals (double l, long r) { return l == r; }
@@ -311,6 +314,9 @@ namespace RCL.Core
 
     [Primitive ("==")]
     public static bool Equals (RCSymbolScalar l, RCSymbolScalar r) { return l.Equals (r); }
+
+    [Primitive ("==")]
+    public static bool Equals (RCTimeScalar l, RCTimeScalar r) { return l.Type == r.Type && l.Ticks == r.Ticks; }
 
     [Primitive ("==")]
     public static bool Equals (string l, string r) { return l.Equals (r); }
@@ -362,6 +368,9 @@ namespace RCL.Core
 
     [Primitive ("!=")]
     public static bool NotEquals (RCSymbolScalar l, RCSymbolScalar r) { return !l.Equals (r); }
+
+    [Primitive ("!=")]
+    public static bool NotEquals (RCTimeScalar l, RCTimeScalar r) { return l.Type != r.Type || l.Ticks != r.Ticks; }
 
     [Primitive ("!=")]
     public static bool NotEquals (string l, string r) { return !l.Equals (r); }

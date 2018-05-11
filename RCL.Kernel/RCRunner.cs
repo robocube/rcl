@@ -1,9 +1,6 @@
 
 using System;
-using System.IO;
-using System.Text;
 using System.Threading;
-using System.Diagnostics;
 using System.Reflection;
 using System.Collections.Generic;
 
@@ -13,6 +10,7 @@ namespace RCL.Kernel
   {
     public readonly RCBlock Options;
     public readonly RCString Arguments;
+    public readonly RCOutput OutputEnum;
 
     //--exit -x
     //With --program, causes rcl to exit after --program is finished
@@ -42,12 +40,31 @@ namespace RCL.Kernel
     //Use --noread when attempts to read from stdin would cause errors
     //(For example, under systemd)
     public readonly bool Noread;
+
+    /// <summary>
+    /// Display binary version number on the console no matter what.
+    /// </summary>
     public readonly bool Version;
+
+    /// <summary>
+    /// File name of rcl program to execute on startup.
+    /// </summary>
     public readonly string Program;
+
+    /// <summary>
+    /// With program, invoke a particular variable as an operator after loading program.
+    /// </summary>
     public readonly string Action;
+
+    /// <summary>
+    /// The output mode of the rcl interpreter. See RCOutput for valid values.
+    /// </summary>
     public readonly string Output;
+
+    /// <summary>
+    /// Whitelist of modules and events to display on the console.
+    /// </summary>
     public readonly string[] Show;
-    public readonly RCOutput OutputEnum;
 
     public RCLArgv (params string[] argv)
     {
@@ -209,7 +226,6 @@ namespace RCL.Kernel
       }
       if (copyright)
       {
-        //Console.WriteLine ();
         PrintCopyright ();
       }
       if (options)
@@ -237,8 +253,12 @@ namespace RCL.Kernel
 
     protected static void PrintVersion ()
     {
-      Version version = System.Reflection.Assembly.GetEntryAssembly().GetName().Version;
-      Console.Out.WriteLine ("Robocube Language {0}", version.ToString ());
+      Assembly assembly = Assembly.GetExecutingAssembly ();
+      if (assembly != null)
+      {
+        Version version = assembly.GetName().Version;
+        Console.Out.WriteLine ("Robocube Language {0}", version.ToString ());
+      }
     }
 
     protected static void PrintCopyright ()
@@ -316,14 +336,16 @@ namespace RCL.Kernel
     public void Start (RCValue program)
     {
       if (program == null)
+      {
         throw new Exception ("program may not be null");
-      
+      }
       RCClosure root = null;
       lock (m_queueLock)
       {
         if (m_root != null)
+        {
           throw new Exception ("Runner has already started.");
-        
+        }
         root = new RCClosure (m_bots[0], program);
         root.Bot.ChangeFiberState (root.Fiber, "start");
         Log.Record (this, root, "fiber", root.Fiber, "start", root.Code);
@@ -337,14 +359,14 @@ namespace RCL.Kernel
     {
       //Shouldn't this be an exception?
       if (program == null)
+      {
         return null;
-      
+      }
       RCBlock wrapper = new RCBlock (RCBlock.Empty, "", "<-", program);
       RCClosure parent = new RCClosure (
         m_bots[0], 0, null, null, wrapper, null, m_state, 0, null, null);
       RCClosure closure = new RCClosure (
         parent, m_bots[0], program, null, RCBlock.Empty, 0, null, null);
-      
       RCValue result = Run (closure);
       return result;
     }

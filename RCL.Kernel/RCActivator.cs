@@ -17,10 +17,17 @@ namespace RCL.Kernel
       Uri codebase = new Uri (Assembly.GetExecutingAssembly ().CodeBase);
       DirectoryInfo dir = new FileInfo (codebase.LocalPath).Directory;
       FileInfo[] files = dir.GetFiles ("*.dll");
-      string[] paths = new string[files.Length];
-      for (int i = 0; i < paths.Length; ++i)
-        paths[i] = new Uri (files[i].FullName).LocalPath;
-      Default =  new RCActivator (paths);
+      FileInfo[] exeFiles = dir.GetFiles ("*.exe");
+      List<string> paths = new List<string> ();
+      for (int i = 0; i < files.Length; ++i)
+      {
+        paths.Add (new Uri (files[i].FullName).LocalPath);
+      }
+      for (int i = 0; i < exeFiles.Length; ++i)
+      {
+        paths.Add (new Uri (exeFiles[i].FullName).LocalPath);
+      }
+      Default =  new RCActivator (paths.ToArray ());
     }
 
     //The assemblies that have been loaded.
@@ -40,6 +47,10 @@ namespace RCL.Kernel
         try 
         {
           m_libs.Add (lib, Assembly.LoadFile (lib));
+        }
+        catch (ArgumentException ex)
+        {
+          throw new Exception (string.Format ("Duplicate lib '{0}'", lib));
         }
         catch (BadImageFormatException)
         {

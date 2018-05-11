@@ -117,15 +117,26 @@ namespace RCL.Kernel
                                 Math.Abs (ts.Seconds),
                                 Math.Abs (fraction));
         }
-        DateTime displayTime = TimeZoneInfo.ConvertTimeFromUtc (new DateTime (scalar.Ticks),
-                                                                RCTime.DisplayTimeZone);
-        return displayTime.ToString (FORMATS[(int) scalar.Type]);
+        else if (scalar.Type == RCTimeType.Date)
+        {
+          return new DateTime (scalar.Ticks).ToString (FORMATS[(int) scalar.Type]);
+        }
+        else
+        {
+          DateTime displayTime = TimeZoneInfo.ConvertTimeFromUtc (new DateTime (scalar.Ticks),
+                                                                  RCTime.DisplayTimeZone);
+          return displayTime.ToString (FORMATS[(int) scalar.Type]);
+        }
       }
       else
       {
         if (scalar.Type == RCTimeType.Timespan)
         {
           throw new NotImplementedException ("Custom formats for RCTimeType.Timespan are not implemented. Please fix.");
+        }
+        else if (scalar.Type == RCTimeType.Date)
+        {
+          return new DateTime (scalar.Ticks).ToString (format);
         }
         else
         {

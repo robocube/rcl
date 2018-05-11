@@ -57,14 +57,8 @@ namespace RCL.Kernel
     {
       if (format == null)
       {
-        if ((scalar % 1) == 0)
-        {
-          return scalar.ToString ("N1", FormatProvider);
-        }
-        else
-        {
-          return scalar.ToString (FormatProvider);
-        }
+        // https://stackoverflow.com/questions/8184068/decimal-tostring-formatting-which-gives-at-least-1-digit-no-upper-limit
+        return scalar.ToString ("0.0###########################", FormatProvider);
       }
       else
       {

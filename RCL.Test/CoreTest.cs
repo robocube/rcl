@@ -510,6 +510,10 @@ namespace RCL.Test
     public void TestEqYY1() { DoTest("#x==#x", "true"); }
     [Test]
     public void TestEqSS() { DoTest ("\"x\"==\"x\"", "true"); }
+    [Test]
+    public void TestEqTT() { DoTest ("2018.05.04 == 2018.05.04", "true"); }
+    [Test]
+    public void TestEqTTWithTime() { DoTest ("2018.05.04 11:21 == 2018.05.04", "false"); }
 
     //Vector Not Equals
     [Test]

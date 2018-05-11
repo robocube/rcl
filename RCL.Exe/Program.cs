@@ -11,11 +11,102 @@ using RCL.Kernel;
 
 namespace RCL.Exe
 {
+  public class Isolate
+  {
+    [RCVerb ("isolate")]
+    public void EvalIsolate (RCRunner runner, RCClosure closure, RCBlock right)
+    {
+      DoIsolate (runner, closure, new string[] {}, right);
+    }
+
+    [RCVerb ("isolate")]
+    public void EvalIsolate (RCRunner runner, RCClosure closure, RCString left, RCBlock right)
+    {
+      DoIsolate (runner, closure, left.ToArray (), right);
+    }
+
+    protected void DoIsolate (RCRunner runner, RCClosure closure, string[] argv, RCValue code)
+    {
+      Thread thread = new Thread (delegate ()
+      {
+        string result = null;
+        AppDomain appDomain = null;
+        Program program;
+        try
+        {
+          AppDomainSetup setupInfo = new AppDomainSetup ();
+          string build = "dev";
+          if (argv.Length > 0)
+          {
+            string first = argv[0];
+            if (first == "dev")
+            {
+              build = first;
+              // It should use the dev build in this case. The current build is not the dev build.
+              setupInfo = AppDomain.CurrentDomain.SetupInformation;
+            }
+            else if (first == "last")
+            {
+              throw new NotImplementedException ("last option is not yet implemented. Please specify a build number");
+            }
+            else
+            {
+              string rclHome = Environment.GetEnvironmentVariable ("RCL_HOME");
+              if (rclHome == null)
+              {
+                throw new Exception ("RCL_HOME was not set. It is needed in order to locate the specified binary: " + first);
+              }
+              int number;
+              if (int.TryParse (first, out number))
+              {
+                build = number.ToString ();
+                setupInfo.ApplicationBase = rclHome + "/bin/rcl_bin/" + number + "/lib";
+              }
+              else
+              {
+                setupInfo = AppDomain.CurrentDomain.SetupInformation;
+              }
+            }
+          }
+          string appDomainName = "Isolated:" + Guid.NewGuid ();
+          appDomain = AppDomain.CreateDomain (appDomainName, null, setupInfo);
+          Type type = typeof (Program);
+          program = (Program) appDomain.CreateInstanceAndUnwrap (type.Assembly.FullName, type.FullName);
+          program.IsolateCode = code.ToString ();
+          program.InstanceMain (argv);
+          result = (string) appDomain.GetData ("IsolateResult");
+        }
+        catch (Exception ex)
+        {
+          runner.Finish (closure, ex, 1);
+        }
+        finally
+        {
+          if (appDomain != null)
+          {
+            AppDomain.Unload (appDomain);
+            appDomain = null;
+          }
+        }
+        if (result == null)
+        {
+          runner.Finish (closure, new Exception ("Missing IsolateResult for program"), 1);
+        }
+        runner.Yield (closure, runner.Peek (result));
+      });
+      thread.IsBackground = true;
+      thread.Start ();
+    }
+  }
+
   /// <summary>
   /// The rcl Interpreter
   /// </summary>
-  public class Program
+  public class Program : MarshalByRefObject
   {
+    public string IsolateCode;
+    public string IsolateResult;
+
     /// <summary>
     /// Autocomplete handler for Mono.Terminal (Autocomplete is not implemented yet)
     /// </summary>
@@ -24,10 +115,16 @@ namespace RCL.Exe
       return new LineEditor.Completion ("RCL>", new string[] {text, text + "foo"});
     }
 
+    public static void Main (string[] argv)
+    {
+      Program program = new Program ();
+      program.InstanceMain (argv);
+    }
+
     /// <summary>
     /// Entry point for the rcl interpreter
     /// </summary>
-    static void Main (string[] argv)
+    public void InstanceMain (string[] argv)
     {
       string flags = Environment.GetEnvironmentVariable ("RCL_FLAGS");
       RCLArgv cmd;
@@ -51,7 +148,6 @@ namespace RCL.Exe
       }
 
       //string message = "\x1b[0;33mYELLOW\x1b[0;31m RED\x1b[0;34m BLUE\x1b[0;37m";
-      //Console.Out.WriteLine (message);
       AppDomain.CurrentDomain.UnhandledException += 
         new UnhandledExceptionEventHandler (UnhandledException);
 
@@ -64,14 +160,23 @@ namespace RCL.Exe
       cmd.PrintStartup ();
 
       string line = "";
-      if (cmd.Program != "")
+      if (cmd.Program != "" || IsolateCode != null)
       {
         int status = 0;
+        RCValue codeResult = null;
         try
         {
-          string file = File.ReadAllText (cmd.Program, Encoding.UTF8);
-          RCValue code = runner.Read (file);
-          runner.Rep (code);
+          RCValue code = null;
+          if (IsolateCode != null)
+          {
+            code = runner.Read (IsolateCode);
+          }
+          else if (cmd.Program != "")
+          {
+            string file = File.ReadAllText (cmd.Program, Encoding.UTF8);
+            code = runner.Read (file);
+          }
+          codeResult = runner.Rep (code);
           if (cmd.Action != "")
           {
             RCValue result = runner.Rep (string.Format ("{0} #", cmd.Action));
@@ -101,17 +206,26 @@ namespace RCL.Exe
         catch (Exception ex)
         {
           // Does this result in duplicate exception reports on the console?
-          // I don't want it to, but without this there are errors that do not show up at all
+          // I don't want it to, but without this there are errors that do not show up at all.
           RCLogger.RecordFilter (0, 0, "runner", 0, "fatal", ex);
           status = 1;
         }
         finally
         {
+          IsolateResult = codeResult.ToString ();
+          AppDomain.CurrentDomain.SetData ("IsolateResult", IsolateResult);
           if (cmd.Exit)
           {
             runner.Dispose ();
             Environment.Exit (status);
           }
+        }
+        if (IsolateCode != null)
+        {
+          // When we are running isolated, Environment.Exit would close the entire process.
+          // Don't do that.
+          runner.Dispose ();
+          return;
         }
       }
       else if (cmd.Exit && !cmd.Batch)
