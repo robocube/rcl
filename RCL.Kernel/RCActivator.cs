@@ -48,7 +48,7 @@ namespace RCL.Kernel
         {
           m_libs.Add (lib, Assembly.LoadFile (lib));
         }
-        catch (ArgumentException ex)
+        catch (ArgumentException)
         {
           throw new Exception (string.Format ("Duplicate lib '{0}'", lib));
         }
