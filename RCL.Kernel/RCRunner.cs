@@ -257,12 +257,18 @@ namespace RCL.Kernel
       if (assembly != null)
       {
         Version version = assembly.GetName().Version;
+      }
+      else
+      {
+        assembly = Assembly.GetExecutingAssembly ();
+      }
+      if (assembly != null)
+      {
         Console.Out.WriteLine ("Robocube Language {0}", version.ToString ());
       }
       else
       {
-        //We get here when running using "dev" isolate {}
-        Console.Out.WriteLine ("Robocube Language {0}", "(dev isolate)");
+        Console.Out.WriteLine ("Robocube Language (Unknown Version)");
       }
     }
 
