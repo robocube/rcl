@@ -253,7 +253,7 @@ namespace RCL.Kernel
 
     protected static void PrintVersion ()
     {
-      Assembly assembly = Assembly.GetExecutingAssembly ();
+      Assembly assembly = Assembly.GetEntryAssembly ();
       if (assembly != null)
       {
         Version version = assembly.GetName().Version;
