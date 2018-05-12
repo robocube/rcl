@@ -259,9 +259,13 @@ namespace RCL.Kernel
         Version version = assembly.GetName ().Version;
         Console.Out.WriteLine ("Robocube Language {0}", version.ToString ());
       }
-      else
+      else if (appDomainVersionString != null && appDomainVersionString != "")
       {
         Console.Out.WriteLine ("Robocube Language {0} (isolated)", appDomainVersionString);
+      }
+      else
+      {
+        Console.Out.WriteLine ("Robocube Language (isolated)");
       }
     }
 
