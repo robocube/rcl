@@ -261,7 +261,8 @@ namespace RCL.Kernel
       }
       else
       {
-        Console.Out.WriteLine ("Robocube Language {0}", "(Unknown Version)");
+        //We get here when running using "dev" isolate {}
+        Console.Out.WriteLine ("Robocube Language {0}", "(dev isolate)");
       }
     }
 

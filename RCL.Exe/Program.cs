@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using System.Text;
 using System.Threading;
+using System.Collections.Generic;
 using Mono.Terminal;
 #if __MonoCS__
 using Mono.Unix;
@@ -29,6 +30,7 @@ namespace RCL.Exe
     {
       Thread thread = new Thread (delegate ()
       {
+        Queue<string> argQueue = new Queue<string> (argv);
         string result = null;
         AppDomain appDomain = null;
         Program program;
@@ -36,7 +38,7 @@ namespace RCL.Exe
         {
           AppDomainSetup setupInfo = new AppDomainSetup ();
           string build = "dev";
-          if (argv.Length > 0)
+          if (argQueue.Count > 0)
           {
             string first = argv[0];
             string rclHome = Environment.GetEnvironmentVariable ("RCL_HOME");
@@ -50,9 +52,11 @@ namespace RCL.Exe
               // It should use the dev build in this case. The current build is not the dev build.
               setupInfo = AppDomain.CurrentDomain.SetupInformation;
               setupInfo.ApplicationBase = rclHome + "/dev/rcl/dbg";
+              argQueue.Dequeue ();
             }
             else if (first == "last")
             {
+              argQueue.Dequeue ();
               throw new NotImplementedException ("last option is not yet implemented. Please specify a build number");
             }
             else
@@ -62,6 +66,7 @@ namespace RCL.Exe
               {
                 build = number.ToString ();
                 setupInfo.ApplicationBase = rclHome + "/bin/rcl_bin/" + number + "/lib";
+                argQueue.Dequeue ();
               }
               else
               {
@@ -74,7 +79,7 @@ namespace RCL.Exe
           Type type = typeof (Program);
           program = (Program) appDomain.CreateInstanceAndUnwrap (type.Assembly.FullName, type.FullName);
           program.IsolateCode = code.ToString ();
-          program.InstanceMain (argv);
+          program.InstanceMain (argQueue.ToArray ());
           result = (string) appDomain.GetData ("IsolateResult");
         }
         catch (Exception ex)
