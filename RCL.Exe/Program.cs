@@ -78,7 +78,7 @@ namespace RCL.Exe
           appDomain = AppDomain.CreateDomain (appDomainName, null, setupInfo);
           Type type = typeof (Program);
           program = (Program) appDomain.CreateInstanceAndUnwrap (type.Assembly.FullName, type.FullName);
-          string appDomainVersionString = type.Assembly.GetName ().Version.ToString ();
+          string appDomainVersionString = setupInfo.ApplicationBase;
           program.IsolateCode = code.ToString ();
           program.InstanceMain (argQueue.ToArray (), appDomainVersionString);
           result = (string) appDomain.GetData ("IsolateResult");
