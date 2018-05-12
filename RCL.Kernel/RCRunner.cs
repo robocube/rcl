@@ -214,7 +214,7 @@ namespace RCL.Kernel
       Environment.Exit (1);
     }
     
-    public void PrintStartup ()
+    public void PrintStartup (string appDomainVersionString)
     {
       bool copyright = !Batch && OutputEnum != RCOutput.Clean && OutputEnum != RCOutput.Test;
       bool options = !Batch && OutputEnum != RCOutput.Clean && OutputEnum != RCOutput.Test;
@@ -222,7 +222,7 @@ namespace RCL.Kernel
       
       if (version)
       {
-        PrintVersion ();
+        PrintVersion (appDomainVersionString);
       }
       if (copyright)
       {
@@ -251,17 +251,17 @@ namespace RCL.Kernel
       }
     }
 
-    protected static void PrintVersion ()
+    protected static void PrintVersion (string appDomainVersionString)
     {
       Assembly assembly = Assembly.GetEntryAssembly ();
       if (assembly != null)
       {
-        Version version = assembly.GetName().Version;
+        Version version = assembly.GetName ().Version;
         Console.Out.WriteLine ("Robocube Language {0}", version.ToString ());
       }
       else
       {
-        Console.Out.WriteLine ("Robocube Language (Unknown Version)");
+        Console.Out.WriteLine ("Robocube Language {0} (isolated)", appDomainVersionString);
       }
     }
 

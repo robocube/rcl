@@ -78,8 +78,9 @@ namespace RCL.Exe
           appDomain = AppDomain.CreateDomain (appDomainName, null, setupInfo);
           Type type = typeof (Program);
           program = (Program) appDomain.CreateInstanceAndUnwrap (type.Assembly.FullName, type.FullName);
+          string appDomainVersionString = type.Assembly.GetName ().Version.ToString ();
           program.IsolateCode = code.ToString ();
-          program.InstanceMain (argQueue.ToArray ());
+          program.InstanceMain (argQueue.ToArray (), appDomainVersionString);
           result = (string) appDomain.GetData ("IsolateResult");
         }
         catch (Exception ex)
@@ -124,13 +125,13 @@ namespace RCL.Exe
     public static void Main (string[] argv)
     {
       Program program = new Program ();
-      program.InstanceMain (argv);
+      program.InstanceMain (argv, "You should never see this text");
     }
 
     /// <summary>
     /// Entry point for the rcl interpreter
     /// </summary>
-    public void InstanceMain (string[] argv)
+    public void InstanceMain (string[] argv, string appDomainVersionString)
     {
       string flags = Environment.GetEnvironmentVariable ("RCL_FLAGS");
       RCLArgv cmd;
@@ -163,7 +164,7 @@ namespace RCL.Exe
       RCLog log = new RCLog (consoleLog);
       RCRunner runner = new RCRunner (RCActivator.Default, log, 1, cmd);
       InstallSignalHandler (runner);
-      cmd.PrintStartup ();
+      cmd.PrintStartup (appDomainVersionString);
 
       string line = "";
       if (cmd.Program != "" || IsolateCode != null)
