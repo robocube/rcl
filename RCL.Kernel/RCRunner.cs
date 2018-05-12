@@ -259,6 +259,10 @@ namespace RCL.Kernel
         Version version = assembly.GetName().Version;
         Console.Out.WriteLine ("Robocube Language {0}", version.ToString ());
       }
+      else
+      {
+        Console.Out.WriteLine ("Robocube Language {0}", "(Unknown Version)");
+      }
     }
 
     protected static void PrintCopyright ()

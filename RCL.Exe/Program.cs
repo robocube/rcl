@@ -39,11 +39,17 @@ namespace RCL.Exe
           if (argv.Length > 0)
           {
             string first = argv[0];
+            string rclHome = Environment.GetEnvironmentVariable ("RCL_HOME");
+            if (rclHome == null)
+            {
+              throw new Exception ("RCL_HOME was not set. It is needed in order to locate the specified binary: " + first);
+            }
             if (first == "dev")
             {
               build = first;
               // It should use the dev build in this case. The current build is not the dev build.
               setupInfo = AppDomain.CurrentDomain.SetupInformation;
+              setupInfo.ApplicationBase = rclHome + "/dev/rcl/dbg";
             }
             else if (first == "last")
             {
@@ -51,11 +57,6 @@ namespace RCL.Exe
             }
             else
             {
-              string rclHome = Environment.GetEnvironmentVariable ("RCL_HOME");
-              if (rclHome == null)
-              {
-                throw new Exception ("RCL_HOME was not set. It is needed in order to locate the specified binary: " + first);
-              }
               int number;
               if (int.TryParse (first, out number))
               {
