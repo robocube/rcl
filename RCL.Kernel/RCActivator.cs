@@ -287,13 +287,13 @@ namespace RCL.Kernel
       {
         if (m_dispatch.TryGetValue (new OverloadKey (name, null, right.GetType ()), out overload))
         {
-          RCBot bot = runner.GetBot (closure.BotId);
+          RCBot bot = runner.GetBot (closure.Bot);
           object state = bot.GetModule (overload.Module);
           overload.Implementation.Invoke (state, new object[] {runner, closure, right});
         }
         else if (m_dispatch.TryGetValue (new OverloadKey (name, null, typeof (object)), out overload))
         {
-          RCBot bot = runner.GetBot (closure.BotId);
+          RCBot bot = runner.GetBot (closure.Bot);
           object state = bot.GetModule (overload.Module);
           overload.Implementation.Invoke (state, new object[] {runner, closure, right});
         }
@@ -329,25 +329,25 @@ namespace RCL.Kernel
       {
         if (m_dispatch.TryGetValue (new OverloadKey (name, ltype, rtype), out overload))
         {
-          RCBot bot = runner.GetBot (closure.BotId);
+          RCBot bot = runner.GetBot (closure.Bot);
           object state = bot.GetModule (overload.Module);
           overload.Implementation.Invoke (state, new object[] {runner, closure, left, right});
         }
         else if (m_dispatch.TryGetValue (new OverloadKey (name, typeof (object), rtype), out overload))
         {
-          RCBot bot = runner.GetBot (closure.BotId);
+          RCBot bot = runner.GetBot (closure.Bot);
           object state = bot.GetModule (overload.Module);
           overload.Implementation.Invoke (state, new object[] {runner, closure, left, right});
         }
         else if (m_dispatch.TryGetValue (new OverloadKey (name, ltype, typeof (object)), out overload))
         {
-          RCBot bot = runner.GetBot (closure.BotId);
+          RCBot bot = runner.GetBot (closure.Bot);
           object state = bot.GetModule (overload.Module);
           overload.Implementation.Invoke (state, new object[] {runner, closure, left, right});
         }
         else if (m_dispatch.TryGetValue (new OverloadKey (name, typeof (object), typeof (object)), out overload))
         {
-          RCBot bot = runner.GetBot (closure.BotId);
+          RCBot bot = runner.GetBot (closure.Bot);
           object state = bot.GetModule (overload.Module);
           overload.Implementation.Invoke (state, new object[] {runner, closure, left, right});
         }

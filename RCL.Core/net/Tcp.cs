@@ -64,7 +64,7 @@ namespace RCL.Core
       //long port = -1;
       //if (symbol.Length > 2)
       //  port = (long) symbol[2];
-      RCBot bot = runner.GetBot (closure.BotId);
+      RCBot bot = runner.GetBot (closure.Bot);
       long handle = bot.New ();
       Client client;
       if (protocol.Equals ("http"))
@@ -108,7 +108,7 @@ namespace RCL.Core
       }
       string protocol = (string) right[0].Part (0);
       long port = (long) right[0].Part (1);
-      RCBot bot = runner.GetBot (closure.BotId);
+      RCBot bot = runner.GetBot (closure.Bot);
       long handle = bot.New ();
       Server server;
       if (protocol.Equals ("http"))
@@ -140,7 +140,7 @@ namespace RCL.Core
       {
         throw new Exception ("open takes exactly one protocol,host,port");
       }
-      RCBot bot = runner.GetBot (closure.BotId);
+      RCBot bot = runner.GetBot (closure.Bot);
       Client client = (Client) bot.Get (right[0]);
       client.Close (runner, closure);
       runner.Yield (closure, right);
@@ -155,7 +155,7 @@ namespace RCL.Core
     protected void DoSend (RCRunner runner, RCClosure closure, RCLong left, RCBlock right)
     {
       RCSymbolScalar[] result = new RCSymbolScalar[left.Count];
-      RCBot bot = runner.GetBot (closure.BotId);
+      RCBot bot = runner.GetBot (closure.Bot);
       for (int i = 0; i < left.Count; ++i)
       {
         Client client = (Client) bot.Get (left[i]);
@@ -174,7 +174,7 @@ namespace RCL.Core
 
     protected void DoAccept (RCRunner runner, RCClosure closure, RCLong left, RCLong right)
     {
-      RCBot bot = runner.GetBot (closure.BotId);
+      RCBot bot = runner.GetBot (closure.Bot);
       for (int i = 0; i < left.Count; ++i)
       {
         Server server = (Server) bot.Get (left[i]);
@@ -190,7 +190,7 @@ namespace RCL.Core
 
     protected void DoReply (RCRunner runner, RCClosure closure, RCSymbol left, RCBlock right)
     {
-      RCBot bot = runner.GetBot (closure.BotId);
+      RCBot bot = runner.GetBot (closure.Bot);
       RCSymbolScalar[] result = new RCSymbolScalar[left.Count];
       for (int i = 0; i < left.Count; ++i)
       {
@@ -214,7 +214,7 @@ namespace RCL.Core
 
     protected void DoReceive (RCRunner runner, RCClosure closure, RCSymbol right)
     {
-      RCBot bot = runner.GetBot (closure.BotId);
+      RCBot bot = runner.GetBot (closure.Bot);
       TcpCollector gatherer = new TcpCollector (runner, closure, right);
       for (int i = 0; i < right.Count; ++i)
       {

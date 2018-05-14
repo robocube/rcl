@@ -9,7 +9,7 @@ namespace RCL.Kernel
     /// <summary>
     /// The number for the bot that created this closure.
     /// </summary>
-    public readonly long BotId;
+    public readonly long Bot;
 
     /// <summary>
     /// The fiber, within bot.
@@ -101,7 +101,7 @@ namespace RCL.Kernel
         throw new Exception ("code may not be null.");
       }
       //Bot = bot;
-      BotId = bot;
+      Bot = bot;
       Parent = parent;
       Code = code;
       Left = left;
@@ -137,7 +137,7 @@ namespace RCL.Kernel
       {
         throw new Exception ("code may not be null.");
       }
-      BotId = bot;
+      Bot = bot;
       Fiber = fiber;
       Locks = locks;
       Parent = parent;
@@ -194,7 +194,7 @@ namespace RCL.Kernel
       if (firstOnTop)
       {
         builder.AppendFormat ("--- BEGIN STACK (bot:{0},fiber:{1},lines:{2}) ---\n",
-                              closure.BotId, closure.Fiber, lines.Count);
+                              closure.Bot, closure.Fiber, lines.Count);
         while (lines.Count > 0)
         {
           builder.AppendLine (lines.Pop ());
@@ -204,7 +204,7 @@ namespace RCL.Kernel
       else
       {
         builder.AppendFormat ("--- END STACK (bot:{0},fiber:{1},lines:{2}) ---\n",
-                              closure.BotId, closure.Fiber, lines.Count);
+                              closure.Bot, closure.Fiber, lines.Count);
         string[] linesInOrder = lines.ToArray ();
         for (int i = linesInOrder.Length - 1; i >= 0; --i)
         {
@@ -217,7 +217,7 @@ namespace RCL.Kernel
     public RCBlock Serialize ()
     {
       RCBlock result = RCBlock.Empty;
-      result = new RCBlock (result, "bot", ":", BotId);
+      result = new RCBlock (result, "bot", ":", Bot);
       result = new RCBlock (result, "code", ":", this.Code);
       result = new RCBlock (result, "depth", ":", this.Depth);
       result = new RCBlock (result, "fiber", ":", this.Fiber);

@@ -12,7 +12,7 @@ namespace RCL.Core
     public void EvalTry (RCRunner runner, RCClosure closure, RCBlock right)
     {
       right.Eval (runner,
-                  new RCClosure (closure, closure.BotId, right, closure.Left, RCBlock.Empty, 0));
+                  new RCClosure (closure, closure.Bot, right, closure.Left, RCBlock.Empty, 0));
     }
 
     public override RCClosure Handle (RCRunner runner, 

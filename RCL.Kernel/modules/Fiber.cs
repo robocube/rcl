@@ -24,13 +24,13 @@ public class Fiber : RCOperator
     RCRunner runner, RCClosure closure, RCBlock right)
   {
     long fiber = DoFiber (runner, closure, right);
-    runner.Yield (closure, new RCLong (closure.BotId, fiber));
+    runner.Yield (closure, new RCLong (closure.Bot, fiber));
   }
 
   protected long DoFiber (RCRunner runner, RCClosure closure, RCValue code)
   {
     long fiber = Interlocked.Increment (ref m_fiber);
-    RCBot bot = runner.GetBot (closure.BotId);
+    RCBot bot = runner.GetBot (closure.Bot);
     RCClosure next = FiberClosure (bot, fiber, closure, code);
     bot.ChangeFiberState (fiber, "start");
     runner.Log.Record (runner, closure, "fiber", fiber, "start", code);
@@ -148,7 +148,7 @@ public class Fiber : RCOperator
     if (previous.Parent != null)
     {
       if (previous.Parent.Parent != null &&
-            (previous.BotId != previous.Parent.Parent.BotId ||
+            (previous.Bot != previous.Parent.Parent.Bot ||
              previous.Fiber != previous.Parent.Parent.Fiber))
       {
         done = true;
@@ -156,7 +156,7 @@ public class Fiber : RCOperator
       //Is it wise to rely on the fiber number here?
       //Yup, numbering fibers is going to be an important idea in robocube.
       else if (previous.Parent.Parent == null &&
-                 (previous.BotId > 0 || previous.Fiber > 0))
+              (previous.Bot > 0 || previous.Fiber > 0))
       {
         done = true;
       }

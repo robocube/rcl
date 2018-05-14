@@ -152,7 +152,7 @@ namespace RCL.Core
         //lgsp.UseNagleAlgorithm = true;
         //lgsp.MaxIdleTime = 100000;
         runner.Log.Record (runner, closure, "http", handle, "start", right);
-        m_bot = closure.BotId;
+        m_bot = closure.Bot;
       }
       runner.Yield (closure, new RCLong (handle));
     }

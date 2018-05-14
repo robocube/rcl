@@ -1,4 +1,3 @@
-
 using System;
 using System.IO;
 using System.Net;
@@ -50,7 +49,7 @@ namespace RCL.Core
       try
       {
         Socket client = m_listener.EndAccept (result);
-        RCBot bot = state.Runner.GetBot (state.Closure.BotId);
+        RCBot bot = state.Runner.GetBot (state.Closure.Bot);
         //long handle = state.Closure.Bot.New ();
         long handle = bot.New ();
         TcpServerSession session = new TcpServerSession (state,

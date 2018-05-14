@@ -31,7 +31,7 @@ namespace RCL.Core
       [RCVerb ("take")]
       public void EvalTake (RCRunner runner, RCClosure closure, RCSymbol left, RCBlock right)
       {
-        RCBot bot = runner.GetBot (closure.BotId);
+        RCBot bot = runner.GetBot (closure.Bot);
         Take module = (Take) bot.GetModule (typeof (Take));
         module.DoTake (runner, closure, left, right);
       }
@@ -44,7 +44,7 @@ namespace RCL.Core
         }
         else
         {
-          RCBot bot = runner.GetBot (tail.BotId);
+          RCBot bot = runner.GetBot (tail.Bot);
           Take module = (Take) bot.GetModule (typeof (Take));
           module.Untake (runner, tail);
           return base.Next (runner, tail, previous, result);
@@ -64,7 +64,7 @@ namespace RCL.Core
     public void DoTake (RCRunner runner, RCClosure closure, RCSymbol symbols, RCValue section)
     {
       RCClosure next = new RCClosure (
-        closure.BotId, closure.Fiber, symbols,
+        closure.Bot, closure.Fiber, symbols,
         closure, section, closure.Left,
         closure.Parent != null ? closure.Parent.Result : null, 0,
         closure.UserOp, closure.UserOpContext);

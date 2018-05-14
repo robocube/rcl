@@ -9,7 +9,7 @@ namespace RCL.Kernel
     public void EvalEval (RCRunner runner, RCClosure closure, RCBlock right)
     {
       RCClosure parent = new RCClosure (closure.Parent, 
-                                        closure.BotId,
+                                        closure.Bot,
                                         right, 
                                         closure.Left, 
                                         RCBlock.Empty, 
@@ -35,7 +35,7 @@ namespace RCL.Kernel
     public void EvalTemplate (RCRunner runner, RCClosure closure, RCTemplate right)
     {
       RCClosure parent = new RCClosure (closure.Parent, 
-                                        closure.BotId,
+                                        closure.Bot,
                                         right, 
                                         closure.Left, 
                                         RCBlock.Empty, 
@@ -47,7 +47,7 @@ namespace RCL.Kernel
     public void EvalEval (RCRunner runner, RCClosure closure, RCOperator right)
     {
       RCClosure parent = new RCClosure (closure.Parent, 
-                                        closure.BotId,
+                                        closure.Bot,
                                         right, 
                                         closure.Left, 
                                         RCBlock.Empty, 
@@ -264,7 +264,7 @@ namespace RCL.Kernel
       if (argument.ArgumentEval)
       {
         RCClosure child = new RCClosure (closure,
-                                         closure.BotId,
+                                         closure.Bot,
                                          argument,
                                          closure.Left,
                                          null,
@@ -346,7 +346,7 @@ namespace RCL.Kernel
         else if (current.Value.ArgumentEval)
         {
           current.Value.Eval (runner, new RCClosure (closure,
-                                                     closure.BotId,
+                                                     closure.Bot,
                                                      current.Value,
                                                      closure.Left,
                                                      closure.Result, 0));
@@ -660,13 +660,13 @@ namespace RCL.Kernel
       //Passing code and @this here is important. NextParentOf will look
       //for the body of the executing function in that variable to detect tail calls.
       RCClosure replacement = new RCClosure (previous.Parent,
-                                             previous.BotId,
+                                             previous.Bot,
                                              previous.Code,
                                              previous.Left,
                                              result,
                                              previous.Index, code, @this);
       RCClosure child = new RCClosure (replacement,
-                                       previous.BotId,
+                                       previous.Bot,
                                        code,
                                        previous.Left,
                                        RCBlock.Empty,
@@ -695,7 +695,7 @@ namespace RCL.Kernel
         throw new ArgumentNullException ("result");
       }
       //Check to see if this fiber was killed before moving on
-      RCBot bot = runner.GetBot (closure.BotId);
+      RCBot bot = runner.GetBot (closure.Bot);
       if (bot.IsFiberDone (closure.Fiber))
       {
         runner.Continue (closure, null);
@@ -709,7 +709,7 @@ namespace RCL.Kernel
         result = closure.Code.Finish (runner, closure, result);
         bot.ChangeFiberState (closure.Fiber, "done");
         runner.Log.Record (runner, closure, "fiber", closure.Fiber, "done", result);
-        if (closure.Fiber == 0 && closure.BotId == 0)
+        if (closure.Fiber == 0 && closure.Bot == 0)
         {
           runner.Finish (closure, result);
         }
@@ -717,7 +717,7 @@ namespace RCL.Kernel
         //without realizing that they have been killed.
         else
         {
-          bot.FiberDone (runner, closure.BotId, closure.Fiber, result);
+          bot.FiberDone (runner, closure.Bot, closure.Fiber, result);
         }
         //Remove closure from the pending queue.
         runner.Continue (closure, null);
@@ -754,7 +754,7 @@ namespace RCL.Kernel
     {
       if (previous.Index < block.Count - 1)
       {
-        return new RCClosure (previous.BotId,
+        return new RCClosure (previous.Bot,
                               previous.Fiber, previous.Locks,
                               previous.Parent, block, previous.Left,
                               NextBlock (runner, block, previous, result),
@@ -818,7 +818,7 @@ namespace RCL.Kernel
           RCArray<RCBlock> useropContext;
           RCClosure nextParentOf = NextParentOf (op, previous, out userop, out useropContext);
           RCClosure next = new RCClosure (nextParentOf,
-                                          head.BotId,
+                                          head.Bot,
                                           op,
                                           previous.Left,
                                           new RCBlock (null, "1", ":", result),
@@ -840,7 +840,7 @@ namespace RCL.Kernel
         if (previous.Index == 0)
         {
           return new RCClosure (previous.Parent,
-                                head.BotId,
+                                head.Bot,
                                 op,
                                 result,
                                 previous.Result,
@@ -851,7 +851,7 @@ namespace RCL.Kernel
           RCValue userop;
           RCArray<RCBlock> useropContext;
           RCClosure next = new RCClosure (NextParentOf (op, previous, out userop, out useropContext),
-                                          head.BotId,
+                                          head.Bot,
                                           op,
                                           //reset "pocket" left to null.
                                           null,
@@ -1084,7 +1084,7 @@ namespace RCL.Kernel
           result = op.Finish (result);
         }
         if (closure.Parent != null &&
-            (closure.Parent.BotId != closure.BotId ||
+            (closure.Parent.Bot != closure.Bot ||
              closure.Parent.Fiber != closure.Fiber))
         {
           break;
