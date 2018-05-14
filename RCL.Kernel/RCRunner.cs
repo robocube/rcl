@@ -354,8 +354,9 @@ namespace RCL.Kernel
         {
           throw new Exception ("Runner has already started.");
         }
-        root = new RCClosure (m_bots[0], program);
-        root.Bot.ChangeFiberState (root.Fiber, "start");
+        RCBot rootBot = m_bots[0];
+        root = new RCClosure (rootBot, program);
+        rootBot.ChangeFiberState (root.Fiber, "start");
         Log.Record (this, root, "fiber", root.Fiber, "start", root.Code);
         m_root = root;
         m_queue.Enqueue (root);
@@ -386,10 +387,11 @@ namespace RCL.Kernel
         if (m_root == null)
         {
           m_root = root;
+          RCBot rootBot = GetBot (m_root.BotId);
           //keeping this inside the lock because it should happen before the call to Enqueue.
           //But only during the very first call to run for this runner.
-          //Log.Record (this, root, root.Bot.Id, "bot", root.Bot.Id, "start", root.Code);
-          root.Bot.ChangeFiberState (root.Fiber, "start");
+          //Log.Record (this, root, root.BotId, "bot", root.BotId, "start", root.Code);
+          rootBot.ChangeFiberState (root.Fiber, "start");
           Log.Record (this, root, "fiber", root.Fiber, "start", root.Code);
         }
         m_queue.Enqueue (root);
@@ -444,7 +446,7 @@ namespace RCL.Kernel
         if (previous != null)
         {
           Dictionary<long, RCClosure> pending = null;
-          if (m_pending.TryGetValue (previous.Bot.Id, out pending))
+          if (m_pending.TryGetValue (previous.BotId, out pending))
           {
             RCClosure c = null;
             if (pending.TryGetValue (previous.Fiber, out c))
@@ -452,7 +454,7 @@ namespace RCL.Kernel
               pending.Remove (previous.Fiber);
               if (pending.Count == 0)
               {
-                m_pending.Remove (previous.Bot.Id);
+                m_pending.Remove (previous.BotId);
               }
               live = true;
             }
@@ -472,7 +474,8 @@ namespace RCL.Kernel
         {
           //This will internally take the m_botLock.
           //This should be ok but given that it is just a log write I would like to move this outside.
-          previous.Bot.ChangeFiberState (previous.Fiber, "dead");
+          RCBot bot = GetBot (previous.BotId);
+          bot.ChangeFiberState (previous.Fiber, "dead");
           Log.Record (this, previous, "fiber", previous.Fiber, "dead", "");
         }
       }
@@ -494,10 +497,10 @@ namespace RCL.Kernel
           return null;
         }
         Dictionary<long, RCClosure> fibers = null;
-        if (!m_pending.TryGetValue (next.Bot.Id, out fibers))
+        if (!m_pending.TryGetValue (next.BotId, out fibers))
         {
           fibers = new Dictionary<long, RCClosure> ();
-          m_pending[next.Bot.Id] = fibers;
+          m_pending[next.BotId] = fibers;
         }
         fibers[next.Fiber] = next;
         return next;
@@ -531,7 +534,7 @@ namespace RCL.Kernel
             try
             {
               //Log.Record (this, next, "fiber", next.Fiber, "exception", userex);
-              Kill (next.Bot.Id, next.Fiber, userex, 1);
+              Kill (next.BotId, next.Fiber, userex, 1);
             }
             catch (Exception sysex)
             {
@@ -712,21 +715,22 @@ namespace RCL.Kernel
     {
       RCValue result = null;
       RCClosure parent = closure;
-      while (parent != null && parent.Bot.Id == closure.Bot.Id && parent.Fiber == closure.Fiber)
+      RCBot bot = GetBot (closure.BotId);
+      while (parent != null && parent.BotId == closure.BotId && parent.Fiber == closure.Fiber)
       {
         RCClosure next = parent.Code.Handle (this, parent, exception, status, out result);
         if (result != null && next == null)
         {
           string state = status == 1 ? "failed" : "killed";
-          closure.Bot.ChangeFiberState (closure.Fiber, state);
+          bot.ChangeFiberState (closure.Fiber, state);
           Log.Record (this, closure, "fiber", closure.Fiber, state, exception);
-          if (closure.Fiber == 0 && closure.Bot.Id == 0)
+          if (closure.Fiber == 0 && closure.BotId == 0)
           {
             Finish (closure, result);
           }
           else
           {
-            closure.Bot.FiberDone (this, closure.Bot.Id, closure.Fiber, result);
+            bot.FiberDone (this, closure.BotId, closure.Fiber, result);
           }
           return;
         }
@@ -736,7 +740,7 @@ namespace RCL.Kernel
         }
         if (result != null)
         {
-          closure.Bot.ChangeFiberState (closure.Fiber, "caught");
+          bot.ChangeFiberState (closure.Fiber, "caught");
           Log.Record (this, closure, "fiber", closure.Fiber, "caught", exception);
           ++m_exceptionCount;
           return;
@@ -747,10 +751,10 @@ namespace RCL.Kernel
       if (result == null)
       {
         string state = status == 1 ? "failed" : "killed";
-        closure.Bot.ChangeFiberState (closure.Fiber, state);
+        bot.ChangeFiberState (closure.Fiber, state);
         Log.Record (this, closure, "fiber", closure.Fiber, state, exception);
         ++m_exceptionCount;
-        if (closure.Fiber == 0 && closure.Bot.Id == 0)
+        if (closure.Fiber == 0 && closure.BotId == 0)
         {
           m_exception = exception;
           m_done.Set ();
@@ -763,7 +767,7 @@ namespace RCL.Kernel
           //Need more work on controlling the lifecycle of fibers.
           //Also I want to get rid of RCNative I think this is the only place
           //where I still need it.
-          closure.Bot.FiberDone (this, closure.Bot.Id, closure.Fiber, new RCNative (exception));
+          bot.FiberDone (this, closure.BotId, closure.Fiber, new RCNative (exception));
         }
       }
     }
@@ -777,10 +781,10 @@ namespace RCL.Kernel
     {
       lock (m_botLock)
       {
-        Queue<RCAsyncState> output = m_output[closure.Bot.Id];
+        Queue<RCAsyncState> output = m_output[closure.BotId];
         output.Enqueue (new RCAsyncState (this, closure, val));
         Queue<RCClosure> watchers;
-        if (m_watchers.TryGetValue (closure.Bot.Id, out watchers))
+        if (m_watchers.TryGetValue (closure.BotId, out watchers))
         {
           while (watchers.Count > 0)
           {
@@ -830,7 +834,7 @@ namespace RCL.Kernel
           RCSymbolScalar name = new RCSymbolScalar (null, parent.Fiber);
           while (parent != null)
           {
-            if (parent.Parent.Bot.Id != parent.Bot.Id ||
+            if (parent.Parent.BotId != parent.BotId ||
                 parent.Parent.Fiber != parent.Fiber)
             {
               break;
@@ -885,6 +889,19 @@ namespace RCL.Kernel
       Log.Record (this, next, "fiber", 0, "start", right);
       Continue (null, next);
       return id;
+    }
+
+    public RCBot GetBot (long id)
+    {
+      RCBot result;
+      lock (m_botLock)
+      {
+        if (!m_bots.TryGetValue (id, out result))
+        {
+          throw new Exception ("Unknown bot id: " + id);
+        }
+      }
+      return result;
     }
 
     public void Done (RCClosure closure, RCLong fibers)
@@ -1215,7 +1232,7 @@ namespace RCL.Kernel
           while (m_queue.Count > 0)
           {
             RCClosure queued = m_queue.Dequeue ();
-            if (queued.Bot.Id == bot)
+            if (queued.BotId == bot)
             {
               if (!killed.Contains (queued.Fiber))
               {
@@ -1258,7 +1275,7 @@ namespace RCL.Kernel
           while (m_queue.Count > 0)
           {
             RCClosure queued = m_queue.Dequeue ();
-            if (queued.Bot.Id == bot)
+            if (queued.BotId == bot)
             {
               if (queued.Fiber == fiber &&
                   !killed.Contains (queued.Fiber))
@@ -1301,7 +1318,8 @@ namespace RCL.Kernel
 
     public void Report (RCClosure closure, Exception ex)
     {
-      closure.Bot.ChangeFiberState (closure.Fiber, "reported");
+      RCBot bot = GetBot (closure.BotId);
+      bot.ChangeFiberState (closure.Fiber, "reported");
       Log.Record (this, closure, "fiber", closure.Fiber, "reported", ex);
       ++m_exceptionCount;
     }

@@ -188,7 +188,7 @@ namespace RCL.Kernel
       long fiber = 0;
       if (closure != null)
       {
-        bot = closure.Bot.Id;
+        bot = closure.BotId;
         fiber = closure.Fiber;
       }
       Record (bot, fiber, type, instance, state, info, forceDoc);

@@ -1083,7 +1083,7 @@ namespace RCL.Kernel
           result = op.Finish (result);
         }
         if (closure.Parent != null &&
-            (closure.Parent.Bot.Id != closure.Bot.Id ||
+            (closure.Parent.BotId != closure.BotId ||
              closure.Parent.Fiber != closure.Fiber))
         {
           break;

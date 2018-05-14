@@ -280,22 +280,21 @@ namespace RCL.Kernel
     }
 
     //Shouldn't these move into eval?
-    public void Invoke (
-      RCRunner runner, RCClosure closure, string name, object right)
+    public void Invoke (RCRunner runner, RCClosure closure, string name, object right)
     {
       OverloadValue overload;
       try
       {
-        if (m_dispatch.TryGetValue (
-          new OverloadKey (name, null, right.GetType ()), out overload))
+        if (m_dispatch.TryGetValue (new OverloadKey (name, null, right.GetType ()), out overload))
         {
-          object state = closure.Bot.GetModule (overload.Module);
+          RCBot bot = runner.GetBot (closure.BotId);
+          object state = bot.GetModule (overload.Module);
           overload.Implementation.Invoke (state, new object[] {runner, closure, right});
         }
-        else if (m_dispatch.TryGetValue (
-          new OverloadKey (name, null, typeof (object)), out overload))
+        else if (m_dispatch.TryGetValue (new OverloadKey (name, null, typeof (object)), out overload))
         {
-          object state = closure.Bot.GetModule (overload.Module);
+          RCBot bot = runner.GetBot (closure.BotId);
+          object state = bot.GetModule (overload.Module);
           overload.Implementation.Invoke (state, new object[] {runner, closure, right});
         }
         else throw RCException.Overload (closure, name, right);
@@ -321,8 +320,7 @@ namespace RCL.Kernel
       }
     }
 
-    public void Invoke (
-      RCRunner runner, RCClosure closure, string name, object left, object right)
+    public void Invoke (RCRunner runner, RCClosure closure, string name, object left, object right)
     {
       OverloadValue overload;
       Type ltype = left.GetType ();
@@ -331,27 +329,27 @@ namespace RCL.Kernel
       {
         if (m_dispatch.TryGetValue (new OverloadKey (name, ltype, rtype), out overload))
         {
-          object state = closure.Bot.GetModule (overload.Module);
-          overload.Implementation.Invoke (
-            state, new object[] {runner, closure, left, right});
+          RCBot bot = runner.GetBot (closure.BotId);
+          object state = bot.GetModule (overload.Module);
+          overload.Implementation.Invoke (state, new object[] {runner, closure, left, right});
         }
         else if (m_dispatch.TryGetValue (new OverloadKey (name, typeof (object), rtype), out overload))
         {
-          object state = closure.Bot.GetModule (overload.Module);
-          overload.Implementation.Invoke (
-            state, new object[] {runner, closure, left, right});
+          RCBot bot = runner.GetBot (closure.BotId);
+          object state = bot.GetModule (overload.Module);
+          overload.Implementation.Invoke (state, new object[] {runner, closure, left, right});
         }
         else if (m_dispatch.TryGetValue (new OverloadKey (name, ltype, typeof (object)), out overload))
         {
-          object state = closure.Bot.GetModule (overload.Module);
-          overload.Implementation.Invoke (
-            state, new object[] {runner, closure, left, right});
+          RCBot bot = runner.GetBot (closure.BotId);
+          object state = bot.GetModule (overload.Module);
+          overload.Implementation.Invoke (state, new object[] {runner, closure, left, right});
         }
         else if (m_dispatch.TryGetValue (new OverloadKey (name, typeof (object), typeof (object)), out overload))
         {
-          object state = closure.Bot.GetModule (overload.Module);
-          overload.Implementation.Invoke (
-            state, new object[] {runner, closure, left, right});
+          RCBot bot = runner.GetBot (closure.BotId);
+          object state = bot.GetModule (overload.Module);
+          overload.Implementation.Invoke (state, new object[] {runner, closure, left, right});
         }
         else throw RCException.Overload (closure, name, left, right);
       }

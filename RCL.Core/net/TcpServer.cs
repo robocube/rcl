@@ -50,7 +50,9 @@ namespace RCL.Core
       try
       {
         Socket client = m_listener.EndAccept (result);
-        long handle = state.Closure.Bot.New ();
+        RCBot bot = state.Runner.GetBot (state.Closure.BotId);
+        //long handle = state.Closure.Bot.New ();
+        long handle = bot.New ();
         TcpServerSession session = new TcpServerSession (state,
 							 this,
 							 client,

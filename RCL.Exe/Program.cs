@@ -34,6 +34,7 @@ namespace RCL.Exe
         string result = null;
         AppDomain appDomain = null;
         Program program;
+        Exception isolateEx = null;
         try
         {
           AppDomainSetup setupInfo = new AppDomainSetup ();
@@ -79,9 +80,11 @@ namespace RCL.Exe
           Type type = typeof (Program);
           program = (Program) appDomain.CreateInstanceAndUnwrap (type.Assembly.FullName, type.FullName);
           string appDomainVersionString = setupInfo.ApplicationBase;
+          //Console.WriteLine("Setting IsolateCode to :{0}", code.ToString ());
           program.IsolateCode = code.ToString ();
           program.InstanceMain (argQueue.ToArray (), appDomainVersionString);
           result = (string) appDomain.GetData ("IsolateResult");
+          isolateEx = (Exception) appDomain.GetData ("IsolateException");
         }
         catch (Exception ex)
         {
@@ -97,9 +100,16 @@ namespace RCL.Exe
         }
         if (result == null)
         {
-          runner.Finish (closure, new Exception ("Missing IsolateResult for program"), 1);
+          if (isolateEx == null)
+          {
+            isolateEx = new Exception ("Missing IsolateResult for program");
+          }
+          runner.Finish (closure, isolateEx, 1);
         }
-        runner.Yield (closure, runner.Peek (result));
+        else
+        {
+          runner.Yield (closure, runner.Peek (result));
+        }
       });
       thread.IsBackground = true;
       thread.Start ();
@@ -154,10 +164,12 @@ namespace RCL.Exe
         cmd = new RCLArgv (argv);
       }
 
-      //string message = "\x1b[0;33mYELLOW\x1b[0;31m RED\x1b[0;34m BLUE\x1b[0;37m";
+      // Someday do color output like this
+      // string message = "\x1b[0;33mYELLOW\x1b[0;31m RED\x1b[0;34m BLUE\x1b[0;37m";
+
+      // Initialize runner environment
       AppDomain.CurrentDomain.UnhandledException += 
         new UnhandledExceptionEventHandler (UnhandledException);
-
       string prompt = "RCL>";
       LineEditor editor = new LineEditor ("RCL");
       RCLogger consoleLog = new RCLogger (cmd.Nokeys, cmd.Show);
@@ -177,13 +189,16 @@ namespace RCL.Exe
           if (IsolateCode != null)
           {
             code = runner.Read (IsolateCode);
+            //Console.WriteLine("Reading IsolateCode: {0}", code);
           }
           else if (cmd.Program != "")
           {
             string file = File.ReadAllText (cmd.Program, Encoding.UTF8);
             code = runner.Read (file);
           }
+          //Console.WriteLine("runner.Rep(code): {0}", code);
           codeResult = runner.Rep (code);
+          //Console.WriteLine("codeResult: {0}", codeResult.ToString ());
           if (cmd.Action != "")
           {
             RCValue result = runner.Rep (string.Format ("{0} #", cmd.Action));
@@ -216,11 +231,18 @@ namespace RCL.Exe
           // I don't want it to, but without this there are errors that do not show up at all.
           RCLogger.RecordFilter (0, 0, "runner", 0, "fatal", ex);
           status = 1;
+          if (IsolateCode != null)
+          {
+            AppDomain.CurrentDomain.SetData ("IsolateException", ex);
+          }
         }
         finally
         {
-          IsolateResult = codeResult.ToString ();
-          AppDomain.CurrentDomain.SetData ("IsolateResult", IsolateResult);
+          if (codeResult != null)
+          {
+            IsolateResult = codeResult.ToString ();
+            AppDomain.CurrentDomain.SetData ("IsolateResult", IsolateResult);
+          }
           if (cmd.Exit)
           {
             runner.Dispose ();

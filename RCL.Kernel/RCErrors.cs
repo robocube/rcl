@@ -1,6 +1,9 @@
 ﻿
+using System;
+
 namespace RCL.Kernel
 {
+  [Serializable]
   public enum RCErrors
   {
     Timeout = 0,  //The operation timed out

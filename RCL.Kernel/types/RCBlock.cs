@@ -253,6 +253,9 @@ namespace RCL.Kernel
       m_count = Previous.Count + 1;
     }
 
+    public RCBlock (RCBlock previous, string name, string instr, params long[] val)
+      : this (previous, name, RCEvaluator.For (instr), new RCLong (val)) {}
+
     public RCBlock (RCBlock previous, string name, string instr, RCValue val)
       : this (previous, name, RCEvaluator.For (instr), val) {}
 
@@ -669,6 +672,26 @@ namespace RCL.Kernel
       {
         throw new Exception (string.Format ("The variable '{0}' is not an incr op. Type is {0}.", val.TypeName));
       }
+    }
+
+    public RCBlock GetBlock (string name, RCBlock def)
+    {
+      RCBlock val = (RCBlock) Get (name);
+      if (val == null)
+      {
+        return def;
+      }
+      else return val;
+    }
+
+    public RCBlock GetBlock (string name)
+    {
+      RCBlock val = (RCBlock) Get (name);
+      if (val == null)
+      {
+        throw new Exception ("Required value " + name + " not found in block");
+      }
+      else return val;
     }
 
     // Convenience functions for extracting individual values

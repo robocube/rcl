@@ -12,6 +12,11 @@ namespace RCL.Kernel
     public readonly RCBot Bot;
 
     /// <summary>
+    /// The number for the bot that created this closure.
+    /// </summary>
+    public readonly long BotId;
+
+    /// <summary>
     /// The fiber, within bot.
     /// </summary>
     public readonly long Fiber;
@@ -98,13 +103,16 @@ namespace RCL.Kernel
         UserOp = parent.UserOp;
         UserOpContext = parent.UserOpContext;
       }
-
       if (bot == null)
+      {
         throw new Exception ("bot may not be null.");
+      }
       if (code == null)
+      {
         throw new Exception ("code may not be null.");
-
+      }
       Bot = bot;
+      BotId = bot.Id;
       Parent = parent;
       Code = code;
       Left = left;
@@ -133,14 +141,19 @@ namespace RCL.Kernel
       RCArray<RCBlock> userOpContext)
     {
       if (parent != null)
+      {
         Depth = parent.Depth + 1;
-
+      }
       if (bot == null)
+      {
         throw new Exception ("bot may not be null.");
+      }
       if (code == null)
+      {
         throw new Exception ("code may not be null.");
-
+      }
       Bot = bot;
+      BotId = bot.Id;
       Fiber = fiber;
       Locks = locks;
       Parent = parent;
@@ -197,7 +210,7 @@ namespace RCL.Kernel
       if (firstOnTop)
       {
         builder.AppendFormat ("--- BEGIN STACK (bot:{0},fiber:{1},lines:{2}) ---\n",
-                              closure.Bot.Id, closure.Fiber, lines.Count);
+                              closure.BotId, closure.Fiber, lines.Count);
         while (lines.Count > 0)
         {
           builder.AppendLine (lines.Pop ());
@@ -207,7 +220,7 @@ namespace RCL.Kernel
       else
       {
         builder.AppendFormat ("--- END STACK (bot:{0},fiber:{1},lines:{2}) ---\n",
-                              closure.Bot.Id, closure.Fiber, lines.Count);
+                              closure.BotId, closure.Fiber, lines.Count);
         string[] linesInOrder = lines.ToArray ();
         for (int i = linesInOrder.Length - 1; i >= 0; --i)
         {
@@ -215,6 +228,43 @@ namespace RCL.Kernel
         }
         builder.AppendFormat ("--- BEGIN STACK ---\n");
       }
+    }
+
+    public RCBlock Serialize ()
+    {
+      RCBlock result = RCBlock.Empty;
+      result = new RCBlock (result, "bot", ":", BotId);
+      result = new RCBlock (result, "code", ":", this.Code);
+      result = new RCBlock (result, "depth", ":", this.Depth);
+      result = new RCBlock (result, "fiber", ":", this.Fiber);
+      result = new RCBlock (result, "index", ":", this.Index);
+      result = new RCBlock (result, "left", ":", this.Left);
+      result = new RCBlock (result, "locks", ":", this.Locks);
+      result = new RCBlock (result, "result", ":", this.Result);
+      result = new RCBlock (result, "parent", ":", this.Parent.Serialize ());
+      return result;
+    }
+
+    public static RCClosure Deserialize (RCRunner runner, RCBlock right)
+    {
+      //RCBlock closureBlock = (RCBlock) runner.Peek (text);
+      RCBot bot = null;
+      long botid = right.GetLong ("bot");
+      long fiber = right.GetLong ("fiber");
+      RCSymbol locks = (RCSymbol) right.Get ("locks");
+      RCClosure parent = Deserialize (runner, right.GetBlock ("parent"));
+      RCValue code = right.Get ("code");
+      RCValue left = right.Get ("left");
+      RCBlock result = right.GetBlock ("result");
+      int index = (int) right.GetLong ("index");
+      RCValue userOp = right.Get ("userOp");
+      RCBlock userOpContextBlock = right.GetBlock ("userOpContext");
+      RCArray<RCBlock> userOpContext = new RCArray<RCBlock> ();
+      for (int i = 0; i < userOpContextBlock.Count; ++i)
+      {
+        userOpContext.Write ((RCBlock) userOpContextBlock.Get (i));
+      }
+      return new RCClosure (bot, fiber, locks, parent, code, left, result, index, userOp, userOpContext);
     }
   }
 }
