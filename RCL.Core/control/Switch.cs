@@ -92,7 +92,7 @@ namespace RCL.Core
         if (i < left.Count)
         {
           RCClosure child = new RCClosure (closure,
-                                           closure.Bot,
+                                           closure.BotId,
                                            right,
                                            closure.Left,
                                            RCBlock.Empty,
@@ -121,7 +121,7 @@ namespace RCL.Core
       {
         RCValue code = picker (left[i]);
         RCClosure child = new RCClosure (closure,
-                                         closure.Bot,
+                                         closure.BotId,
                                          code,
                                          closure.Left,
                                          RCBlock.Empty,

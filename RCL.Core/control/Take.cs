@@ -29,15 +29,14 @@ namespace RCL.Core
     public class TakeOperator : RCOperator
     {
       [RCVerb ("take")]
-      public void EvalTake (
-        RCRunner runner, RCClosure closure, RCSymbol left, RCBlock right)
+      public void EvalTake (RCRunner runner, RCClosure closure, RCSymbol left, RCBlock right)
       {
-        Take module = (Take) closure.Bot.GetModule (typeof (Take));
+        RCBot bot = runner.GetBot (closure.BotId);
+        Take module = (Take) bot.GetModule (typeof (Take));
         module.DoTake (runner, closure, left, right);
       }
   
-      public override RCClosure Next (
-        RCRunner runner, RCClosure tail, RCClosure previous, RCValue result)
+      public override RCClosure Next (RCRunner runner, RCClosure tail, RCClosure previous, RCValue result)
       {
         if (previous.Index < 2)
         {
@@ -45,7 +44,8 @@ namespace RCL.Core
         }
         else
         {
-          Take module = (Take) tail.Bot.GetModule (typeof (Take));
+          RCBot bot = runner.GetBot (tail.BotId);
+          Take module = (Take) bot.GetModule (typeof (Take));
           module.Untake (runner, tail);
           return base.Next (runner, tail, previous, result);
         }
@@ -61,11 +61,10 @@ namespace RCL.Core
       }
     }
 
-    public void DoTake (
-      RCRunner runner, RCClosure closure, RCSymbol symbols, RCValue section)
+    public void DoTake (RCRunner runner, RCClosure closure, RCSymbol symbols, RCValue section)
     {
       RCClosure next = new RCClosure (
-        closure.Bot, closure.Fiber, symbols,
+        closure.BotId, closure.Fiber, symbols,
         closure, section, closure.Left,
         closure.Parent != null ? closure.Parent.Result : null, 0,
         closure.UserOp, closure.UserOpContext);

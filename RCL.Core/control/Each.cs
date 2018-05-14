@@ -88,13 +88,13 @@ namespace RCL.Core
         result = new RCBlock (result, "I", ":", new RCLong (i));
         result = new RCBlock (result, "R", ":", right.Get (i));
         closure = new RCClosure (closure.Parent,
-                                 closure.Bot,
+                                 closure.BotId,
                                  closure.Code,
                                  closure.Left,
                                  result,
                                  closure.Index);
         left.Eval (runner, new RCClosure (closure,
-                                          closure.Bot,
+                                          closure.BotId,
                                           left,
                                           closure.Left,
                                           RCBlock.Empty,
@@ -123,7 +123,7 @@ namespace RCL.Core
         result = new RCBlock (result, "R", ":",
                                       RCVectorBase.FromArray (new RCArray<T> (right[i])));
         left.Eval (runner,
-                   new RCClosure (closure, closure.Bot, left, closure.Left, result, 0));
+                   new RCClosure (closure, closure.BotId, left, closure.Left, result, 0));
       }
       else
       {
@@ -153,13 +153,13 @@ namespace RCL.Core
       {
         RCBlock output = new RCBlock (null, name, ":", result);
         RCClosure parent = new RCClosure (previous.Parent, 
-                                          previous.Bot, 
+                                          previous.BotId,
                                           previous.Code, 
                                           previous.Left,
                                           output, 
                                           previous.Index + 1);
         return new RCClosure (parent, 
-                              previous.Bot, 
+                              previous.BotId,
                               previous.Code, 
                               previous.Left,
                               previous.Result,
@@ -170,13 +170,13 @@ namespace RCL.Core
         RCBlock output = new RCBlock (previous.Parent.Result, 
                                       name, ":", result);
         RCClosure parent = new RCClosure (previous.Parent.Parent, 
-                                          previous.Bot, 
+                                          previous.BotId,
                                           previous.Code, 
                                           previous.Left,
                                           output, 
                                           previous.Index + 1);
         return new RCClosure (parent, 
-                              previous.Bot, 
+                              previous.BotId,
                               previous.Code, 
                               previous.Left,
                               previous.Result, 

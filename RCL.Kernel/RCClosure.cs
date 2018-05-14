@@ -7,11 +7,6 @@ namespace RCL.Kernel
   public class RCClosure
   {
     /// <summary>
-    /// The bot, sort of like the this pointer.
-    /// </summary>
-    public readonly RCBot Bot;
-
-    /// <summary>
     /// The number for the bot that created this closure.
     /// </summary>
     public readonly long BotId;
@@ -73,27 +68,25 @@ namespace RCL.Kernel
     /// </summary>
     public readonly RCArray<RCBlock> UserOpContext;
 
-    public RCClosure (RCBot bot, RCValue code)
+    public RCClosure (long bot, RCValue code)
       :this (bot, 0, null, null, code, null, null, 0, null, null) {}
 
-    public RCClosure (
-      RCClosure parent,
-      RCBot bot,
-      RCValue code,
-      RCValue left,
-      RCBlock result,
-      int index)
+    public RCClosure (RCClosure parent,
+                      long bot,
+                      RCValue code,
+                      RCValue left,
+                      RCBlock result,
+                      int index)
       :this (parent, bot, code, left, result, index, null, null) {}
 
-    public RCClosure (
-      RCClosure parent,
-      RCBot bot,
-      RCValue code,
-      RCValue left,
-      RCBlock result,
-      int index,
-      RCValue userOp,
-      RCArray<RCBlock> userOpContext)
+    public RCClosure (RCClosure parent,
+                      long bot,
+                      RCValue code,
+                      RCValue left,
+                      RCBlock result,
+                      int index,
+                      RCValue userOp,
+                      RCArray<RCBlock> userOpContext)
     {
       if (parent != null)
       {
@@ -103,16 +96,12 @@ namespace RCL.Kernel
         UserOp = parent.UserOp;
         UserOpContext = parent.UserOpContext;
       }
-      if (bot == null)
-      {
-        throw new Exception ("bot may not be null.");
-      }
       if (code == null)
       {
         throw new Exception ("code may not be null.");
       }
-      Bot = bot;
-      BotId = bot.Id;
+      //Bot = bot;
+      BotId = bot;
       Parent = parent;
       Code = code;
       Left = left;
@@ -129,7 +118,7 @@ namespace RCL.Kernel
     }
 
     public RCClosure (
-      RCBot bot,
+      long bot,
       long fiber,
       RCSymbol locks,
       RCClosure parent,
@@ -144,16 +133,11 @@ namespace RCL.Kernel
       {
         Depth = parent.Depth + 1;
       }
-      if (bot == null)
-      {
-        throw new Exception ("bot may not be null.");
-      }
       if (code == null)
       {
         throw new Exception ("code may not be null.");
       }
-      Bot = bot;
-      BotId = bot.Id;
+      BotId = bot;
       Fiber = fiber;
       Locks = locks;
       Parent = parent;
@@ -247,9 +231,7 @@ namespace RCL.Kernel
 
     public static RCClosure Deserialize (RCRunner runner, RCBlock right)
     {
-      //RCBlock closureBlock = (RCBlock) runner.Peek (text);
-      RCBot bot = null;
-      long botid = right.GetLong ("bot");
+      long botId = right.GetLong ("bot");
       long fiber = right.GetLong ("fiber");
       RCSymbol locks = (RCSymbol) right.Get ("locks");
       RCClosure parent = Deserialize (runner, right.GetBlock ("parent"));
@@ -264,7 +246,7 @@ namespace RCL.Kernel
       {
         userOpContext.Write ((RCBlock) userOpContextBlock.Get (i));
       }
-      return new RCClosure (bot, fiber, locks, parent, code, left, result, index, userOp, userOpContext);
+      return new RCClosure (botId, fiber, locks, parent, code, left, result, index, userOp, userOpContext);
     }
   }
 }

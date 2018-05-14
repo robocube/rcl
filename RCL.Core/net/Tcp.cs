@@ -64,7 +64,8 @@ namespace RCL.Core
       //long port = -1;
       //if (symbol.Length > 2)
       //  port = (long) symbol[2];
-      long handle = closure.Bot.New ();
+      RCBot bot = runner.GetBot (closure.BotId);
+      long handle = bot.New ();
       Client client;
       if (protocol.Equals ("http"))
       {
@@ -87,7 +88,7 @@ namespace RCL.Core
       {
         throw new NotImplementedException ("Unknown protocol: " + protocol);
       }
-      closure.Bot.Put (handle, client);
+      bot.Put (handle, client);
       client.Open (runner, closure);
     }
 
@@ -105,10 +106,10 @@ namespace RCL.Core
       {
         throw new Exception("listen takes exactly one protocol,port");
       }
-
       string protocol = (string) right[0].Part (0);
       long port = (long) right[0].Part (1);
-      long handle = closure.Bot.New ();
+      RCBot bot = runner.GetBot (closure.BotId);
+      long handle = bot.New ();
       Server server;
       if (protocol.Equals ("http"))
       {
@@ -126,7 +127,7 @@ namespace RCL.Core
       {
         throw new ArgumentException ("Unknown protocol: " + protocol);
       }
-      closure.Bot.Put (handle, server);
+      bot.Put (handle, server);
       server.Listen (runner, closure);
     }
 
@@ -139,7 +140,8 @@ namespace RCL.Core
       {
         throw new Exception ("open takes exactly one protocol,host,port");
       }
-      Client client = (Client) closure.Bot.Get (right[0]);
+      RCBot bot = runner.GetBot (closure.BotId);
+      Client client = (Client) bot.Get (right[0]);
       client.Close (runner, closure);
       runner.Yield (closure, right);
     }
@@ -153,9 +155,10 @@ namespace RCL.Core
     protected void DoSend (RCRunner runner, RCClosure closure, RCLong left, RCBlock right)
     {
       RCSymbolScalar[] result = new RCSymbolScalar[left.Count];
+      RCBot bot = runner.GetBot (closure.BotId);
       for (int i = 0; i < left.Count; ++i)
       {
-        Client client = (Client) closure.Bot.Get (left[i]);
+        Client client = (Client) bot.Get (left[i]);
         TcpSendState state = client.Send (runner, closure, right);
         RCSymbolScalar handle = new RCSymbolScalar (null, state.Handle);
         result[i] = new RCSymbolScalar (handle, state.Id);
@@ -171,29 +174,30 @@ namespace RCL.Core
 
     protected void DoAccept (RCRunner runner, RCClosure closure, RCLong left, RCLong right)
     {
+      RCBot bot = runner.GetBot (closure.BotId);
       for (int i = 0; i < left.Count; ++i)
       {
-        Server server = (Server) closure.Bot.Get (left[i]);
+        Server server = (Server) bot.Get (left[i]);
         server.Accept (runner, closure, right[0]);
       }
     }
 
     [RCVerb ("reply")]
-    public void EvalReply (
-      RCRunner runner, RCClosure closure, RCSymbol left, RCBlock right)
+    public void EvalReply (RCRunner runner, RCClosure closure, RCSymbol left, RCBlock right)
     {
       DoReply (runner, closure, left, right);
     }
 
     protected void DoReply (RCRunner runner, RCClosure closure, RCSymbol left, RCBlock right)
     {
+      RCBot bot = runner.GetBot (closure.BotId);
       RCSymbolScalar[] result = new RCSymbolScalar[left.Count];
       for (int i = 0; i < left.Count; ++i)
       {
         long channel = (long) left[i].Part (0);
         long sid = (long) left[i].Part (1);
         long cid = (long) left[i].Part (2);
-        Server server = (Server) closure.Bot.Get (channel);
+        Server server = (Server) bot.Get (channel);
         TcpSendState state = server.Reply (runner, closure, sid, cid, right);
         RCSymbolScalar handle = new RCSymbolScalar (null, state.Handle);
         result[i] = new RCSymbolScalar (handle, state.Id);
@@ -210,11 +214,12 @@ namespace RCL.Core
 
     protected void DoReceive (RCRunner runner, RCClosure closure, RCSymbol right)
     {
+      RCBot bot = runner.GetBot (closure.BotId);
       TcpCollector gatherer = new TcpCollector (runner, closure, right);
       for (int i = 0; i < right.Count; ++i)
       {
         long channel = (long) right[i].Part (0);
-        Client client = (Client) closure.Bot.Get (channel);
+        Client client = (Client) bot.Get (channel);
         client.Receive (gatherer, right[i]);
       }
     }
