@@ -112,7 +112,7 @@ namespace RCL.Test
     [Test]
     public void TestForConflictingResults ()
     {
-      RCRunner runner = new RCRunner (RCActivator.Default,
+      RCRunner runner = new RCRunner (RCSystem.Activator,
                                       new RCLog (new RCLogger ()), 1, new RCLArgv ());
       Assert.AreEqual ("{status:0 data:5}", 
                        RepString (runner, "first #r from eval {serve:{b:bot {<-try {<-eval {<-2 + 3}}} f1:fiber {r:wait $b <-$r} <-wait $f1} r:wait fiber {<-serve #}}"));

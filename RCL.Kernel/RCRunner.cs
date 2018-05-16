@@ -7,6 +7,23 @@ namespace RCL.Kernel
 {
   public class RCLArgv
   {
+    public static RCLArgv m_instance = new RCLArgv ();
+    public static volatile bool m_initInvoked = false;
+    public static void Init (string[] argv)
+    {
+      if (m_initInvoked)
+      {
+        throw new InvalidOperationException ("RCLArgv.Init may only be invoked once per appDomain");
+      }
+      m_instance = new RCLArgv (argv);
+      m_initInvoked = true;
+    }
+
+    public static RCLArgv Instance
+    {
+      get { return m_instance; }
+    }
+
     public readonly RCBlock Options;
     public readonly RCString Arguments;
     public readonly RCOutput OutputEnum;
@@ -318,8 +335,8 @@ namespace RCL.Kernel
     protected AutoResetEvent m_done = new AutoResetEvent (false);
     protected Thread m_ctorThread;
 
-    public RCRunner () : this (RCActivator.Default, new RCLog (), 1, new RCLArgv ()) {}
-    public RCRunner (params string[] options) : this (RCActivator.Default, new RCLog (), 1, new RCLArgv (options)) {}
+    public RCRunner () : this (RCSystem.Activator, RCSystem.Log, 1, RCSystem.Args) {}
+    public RCRunner (params string[] options) : this (RCSystem.Activator, RCSystem.Log, 1, new RCLArgv (options)) {}
     public RCRunner (RCActivator activator, RCLog log, long workers, RCLArgv argv)
     {
       Argv = argv;
@@ -582,21 +599,6 @@ namespace RCL.Kernel
       }
     }
 
-    public RCValue Peek (string code)
-    {
-      bool fragment;
-      return Peek (code, out fragment);
-    }
-
-    public RCValue Peek (string code, out bool fragment)
-    {
-      RCParser parser = new RCLParser (Activator);
-      RCArray<RCToken> tokens = new RCArray<RCToken> ();
-      parser.Lex (code, tokens);
-      RCValue result = parser.Parse (tokens, out fragment);
-      return result;
-    }
-
     public RCValue Read (string code)
     {
       bool fragment;
@@ -651,7 +653,7 @@ namespace RCL.Kernel
     public RCValue Rep (string code)
     {
       bool fragment = false;
-      RCValue peek = Peek (code, out fragment);
+      RCValue peek = RCSystem.Parse (code, out fragment);
       if (peek == null)
       {
         return null;

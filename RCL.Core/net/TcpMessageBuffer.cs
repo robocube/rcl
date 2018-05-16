@@ -52,7 +52,7 @@ namespace RCL.Core
         string text = Encoding.ASCII.GetString (m_recvBuffer, HEADER_SIZE, m_read - HEADER_SIZE);
         bool fragment = false;
         //This one creates a new parser an so it is threadsafe for multiple calls.
-        RCValue body = runner.Peek (text, out fragment);
+        RCValue body = RCSystem.Parse (text, out fragment);
         if (body != null)
         {
           //throw new Exception("failed to parse:" + text);

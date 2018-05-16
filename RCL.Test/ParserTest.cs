@@ -869,7 +869,7 @@ namespace RCL.Test
     {
       //RCSymbolScalar symbol = RCSymbolScalar.From ((long) 0, "CDwindow-2b19bc6d-b257-4c8d-8104-0d2bae022016");
       bool fragment;
-      RCSymbol symbol = (RCSymbol) runner.Peek ("#0,'this-is-a-test'", out fragment);
+      RCSymbol symbol = (RCSymbol) RCSystem.Parse ("#0,'this-is-a-test'", out fragment);
       Assert.AreEqual ("this-is-a-test", symbol[0].Part (1));
     }
 

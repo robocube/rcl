@@ -109,7 +109,7 @@ namespace RCL.Exe
         }
         else
         {
-          runner.Yield (closure, runner.Peek (result));
+          runner.Yield (closure, RCSystem.Parse (result));
         }
       });
       thread.IsBackground = true;
@@ -159,10 +159,12 @@ namespace RCL.Exe
           newArgv[flagsv.Length + i] = argv[i];
         }
         cmd = new RCLArgv (newArgv);
+        RCLArgv.Init (newArgv);
       }
       else
       {
         cmd = new RCLArgv (argv);
+        RCLArgv.Init (argv);
       }
       // Someday do color output like this
       // string message = "\x1b[0;33mYELLOW\x1b[0;31m RED\x1b[0;34m BLUE\x1b[0;37m";
@@ -174,8 +176,7 @@ namespace RCL.Exe
       LineEditor editor = new LineEditor ("RCL");
       RCLogger consoleLog = new RCLogger (cmd.Nokeys, cmd.Show);
       RCLog log = new RCLog (consoleLog);
-      RCSystem.Init (cmd, log, RCActivator.Default);
-      RCRunner runner = new RCRunner (RCActivator.Default, log, 1, cmd);
+      RCRunner runner = new RCRunner (RCSystem.Activator, log, 1, cmd);
       InstallSignalHandler (runner);
       cmd.PrintStartup (appDomainVersionString);
 
@@ -282,7 +283,7 @@ namespace RCL.Exe
               text.AppendLine (line);
             }
             bool fragment;
-            RCValue code = runner.Peek (text.ToString (), out fragment);
+            RCValue code = RCSystem.Parse (text.ToString (), out fragment);
             RCValue result = runner.Rep (code);
             if (result != null)
             {

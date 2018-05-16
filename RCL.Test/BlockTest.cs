@@ -6,7 +6,7 @@ using RCL.Kernel;
 namespace RCL.Test
 {
   /// <summary>
-  /// Test the behavior of the core objects of the RC language
+  /// Test the behavior of core classes in RCL
   /// </summary>
   [TestFixture]
   public class BlockTest
@@ -212,7 +212,7 @@ namespace RCL.Test
     public void RawNames ()
     {
       r.Reset ();
-      RCBlock k = (RCBlock) r.Peek ("{'Set-Cookie':\"abcdefg\"}");
+      RCBlock k = (RCBlock) RCSystem.Parse ("{'Set-Cookie':\"abcdefg\"}");
       Assert.AreEqual ("'Set-Cookie'", k.GetName (0).Name);
       Assert.AreEqual ("Set-Cookie", k.GetName (0).RawName);
     }
