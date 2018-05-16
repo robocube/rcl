@@ -339,6 +339,7 @@ namespace RCL.Exe
         catch (Exception ex)
         {
           RCLogger.RecordFilter (0, 0, "fiber", 0, "reported", ex);
+          //RCSystem.Log.Record (0, 0, "fiber", 0, "reported", ex);
         }
       }
       runner.Dispose ();
@@ -375,7 +376,7 @@ namespace RCL.Exe
           {
             ThreadPool.QueueUserWorkItem (delegate (object state) 
             {
-              runner.Log.Record (runner, null, "runner", 0, "signal", "SIGTERM");
+              RCSystem.Log.Record (runner, null, "runner", 0, "signal", "SIGTERM");
               runner.Abort (15);
             });
           }
@@ -386,7 +387,7 @@ namespace RCL.Exe
               m_firstSigint = true;
               ThreadPool.QueueUserWorkItem (delegate (object state) 
               {
-                runner.Log.Record (runner, null, "runner", 0, "signal", "SIGINT");
+                RCSystem.Log.Record (runner, null, "runner", 0, "signal", "SIGINT");
                 runner.Interupt ();
               });
             }
@@ -394,7 +395,7 @@ namespace RCL.Exe
             {
               ThreadPool.QueueUserWorkItem (delegate (object state) 
               {
-                runner.Log.Record (runner, null, "runner", 0, "signal", "SIGINT (exiting)");
+                RCSystem.Log.Record (runner, null, "runner", 0, "signal", "SIGINT (exiting)");
                 runner.Abort (2);
               });
             }

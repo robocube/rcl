@@ -143,7 +143,7 @@ namespace RCL.Core
       RCBlock result = GetFileEventInfo (e);
       result = new RCBlock (result, "oldname", ":", new RCString (e.OldName));
       result = new RCBlock (result, "oldfullpath", ":", new RCString (e.OldFullPath));
-      //watcher.Runner.Log.Record (watcher.Runner, closure, "fs", watcher.Handle, "rename", result);
+      //RCSystem.Log.Record (watcher.Runner, closure, "fs", watcher.Handle, "rename", result);
       EnqueueAndDrain (watcher, result);
     }
 

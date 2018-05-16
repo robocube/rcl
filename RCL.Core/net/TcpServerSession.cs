@@ -87,12 +87,12 @@ namespace RCL.Core
           //We need to tell the server to remove this connection from the list.
           //No need to try and close the connection.  That is already done.
           m_socket.Close (1000);
-          m_listenState.Runner.Log.Record (m_listenState.Runner, 
-                                           m_listenState.Closure, 
-                                           "socket",
-                                           m_handle,
-                                           "closed",
-                                           "");
+          RCSystem.Log.Record (m_listenState.Runner,
+                               m_listenState.Closure,
+                               "socket",
+                               m_handle,
+                               "closed",
+                               "");
         }
       }
     }

@@ -24,7 +24,7 @@ namespace RCL.Core
       StringBuilder builder = new StringBuilder ();
       closure.ToString (builder:builder, indent:0, firstOnTop:firstOnTop);
       string stack = builder.ToString ();
-      runner.Log.Record (runner, closure, "stack", 0, "show", stack);
+      RCSystem.Log.Record (runner, closure, "stack", 0, "show", stack);
       runner.Yield (closure, new RCString (stack));
     }
   }

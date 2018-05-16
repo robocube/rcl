@@ -99,14 +99,14 @@ namespace RCL.Core
             }
             writer.Close ();
             //How does the stream get closed in this case?
-            Runner.Log.Record (Runner, Closure, "web", Instance, logEvent, Method + " " + Url);
+            RCSystem.Log.Record (Runner, Closure, "web", Instance, logEvent, Method + " " + Url);
             //This does DNS lookups and some other blocking stuff.
             request.BeginGetResponse (FinishGetResponse, request);
           }, null);
         }
         else 
         {
-          Runner.Log.Record (Runner, Closure, "web", Instance, logEvent, Method + " " + Url);
+          RCSystem.Log.Record (Runner, Closure, "web", Instance, logEvent, Method + " " + Url);
           //This does DNS lookups and some other blocking stuff.
           request.BeginGetResponse (FinishGetResponse, request);
         }
@@ -205,7 +205,7 @@ namespace RCL.Core
             }
             block = new RCBlock (block, "head", ":", head);
             block = new RCBlock (block, "body", ":", new RCString (body));
-            Runner.Log.Record (Runner, Closure, "web", Instance, "response", block);
+            RCSystem.Log.Record (Runner, Closure, "web", Instance, "response", block);
           }
           catch (WebException webEx)
           {
@@ -308,7 +308,7 @@ namespace RCL.Core
       {
         this.m_timeout = (int) right[0];
       }
-      runner.Log.Record (runner, closure, "web", 0, "httptimeout", right[0]);
+      RCSystem.Log.Record (runner, closure, "web", 0, "httptimeout", right[0]);
       runner.Yield (closure, right);
     }
 
@@ -319,7 +319,7 @@ namespace RCL.Core
       {
         this.m_retry = (int) right[0];
       }
-      runner.Log.Record (runner, closure, "web", 0, "httpretry", right[0]);
+      RCSystem.Log.Record (runner, closure, "web", 0, "httpretry", right[0]);
       runner.Yield (closure, right);
     }
 
@@ -484,10 +484,8 @@ namespace RCL.Core
           new DownloadStringCompletedEventHandler (
             client_DownloadStringCompleted);
         Uri uri = new Uri (left[i] + query);
-        runner.Log.Record (runner, closure,
-                           "httpc", handle, "get", new RCString (left[i]));
-        client.DownloadStringAsync (
-          uri, new RCAsyncState (runner, closure, handle));
+        RCSystem.Log.Record (runner, closure, "httpc", handle, "get", new RCString (left[i]));
+        client.DownloadStringAsync (uri, new RCAsyncState (runner, closure, handle));
       }
     }
 
@@ -499,16 +497,14 @@ namespace RCL.Core
       try
       {
         client.DownloadStringCompleted -=
-          new DownloadStringCompletedEventHandler(
-            client_DownloadStringCompleted);
+          new DownloadStringCompletedEventHandler(client_DownloadStringCompleted);
         if (e.Error != null)
         {
           throw e.Error;
         }
         RCString result = new RCString (e.Result);
         long handle = (long) state.Other;
-        state.Runner.Log.Record (state.Runner, state.Closure,
-                                 "httpc", handle, "done", result);
+        RCSystem.Log.Record (state.Runner, state.Closure, "httpc", handle, "done", result);
         state.Runner.Yield (state.Closure, result);
       }
       catch (Exception ex)

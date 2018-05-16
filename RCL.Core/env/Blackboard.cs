@@ -465,7 +465,7 @@ namespace RCL.Core
         ContinueWaiters (runner, all);
         //I really want to see what was written including G and T and i cols.
         //Not only what was passed in.
-        runner.Log.Record (runner, closure, "board", 0, "write", right);
+        RCSystem.Log.Record (runner, closure, "board", 0, "write", right);
         runner.Yield (closure, new RCLong (line));
       }
       catch (Exception)
@@ -479,7 +479,7 @@ namespace RCL.Core
     {
       long line = Write (runner, left, right, false);
       RCBlock logBlock = new RCBlock (right, "S", ":", left);
-      runner.Log.Record (runner, closure, "board", 0, "write", logBlock);
+      RCSystem.Log.Record (runner, closure, "board", 0, "write", logBlock);
       runner.Yield (closure, new RCLong (line));
     }
 
@@ -488,7 +488,7 @@ namespace RCL.Core
     {
       long line = Write (runner, left, right, true);
       RCBlock logBlock = new RCBlock (right, "S", ":", left);
-      runner.Log.Record (runner, closure, "board", 0, "write", logBlock);
+      RCSystem.Log.Record (runner, closure, "board", 0, "write", logBlock);
       runner.Yield (closure, new RCLong (line));
     }
 

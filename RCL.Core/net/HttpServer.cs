@@ -18,18 +18,18 @@ namespace RCL.Core
     {
       if (right[0] == "Enabled")
       {
-        runner.Log.Record (runner, closure, "http", 0, "certcheck", "Enabled");
+        RCSystem.Log.Record (runner, closure, "http", 0, "certcheck", "Enabled");
         ServicePointManager.ServerCertificateValidationCallback = null;
       }
       else if (right[0] == "AllowSelfSigned")
       {
-        runner.Log.Record (runner, closure, "http", 0, "certcheck", "AllowSelfSigned");
+        RCSystem.Log.Record (runner, closure, "http", 0, "certcheck", "AllowSelfSigned");
         ServicePointManager.ServerCertificateValidationCallback =
           new CertificateValidator (runner, closure).AllowSelfSigned;
       }
       else if (right[0] == "None")
       {
-        runner.Log.Record (runner, closure, "http", 0, "certcheck", "NoChecking");
+        RCSystem.Log.Record (runner, closure, "http", 0, "certcheck", "NoChecking");
         ServicePointManager.ServerCertificateValidationCallback =
           new CertificateValidator (runner, closure).NoChecking;
       }
@@ -56,7 +56,7 @@ namespace RCL.Core
                               X509Chain chain,
                               SslPolicyErrors sslPolicyErrors)
       {
-        Runner.Log.Record (Runner, Closure, "http", 0, "certcheck", "Allowing request in spite of policy error");
+        RCSystem.Log.Record (Runner, Closure, "http", 0, "certcheck", "Allowing request in spite of policy error");
         return true;
       }
 
@@ -81,12 +81,12 @@ namespace RCL.Core
                 bool chainIsValid = chain.Build ((X509Certificate2) certificate);
                 if (!chainIsValid)
                 {
-                  Runner.Log.Record (Runner, Closure, "http", 0, "certcheck", "Allowing request in spite of policy error");
+                  RCSystem.Log.Record (Runner, Closure, "http", 0, "certcheck", "Allowing request in spite of policy error");
                   return false;
                 }
               }
             }
-            Runner.Log.Record (Runner, Closure, "http", 0, "certcheck", "Allowing request in spite of policy error");
+            RCSystem.Log.Record (Runner, Closure, "http", 0, "certcheck", "Allowing request in spite of policy error");
           }
         }
         catch (Exception ex)
@@ -151,7 +151,7 @@ namespace RCL.Core
         //lgsp.Expect100Continue = false;
         //lgsp.UseNagleAlgorithm = true;
         //lgsp.MaxIdleTime = 100000;
-        runner.Log.Record (runner, closure, "http", handle, "start", right);
+        RCSystem.Log.Record (runner, closure, "http", handle, "start", right);
         m_bot = closure.Bot;
       }
       runner.Yield (closure, new RCLong (handle));
@@ -168,7 +168,7 @@ namespace RCL.Core
           HttpListener listener = m_listeners[(int) right[i]];
           //I should be ok calling this in a lock right?
           listener.Close ();
-          runner.Log.Record (runner, closure, "http", right[i], "stop", "");
+          RCSystem.Log.Record (runner, closure, "http", right[i], "stop", "");
           //Shouldn't I remove this from the m_listeners?
           //Wait I want to see if retaining it fixes the object disposed exception.
         }
@@ -194,7 +194,7 @@ namespace RCL.Core
                                   new RCAsyncState (runner, closure, listener));
       }
       //These updates were just noise in the log file.
-      //runner.Log.Record (runner, closure, closure.Bot.Id, "https", right[0], "recv", "");
+      //RCSystem.Log.Record (runner, closure, closure.Bot.Id, "https", right[0], "recv", "");
     }
 
     [RCVerb ("httpcheck")]
@@ -264,7 +264,7 @@ namespace RCL.Core
           //}
         }
         info.Context.Response.OutputStream.Close ();
-        runner.Log.Record (runner, closure, "http", right[0], "session",
+        RCSystem.Log.Record (runner, closure, "http", right[0], "session",
           cookie != null ? cookie.Value : "null");
         throw new RCException (closure, RCErrors.Session, "Invalid session id");
       }
@@ -308,7 +308,7 @@ namespace RCL.Core
           handle = m_context;
           m_contexts.Add (handle, new RequestInfo (context, DateTime.UtcNow));
         }
-        state.Runner.Log.Record (state.Runner, state.Closure,
+        RCSystem.Log.Record (state.Runner, state.Closure,
                                  "http", handle, "recieve",
                                  context.Request.HttpMethod + " " + context.Request.RawUrl);
         state.Runner.Yield (state.Closure, new RCLong (handle));
@@ -545,7 +545,7 @@ namespace RCL.Core
           }
           finally
           {
-            runner.Log.Record (runner, closure, "http", left[i], "send", result);
+            RCSystem.Log.Record (runner, closure, "http", left[i], "send", result);
             info.Context.Response.OutputStream.Close ();
             info.Context.Request.InputStream.Close ();
             lock (m_lock)
@@ -596,7 +596,7 @@ namespace RCL.Core
           }
           finally
           {
-            runner.Log.Record (runner, closure, "http", left[i], "send", result);
+            RCSystem.Log.Record (runner, closure, "http", left[i], "send", result);
             info.Context.Response.OutputStream.Close ();
             info.Context.Request.InputStream.Close ();
             lock (m_lock)

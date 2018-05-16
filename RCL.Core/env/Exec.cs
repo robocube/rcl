@@ -260,9 +260,9 @@ namespace RCL.Core
             //  m_process.StandardInput.Close ();
             //}
           }
-          m_state.Runner.Log.Record (m_state.Runner, m_state.Closure,
-                                        "exec", Handle, "start",
-                                        string.Format ("{0} {1}", m_program, m_arguments));
+          RCSystem.Log.Record (m_state.Runner, m_state.Closure,
+                               "exec", Handle, "start",
+                               string.Format ("{0} {1}", m_program, m_arguments));
         }
         catch (Exception ex)
         {
@@ -308,22 +308,14 @@ namespace RCL.Core
           {
             return;
           }
-          //Console.Out.WriteLine ("Yielding");
           exitCode = m_process.ExitCode;
           m_exitCode = exitCode;
-          //Console.Out.WriteLine ("Disposing timer");
           m_timer.Dispose ();
-          //Console.Out.WriteLine ("Disposing process");
-          //m_finished = true;
-          //m_process.Dispose ();
-          //Console.Out.WriteLine ("Disposing waiters");
           waiters = m_waiters.ToArray ();
           m_waiters.Clear ();
           m_finished = true;
         }
-        //Console.Out.WriteLine ("Logging");
-        m_state.Runner.Log.Record (m_state.Runner, m_state.Closure,
-                                   "exec", Handle, "done", exitCode);
+        RCSystem.Log.Record (m_state.Runner, m_state.Closure, "exec", Handle, "done", exitCode);
         RCString lines = null;
         lock (this)
         {
@@ -335,8 +327,7 @@ namespace RCL.Core
         }
         if (lines != null)
         {
-          m_state.Runner.Log.RecordDoc (m_state.Runner, m_state.Closure,
-                                        "exec", Handle, "line", lines);
+          RCSystem.Log.RecordDoc (m_state.Runner, m_state.Closure, "exec", Handle, "line", lines);
         }
         RCString result = new RCString (m_result);
         for (int i = 0; i < waiters.Length; ++i)
@@ -387,8 +378,7 @@ namespace RCL.Core
         try
         {
           RCLong signal = (RCLong) state.Other;
-          m_state.Runner.Log.Record (
-            m_state.Runner, null, "exec", Handle, "killx", signal[0]);
+          RCSystem.Log.Record (m_state.Runner, null, "exec", Handle, "killx", signal[0]);
           lock (this)
           {
 #if __MonoCS__
@@ -412,8 +402,7 @@ namespace RCL.Core
         try
         {
           RCLong signal = (RCLong) state.Other;
-          m_state.Runner.Log.Record (
-            m_state.Runner, null, "exec", Handle, "closex", signal[0]);
+          RCSystem.Log.Record (m_state.Runner, null, "exec", Handle, "closex", signal[0]);
           Close ();
           state.Runner.Yield (state.Closure, signal);
         }
@@ -429,7 +418,7 @@ namespace RCL.Core
         //If it's an rcl process it should cleanly close sockets, files, other procs etc.
         //See signal handling in Process.cs
         string message = m_program + (m_arguments.Length > 0 ? " " : "") + m_arguments + " (" + m_pid + ")";
-        m_state.Runner.Log.Record (m_state.Runner, null, "exec", Handle, "closing", message);
+        RCSystem.Log.Record (m_state.Runner, null, "exec", Handle, "closing", message);
         lock (this)
         {
           if (m_pid >= 0 && !m_finished)
@@ -451,7 +440,7 @@ namespace RCL.Core
           {
             if (m_finished)
             {
-              m_state.Runner.Log.Record (m_state.Runner, null, "exec", Handle, "finished", "soft");
+              RCSystem.Log.Record (m_state.Runner, null, "exec", Handle, "finished", "soft");
               return;
             }
           }
@@ -471,7 +460,7 @@ namespace RCL.Core
           {
             if (m_finished)
             {
-              m_state.Runner.Log.Record (m_state.Runner, null, "exec", Handle, "finished", "hard");
+              RCSystem.Log.Record (m_state.Runner, null, "exec", Handle, "finished", "hard");
               return;
             }
           }
@@ -520,7 +509,7 @@ namespace RCL.Core
           //with the usual formatting procedure.
           //example single lines will appear on the header line not their own line.
           //for purposes of writing to stdin it is imperative that every line ends cleanly.
-          state.Runner.Log.Record (state.Runner, state.Closure,
+          RCSystem.Log.Record (state.Runner, state.Closure,
                                    "exec", Handle, "writex", right);
         }
         catch (Exception ex)
@@ -600,8 +589,7 @@ namespace RCL.Core
           }
           if (line != null)
           {
-            state.Runner.Log.Record (state.Runner, state.Closure,
-                                     "exec", Handle, "readx", line);
+            RCSystem.Log.Record (state.Runner, state.Closure, "exec", Handle, "readx", line);
             state.Runner.Yield (state.Closure, new RCString (line));
           }
           else
@@ -630,8 +618,7 @@ namespace RCL.Core
           }
           if (output != null)
           {
-            m_state.Runner.Log.RecordDoc (m_state.Runner, m_state.Closure,
-                                          "exec", Handle, "line", output);
+            RCSystem.Log.RecordDoc (m_state.Runner, m_state.Closure, "exec", Handle, "line", output);
           }
           m_timer.Change (200, Timeout.Infinite);
         }

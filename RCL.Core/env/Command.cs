@@ -201,8 +201,7 @@ namespace RCL.Core
         throw new RCException (closure, RCErrors.File, ex.Message);
       }
 
-      runner.Log.Record (runner, closure,
-                         "save", Interlocked.Increment (ref m_handle), path, lines);
+      RCSystem.Log.Record (runner, closure, "save", Interlocked.Increment (ref m_handle), path, lines);
       //ideally this should return a symbol right?
       runner.Yield (closure, new RCString (path));
     }
@@ -262,8 +261,7 @@ namespace RCL.Core
       {
         throw new RCException (closure, RCErrors.File, ex.Message);
       }
-      runner.Log.Record (runner, closure,
-                         "save", Interlocked.Increment (ref m_handle), left[0], right);
+      RCSystem.Log.Record (runner, closure, "save", Interlocked.Increment (ref m_handle), left[0], right);
       runner.Yield (closure, new RCString (left[0]));
     }
 
@@ -461,21 +459,21 @@ namespace RCL.Core
       [RCVerb ("print")]
       public void EvalPrint (RCRunner runner, RCClosure closure, RCString left, object right)
       {
-        runner.Log.Record (runner, closure, "print", 0, left[0], right);
+        RCSystem.Log.Record (runner, closure, "print", 0, left[0], right);
         runner.Yield (closure, (RCValue) right);
       }
 
       [RCVerb ("print")]
       public void EvalPrint (RCRunner runner, RCClosure closure, RCValue right)
       {
-        runner.Log.Record (runner, closure, "print", 0, "out", right);
+        RCSystem.Log.Record (runner, closure, "print", 0, "out", right);
         runner.Yield (closure, right);
       }
 
       [RCVerb ("print")]
       public void EvalPrint (RCRunner runner, RCClosure closure, RCString right)
       {
-        runner.Log.Record (runner, closure, "print", 0, "out", right);
+        RCSystem.Log.Record (runner, closure, "print", 0, "out", right);
         runner.Yield (closure, right);
       }
 
@@ -483,7 +481,7 @@ namespace RCL.Core
       public void EvalPrint (
         RCRunner runner, RCClosure closure, RCString left, RCString right)
       {
-        runner.Log.Record (runner, closure, "print", 0, left[0], right);
+        RCSystem.Log.Record (runner, closure, "print", 0, left[0], right);
         runner.Yield (closure, right);
       }
     }
@@ -531,7 +529,7 @@ namespace RCL.Core
                           RCClosure closure, 
                           RCLong right)
     {
-      runner.Log.Record (runner, closure, "runner", 0, "exit", right);
+      RCSystem.Log.Record (runner, closure, "runner", 0, "exit", right);
       runner.Abort ((int) right[0]);
     }
 
@@ -546,8 +544,8 @@ namespace RCL.Core
     {
       RCArray<string> column = right.DoColof<string> ("column", "");
       RCArray<string> format = right.DoColof<string> ("format", "");
-      runner.Log.Colmap (column, format);
-      //runner.Log.Record (runner, closure, "display", 0, "format", "set to " + right[0]);
+      RCSystem.Log.Colmap (column, format);
+      //RCSystem.Log.Record (runner, closure, "display", 0, "format", "set to " + right[0]);
       runner.Yield (closure, right);
     }
 
@@ -563,7 +561,7 @@ namespace RCL.Core
     public void DisplayTimezone (RCRunner runner, RCClosure closure, RCString right)
     {
       RCTime.DisplayTimeZone = TimeZoneInfo.FindSystemTimeZoneById (right[0]);
-      runner.Log.Record (runner, closure, "display", 0, "timezone", "set to " + right[0]);
+      RCSystem.Log.Record (runner, closure, "display", 0, "timezone", "set to " + right[0]);
       runner.Yield (closure, right);
       //TimeZoneInfo timezone = TimeZoneInfo.FindSystemTimeZoneById (displayTimezone);
       //displayTime = TimeZoneInfo.ConvertTimeFromUtc (new DateTime (scalar.Ticks), DisplayTimeZone);

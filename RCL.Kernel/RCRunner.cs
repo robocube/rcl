@@ -294,13 +294,8 @@ namespace RCL.Kernel
 
   public class RCRunner
   {
-    //I made this public because parse wants it.
-    //It's fine because there are no mutating methods on RCActivator.
-    //But it's possible that could change at some point.
-
     public readonly RCLArgv Argv;
     public readonly RCActivator Activator;
-    public readonly RCLog Log;
 
     //I made these public for snap.
     public readonly object m_botLock = new object ();
@@ -342,7 +337,7 @@ namespace RCL.Kernel
       Argv = argv;
       Activator = activator;
       log.SetVerbosity (argv.OutputEnum);
-      Log = log;
+      //Log = log;
       m_ctorThread = Thread.CurrentThread;
       m_bots[0] = new RCBot (this, 0);
       m_output[0] = new Queue<RCAsyncState> ();
@@ -373,7 +368,7 @@ namespace RCL.Kernel
         RCBot rootBot = m_bots[0];
         root = new RCClosure (rootBot.Id, program);
         rootBot.ChangeFiberState (root.Fiber, "start");
-        Log.Record (this, root, "fiber", root.Fiber, "start", root.Code);
+        RCSystem.Log.Record (this, root, "fiber", root.Fiber, "start", root.Code);
         m_root = root;
         m_queue.Enqueue (root);
       }
@@ -406,7 +401,7 @@ namespace RCL.Kernel
           //But only during the very first call to run for this runner.
           //Log.Record (this, root, root.BotId, "bot", root.BotId, "start", root.Code);
           rootBot.ChangeFiberState (root.Fiber, "start");
-          Log.Record (this, root, "fiber", root.Fiber, "start", root.Code);
+          RCSystem.Log.Record (this, root, "fiber", root.Fiber, "start", root.Code);
         }
         m_queue.Enqueue (root);
       }
@@ -420,8 +415,7 @@ namespace RCL.Kernel
       //If an exception was thrown, rethrow it on this thread.
       if (m_exception != null)
       {
-        //Console.Out.WriteLine (m_exception.ToString ());
-        Log.Record (this, null, "runner", 0, "unhandled", m_exception);
+        RCSystem.Log.Record (this, null, "runner", 0, "unhandled", m_exception);
         Exception exception = m_exception;
         m_exception = null;
         throw exception;
@@ -490,7 +484,7 @@ namespace RCL.Kernel
           //This should be ok but given that it is just a log write I would like to move this outside.
           RCBot bot = GetBot (previous.Bot);
           bot.ChangeFiberState (previous.Fiber, "dead");
-          Log.Record (this, previous, "fiber", previous.Fiber, "dead", "");
+          RCSystem.Log.Record (this, previous, "fiber", previous.Fiber, "dead", "");
         }
       }
     }
@@ -720,7 +714,7 @@ namespace RCL.Kernel
         {
           string state = status == 1 ? "failed" : "killed";
           bot.ChangeFiberState (closure.Fiber, state);
-          Log.Record (this, closure, "fiber", closure.Fiber, state, exception);
+          RCSystem.Log.Record (this, closure, "fiber", closure.Fiber, state, exception);
           if (closure.Fiber == 0 && closure.Bot == 0)
           {
             Finish (closure, result);
@@ -738,7 +732,7 @@ namespace RCL.Kernel
         if (result != null)
         {
           bot.ChangeFiberState (closure.Fiber, "caught");
-          Log.Record (this, closure, "fiber", closure.Fiber, "caught", exception);
+          RCSystem.Log.Record (this, closure, "fiber", closure.Fiber, "caught", exception);
           ++m_exceptionCount;
           return;
         }
@@ -749,7 +743,7 @@ namespace RCL.Kernel
       {
         string state = status == 1 ? "failed" : "killed";
         bot.ChangeFiberState (closure.Fiber, state);
-        Log.Record (this, closure, "fiber", closure.Fiber, state, exception);
+        RCSystem.Log.Record (this, closure, "fiber", closure.Fiber, state, exception);
         ++m_exceptionCount;
         if (closure.Fiber == 0 && closure.Bot == 0)
         {
@@ -883,7 +877,7 @@ namespace RCL.Kernel
         next = Fiber.FiberClosure (bot, 0, closure, right);
       }
       bot.ChangeFiberState (0, "start");
-      Log.Record (this, next, "fiber", 0, "start", right);
+      RCSystem.Log.Record (this, next, "fiber", 0, "start", right);
       Continue (null, next);
       return id;
     }
@@ -1317,27 +1311,31 @@ namespace RCL.Kernel
     {
       RCBot bot = GetBot (closure.Bot);
       bot.ChangeFiberState (closure.Fiber, "reported");
-      Log.Record (this, closure, "fiber", closure.Fiber, "reported", ex);
+      RCSystem.Log.Record (this, closure, "fiber", closure.Fiber, "reported", ex);
       ++m_exceptionCount;
     }
 
     public void Report (Exception ex)
     {
-      Log.Record (this, null, "fiber", 0, "reported", ex);
+      RCSystem.Log.Record (this, null, "fiber", 0, "reported", ex);
       ++m_exceptionCount;
     }
 
     public RCOperator New (string op, RCValue right)
     {
       if (right == null)
+      {
         throw new ArgumentNullException ("R");
+      }
       return Activator.New (op, right);
     }
 
     public RCOperator New (string op, RCValue left, RCValue right)
     {
       if (right == null)
+      {
         throw new ArgumentNullException ("R");
+      }
       return Activator.New (op, left, right);
     }
 
