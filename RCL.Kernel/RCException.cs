@@ -11,8 +11,7 @@ namespace RCL.Kernel
   [Serializable]
   public class RCException : Exception
   {
-    public static RCException Overload (
-      RCClosure closure, RCOperator op, RCValue right)
+    public static RCException Overload (RCClosure closure, RCOperator op, RCValue right)
     {
       string message = closure.ToString ();
       message += "\n---- RCL Stack ----\n";
@@ -21,8 +20,7 @@ namespace RCL.Kernel
       return new RCException (closure, RCErrors.Type, message);
     }
 
-    public static RCException Overload (
-      RCClosure closure, RCOperator op, RCValue left, RCValue right)
+    public static RCException Overload (RCClosure closure, RCOperator op, RCValue left, RCValue right)
     {
       string message = "Operator " + op.Name +
         " can not receive arguments of type " +
@@ -32,8 +30,7 @@ namespace RCL.Kernel
       return new RCException (closure, RCErrors.Type, message);
     }
 
-    public static RCException Overload (
-      RCClosure closure, string op, object right)
+    public static RCException Overload (RCClosure closure, string op, object right)
     {
       string message = closure.ToString ();
       message += "\n---- RCL Stack ----\n";
@@ -42,8 +39,7 @@ namespace RCL.Kernel
       return new RCException (closure, RCErrors.Type, message);
     }
 
-    public static RCException Overload (
-      RCClosure closure, string op, object left, object right)
+    public static RCException Overload (RCClosure closure, string op, object left, object right)
     {
       string message = closure.ToString ();
       message += "\n---- RCL Stack ----\n";
@@ -67,11 +63,23 @@ namespace RCL.Kernel
                               "Attempted to mutate a value after it was locked.");
     }
 
-    public RCException () { }
+    public RCException () {}
 
     //Without this constructor, deserialization will fail
     protected RCException (SerializationInfo info, StreamingContext context)
-      :base (info, context) {}
+      :base (info, context)
+    {
+      string closureString = info.GetString ("Closure");
+      bool fragment;
+      RCBlock closureBlock = (RCBlock) RCSystem.Parse (closureString, out fragment);
+      Closure = RCClosure.Deserialize (closureBlock);
+      Error = (RCErrors) info.GetValue ("Error", typeof (RCErrors));
+      string[] outputStrings = (string[]) info.GetValue ("Output", typeof (string[]));
+      if (outputStrings != null)
+      {
+        Output = new RCString (outputStrings);
+      }
+    }
 
     [SecurityPermissionAttribute (SecurityAction.Demand, SerializationFormatter = true)]
     public override void GetObjectData (SerializationInfo info, StreamingContext context)
@@ -80,10 +88,16 @@ namespace RCL.Kernel
       {
         throw new ArgumentNullException ("info");
       }
-      info.AddValue ("ClosureString", this.Closure.ToString ());
-      // Note: if "List<T>" isn't serializable you may need to work out another
-      //       method of adding your list, this is just for show...
+      info.AddValue ("Closure", this.Closure.Serialize ().ToString ());
       info.AddValue ("Error", this.Error, typeof (RCErrors));
+      if (this.Output != null)
+      {
+        info.AddValue ("Output", this.Output.ToArray (), typeof (string[]));
+      }
+      else
+      {
+        info.AddValue ("Output", new string[]{}, typeof (string[]));
+      }
       // MUST call through to the base class to let it save its own state
       base.GetObjectData (info, context);
     }
@@ -126,30 +140,28 @@ namespace RCL.Kernel
 
     public override string ToString ()
     {
-      return ToStringInner (messageOnTop:false, noStackOnNonNativeErrors:false, firstOnTop:true);
+      return ToStringInner (testString:false, messageOnTop:false, noStackOnNonNativeErrors:false, firstOnTop:true);
     }
 
     public string ToSystemdString ()
     {
-      return ToStringInner (messageOnTop:true, noStackOnNonNativeErrors:false, firstOnTop:false);
+      return ToStringInner (testString:false, messageOnTop:true, noStackOnNonNativeErrors:false, firstOnTop:false);
     }
 
     public string ToTestString ()
     {
-      return string.Format ("<<{0}>>", Error.ToString ());
+      //return ToString ();
+      //return string.Format ("<<{0}>>", Error.ToString ());
+      return ToStringInner (testString:true, messageOnTop:false, noStackOnNonNativeErrors:false, firstOnTop:true);
     }
 
-    public string ToStringInner (bool messageOnTop, bool noStackOnNonNativeErrors, bool firstOnTop)
+    public string ToStringInner (bool testString, bool messageOnTop, bool noStackOnNonNativeErrors, bool firstOnTop)
     {
-      //Serializable
-      //if (Closure == null)
-      //{
-      //  return ToTestString ();
-      //}
       StringBuilder builder = new StringBuilder ();
       //Never show stack on asserts
       //Always show stack on native exceptions
-      if (Error == RCErrors.Assert ||
+      if (testString ||
+          Error == RCErrors.Assert ||
           Error == RCErrors.Exec ||
           Error == RCErrors.File ||
           (noStackOnNonNativeErrors && Error != RCErrors.Native))

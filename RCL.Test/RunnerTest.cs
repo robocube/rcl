@@ -155,7 +155,7 @@ namespace RCL.Test
     public void TestTryError()
     {
       RCRunner runner = new RCRunner ("--output=test");
-      Assert.AreEqual ("{status:1 data:\"<<Assert>>\"}", runner.Rep ("try {<-assert false}").ToString ());
+      Assert.AreEqual ("{status:1 data:\"<<Assert,Failed: assert false>>\"}", runner.Rep ("try {<-assert false}").ToString ());
     }
 
 #if __MonoCS__

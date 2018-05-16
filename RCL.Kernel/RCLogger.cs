@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Diagnostics;
 using System.Collections.Generic;
 using System.Text;
 
@@ -234,6 +235,8 @@ namespace RCL.Kernel
         }
         m_output.WriteLine ("{0} {1} {2} {3} {4} {5} {6}",
                             time, bot, fiber, type, instance, state, info.ToString ());
+        Debug.WriteLine ("{0} {1} {2} {3} {4} {5} {6}",
+                          time, bot, fiber, type, instance, state, info.ToString ());
       }
       else if (m_level == RCOutput.Systemd)
       {
@@ -282,6 +285,8 @@ namespace RCL.Kernel
         }
         m_output.WriteLine ("<{0}>{1} {2} {3} {4} {5} {6}",
                             severity, bot, fiber, type, instance, state, message);
+        Debug.WriteLine ("<{0}>{1} {2} {3} {4} {5} {6}",
+                            severity, bot, fiber, type, instance, state, message);
       }
       else if (m_level == RCOutput.Multi || m_level == RCOutput.Full)
       {
@@ -292,11 +297,14 @@ namespace RCL.Kernel
         string optionalSpace = (singleLine && message.Length > 0) ? " " : "";
         m_output.WriteLine ("{0} {1} {2} {3} {4} {5}{6}{7}",
                             time, bot, fiber, type, instance, state, optionalSpace, message);
+        Debug.WriteLine ("{0} {1} {2} {3} {4} {5}{6}{7}",
+                            time, bot, fiber, type, instance, state, optionalSpace, message);
       }
       else if (m_level == RCOutput.Clean) //&& type == "print")
       {
         string message = CreateMessage (info);
         m_output.WriteLine (message);
+        Debug.WriteLine (message);
       }
       else if (m_level == RCOutput.Test)
       {
@@ -305,6 +313,8 @@ namespace RCL.Kernel
         string optionalSpace = (singleLine && message.Length > 0) ? " " : "";
         m_output.WriteLine ("{0} {1} {2} {3} {4}{5}{6}", 
                             bot, fiber, type, instance, state, optionalSpace, message);        
+        Debug.WriteLine ("{0} {1} {2} {3} {4}{5}{6}",
+                            bot, fiber, type, instance, state, optionalSpace, message);
       }
       else if (m_level == RCOutput.Trace)
       {

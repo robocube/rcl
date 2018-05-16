@@ -100,7 +100,6 @@ namespace RCL.Kernel
       {
         throw new Exception ("code may not be null.");
       }
-      //Bot = bot;
       Bot = bot;
       Parent = parent;
       Code = code;
@@ -222,29 +221,52 @@ namespace RCL.Kernel
       result = new RCBlock (result, "depth", ":", this.Depth);
       result = new RCBlock (result, "fiber", ":", this.Fiber);
       result = new RCBlock (result, "index", ":", this.Index);
-      result = new RCBlock (result, "left", ":", this.Left);
-      result = new RCBlock (result, "locks", ":", this.Locks);
       result = new RCBlock (result, "result", ":", this.Result);
-      result = new RCBlock (result, "parent", ":", this.Parent.Serialize ());
+      if (this.Left != null)
+      {
+        result = new RCBlock (result, "left", ":", this.Left);
+      }
+      if (this.Locks != null)
+      {
+        result = new RCBlock (result, "locks", ":", this.Locks);
+      }
+      if (this.Parent != null)
+      {
+        result = new RCBlock (result, "parent", ":", this.Parent.Serialize ());
+      }
+      if (this.UserOpContext != null)
+      {
+        //TODO: make this List serialize
+        //result = new RCBlock (result, "userOpContext", ":", this.Parent.Serialize ());
+      }
       return result;
     }
 
-    public static RCClosure Deserialize (RCRunner runner, RCBlock right)
+    public static RCClosure Deserialize (RCBlock right)
     {
       long botId = right.GetLong ("bot");
       long fiber = right.GetLong ("fiber");
-      RCSymbol locks = (RCSymbol) right.Get ("locks");
-      RCClosure parent = Deserialize (runner, right.GetBlock ("parent"));
+      RCSymbol locks = (RCSymbol) right.Get ("locks", null);
+      RCBlock parentBlock = (RCBlock) right.GetBlock ("parent", null);
+      RCClosure parent = null;
+      if (parentBlock != null)
+      {
+        parent = Deserialize (parentBlock);
+      }
       RCValue code = right.Get ("code");
-      RCValue left = right.Get ("left");
+      RCValue left = right.Get ("left", null);
       RCBlock result = right.GetBlock ("result");
       int index = (int) right.GetLong ("index");
       RCValue userOp = right.Get ("userOp");
-      RCBlock userOpContextBlock = right.GetBlock ("userOpContext");
-      RCArray<RCBlock> userOpContext = new RCArray<RCBlock> ();
-      for (int i = 0; i < userOpContextBlock.Count; ++i)
+      RCBlock userOpContextBlock = right.GetBlock ("userOpContext", null);
+      RCArray<RCBlock> userOpContext = null;
+      if (userOpContextBlock != null)
       {
-        userOpContext.Write ((RCBlock) userOpContextBlock.Get (i));
+        userOpContext = new RCArray<RCBlock> ();
+        for (int i = 0; i < userOpContextBlock.Count; ++i)
+        {
+          userOpContext.Write ((RCBlock) userOpContextBlock.Get (i));
+        }
       }
       return new RCClosure (botId, fiber, locks, parent, code, left, result, index, userOp, userOpContext);
     }

@@ -2061,13 +2061,13 @@ namespace RCL.Test
     [Test]
     public void TestTryFail ()
     {
-      DoTest ("try {<-900 fail \"fail with status 900\"}", "{status:900 data:\"<<Custom>>\"}");
+      DoTest ("try {<-900 fail \"fail with status 900\"}", "{status:900 data:\"<<Custom,fail with status 900>>\"}");
     }
 
     [Test]
     public void TestTryFail1 ()
     {
-      DoTest ("try {<-fail \"rando failure message\"}", "{status:8 data:\"<<Custom>>\"}");
+      DoTest ("try {<-fail \"rando failure message\"}", "{status:8 data:\"<<Custom,rando failure message>>\"}");
     }
 
     [Test]
@@ -2154,7 +2154,7 @@ namespace RCL.Test
     [Test]
     public void TestTryAssert ()
     {
-      DoTest ("try {<-assert false}", "{status:1 data:\"<<Assert>>\"}");
+      DoTest ("try {<-assert false}", "{status:1 data:\"<<Assert,Failed: assert false>>\"}");
     }
 
     [Test]
@@ -2627,7 +2627,7 @@ namespace RCL.Test
       //It would return zero if the process exited before waitx registered.
       for (int i = 0; i < 10; ++i)
       {
-        DoTest ("{sh:startx \"bash\" :$sh writex \"exit 1\n\" <-try {<-waitx $sh}}", "{status:1 data:\"<<Exec>>\"}");
+        DoTest ("{sh:startx \"bash\" :$sh writex \"exit 1\n\" <-try {<-waitx $sh}}", "{status:1 data:\"<<Exec,exit status 1>>\"}");
       }
     }
 
