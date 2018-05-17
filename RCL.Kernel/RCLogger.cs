@@ -65,72 +65,24 @@ namespace RCL.Kernel
       return m_colmap;
     }
 
-    public void RecordFilter (RCClosure closure,
-                              string type,
-                              long instance,
-                              string state,
-                              object info)
-    {
-      RecordFilter (closure, type, instance, state, info, false);
-    }
-
-    public void RecordFilter (RCClosure closure,
-                              string type,
-                              long instance,
-                              string state,
-                              object info,
-                              bool forceDoc)
+    protected bool Filter (string type, string state)
     {
       lock (m_lock)
       {
         if (m_show.Contains ("*"))
         {
-          Record (closure, type, instance, state, info, forceDoc);
+          return true;
         }
         else if (m_show.Contains (type))
         {
-          Record (closure, type, instance, state, info, forceDoc);
+          return true;
         }
         else if (m_show.Contains (type + ":" + state))
         {
-          Record (closure, type, instance, state, info, forceDoc);
+          return true;
         }
       }
-    }
-
-    public void RecordFilter (long bot,
-                              long fiber,
-                              string type,
-                              long instance,
-                              string state,
-                              object info)
-    {
-      RecordFilter (bot, fiber, type, instance, state, info, false);
-    }
-
-    public void RecordFilter (long bot,
-                              long fiber,
-                              string type,
-                              long instance,
-                              string state,
-                              object info,
-                              bool forceDoc)
-    {
-      lock (m_lock)
-      {
-        if (m_show.Contains ("*"))
-        {
-          Record (bot, fiber, type, instance, state, info, forceDoc);
-        }
-        else if (m_show.Contains (type))
-        {
-          Record (bot, fiber, type, instance, state, info, forceDoc);
-        }
-        else if (m_show.Contains (type + ":" + state))
-        {
-          Record (bot, fiber, type, instance, state, info, forceDoc);
-        }
-      }
+      return false;
     }
 
     public void Record (RCClosure closure,
@@ -177,6 +129,10 @@ namespace RCL.Kernel
                         object info,
                         bool forceDoc)
     {
+      if (!Filter (type, state))
+      {
+        return;
+      }
       if (m_output == null)
       {
         return;

@@ -53,13 +53,11 @@ namespace RCL.Exe
         {
           newArgv[flagsv.Length + i] = argv[i];
         }
-        cmd = new RCLArgv (newArgv);
-        RCLArgv.Init (newArgv);
+        cmd = RCLArgv.Init (newArgv);
       }
       else
       {
-        cmd = new RCLArgv (argv);
-        RCLArgv.Init (argv);
+        cmd = RCLArgv.Init (argv);
       }
       // Someday do color output like this
       // string message = "\x1b[0;33mYELLOW\x1b[0;31m RED\x1b[0;34m BLUE\x1b[0;37m";

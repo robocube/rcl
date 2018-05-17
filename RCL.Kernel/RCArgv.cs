@@ -7,9 +7,9 @@ namespace RCL.Kernel
 {
   public class RCLArgv
   {
-    public static RCLArgv m_instance = new RCLArgv ();
+    public static volatile RCLArgv m_instance = new RCLArgv ();
     public static volatile bool m_initInvoked = false;
-    public static void Init (string[] argv)
+    public static RCLArgv Init (string[] argv)
     {
       if (m_initInvoked)
       {
@@ -17,6 +17,7 @@ namespace RCL.Kernel
       }
       m_instance = new RCLArgv (argv);
       m_initInvoked = true;
+      return m_instance;
     }
 
     public static RCLArgv Instance
