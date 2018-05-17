@@ -174,9 +174,8 @@ namespace RCL.Exe
         new UnhandledExceptionEventHandler (UnhandledException);
       string prompt = "RCL>";
       LineEditor editor = new LineEditor ("RCL");
-      RCLogger consoleLog = new RCLogger (cmd.Nokeys, cmd.Show);
-      RCLog log = new RCLog (consoleLog);
-      RCRunner runner = new RCRunner (RCSystem.Activator, log, 1, cmd);
+      //RCLogger log = new RCLogger (cmd.Nokeys, cmd.Show);
+      RCRunner runner = new RCRunner (RCSystem.Activator, 1, cmd);
       InstallSignalHandler (runner);
       cmd.PrintStartup (appDomainVersionString);
 
@@ -191,22 +190,19 @@ namespace RCL.Exe
           if (IsolateCode != null)
           {
             code = runner.Read (IsolateCode);
-            //Console.WriteLine("Reading IsolateCode: {0}", code);
           }
           else if (cmd.Program != "")
           {
             string file = File.ReadAllText (cmd.Program, Encoding.UTF8);
             code = runner.Read (file);
           }
-          //Console.WriteLine("runner.Rep(code): {0}", code);
           codeResult = runner.Rep (code);
-          //Console.WriteLine("codeResult: {0}", codeResult.ToString ());
           if (cmd.Action != "")
           {
             RCValue result = runner.Rep (string.Format ("{0} #", cmd.Action));
             if (cmd.OutputEnum != RCOutput.Clean)
             {
-              string text = result.Format (RCFormat.Pretty, log.GetColmap ());
+              string text = result.Format (RCFormat.Pretty, RCSystem.Log.GetColmap ());
               Console.Out.WriteLine (text);
             }
           }
@@ -287,7 +283,7 @@ namespace RCL.Exe
             RCValue result = runner.Rep (code);
             if (result != null)
             {
-              Console.Out.WriteLine (result.Format (RCFormat.Pretty, log.GetColmap ()));
+              Console.Out.WriteLine (result.Format (RCFormat.Pretty, RCSystem.Log.GetColmap ()));
             }
             if (cmd.Exit)
             {
@@ -317,11 +313,11 @@ namespace RCL.Exe
             if (line != null)
             {
               string trimmed = line.TrimStart (' ').TrimEnd (' ');
-              line = Alias (trimmed, runner, consoleLog, cmd);
+              line = Alias (trimmed, runner, cmd);
               RCValue result = runner.Rep (line);
               if (result != null)
               {
-                Console.Out.WriteLine (result.Format (RCFormat.Pretty, log.GetColmap ()));
+                Console.Out.WriteLine (result.Format (RCFormat.Pretty, RCSystem.Log.GetColmap ()));
               }
             }
             else break;
@@ -375,7 +371,7 @@ namespace RCL.Exe
           {
             ThreadPool.QueueUserWorkItem (delegate (object state) 
             {
-              RCSystem.Log.Record ("runner", 0, "signal", "SIGTERM");
+              RCSystem.Log.Record (0, 0, "runner", 0, "signal", "SIGTERM");
               runner.Abort (15);
             });
           }
@@ -386,7 +382,7 @@ namespace RCL.Exe
               m_firstSigint = true;
               ThreadPool.QueueUserWorkItem (delegate (object state) 
               {
-                RCSystem.Log.Record ("runner", 0, "signal", "SIGINT");
+                RCSystem.Log.Record (0, 0, "runner", 0, "signal", "SIGINT");
                 runner.Interupt ();
               });
             }
@@ -394,7 +390,7 @@ namespace RCL.Exe
             {
               ThreadPool.QueueUserWorkItem (delegate (object state) 
               {
-                RCSystem.Log.Record ("runner", 0, "signal", "SIGINT (exiting)");
+                RCSystem.Log.Record (0, 0, "runner", 0, "signal", "SIGINT (exiting)");
                 runner.Abort (2);
               });
             }
@@ -418,7 +414,7 @@ namespace RCL.Exe
     /// Some corny bash-like aliases for various things. We should get rid of this or do
     /// something better.
     /// </summary>
-    static string Alias (string trimmed, RCRunner runner, RCLogger output, RCLArgv cmd)
+    static string Alias (string trimmed, RCRunner runner, RCLArgv cmd)
     {
       string line = trimmed;
       if (trimmed == "exit")
@@ -459,7 +455,7 @@ namespace RCL.Exe
                trimmed == "clean")
       {
         RCOutput level = (RCOutput) Enum.Parse (typeof (RCOutput), trimmed, true);
-        output.SetVerbosity (level);
+        RCSystem.Log.SetVerbosity (level);
       }
       else if (trimmed == "help")
       {

@@ -91,6 +91,11 @@ namespace RCL.Kernel
       m_level = level;
     }
 
+    public void Colmap (RCArray<string> column, RCArray<string> format)
+    {
+      UpdateColmap (column, format);
+    }
+
     public void UpdateColmap (RCArray<string> column, RCArray<string> format)
     {
       lock (m_lock)
@@ -107,21 +112,21 @@ namespace RCL.Kernel
       return m_colmap;
     }
 
-    public static void RecordFilter (RCClosure closure,
-                                     string type,
-                                     long instance,
-                                     string state,
-                                     object info)
+    public void RecordFilter (RCClosure closure,
+                              string type,
+                              long instance,
+                              string state,
+                              object info)
     {
       RecordFilter (closure, type, instance, state, info, false);
     }
 
-    public static void RecordFilter (RCClosure closure,
-                                     string type,
-                                     long instance,
-                                     string state,
-                                     object info,
-                                     bool forceDoc)
+    public void RecordFilter (RCClosure closure,
+                              string type,
+                              long instance,
+                              string state,
+                              object info,
+                              bool forceDoc)
     {
       lock (m_lock)
       {
@@ -140,23 +145,23 @@ namespace RCL.Kernel
       }
     }
 
-    public static void RecordFilter (long bot,
-                                     long fiber,
-                                     string type,
-                                     long instance,
-                                     string state,
-                                     object info)
+    public void RecordFilter (long bot,
+                              long fiber,
+                              string type,
+                              long instance,
+                              string state,
+                              object info)
     {
       RecordFilter (bot, fiber, type, instance, state, info, false);
     }
 
-    public static void RecordFilter (long bot,
-                                     long fiber,
-                                     string type,
-                                     long instance,
-                                     string state,
-                                     object info,
-                                     bool forceDoc)
+    public void RecordFilter (long bot,
+                              long fiber,
+                              string type,
+                              long instance,
+                              string state,
+                              object info,
+                              bool forceDoc)
     {
       lock (m_lock)
       {
@@ -175,12 +180,21 @@ namespace RCL.Kernel
       }
     }
 
-    protected static void Record (RCClosure closure,
-                                  string type,
-                                  long instance,
-                                  string state,
-                                  object info,
-                                  bool forceDoc)
+    public void Record (RCClosure closure,
+                        string type,
+                        long instance,
+                        string state,
+                        object info)
+    {
+      Record (closure, type, instance, state, info, false);
+    }
+
+    public void Record (RCClosure closure,
+                               string type,
+                               long instance,
+                               string state,
+                               object info,
+                               bool forceDoc)
     {
       long bot = 0;
       long fiber = 0;
@@ -192,23 +206,23 @@ namespace RCL.Kernel
       Record (bot, fiber, type, instance, state, info, forceDoc);
     }
 
-    protected static void Record (long bot,
-                                  long fiber,
-                                  string type,
-                                  long instance,
-                                  string state,
-                                  object info)
+    public void Record (long bot,
+                        long fiber,
+                        string type,
+                        long instance,
+                        string state,
+                        object info)
     {
       Record (bot, fiber, type, instance, state, info, false);
     }
 
-    protected static void Record (long bot,
-                                  long fiber,
-                                  string type,
-                                  long instance,
-                                  string state,
-                                  object info,
-                                  bool forceDoc)
+    public void Record (long bot,
+                        long fiber,
+                        string type,
+                        long instance,
+                        string state,
+                        object info,
+                        bool forceDoc)
     {
       if (m_output == null)
       {

@@ -16,11 +16,12 @@ namespace RCL.Kernel
     {
       Args = RCLArgv.Instance;
       Activator = RCActivator.CreateDefault ();
-      Log = new RCLog (new RCLogger (Args.Nokeys, Args.Show));
+      Log = new RCLogger (Args.Nokeys, Args.Show);
+      Log.SetVerbosity (Args.OutputEnum);
     }
 
     public readonly static RCLArgv Args;
-    public readonly static RCLog Log;
+    public readonly static RCLogger Log;
     public readonly static RCActivator Activator;
 
     public static RCValue Parse (string code)

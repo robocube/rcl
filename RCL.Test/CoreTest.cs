@@ -11,9 +11,7 @@ namespace RCL.Test
     //We could have operators that yield strings and in the 
     //end you just traverse the document and cat all the strings
     //together.
-    protected RCRunner runner = new RCRunner (RCSystem.Activator,
-                                              new RCLog (), 1,
-                                              new RCLArgv ("--output=test", "--show=print"));
+    protected RCRunner runner = new RCRunner (RCSystem.Activator, 1, new RCLArgv ("--output=test", "--show=print"));
 
     public static void DoTest (RCRunner runner, RCFormat args, string code, string expected)
     {

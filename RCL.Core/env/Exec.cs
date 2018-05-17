@@ -326,7 +326,7 @@ namespace RCL.Core
         }
         if (lines != null)
         {
-          RCSystem.Log.RecordDoc (m_state.Closure, "exec", Handle, "line", lines);
+          RCSystem.Log.Record (m_state.Closure, "exec", Handle, "line", lines, forceDoc:true);
         }
         RCString result = new RCString (m_result);
         for (int i = 0; i < waiters.Length; ++i)
@@ -616,7 +616,7 @@ namespace RCL.Core
           }
           if (output != null)
           {
-            RCSystem.Log.RecordDoc (m_state.Closure, "exec", Handle, "line", output);
+            RCSystem.Log.Record (m_state.Closure, "exec", Handle, "line", output, forceDoc:true);
           }
           m_timer.Change (200, Timeout.Infinite);
         }

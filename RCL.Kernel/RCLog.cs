@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 namespace RCL.Kernel
 {
+  /*
   public class RCLog
   {
     protected RCLogger m_logger;
@@ -69,5 +70,6 @@ namespace RCL.Kernel
       RCLogger.RecordFilter (closure, type, instance, state, info, true);
     }
   }
+  */
 }
 

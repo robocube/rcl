@@ -330,14 +330,12 @@ namespace RCL.Kernel
     protected AutoResetEvent m_done = new AutoResetEvent (false);
     protected Thread m_ctorThread;
 
-    public RCRunner () : this (RCSystem.Activator, RCSystem.Log, 1, RCSystem.Args) {}
-    public RCRunner (params string[] options) : this (RCSystem.Activator, RCSystem.Log, 1, new RCLArgv (options)) {}
-    public RCRunner (RCActivator activator, RCLog log, long workers, RCLArgv argv)
+    public RCRunner () : this (RCSystem.Activator, 1, RCSystem.Args) {}
+    public RCRunner (params string[] options) : this (RCSystem.Activator, 1, new RCLArgv (options)) {}
+    public RCRunner (RCActivator activator, long workers, RCLArgv argv)
     {
       Argv = argv;
       Activator = activator;
-      log.SetVerbosity (argv.OutputEnum);
-      //Log = log;
       m_ctorThread = Thread.CurrentThread;
       m_bots[0] = new RCBot (this, 0);
       m_output[0] = new Queue<RCAsyncState> ();

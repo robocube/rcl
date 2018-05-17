@@ -2329,9 +2329,7 @@ namespace RCL.Test
       //DoTest ("\"G\" \"S\" retimeline [G|T|S|x 0 0 #a 0]", "[G|S|x 0 #a 0]");
     }
 
-    protected RCRunner runner = new RCRunner (RCSystem.Activator,
-                                              new RCLog (), 1,
-                                              new RCLArgv ("--output=test", "--show=print"));
+    protected RCRunner runner = new RCRunner (RCSystem.Activator, 1, new RCLArgv ("--output=test", "--show=print"));
 
     public void DoTest (string code, string expected)
     {
