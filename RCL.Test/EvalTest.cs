@@ -2048,7 +2048,7 @@ namespace RCL.Test
     }
 #endif
 
-    RCRunner runner = new RCRunner (RCSystem.Activator, 1, new RCLArgv ("--output=test", "--show=print"));
+    RCRunner runner = RCRunner.TestRunner ();
 
     /// <summary>
     /// Run the test using RCFormat.DefaultNoT (No timestamps on cubes)

@@ -11,7 +11,7 @@ namespace RCL.Kernel
     public void EvalParse (
       RCRunner runner, RCClosure closure, RCString right)
     {
-      runner.Yield (closure, DoParse (new RCLParser (runner.Activator), right));
+      runner.Yield (closure, DoParse (new RCLParser (RCSystem.Activator), right));
     }
 
     [RCVerb ("parse")]
@@ -34,7 +34,7 @@ namespace RCL.Kernel
       }
       else if (which.Equals ("rcl"))
       {
-        parser = new RCLParser (runner.Activator);
+        parser = new RCLParser (RCSystem.Activator);
       }
       else if (which.Equals ("log"))
       {

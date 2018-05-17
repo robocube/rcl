@@ -293,11 +293,11 @@ namespace RCL.Kernel
       }
       if (left == null)
       {
-        runner.Activator.Invoke (runner, closure, op.Name, right);
+        RCSystem.Activator.Invoke (runner, closure, op.Name, right);
       }
       else
       {
-        runner.Activator.Invoke (runner, closure, op.Name, left, right);
+        RCSystem.Activator.Invoke (runner, closure, op.Name, left, right);
       }
       //A lot of good men died to bring us this one line of code...
       //Let's keep this around as a memorial.
@@ -317,7 +317,7 @@ namespace RCL.Kernel
         if (current.Evaluator.Invoke)
         {
           string op = ((RCString) current.Value)[0];
-          runner.Activator.Invoke (runner, closure, op, closure.Result);
+          RCSystem.Activator.Invoke (runner, closure, op, closure.Result);
         }
         else if (current.Evaluator.Template)
         {

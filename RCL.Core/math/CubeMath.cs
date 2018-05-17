@@ -1007,7 +1007,7 @@ namespace RCL.Core
       RCOperator op = (RCOperator) closure.Code;
       if (left.Cols == 0)
         throw new Exception ("The left argument was an empty cube.");
-      runner.Activator.Invoke (runner, closure, op.Name, left.GetSimpleVector (0), right);
+      RCSystem.Activator.Invoke (runner, closure, op.Name, left.GetSimpleVector (0), right);
     }
 
     [RCVerb ("read")] [RCVerb ("write")]
@@ -1019,7 +1019,7 @@ namespace RCL.Core
       RCOperator op = (RCOperator) closure.Code;
       if (left.Cols == 0)
         throw new Exception ("The left argument was an empty cube.");
-      runner.Activator.Invoke (runner, closure, op.Name, left.GetSimpleVector (0), right);
+      RCSystem.Activator.Invoke (runner, closure, op.Name, left.GetSimpleVector (0), right);
     }
 
     [RCVerb ("read")] [RCVerb ("write")]
@@ -1033,7 +1033,7 @@ namespace RCL.Core
         throw new Exception ("The left argument was an empty cube.");
       if (right.Cols == 0)
         throw new Exception ("The right argument was an empty cube.");
-      runner.Activator.Invoke (
+      RCSystem.Activator.Invoke (
         runner, closure, op.Name, left.GetSimpleVector (0), right.GetSimpleVector (0));
     }
 

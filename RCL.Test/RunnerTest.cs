@@ -112,7 +112,7 @@ namespace RCL.Test
     [Test]
     public void TestForConflictingResults ()
     {
-      RCRunner runner = new RCRunner (RCSystem.Activator, 1, new RCLArgv ());
+      RCRunner runner = new RCRunner ();
       Assert.AreEqual ("{status:0 data:5}", 
                        RepString (runner, "first #r from eval {serve:{b:bot {<-try {<-eval {<-2 + 3}}} f1:fiber {r:wait $b <-$r} <-wait $f1} r:wait fiber {<-serve #}}"));
     }
@@ -153,7 +153,7 @@ namespace RCL.Test
     [Test]
     public void TestTryError()
     {
-      RCRunner runner = new RCRunner ("--output=test");
+      RCRunner runner = RCRunner.TestRunner ();
       Assert.AreEqual ("{status:1 data:\"<<Assert,Failed: assert false>>\"}", runner.Rep ("try {<-assert false}").ToString ());
     }
 

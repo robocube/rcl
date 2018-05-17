@@ -6,9 +6,6 @@ namespace RCL.Kernel
 {
   public class RCRunner
   {
-    public readonly RCLArgv Argv;
-    public readonly RCActivator Activator;
-
     //I made these public for snap.
     public readonly object m_botLock = new object ();
     public Dictionary<long, RCBot> m_bots = new Dictionary<long, RCBot> ();
@@ -42,16 +39,19 @@ namespace RCL.Kernel
     protected AutoResetEvent m_done = new AutoResetEvent (false);
     protected Thread m_ctorThread;
 
-    public RCRunner () : this (RCSystem.Activator, 1, RCSystem.Args) {}
-    public RCRunner (params string[] options) : this (RCSystem.Activator, 1, new RCLArgv (options)) {}
-    public RCRunner (RCActivator activator, long workers, RCLArgv argv)
+    public static RCRunner TestRunner ()
     {
-      Argv = argv;
-      Activator = activator;
+      RCSystem.Reconfigure (new RCLArgv ("--output=test", "--show=print"));
+      return new RCRunner (workers:1);
+    }
+
+    public RCRunner () : this (workers:1) {}
+    public RCRunner (long workers)
+    {
       m_ctorThread = Thread.CurrentThread;
       m_bots[0] = new RCBot (this, 0);
       m_output[0] = new Queue<RCAsyncState> ();
-      m_parser = new RCLParser (Activator);
+      m_parser = new RCLParser (RCSystem.Activator);
       Console.CancelKeyPress += HandleConsoleCancelKeyPress;
       for (int i = 0; i < workers; ++i)
       {
@@ -325,7 +325,7 @@ namespace RCL.Kernel
       {
         lock (m_botLock)
         {
-          m_parser = new RCLParser (Activator);
+          m_parser = new RCLParser (RCSystem.Activator);
           m_root = null;
           m_result = null;
           m_exception = null;
@@ -1036,7 +1036,7 @@ namespace RCL.Kernel
       {
         throw new ArgumentNullException ("R");
       }
-      return Activator.New (op, right);
+      return RCSystem.Activator.New (op, right);
     }
 
     public RCOperator New (string op, RCValue left, RCValue right)
@@ -1045,7 +1045,7 @@ namespace RCL.Kernel
       {
         throw new ArgumentNullException ("R");
       }
-      return Activator.New (op, left, right);
+      return RCSystem.Activator.New (op, left, right);
     }
 
     public int ExceptionCount

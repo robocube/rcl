@@ -17,7 +17,7 @@ namespace RCL.Kernel
     public RCBot (RCRunner runner, long id)
     {
       Id = id;
-      runner.Activator.InjectState (this);
+      RCSystem.Activator.InjectState (this);
     }
 
     //Deprecated: Only used by Tcp api.

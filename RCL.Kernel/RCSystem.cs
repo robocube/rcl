@@ -21,9 +21,9 @@ namespace RCL.Kernel
       Log.SetVerbosity (Args.OutputEnum);
     }
 
-    public readonly static RCLArgv Args;
-    public readonly static RCLogger Log;
-    public readonly static RCActivator Activator;
+    public static RCLArgv Args;
+    public static RCLogger Log;
+    public static RCActivator Activator;
 
     public static RCValue Parse (string code)
     {
@@ -38,6 +38,13 @@ namespace RCL.Kernel
       parser.Lex (code, tokens);
       RCValue result = parser.Parse (tokens, out fragment);
       return result;
+    }
+
+    public static void Reconfigure (RCLArgv args)
+    {
+      Args = args;
+      Log = new RCLogger (Args.Nokeys, Args.Show);
+      Log.SetVerbosity (Args.OutputEnum);
     }
 
     /// <summary>

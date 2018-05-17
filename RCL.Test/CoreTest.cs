@@ -7,11 +7,8 @@ namespace RCL.Test
 {
   public class CoreTest
   {
-    //Gui Operators? Are gui operators like gui controls?
-    //We could have operators that yield strings and in the 
-    //end you just traverse the document and cat all the strings
-    //together.
-    protected RCRunner runner = new RCRunner (RCSystem.Activator, 1, new RCLArgv ("--output=test", "--show=print"));
+    //protected RCRunner runner = new RCRunner (RCSystem.Activator, 1, new RCLArgv ("--output=test", "--show=print"));
+    protected RCRunner runner = RCRunner.TestRunner ();
 
     public static void DoTest (RCRunner runner, RCFormat args, string code, string expected)
     {

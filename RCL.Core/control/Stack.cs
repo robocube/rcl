@@ -20,7 +20,7 @@ namespace RCL.Core
     [RCVerb ("stack_trace")]
     public void EvalStackTrace (RCRunner runner, RCClosure closure, RCBlock right)
     {
-      bool firstOnTop = runner.Argv.OutputEnum != RCOutput.Systemd;
+      bool firstOnTop = RCSystem.Args.OutputEnum != RCOutput.Systemd;
       StringBuilder builder = new StringBuilder ();
       closure.ToString (builder:builder, indent:0, firstOnTop:firstOnTop);
       string stack = builder.ToString ();

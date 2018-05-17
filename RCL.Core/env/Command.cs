@@ -326,12 +326,11 @@ namespace RCL.Core
       runner.Yield (closure, new RCLong (Process.GetCurrentProcess ().Id));
     }
 
-    //Let's call this getarg to be more like getenv
     [RCVerb ("option")]
     public void EvalOptions (
       RCRunner runner, RCClosure closure, RCString left, RCString right)
     {
-      RCValue result = runner.Argv.Options.Get (right[0]);
+      RCValue result = RCSystem.Args.Options.Get (right[0]);
       if (result == null)
       {
         result = left;
@@ -343,7 +342,7 @@ namespace RCL.Core
     public void EvalOptions (
       RCRunner runner, RCClosure closure, RCString right)
     {
-      RCValue result = runner.Argv.Options.Get (right[0]);
+      RCValue result = RCSystem.Args.Options.Get (right[0]);
       if (result == null)
       {
         throw new Exception ("No such option:" + right[0]);
@@ -377,11 +376,11 @@ namespace RCL.Core
     {
       if (value == "arguments")
       {
-        runner.Yield (closure, runner.Argv.Arguments);
+        runner.Yield (closure, RCSystem.Args.Arguments);
       }
       else if (value == "options")
       {
-        runner.Yield (closure, runner.Argv.Options);
+        runner.Yield (closure, RCSystem.Args.Options);
       }
       else if (value == "directory")
       {

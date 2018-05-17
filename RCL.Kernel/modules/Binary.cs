@@ -252,7 +252,7 @@ namespace RCL.Kernel
       RCRunner runner, RCClosure closure, RCByte right)
     {
       int start = 0;
-      RCValue result = DoParse (runner.Activator, right.Data, ref start);
+      RCValue result = DoParse (RCSystem.Activator, right.Data, ref start);
       runner.Yield (closure, result);
     }
 

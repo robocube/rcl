@@ -69,7 +69,7 @@ namespace RCL.Exe
         new UnhandledExceptionEventHandler (UnhandledException);
       string prompt = "RCL>";
       LineEditor editor = new LineEditor ("RCL");
-      RCRunner runner = new RCRunner (RCSystem.Activator, 1, cmd);
+      RCRunner runner = new RCRunner (workers:1);
       InstallSignalHandler (runner);
       cmd.PrintStartup (appDomainVersionString);
 

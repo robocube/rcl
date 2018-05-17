@@ -29,7 +29,7 @@ namespace RCL.Core
       string message;
       if (rcex != null)
       {
-        if (runner.Argv.OutputEnum == RCOutput.Test) 
+        if (RCSystem.Args.OutputEnum == RCOutput.Test)
         {
           message = rcex.ToTestString ();
         }

@@ -428,7 +428,7 @@ namespace RCL.Core
     [RCVerb ("monad")]
     public void EvalMonad (RCRunner runner, RCClosure closure, RCString left, object right)
     {
-      RCOperator op = runner.Activator.New (left[0], (RCValue) right);
+      RCOperator op = RCSystem.Activator.New (left[0], (RCValue) right);
       runner.Yield (closure, op);
     }
 
@@ -436,7 +436,7 @@ namespace RCL.Core
     public void EvalDyad (RCRunner runner, RCClosure closure, RCString left, object right)
     {
       RCBlock block = (RCBlock) right;
-      RCOperator op = runner.Activator.New (left[0], block.Get ("l"), block.Get ("r"));
+      RCOperator op = RCSystem.Activator.New (left[0], block.Get ("l"), block.Get ("r"));
       runner.Yield (closure, op);
     }
       
