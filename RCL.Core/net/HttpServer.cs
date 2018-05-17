@@ -18,18 +18,18 @@ namespace RCL.Core
     {
       if (right[0] == "Enabled")
       {
-        RCSystem.Log.Record (runner, closure, "http", 0, "certcheck", "Enabled");
+        RCSystem.Log.Record (closure, "http", 0, "certcheck", "Enabled");
         ServicePointManager.ServerCertificateValidationCallback = null;
       }
       else if (right[0] == "AllowSelfSigned")
       {
-        RCSystem.Log.Record (runner, closure, "http", 0, "certcheck", "AllowSelfSigned");
+        RCSystem.Log.Record (closure, "http", 0, "certcheck", "AllowSelfSigned");
         ServicePointManager.ServerCertificateValidationCallback =
           new CertificateValidator (runner, closure).AllowSelfSigned;
       }
       else if (right[0] == "None")
       {
-        RCSystem.Log.Record (runner, closure, "http", 0, "certcheck", "NoChecking");
+        RCSystem.Log.Record (closure, "http", 0, "certcheck", "NoChecking");
         ServicePointManager.ServerCertificateValidationCallback =
           new CertificateValidator (runner, closure).NoChecking;
       }
@@ -56,7 +56,7 @@ namespace RCL.Core
                               X509Chain chain,
                               SslPolicyErrors sslPolicyErrors)
       {
-        RCSystem.Log.Record (Runner, Closure, "http", 0, "certcheck", "Allowing request in spite of policy error");
+        RCSystem.Log.Record (Closure, "http", 0, "certcheck", "Allowing request in spite of policy error");
         return true;
       }
 
@@ -81,12 +81,12 @@ namespace RCL.Core
                 bool chainIsValid = chain.Build ((X509Certificate2) certificate);
                 if (!chainIsValid)
                 {
-                  RCSystem.Log.Record (Runner, Closure, "http", 0, "certcheck", "Allowing request in spite of policy error");
+                  RCSystem.Log.Record (Closure, "http", 0, "certcheck", "Allowing request in spite of policy error");
                   return false;
                 }
               }
             }
-            RCSystem.Log.Record (Runner, Closure, "http", 0, "certcheck", "Allowing request in spite of policy error");
+            RCSystem.Log.Record (Closure, "http", 0, "certcheck", "Allowing request in spite of policy error");
           }
         }
         catch (Exception ex)
@@ -151,7 +151,7 @@ namespace RCL.Core
         //lgsp.Expect100Continue = false;
         //lgsp.UseNagleAlgorithm = true;
         //lgsp.MaxIdleTime = 100000;
-        RCSystem.Log.Record (runner, closure, "http", handle, "start", right);
+        RCSystem.Log.Record (closure, "http", handle, "start", right);
         m_bot = closure.Bot;
       }
       runner.Yield (closure, new RCLong (handle));
@@ -168,7 +168,7 @@ namespace RCL.Core
           HttpListener listener = m_listeners[(int) right[i]];
           //I should be ok calling this in a lock right?
           listener.Close ();
-          RCSystem.Log.Record (runner, closure, "http", right[i], "stop", "");
+          RCSystem.Log.Record (closure, "http", right[i], "stop", "");
           //Shouldn't I remove this from the m_listeners?
           //Wait I want to see if retaining it fixes the object disposed exception.
         }
@@ -264,8 +264,8 @@ namespace RCL.Core
           //}
         }
         info.Context.Response.OutputStream.Close ();
-        RCSystem.Log.Record (runner, closure, "http", right[0], "session",
-          cookie != null ? cookie.Value : "null");
+        RCSystem.Log.Record (closure, "http", right[0], "session",
+                             cookie != null ? cookie.Value : "null");
         throw new RCException (closure, RCErrors.Session, "Invalid session id");
       }
       runner.Yield (closure, right);
@@ -308,9 +308,8 @@ namespace RCL.Core
           handle = m_context;
           m_contexts.Add (handle, new RequestInfo (context, DateTime.UtcNow));
         }
-        RCSystem.Log.Record (state.Runner, state.Closure,
-                                 "http", handle, "recieve",
-                                 context.Request.HttpMethod + " " + context.Request.RawUrl);
+        RCSystem.Log.Record (state.Closure, "http", handle, "recieve",
+                             context.Request.HttpMethod + " " + context.Request.RawUrl);
         state.Runner.Yield (state.Closure, new RCLong (handle));
       }
       catch (ObjectDisposedException)
@@ -545,7 +544,7 @@ namespace RCL.Core
           }
           finally
           {
-            RCSystem.Log.Record (runner, closure, "http", left[i], "send", result);
+            RCSystem.Log.Record (closure, "http", left[i], "send", result);
             info.Context.Response.OutputStream.Close ();
             info.Context.Request.InputStream.Close ();
             lock (m_lock)
@@ -562,8 +561,7 @@ namespace RCL.Core
       runner.Yield (closure, result);
     }
 
-    protected void DoHttpSend (
-      RCRunner runner, RCClosure closure, RCLong left, string message)
+    protected void DoHttpSend (RCRunner runner, RCClosure closure, RCLong left, string message)
     {
       RCBlock result = RCBlock.Empty;
       int total = 0;
@@ -596,7 +594,7 @@ namespace RCL.Core
           }
           finally
           {
-            RCSystem.Log.Record (runner, closure, "http", left[i], "send", result);
+            RCSystem.Log.Record (closure, "http", left[i], "send", result);
             info.Context.Response.OutputStream.Close ();
             info.Context.Request.InputStream.Close ();
             lock (m_lock)
@@ -748,7 +746,7 @@ namespace RCL.Core
           {
             foreach (KeyValuePair<int, HttpServer.RequestInfo> kv in m_contexts)
             {
-              RCLogger.RecordFilter (m_bot, (long) 0, "http", (long) kv.Key, "cancel", kv.Value.Context.Request.RawUrl);
+              RCSystem.Log.Record (m_bot, (long) 0, "http", (long) kv.Key, "cancel", kv.Value.Context.Request.RawUrl);
               kv.Value.Context.Response.OutputStream.Close ();
             }
             foreach (KeyValuePair<int, HttpListener> kv in m_listeners)
@@ -756,7 +754,7 @@ namespace RCL.Core
               //I should be ok calling this in a lock right?
               foreach (string prefix in kv.Value.Prefixes)
               {
-                RCLogger.RecordFilter (m_bot, (long) 0, "http", (long) kv.Key, "close", prefix);
+                RCSystem.Log.Record (m_bot, (long) 0, "http", (long) kv.Key, "close", prefix);
               }
               kv.Value.Close ();
             }

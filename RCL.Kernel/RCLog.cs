@@ -33,24 +33,40 @@ namespace RCL.Kernel
       return m_logger.GetColmap ();
     }
 
-    public virtual void Record (RCRunner runner, 
-                                RCClosure closure, 
-                                string type, 
-                                long instance, 
-                                string state, 
+    public virtual void Record (string type,
+                                long instance,
+                                string state,
                                 object info)
     {
-      RCLogger.RecordFilter (runner, closure, type, instance, state, info, false);
+      RCLogger.RecordFilter (0, 0, type, instance, state, info, false);
     }
 
-    public virtual void RecordDoc (RCRunner runner,
-                                   RCClosure closure,
+    public virtual void Record (long bot,
+                                long fiber,
+                                string type,
+                                long instance,
+                                string state,
+                                object info)
+    {
+      RCLogger.RecordFilter (bot, fiber, type, instance, state, info, false);
+    }
+
+    public virtual void Record (RCClosure closure,
+                                string type,
+                                long instance,
+                                string state,
+                                object info)
+    {
+      RCLogger.RecordFilter (closure, type, instance, state, info, false);
+    }
+
+    public virtual void RecordDoc (RCClosure closure,
                                    string type,
                                    long instance,
                                    string state,
                                    object info)
     {
-      RCLogger.RecordFilter (runner, closure, type, instance, state, info, true);
+      RCLogger.RecordFilter (closure, type, instance, state, info, true);
     }
   }
 }

@@ -231,7 +231,7 @@ namespace RCL.Exe
         {
           // Does this result in duplicate exception reports on the console?
           // I don't want it to, but without this there are errors that do not show up at all.
-          RCLogger.RecordFilter (0, 0, "runner", 0, "fatal", ex);
+          RCSystem.Log.Record (0, 0, "runner", 0, "fatal", ex);
           status = 1;
           if (IsolateCode != null)
           {
@@ -338,8 +338,7 @@ namespace RCL.Exe
         }
         catch (Exception ex)
         {
-          RCLogger.RecordFilter (0, 0, "fiber", 0, "reported", ex);
-          //RCSystem.Log.Record (0, 0, "fiber", 0, "reported", ex);
+          RCSystem.Log.Record (0, 0, "fiber", 0, "reported", ex);
         }
       }
       runner.Dispose ();
@@ -376,7 +375,7 @@ namespace RCL.Exe
           {
             ThreadPool.QueueUserWorkItem (delegate (object state) 
             {
-              RCSystem.Log.Record (runner, null, "runner", 0, "signal", "SIGTERM");
+              RCSystem.Log.Record ("runner", 0, "signal", "SIGTERM");
               runner.Abort (15);
             });
           }
@@ -387,7 +386,7 @@ namespace RCL.Exe
               m_firstSigint = true;
               ThreadPool.QueueUserWorkItem (delegate (object state) 
               {
-                RCSystem.Log.Record (runner, null, "runner", 0, "signal", "SIGINT");
+                RCSystem.Log.Record ("runner", 0, "signal", "SIGINT");
                 runner.Interupt ();
               });
             }
@@ -395,7 +394,7 @@ namespace RCL.Exe
             {
               ThreadPool.QueueUserWorkItem (delegate (object state) 
               {
-                RCSystem.Log.Record (runner, null, "runner", 0, "signal", "SIGINT (exiting)");
+                RCSystem.Log.Record ("runner", 0, "signal", "SIGINT (exiting)");
                 runner.Abort (2);
               });
             }

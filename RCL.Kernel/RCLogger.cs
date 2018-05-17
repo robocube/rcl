@@ -100,25 +100,23 @@ namespace RCL.Kernel
     }
 
     /// <summary>
-    /// This is threadsafe because the RCColmap instances are immutable
+    /// This is thread safe because the RCColmap instances are immutable
     /// </summary>
     public RCColmap GetColmap ()
     {
       return m_colmap;
     }
 
-    public static void RecordFilter (RCRunner runner,
-                                     RCClosure closure,
+    public static void RecordFilter (RCClosure closure,
                                      string type,
                                      long instance,
                                      string state,
                                      object info)
     {
-      RecordFilter (runner, closure, type, instance, state, info, false);
+      RecordFilter (closure, type, instance, state, info, false);
     }
 
-    public static void RecordFilter (RCRunner runner,
-                                     RCClosure closure,
+    public static void RecordFilter (RCClosure closure,
                                      string type,
                                      long instance,
                                      string state,
@@ -129,15 +127,15 @@ namespace RCL.Kernel
       {
         if (m_show.Contains ("*"))
         {
-          Record (runner, closure, type, instance, state, info, forceDoc);
+          Record (closure, type, instance, state, info, forceDoc);
         }
         else if (m_show.Contains (type))
         {
-          Record (runner, closure, type, instance, state, info, forceDoc);
+          Record (closure, type, instance, state, info, forceDoc);
         }
         else if (m_show.Contains (type + ":" + state))
         {
-          Record (runner, closure, type, instance, state, info, forceDoc);
+          Record (closure, type, instance, state, info, forceDoc);
         }
       }
     }
@@ -177,8 +175,7 @@ namespace RCL.Kernel
       }
     }
 
-    protected static void Record (RCRunner runner,
-                                  RCClosure closure,
+    protected static void Record (RCClosure closure,
                                   string type,
                                   long instance,
                                   string state,

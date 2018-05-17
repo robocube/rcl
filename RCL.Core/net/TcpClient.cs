@@ -178,7 +178,7 @@ namespace RCL.Core
         if (count == 0)
         {
           m_socket.Close (1000);
-          RCSystem.Log.Record (m_openState.Runner, m_openState.Closure, "socket", m_handle, "closed", "");
+          RCSystem.Log.Record (m_openState.Closure, "socket", m_handle, "closed", "");
         }
       }
     }
