@@ -1,4 +1,4 @@
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -40,6 +40,9 @@
     <Compile Include="modules\Eval.cs" />
     <Compile Include="modules\Format.cs" />
     <Compile Include="modules\Parse.cs" />
+    <Compile Include="RCArgv.cs" />
+    <Compile Include="RCColmap.cs" />
+    <Compile Include="RCSystem.cs" />
     <Compile Include="types\RCBlock.cs" />
     <Compile Include="types\RCNative.cs" />
     <Compile Include="types\RCOperator.cs" />
@@ -118,7 +121,6 @@
     <Compile Include="RCModule.cs" />
     <Compile Include="RCExtension.cs" />
     <Compile Include="modules\Fiber.cs" />
-    <Compile Include="RCLog.cs" />
     <Compile Include="RCOutput.cs" />
     <Compile Include="RCLogger.cs" />
     <Compile Include="RCException.cs" />
@@ -138,13 +140,7 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="types\" />
-    <Folder Include="modules\" />
-    <Folder Include="lexer\" />
-    <Folder Include="parser\" />
-    <Folder Include="cube\" />
-  </ItemGroup>
+  <ItemGroup />
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>
