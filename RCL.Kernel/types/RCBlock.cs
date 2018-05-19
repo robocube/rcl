@@ -256,6 +256,27 @@ namespace RCL.Kernel
     public RCBlock (RCBlock previous, string name, string instr, params long[] val)
       : this (previous, name, RCEvaluator.For (instr), new RCLong (val)) {}
 
+    public RCBlock (RCBlock previous, string name, string instr, params string[] val)
+      : this (previous, name, RCEvaluator.For (instr), new RCString (val)) { }
+
+    public RCBlock (RCBlock previous, string name, string instr, params double[] val)
+      : this (previous, name, RCEvaluator.For (instr), new RCDouble (val)) { }
+
+    public RCBlock (RCBlock previous, string name, string instr, params decimal[] val)
+      : this (previous, name, RCEvaluator.For (instr), new RCDecimal (val)) { }
+
+    public RCBlock (RCBlock previous, string name, string instr, params bool[] val)
+      : this (previous, name, RCEvaluator.For (instr), new RCBoolean (val)) { }
+
+    public RCBlock (RCBlock previous, string name, string instr, params RCIncrScalar[] val)
+      : this (previous, name, RCEvaluator.For (instr), new RCIncr (val)) { }
+
+    public RCBlock (RCBlock previous, string name, string instr, params RCTimeScalar[] val)
+      : this (previous, name, RCEvaluator.For (instr), new RCTime (val)) { }
+
+    public RCBlock (RCBlock previous, string name, string instr, params RCSymbolScalar[] val)
+      : this (previous, name, RCEvaluator.For (instr), new RCSymbol (val)) { }
+
     public RCBlock (RCBlock previous, string name, string instr, RCValue val)
       : this (previous, name, RCEvaluator.For (instr), val) {}
 

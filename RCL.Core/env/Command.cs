@@ -524,9 +524,7 @@ namespace RCL.Core
     }
 
     [RCVerb ("exit")]
-    public void EvalExit (RCRunner runner, 
-                          RCClosure closure, 
-                          RCLong right)
+    public void EvalExit (RCRunner runner, RCClosure closure, RCLong right)
     {
       RCSystem.Log.Record (closure, "runner", 0, "exit", right);
       runner.Abort ((int) right[0]);
@@ -538,17 +536,17 @@ namespace RCL.Core
     /// It is no fun crunching numbers at the command line if they don't 
     /// look right.
     /// </summary>
-    [RCVerb ("display_format")]
+    [RCVerb ("displayFormat")]
     public void DisplayFormat (RCRunner runner, RCClosure closure, RCCube right)
     {
       RCArray<string> column = right.DoColof<string> ("column", "");
       RCArray<string> format = right.DoColof<string> ("format", "");
-      RCSystem.Log.Colmap (column, format);
+      RCSystem.Log.UpdateColmap (column, format);
       //RCSystem.Log.Record (runner, closure, "display", 0, "format", "set to " + right[0]);
       runner.Yield (closure, right);
     }
 
-    [RCVerb ("display_format")]
+    [RCVerb ("displayFormat")]
     public void DisplayFormat (RCRunner runner, RCClosure closure, RCBlock right)
     {
       //RCArray<string> column = right.DoColof<string> ("column", "");
@@ -556,7 +554,7 @@ namespace RCL.Core
       throw new NotImplementedException ("This should yield a cube describing the defined formats");
     }
 
-    [RCVerb ("display_timezone")]
+    [RCVerb ("displayTimezone")]
     public void DisplayTimezone (RCRunner runner, RCClosure closure, RCString right)
     {
       RCTime.DisplayTimeZone = TimeZoneInfo.FindSystemTimeZoneById (right[0]);
@@ -566,7 +564,7 @@ namespace RCL.Core
       //displayTime = TimeZoneInfo.ConvertTimeFromUtc (new DateTime (scalar.Ticks), DisplayTimeZone);
     }
 
-    [RCVerb ("display_timezone")]
+    [RCVerb ("displayTimezone")]
     public void DisplayTimezone (RCRunner runner, RCClosure closure, RCBlock right)
     {
       string id = RCTime.DisplayTimeZone.Id;

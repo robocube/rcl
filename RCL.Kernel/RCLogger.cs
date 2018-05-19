@@ -44,11 +44,6 @@ namespace RCL.Kernel
       m_level = level;
     }
 
-    public void Colmap (RCArray<string> column, RCArray<string> format)
-    {
-      UpdateColmap (column, format);
-    }
-
     public void UpdateColmap (RCArray<string> column, RCArray<string> format)
     {
       lock (m_lock)
@@ -95,11 +90,11 @@ namespace RCL.Kernel
     }
 
     public void Record (RCClosure closure,
-                               string type,
-                               long instance,
-                               string state,
-                               object info,
-                               bool forceDoc)
+                        string type,
+                        long instance,
+                        string state,
+                        object info,
+                        bool forceDoc)
     {
       long bot = 0;
       long fiber = 0;

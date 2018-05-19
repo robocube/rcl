@@ -29,12 +29,15 @@ namespace RCL.Kernel
       return new RCActivator (paths.ToArray ());
     }
 
-    //The assemblies that have been loaded.
+    //The assemblies which have been loaded
     protected Dictionary<string, Assembly> m_libs = new Dictionary<string, Assembly> ();
-    //All of the operators that are available regardless of how they are implemented.
+
+    //All of the available operators are available regardless of how they are implemented.
     protected Dictionary<string, Type> m_operator = new Dictionary<string, Type> ();
+
     //Lookup for final dispatching of the correct operator overload.
     protected Dictionary<OverloadKey, OverloadValue> m_dispatch;
+
     //List of types to be treated as modules with state maintained by the bot.
     protected HashSet<Type> m_modules;
 
@@ -56,7 +59,6 @@ namespace RCL.Kernel
           //Skip any unmanaged dlls in the dir    
         }
       }
-
       m_dispatch = new Dictionary<OverloadKey, OverloadValue> ();
       m_modules = new HashSet<Type> ();
       foreach (Assembly lib in m_libs.Values)
@@ -68,7 +70,7 @@ namespace RCL.Kernel
         }
         catch (Exception ex)
         {
-          Console.Out.WriteLine (ex);
+          RCSystem.Log.Record (0, 0, "runner", 0, "load", ex);
           continue;
         }
         foreach (Type type in types)
@@ -83,48 +85,40 @@ namespace RCL.Kernel
       }
     }
 
-    //protected Dictionary<string, Type> m_extByToken = new Dictionary<string, Type> ();
-    //protected Dictionary<char, Type> m_extByCode = new Dictionary<char, Type> ();
-    protected Dictionary<string, ParserExtension> m_extByToken =
-      new Dictionary<string, ParserExtension> ();
-    protected Dictionary<char, ParserExtension> m_extByCode =
-      new Dictionary<char, ParserExtension> ();
+    protected Dictionary<string, ParserExtension> m_extByToken = new Dictionary<string, ParserExtension> ();
+    protected Dictionary<char, ParserExtension> m_extByCode = new Dictionary<char, ParserExtension> ();
 
-    public void CreateVerbTable (
-      Dictionary<OverloadKey, OverloadValue> result, Type type, out bool module)
+    public void CreateVerbTable (Dictionary<OverloadKey, OverloadValue> result, Type type, out bool module)
     {
       //Is it an extension?
-      object[] attributes =
-        type.GetCustomAttributes (typeof (RCExtension), false);
+      object[] attributes = type.GetCustomAttributes (typeof (RCExtension), false);
       if (attributes.Length > 0)
       {
         RCExtension ext = (RCExtension) attributes[0];
-        ParserExtension extension = (ParserExtension)
-          type.GetConstructor (m_ctor).Invoke (m_ctor);
+        ParserExtension extension = (ParserExtension) type.GetConstructor (m_ctor).Invoke (m_ctor);
         m_extByToken[ext.StartToken] = extension;
         m_extByCode[ext.TypeCode] = extension;
       }
 
       //Is it a standalone module (with no operators)
       module = false;
-      attributes =
-        type.GetCustomAttributes (typeof (RCModule), false);
+      attributes = type.GetCustomAttributes (typeof (RCModule), false);
       if (attributes.Length > 0)
+      {
         module = true;
+      }
 
       foreach (MethodInfo method in type.GetMethods ())
       {
-        attributes =
-          method.GetCustomAttributes (typeof (RCVerb), false);
+        attributes = method.GetCustomAttributes (typeof (RCVerb), false);
         for (int i = 0; i < attributes.Length; ++i)
         {
           RCVerb verb = (RCVerb) attributes[i];
-
           //Check to see if this verb has a custom implementation.
           //This is for operators that need to override methods on RCOperator
-          //like Next for example.  Switch and each are good examples.
+          //like Next for example. Switch and each are good examples.
           //Having an entry in m_operator is what distinguishes a built-in
-          //operator from a UserOperator implemented in RC.
+          //operator from a UserOperator implemented in RCL.
           //note that you cannot currently create a user operator with the same
           //name as an existing built-in operator. This may turn out to be a problem.
           Type optype;
@@ -132,18 +126,22 @@ namespace RCL.Kernel
           if (optype == null || optype == typeof (RCOperator))
           {
             if (type.IsSubclassOf (typeof (RCOperator)))
+            {
               m_operator[verb.Name] = type;
+            }
             else
+            {
               m_operator[verb.Name] = typeof (RCOperator);
+            }
           }
-
           ParameterInfo[] parameters = method.GetParameters ();
           if (parameters.Length == 3)
           {
-            OverloadKey key = new OverloadKey (
-              verb.Name, null, parameters[2].ParameterType);
+            OverloadKey key = new OverloadKey (verb.Name, null, parameters[2].ParameterType);
             if (result.ContainsKey (key))
+            {
               throw new Exception ("dispatch table already contains the key:" + key);
+            }
             result.Add (key, new OverloadValue (type, method));
             module = true;
           }
@@ -152,7 +150,9 @@ namespace RCL.Kernel
             OverloadKey key = new OverloadKey (
               verb.Name, parameters[2].ParameterType, parameters[3].ParameterType);
             if (result.ContainsKey (key))
+            {
               throw new Exception ("dispatch table already contains the key:" + key);
+            }
             result.Add (key, new OverloadValue (type, method));
             module = true;
           }
@@ -187,8 +187,9 @@ namespace RCL.Kernel
         {
           ConstructorInfo ctor = type.GetConstructor (m_ctor);
           if (ctor == null)
-            throw new Exception (
-              "No zero argument constructor found on type " + type);
+          {
+            throw new Exception ("No zero argument constructor found on type " + type);
+          }
           result = (RCOperator) ctor.Invoke (null);
           result.Init (op, left, right);
         }

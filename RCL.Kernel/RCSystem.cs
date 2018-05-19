@@ -16,9 +16,10 @@ namespace RCL.Kernel
     static RCSystem ()
     {
       Args = RCLArgv.Instance;
-      Activator = RCActivator.CreateDefault ();
+      //Setup the logger first in case the Activator throws an exception
       Log = new RCLogger (Args.Nokeys, Args.Show);
       Log.SetVerbosity (Args.OutputEnum);
+      Activator = RCActivator.CreateDefault ();
     }
 
     public static RCLArgv Args;
