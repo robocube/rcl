@@ -987,8 +987,12 @@ namespace RCL.Kernel
       }
     }
 
-    public RCSymbolScalar WriteCell (
-      string name, RCSymbolScalar symbol, object box)
+    public RCSymbolScalar WriteCell (string name, object box)
+    {
+      return WriteCell (name, null, box);
+    }
+
+    public RCSymbolScalar WriteCell (string name, RCSymbolScalar symbol, object box)
     {
       if (box == null)
       {
@@ -1123,7 +1127,6 @@ namespace RCL.Kernel
         if (type == typeof (byte)) column = new ColumnOfByte (Axis);
         else if (type == typeof (double)) column = new ColumnOfDouble (Axis);
         else if (type == typeof (long)) column = new ColumnOfLong (Axis);
-        //else if (type == typeof (int)) column = new ColumnOfLong (Axis);
         else if (type == typeof (decimal)) column = new ColumnOfDecimal (Axis);
         else if (type == typeof (bool)) column = new ColumnOfBool (Axis);
         else if (type == typeof (string)) column = new ColumnOfString (Axis);

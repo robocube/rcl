@@ -152,7 +152,6 @@ namespace RCL.Kernel
     protected class TemplateVars
     {
       public bool m_multilineTemplate = false;
-      //public bool m_parsingContent = false;
       public int m_minSpaces = int.MaxValue;
     }
     //This stack holds a few extra variables required for parsing nested templates.
@@ -812,13 +811,6 @@ namespace RCL.Kernel
         for (int i = 0; i < vector.Count; ++i)
           list.Write (vector[i].ParseBoolean (m_lexer));
         result = new RCBoolean (list);
-      }
-      else if (vector[0].Type == RCTokenType.Symbol)
-      {
-        RCArray<RCSymbolScalar> list = new RCArray<RCSymbolScalar> (vector.Count);
-        for (int i = 0; i < vector.Count; ++i)
-          list.Write (vector[i].ParseSymbol (m_lexer));
-        result = new RCSymbol (list);
       }
       else if (vector[0].Type == RCTokenType.Incr)
       {

@@ -35,11 +35,14 @@ namespace RCL.Kernel
 
     protected int LengthOfByteLiteral (string text, int start)
     {
-      if (start + 1 < text.Length &&
-          IsHexChar (text[start]) &&
-          IsHexChar (text[start + 1]))
+      if (start + 1 < text.Length && IsHexChar (text[start]) && IsHexChar (text[start + 1]))
+      {
         return 2;
-      else return -1;
+      }
+      else
+      {
+        return -1;
+      }
     }
 
     protected bool IsHexChar (char c)

@@ -194,6 +194,12 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestSymbolWithByte ()
+    {
+      DoParserTest ("#\\xFF", "#\\xFF");
+    }
+
+    [Test]
     public void TestSimpleMonadicExpressionWithLiteral ()
     {
       DoParserTest ("sum 1 2 3");

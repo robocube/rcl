@@ -22,7 +22,7 @@ namespace RCL.Kernel
     internal static string[] Booleans = { "true", "false" };
 
     /// <summary>
-    /// Either a the name of a operator or a variable.
+    /// The name of an operator or a variable.
     /// </summary>
     public static readonly RCTokenType Name = new NameToken ();
 
@@ -181,8 +181,7 @@ namespace RCL.Kernel
       else return false;
     }
 
-    public static int LengthOfDelimitedName (
-      string text, int start, char delimiter)
+    public static int LengthOfDelimitedName (string text, int start, char delimiter)
     {
       //Check for one of the special ops like + - * etc...
       for (int i = 0; i < SpecialOperators.Length; ++i)
@@ -270,6 +269,10 @@ namespace RCL.Kernel
             break;
           }
         }
+        else if (text[end] == '\\')
+        {
+          ++end;
+        }
         else if (text[end] == '*' || text[end] == '.')
         {
           ++end;
@@ -279,24 +282,36 @@ namespace RCL.Kernel
       return end - start;
     }
 
-    public static int LengthOfEnclosedLiteral (
-      string text, int start, char delimeter)
+    public static int LengthOfEnclosedLiteral (string text, int start, char delimeter)
     {
-      if (start >= text.Length) return -1;
-      if (text[start] != delimeter) return -1;
+      if (start >= text.Length)
+      {
+        return -1;
+      }
+      if (text[start] != delimeter)
+      {
+        return -1;
+      }
       int current = start + 1;
       while (current < text.Length)
       {
         if (text[current] == delimeter)
         {
-          if (text[current - 1] != '\\' || 
+          if (text[current - 1] != '\\' ||
               text[current - 1] == '\\' && text[current-2] == '\\')
+          {
             break;
+          }
         }
         ++current;
       }
-      while (current < text.Length && text[current] != delimeter) current++;
-      return current >= text.Length ? -1 : current - start + 1;
+      while (current < text.Length && text[current] != delimeter)
+      {
+        ++current;
+      }
+      int result = current >= text.Length ? -1 : current - start + 1;
+      //Console.WriteLine ("result: {0}", result);
+      return result;
     }
 
     public static int LengthOfKeyword (string text, int start, string word)
@@ -304,7 +319,10 @@ namespace RCL.Kernel
       int i = 0;
       while ((start + i) < text.Length && word[i] == text[start + i])
       {
-        if (i == word.Length - 1) return word.Length;
+        if (i == word.Length - 1)
+        {
+          return word.Length;
+        }
         ++i;
       }
       return -1;
@@ -320,23 +338,23 @@ namespace RCL.Kernel
     /// </summary>
     public static string EscapeControlChars (string str, char delimeter)
     {
-      StringBuilder builder = new StringBuilder();
+      StringBuilder builder = new StringBuilder ();
       for (int i = 0; i < str.Length; ++i)
       {
         char current = str[i];
-        if (current == '\n') builder.Append("\\n");
-        else if (current == '\r') builder.Append("\\r");
-        else if (current == '\t') builder.Append("\\t");
-        else if (current == '\a') builder.Append("\\a");
-        else if (current == '\\') builder.Append("\\\\");
+        if (current == '\n') builder.Append ("\\n");
+        else if (current == '\r') builder.Append ("\\r");
+        else if (current == '\t') builder.Append ("\\t");
+        else if (current == '\a') builder.Append ("\\a");
+        else if (current == '\\') builder.Append ("\\\\");
         else if (current == delimeter)
         {
           builder.Append("\\");
-          builder.Append(delimeter);
+          builder.Append (delimeter);
         }
-        else builder.Append(current);
+        else builder.Append (current);
       }
-      return builder.ToString();
+      return builder.ToString ();
     }
 
     /// <summary>
@@ -389,62 +407,62 @@ namespace RCL.Kernel
 
     public virtual string ParseString (RCLexer lexer, RCToken token)
     {
-      throw new Exception (Message (Name.ToString (), token.Text, "string"));
+      throw new Exception (Message (token.Type.ToString (), token.Text, "string"));
     }
 
     public virtual double ParseDouble (RCLexer lexer, RCToken token)
     {
-      throw new Exception (Message (Name.ToString (), token.Text, "double"));
+      throw new Exception (Message (token.Type.ToString (), token.Text, "double"));
     }
 
     public virtual long ParseLong (RCLexer lexer, RCToken token)
     {
-      throw new Exception (Message (Name.ToString (), token.Text, "long"));
+      throw new Exception (Message (token.Type.ToString (), token.Text, "long"));
     }
 
     public virtual decimal ParseDecimal (RCLexer lexer, RCToken token)
     {
-      throw new Exception (Message (Name.ToString (), token.Text, "decimal"));
+      throw new Exception (Message (token.Type.ToString (), token.Text, "decimal"));
     }
 
     public virtual float ParseFloat (RCLexer lexer, RCToken token)
     {
-      throw new Exception (Message (Name.ToString (), token.Text, "double"));
+      throw new Exception (Message (token.Type.ToString (), token.Text, "double"));
     }
 
     public virtual int ParseInt (RCLexer lexer, RCToken token)
     {
-      throw new Exception (Message (Name.ToString (), token.Text, "int"));
+      throw new Exception (Message (token.Type.ToString (), token.Text, "int"));
     }
 
     public virtual bool ParseBoolean (RCLexer lexer, RCToken token)
     {
-      throw new Exception (Message (Name.ToString (), token.Text, "bool"));
+      throw new Exception (Message (token.Type.ToString (), token.Text, "bool"));
     }
 
     public virtual RCSymbolScalar ParseSymbol (RCLexer lexer, RCToken token)
     {
-      throw new Exception (Message (Name.ToString (), token.Text, "symbol"));
+      throw new Exception (Message (token.Type.ToString (), token.Text, "symbol"));
     }
 
     public virtual RCBlock ParseLink (RCLexer lexer, RCToken token)
     {
-      throw new Exception (Message (Name.ToString (), token.Text, "link"));
+      throw new Exception (Message (token.Type.ToString (), token.Text, "link"));
     }
 
     public virtual RCIncrScalar ParseIncr (RCLexer lexer, RCToken token)
     {
-      throw new Exception (Message (Name.ToString (), token.Text, "incr"));
+      throw new Exception (Message (token.Type.ToString (), token.Text, "incr"));
     }
 
     public virtual byte ParseByte (RCLexer lexer, RCToken token)
     {
-      throw new Exception (Message (Name.ToString (), token.Text, "byte"));
+      throw new Exception (Message (token.Type.ToString (), token.Text, "byte"));
     }
 
     public virtual RCTimeScalar ParseTime (RCLexer lexer, RCToken token)
     {
-      throw new Exception (Message (Name.ToString (), token.Text, "time"));
+      throw new Exception (Message (token.Type.ToString (), token.Text, "time"));
     }
 
     protected string Message (string tokenType, string tokenText, string typeName)

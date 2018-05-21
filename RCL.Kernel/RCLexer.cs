@@ -29,7 +29,7 @@ namespace RCL.Kernel
         foreach (RCTokenType tokenType in m_types)
         {
           token = tokenType.TryParseToken (input, i, tokenIndex, previous);
-          if (null != token)
+          if (token != null)
           {
             output.Write (token);
             previous = token;

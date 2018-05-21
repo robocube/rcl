@@ -1070,22 +1070,22 @@ namespace RCL.Test
     public void TestAtKY() { DoTest ("{x:0 y:1 z:2} at #y", "{y:1}"); }
     [Test]
     [Ignore ("because")]
-    public void TestAtUL() { DoTest ("[S|x y z 0 10 100] at 1", "10"); }
+    public void TestAtUL() { DoTest ("[S|x y z #a 0 10 100] at 1", "10"); }
     [Test]
     [Ignore ("because")]
-    public void TestAtUD() { DoTest ("[S|x y z 0 10 100] at 1.0", "10"); }
+    public void TestAtUD() { DoTest ("[S|x y z #a 0 10 100] at 1.0", "10"); }
     [Test]
     [Ignore ("because")]
-    public void TestAtUM() { DoTest ("[S|x y z 0 10 100] at 1m", "10"); }
+    public void TestAtUM() { DoTest ("[S|x y z #a 0 10 100] at 1m", "10"); }
     [Test]
     [Ignore ("because")]
-    public void TestAtUX() { DoTest ("[S|x y z 0 10 100] at \\x01", "10"); }
+    public void TestAtUX() { DoTest ("[S|x y z #a 0 10 100] at \\x01", "10"); }
     [Test]
     [Ignore ("because")]
-    public void TestAtUS() { DoTest ("[S|x y z 0 10 100] at \"y\"", "10"); }
+    public void TestAtUS() { DoTest ("[S|x y z #a 0 10 100] at \"y\"", "10"); }
     [Test]
     [Ignore ("because")]
-    public void TestAtUY() { DoTest ("[S|x y z 0 10 100] at #y", "10"); }
+    public void TestAtUY() { DoTest ("[S|x y z #a 0 10 100] at #y", "10"); }
 
     //From is just at with the indices on the left side.
     //[Test]
@@ -1188,12 +1188,12 @@ namespace RCL.Test
     [Test]
     public void TestFromSKNameError ()
     {
-      Assert.Throws<RCException> (delegate () { DoTest ("\"a\" \"b\" \"c\" from {a:1 b:2}", ""); });
+      Assert.Throws<RCException> (delegate () { DoTest ("\"a\" \"b\" \"c\" from {a:1 b:2}", "{}"); });
     }
     [Test]
     public void TestFromYKNameError ()
     {
-      Assert.Throws<RCException> (delegate () { DoTest ("#a #b #c from {a:1 b:2}", ""); });
+      Assert.Throws<RCException> (delegate () { DoTest ("#a #b #c from {a:1 b:2}", "{}"); });
     }
 
     [Test]
@@ -1205,7 +1205,7 @@ namespace RCL.Test
     [Test]
     public void TestUnwrapEx ()
     {
-      Assert.Throws<RCException> (delegate () { DoTest ("unwrap {:0 :1 :2}", ""); });
+      Assert.Throws<RCException> (delegate () { DoTest ("unwrap {:0 :1 :2}", "{}"); });
     }
 
     //Oh no! What if find doesn't find anything.  How do I represent the result?
@@ -2599,7 +2599,7 @@ namespace RCL.Test
     [Test]
     public void TestGetm ()
     {
-      DoTestException (runner, "getm #foo", RCErrors.Varname, "No such variable: #foo");
+      Assert.Throws<RCException> (delegate () { DoTest ("getm #foo", "{}"); });
     }
 
     [Test]
