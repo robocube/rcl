@@ -310,7 +310,6 @@ namespace RCL.Kernel
         ++current;
       }
       int result = current >= text.Length ? -1 : current - start + 1;
-      //Console.WriteLine ("result: {0}", result);
       return result;
     }
 
