@@ -715,6 +715,96 @@ namespace RCL.Kernel
       else return val;
     }
 
+    public RCBlock GetBlock (long i)
+    {
+      RCBlock val = (RCBlock) Get (i);
+      if (val == null)
+      {
+        throw new Exception (string.Format ("No value at index {0} within block (count:{1})", i, Count));
+      }
+      else return val;
+    }
+
+    public string GetString (long i)
+    {
+      RCString val = (RCString) Get (i);
+      if (val == null)
+      {
+        throw new Exception (string.Format ("No value at index {0} within block (count:{1})", i, Count));
+      }
+      return val[0];
+    }
+
+    public bool GetBoolean (long i)
+    {
+      RCBoolean val = (RCBoolean) Get (i);
+      if (val == null)
+      {
+        throw new Exception (string.Format ("No value at index {0} within block (count:{1})", i, Count));
+      }
+      return val[0];
+    }
+
+    public long GetLong (long i)
+    {
+      RCLong val = (RCLong) Get (i);
+      if (val == null)
+      {
+        throw new Exception (string.Format ("No value at index {0} within block (count:{1})", i, Count));
+      }
+      return val[0];
+    }
+
+    public double GetDouble (long i)
+    {
+      RCDouble val = (RCDouble) Get (i);
+      if (val == null)
+      {
+        throw new Exception (string.Format ("No value at index {0} within block (count:{1})", i, Count));
+      }
+      return val[0];
+    }
+
+    public decimal GetDecimal (long i)
+    {
+      RCDecimal val = (RCDecimal) Get (i);
+      if (val == null)
+      {
+        throw new Exception (string.Format ("No value at index {0} within block (count:{1})", i, Count));
+      }
+      return val[0];
+    }
+
+    public RCTimeScalar GetTime (long i)
+    {
+      RCTime val = (RCTime) Get (i);
+      if (val == null)
+      {
+        throw new Exception (string.Format ("No value at index {0} within block (count:{1})", i, Count));
+      }
+      return val[0];
+    }
+
+    public RCSymbolScalar GetSymbol (long i)
+    {
+      RCSymbol val = (RCSymbol) Get (i);
+      if (val == null)
+      {
+        throw new Exception (string.Format ("No value at index {0} within block (count:{1})", i, Count));
+      }
+      return val[0];
+    }
+
+    public RCIncrScalar GetIncr (long i)
+    {
+      RCIncr val = (RCIncr) Get (i);
+      if (val == null)
+      {
+        throw new Exception (string.Format ("No value at index {0} within block (count:{1})", i, Count));
+      }
+      return val[0];
+    }
+
     // Convenience functions for extracting individual values
     // in ordinary cases.
     // Useful for integrating with external apis and data.

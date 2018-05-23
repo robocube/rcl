@@ -7,7 +7,6 @@ namespace RCL.Test
 {
   public class CoreTest
   {
-    //protected RCRunner runner = new RCRunner (RCSystem.Activator, 1, new RCLArgv ("--output=test", "--show=print"));
     protected RCRunner runner = RCRunner.TestRunner ();
 
     public static void DoTest (RCRunner runner, RCFormat args, string code, string expected)
@@ -926,7 +925,7 @@ namespace RCL.Test
   {
     //Symbular Aggregations - xavg, xcount, xsum, xmax, xmed, 
 
-    //RC Reader and Writer Operators
+    //RCL read and write Operators
 
     //Generic Operators
     //Append
@@ -1272,6 +1271,8 @@ namespace RCL.Test
     public void TestWhereTB () { DoTest ("2015.05.27 2015.05.28 2015.05.29 where true false true", "2015.05.27 2015.05.29"); }
     [Test]
     public void TestWhereKB () { DoTest ("{a:{x:1} b:{y:1} c:{z:1}} where true false true", "{a:{x:1} c:{z:1}}"); }
+    [Test]
+    public void TestWhereKK () { DoTest ("{a:{x:1} b:{x:2} c:{x:3} d:{x:4}} where {a:{x:true} b:{x:true} c:{x:false} d:{x:false}}", "{a:{x:1} b:{x:2}}"); }
 
     [Test]
     public void TestSortAscL() { DoTest ("#asc sort 2 0 1", "0 1 2"); }
@@ -2302,12 +2303,16 @@ namespace RCL.Test
       DoTest ("{lib:{f1:{<-1 + 2}} <-lib.f1 {}}", "3");
     }
 
-    //Parsing other data formats
     [Test]
     public void TestParseDefault ()
     {
-      DoTest ("#rcl parse \"{a:1 b:2.0 c:\\\"3\\\"}\"", "{a:1 b:2.0 c:\"3\"}");
       DoTest ("parse \"{a:1 b:2.0 c:\\\"3\\\"}\"", "{a:1 b:2.0 c:\"3\"}");
+    }
+
+    [Test]
+    public void TestParseDefault1 ()
+    {
+      DoTest ("#rcl parse \"{a:1 b:2.0 c:\\\"3\\\"}\"", "{a:1 b:2.0 c:\"3\"}");
     }
 
     [Test]
@@ -2322,76 +2327,120 @@ namespace RCL.Test
 
       //No terminal newline - this is not really valid csv, let's not worry about it.
       //DoTest ("#csv parse \"x,y,z\\nX,Y,\"", "{x:\"X\" y:\"Y\" z:\"\"}");
+    }
 
+    [Test]
+    public void TestParseCSV1 ()
+    {
       //Empty string at the end of a line.
       //\r\n for newlines.
       DoTest ("#csv parse \"a,b,c\\r\\nA,B,\\r\\n\"", "{a:\"A\" b:\"B\" c:\"\"}");
+    }
 
+    [Test]
+    public void TestParseCSV2 ()
+    {
       //Empty string at the beginning of a line.
       DoTest ("#csv parse \"a,b,c\\r\\n,B,C\\r\\n\"", "{a:\"\" b:\"B\" c:\"C\"}");
     }
 
     [Test]
-    public void TestParseCSVEmpty ()
+    public void TestParseCSV3 ()
     {
       DoTest ("#csv parse \"\"", "{}");
+    }
+
+    [Test]
+    public void TestParseCSV4 ()
+    {
       DoTest ("#csv parse \"\n\"", "{}");
+    }
+
+    [Test]
+    public void TestParseCSV5 ()
+    {
       DoTest ("#csv parse \"\n\n\"", "{}");
+    }
+
+    [Test]
+    public void TestParseCSV6 ()
+    {
       DoTest ("#csv parse \"\n\n\n\"", "{}");
     }
 
-    [Test]
-    public void TestParseJSON ()
-    {
-      //JSON parsing test cases are from:
-      //http://code.google.com/p/json-ply/source/browse/trunk/jsonply_test.py
+    //JSON parsing test cases are from:
+    //http://code.google.com/p/json-ply/source/browse/trunk/jsonply_test.py
 
+    public void TestParseJSONEmptyArray ()
+    {
       //Empty array
       DoTest ("#json parse \"[]\"", "{}");
-      //Array of strings
-      DoTest ("#json parse \"[\\\"a\\\",\\\"b\\\",\\\"c\\\"]\"", "{:\"a\" :\"b\" :\"c\"}");
-      //Array of numbers
-      DoTest ("#json parse \"[1, 2, 3.4e5]\"", "{:1.0 :2.0 :340000.0}");
-      //Array of arrays
-      DoTest ("#json parse \"[[\\\"a\\\",\\\"b\\\",\\\"c\\\"]]\"", "{:{:\"a\" :\"b\" :\"c\"}}");
-      //Array of dicts
-      DoTest ("#json parse \"[{\\\"a\\\":\\\"b\\\"},{\\\"c\\\":\\\"d\\\"}]\"", "{:{a:\"b\"} :{c:\"d\"}}");
-      //Array of mixed itmems
-      DoTest ("#json parse \"[1, true, {\\\"a\\\": \\\"b\\\"}, [\\\"c\\\"]]\"", "{:1.0 :true :{a:\"b\"} :{:\"c\"}}");
-
-      //Empty dict
-      DoTest ("#json parse \"{}\"", "{}");
-      //Dict of strings
-      DoTest ("#json parse \"{\\\"a\\\":\\\"b\\\" \\\"c\\\":\\\"d\\\"}\"", "{a:\"b\" c:\"d\"}");
-      //Dict of numbers
-      DoTest ("#json parse \"{\\\"a\\\":1.0 \\\"b\\\":2.3}\"", "{a:1.0 b:2.3}");
-      //Dict of arrays
-      DoTest ("#json parse \"{\\\"a\\\": [\\\"b\\\", \\\"c\\\"], \\\"d\\\":[1.0, 2.3]}\"", "{a:{:\"b\" :\"c\"} d:{:1.0 :2.3}}");
-      //Dict of dicts
-      DoTest ("#json parse \"{\\\"a\\\": {\\\"b\\\":\\\"c\\\"} \\\"d\\\": {\\\"e\\\":\\\"f\\\"}}\"", "{a:{b:\"c\"} d:{e:\"f\"}}");
-      //Dict of mixed items
-      DoTest ("#json parse \"{\\\"a\\\": true, \\\"b\\\": [1.0, 2.3], \\\"c\\\": {\\\"d\\\":null}}\"", "{a:true b:{:1.0 :2.3} c:{d:{}}}");
     }
 
-    [Test]
-    public void TestParseXML ()
+    public void TestParseJSONStringArray ()
     {
-      //Single empty element
-      DoTest ("#xml parse \"<a></a>\"", "{a:{:\"\"}}");
-      //Empty element single tag
-      DoTest ("#xml parse \"<a/>\"", "{a:{:\"\"}}");
-      //Single element with content
-      DoTest ("#xml parse \"<a>x</a>\"", "{a:{:\"x\"}}");
-      //Single element with attribute
-      DoTest ("#xml parse \"<a b=\\\"x\\\"></a>\"", "{a:{b:\"x\" :\"\"}}");
-      //Multiple attributes in an element
-      DoTest ("#xml parse \"<a b=\\\"x\\\" c=\\\"y\\\" d=\\\"z\\\">w</a>\"", "{a:{b:\"x\" c:\"y\" d:\"z\" :\"w\"}}");
-      //Multiple elements in a document
-      DoTest ("#xml parse \"<a>x</a><b>y</b><c>z</c>\"", "{a:{:\"x\"} b:{:\"y\"} c:{:\"z\"}}");
-      //Multiple elements with different content types.
-      DoTest ("#xml parse \"<a>x</a><b></b><c/>\"", "{a:{:\"x\"} b:{:\"\"} c:{:\"\"}}");
-      //Nested elements
-      DoTest ("#xml parse \"<a><b>x</b><c>y</c><d>z</d></a>\"", "{a:{:{b:{:\"x\"} c:{:\"y\"} d:{:\"z\"}}}}");
+      //Array of strings
+      DoTest ("#json parse \"[\\\"a\\\",\\\"b\\\",\\\"c\\\"]\"", "{:\"a\" :\"b\" :\"c\"}");
+    }
+
+    public void TestParseJSONNumberArray ()
+    {
+      //Array of numbers
+      DoTest ("#json parse \"[1, 2, 3.4e5]\"", "{:1.0 :2.0 :340000.0}");
+    }
+
+    public void TestParseJSONArrayOfArrays ()
+    {
+      //Array of arrays
+      DoTest ("#json parse \"[[\\\"a\\\",\\\"b\\\",\\\"c\\\"]]\"", "{:{:\"a\" :\"b\" :\"c\"}}");
+    }
+
+    public void TestParseJSONArrayOfDicts ()
+    {
+      //Array of dicts
+      DoTest ("#json parse \"[{\\\"a\\\":\\\"b\\\"},{\\\"c\\\":\\\"d\\\"}]\"", "{:{a:\"b\"} :{c:\"d\"}}");
+    }
+
+    public void TestParseJSONMixedArray ()
+    {
+      //Array of mixed itmems
+      DoTest ("#json parse \"[1, true, {\\\"a\\\": \\\"b\\\"}, [\\\"c\\\"]]\"", "{:1.0 :true :{a:\"b\"} :{:\"c\"}}");
+    }
+
+    public void TestParseJSONEmptyDict ()
+    {
+      //Empty dict
+      DoTest ("#json parse \"{}\"", "{}");
+    }
+
+    public void TestParseJSONStringDict ()
+    {
+      //Dict of strings
+      DoTest ("#json parse \"{\\\"a\\\":\\\"b\\\" \\\"c\\\":\\\"d\\\"}\"", "{a:\"b\" c:\"d\"}");
+    }
+
+    public void TestParseJSONNumberDict ()
+    {
+      //Dict of numbers
+      DoTest ("#json parse \"{\\\"a\\\":1.0 \\\"b\\\":2.3}\"", "{a:1.0 b:2.3}");
+    }
+
+    public void TestParseJSONArrayDict ()
+    {
+      //Dict of arrays
+      DoTest ("#json parse \"{\\\"a\\\": [\\\"b\\\", \\\"c\\\"], \\\"d\\\":[1.0, 2.3]}\"", "{a:{:\"b\" :\"c\"} d:{:1.0 :2.3}}");
+    }
+
+    public void TestParseJSONDictDict ()
+    {
+      //Dict of dicts
+      DoTest ("#json parse \"{\\\"a\\\": {\\\"b\\\":\\\"c\\\"} \\\"d\\\": {\\\"e\\\":\\\"f\\\"}}\"", "{a:{b:\"c\"} d:{e:\"f\"}}");
+    }
+
+    public void TestParseJSONMixedDict ()
+    {
+      //Dict of mixed items
+      DoTest ("#json parse \"{\\\"a\\\": true, \\\"b\\\": [1.0, 2.3], \\\"c\\\": {\\\"d\\\":null}}\"", "{a:true b:{:1.0 :2.3} c:{d:{}}}");
     }
 
     [Test]
@@ -2399,53 +2448,189 @@ namespace RCL.Test
     {
       //Single empty element
       DoTest ("#xml parse \"<a></a>\"", "{a:{:\"\"}}");
+    }
+
+    public void TestParseXML2 ()
+    {
       //Empty element single tag
       DoTest ("#xml parse \"<a/>\"", "{a:{:\"\"}}");
+    }
+
+    public void TestParseXML3 ()
+    {
       //Single element with content
       DoTest ("#xml parse \"<a>x</a>\"", "{a:{:\"x\"}}");
+    }
+
+    public void TestParseXML4 ()
+    {
+      //Single element with attribute
+      DoTest ("#xml parse \"<a b=\\\"x\\\"></a>\"", "{a:{b:\"x\" :\"\"}}");
+    }
+
+    public void TestParseXML5 ()
+    {
+      //Multiple attributes in an element
+      DoTest ("#xml parse \"<a b=\\\"x\\\" c=\\\"y\\\" d=\\\"z\\\">w</a>\"", "{a:{b:\"x\" c:\"y\" d:\"z\" :\"w\"}}");
+    }
+
+    public void TestParseXML6 ()
+    {
       //Multiple elements in a document
       DoTest ("#xml parse \"<a>x</a><b>y</b><c>z</c>\"", "{a:{:\"x\"} b:{:\"y\"} c:{:\"z\"}}");
+    }
+
+    public void TestParseXML7 ()
+    {
       //Multiple elements with different content types.
       DoTest ("#xml parse \"<a>x</a><b></b><c/>\"", "{a:{:\"x\"} b:{:\"\"} c:{:\"\"}}");
-      //Single nested multiple elements
+    }
+
+    public void TestParseXML8 ()
+    {
+      //Nested elements
       DoTest ("#xml parse \"<a><b>x</b><c>y</c><d>z</d></a>\"", "{a:{:{b:{:\"x\"} c:{:\"y\"} d:{:\"z\"}}}}");
-      //Multiple nested single elements
+    }
+
+    //Single empty element
+    [Test]
+    public void TestParseXml9 ()
+    {
+      DoTest ("#xml parse \"<a></a>\"", "{a:{:\"\"}}");
+    }
+
+    //Empty element single tag
+    [Test]
+    public void TestParseXml10 ()
+    {
+      DoTest ("#xml parse \"<a/>\"", "{a:{:\"\"}}");
+    }
+
+    //Single element with content
+    [Test]
+    public void TestParseXml11 ()
+    {
+      DoTest ("#xml parse \"<a>x</a>\"", "{a:{:\"x\"}}");
+    }
+
+    //Multiple elements in a document
+    [Test]
+    public void TestParseXml12 ()
+    {
+      DoTest ("#xml parse \"<a>x</a><b>y</b><c>z</c>\"", "{a:{:\"x\"} b:{:\"y\"} c:{:\"z\"}}");
+    }
+
+    //Multiple elements with different content types.
+    [Test]
+    public void TestParseXml13 ()
+    {
+      DoTest ("#xml parse \"<a>x</a><b></b><c/>\"", "{a:{:\"x\"} b:{:\"\"} c:{:\"\"}}");
+    }
+
+    //Single nested multiple elements
+    [Test]
+    public void TestParseXml14 ()
+    {
+      DoTest ("#xml parse \"<a><b>x</b><c>y</c><d>z</d></a>\"", "{a:{:{b:{:\"x\"} c:{:\"y\"} d:{:\"z\"}}}}");
+    }
+
+    //Multiple nested single elements
+    [Test]
+    public void TestParseXml15 ()
+    {
       DoTest ("#xml parse \"<a><b><c>x</c></b></a>\"", "{a:{:{b:{:{c:{:\"x\"}}}}}}");
-      //Multiple nested multiple elements
+    }
+
+    //Multiple nested multiple elements
+    [Test]
+    public void TestParseXml16 ()
+    {
       DoTest ("#xml parse \"<a><b><c>x</c><d>y</d></b><e/></a>\"", "{a:{:{b:{:{c:{:\"x\"} d:{:\"y\"}}} e:{:\"\"}}}}");
     }
 
+    //Single empty element
     [Test]
-    public void TestParseXML2 ()
+    public void TestParseXml17 ()
     {
-      //Single empty element
       DoTest ("#xml parse \"<a f=\\\"i\\\"></a>\"", "{a:{f:\"i\" :\"\"}}");
-      //Empty element single tag
+    }
+
+    //Empty element single tag
+    [Test]
+    public void TestParseXml18 ()
+    {
       DoTest ("#xml parse \"<a f=\\\"i\\\"/>\"", "{a:{f:\"i\" :\"\"}}");
-      //Single element with content
+    }
+
+    //Single element with content
+    [Test]
+    public void TestParseXml19 ()
+    {
       DoTest ("#xml parse \"<a f=\\\"i\\\">x</a>\"", "{a:{f:\"i\" :\"x\"}}");
-      //Multiple elements in a document
+    }
+
+    //Multiple elements in a document
+    [Test]
+    public void TestParseXml20 ()
+    {
       DoTest ("#xml parse \"<a f=\\\"i\\\">x</a><b g=\\\"j\\\">y</b><c h=\\\"k\\\">z</c>\"", "{a:{f:\"i\" :\"x\"} b:{g:\"j\" :\"y\"} c:{h:\"k\" :\"z\"}}");
-      //Multiple elements with different content types.
+    }
+
+    //Multiple elements with different content types.
+    [Test]
+    public void TestParseXml21 ()
+    {
       DoTest ("#xml parse \"<a f=\\\"i\\\">x</a><b g=\\\"j\\\"></b><c h=\\\"k\\\"/>\"", "{a:{f:\"i\" :\"x\"} b:{g:\"j\" :\"\"} c:{h:\"k\" :\"\"}}");
-      //Single nested multiple elements
+    }
+
+    //Single nested multiple elements
+    [Test]
+    public void TestParseXml22 ()
+    {
       DoTest ("#xml parse \"<a f=\\\"i\\\"><b g=\\\"j\\\">x</b><c>y</c><d h=\\\"k\\\">z</d></a>\"", "{a:{f:\"i\" :{b:{g:\"j\" :\"x\"} c:{:\"y\"} d:{h:\"k\" :\"z\"}}}}");
-      //Multiple nested single elements
+    }
+
+    //Multiple nested single elements
+    [Test]
+    public void TestParseXml23 ()
+    {
       DoTest ("#xml parse \"<a f=\\\"i\\\"><b g=\\\"j\\\"><c h=\\\"k\\\">x</c></b></a>\"", "{a:{f:\"i\" :{b:{g:\"j\" :{c:{h:\"k\" :\"x\"}}}}}}");
-      //Multiple nested multiple elements
+    }
+
+    //Multiple nested multiple elements
+    [Test]
+    public void TestParseXml24 ()
+    {
       DoTest ("#xml parse \"<a f=\\\"i\\\"><b><c g=\\\"j\\\">x</c><d>y</d></b><e h=\\\"k\\\"/></a>\"", "{a:{f:\"i\" :{b:{:{c:{g:\"j\" :\"x\"} d:{:\"y\"}}} e:{h:\"k\" :\"\"}}}}");
     }
 
     [Test]
-    public void TestFormatPretty ()
+    public void TestFormatPretty1 ()
     {
       DoTest ("#pretty format {}", "\"{}\"");
+    }
 
+    [Test]
+    public void TestFormatPretty2 ()
+    {
       DoTest ("#pretty format {a:1.0 b:2.0 c:3.0}", "\"{\\n  a:1.0\\n  b:2.0\\n  c:3.0\\n}\"");
+    }
 
+    [Test]
+    public void TestFormatPretty3 ()
+    {
       DoTest ("#pretty format {:{a:1.0 b:2.0 c:3.0}}", "\"{\\n  :{\\n    a:1.0\\n    b:2.0\\n    c:3.0\\n  }\\n}\"");
+    }
 
+    [Test]
+    public void TestFormatPretty4 ()
+    {
       DoTest ("#pretty format {:{a:1.0 1.0 1.0 b:2.0 2.0 2.0 c:3.0 3.0 3.0}}", "\"{\\n  :{\\n    a:1.0 1.0 1.0\\n    b:2.0 2.0 2.0\\n    c:3.0 3.0 3.0\\n  }\\n}\"");
+    }
+
+    [Test]
+    public void TestFormatPretty5 ()
+    {
       //[
       //  T | S|   a b
       //  0l #x   1l "2"
@@ -2456,7 +2641,7 @@ namespace RCL.Test
     }
 
     [Test]
-    public void TestFormatPretty1 ()
+    public void TestFormatPretty6 ()
     {
       DoTest ("#pretty format {u:[S|x #a 0]}", "\"{\\n  u:[\\n    S | x\\n    #a  0\\n  ]\\n}\"");
     }
@@ -2481,70 +2666,158 @@ namespace RCL.Test
     //(varying based on the TYPE of the arguments is ok).
     //So use a different operator name to format binary data.
     [Test]
-    public void TestBinaryFixed ()
+    public void TestBinaryFixed1 ()
     {
       DoTest ("parse binary -1000000000 -2000000 -3000 -4 0 5 6000 7000000 8000000000", "-1000000000 -2000000 -3000 -4 0 5 6000 7000000 8000000000");
+    }
+
+    [Test]
+    public void TestBinaryFixed2 ()
+    {
       DoTest ("parse binary -1000000000.0 -2000000.0 -3000.0 -4.0 0.0 5.0 6000.0 7000000.0 8000000000.0", "-1000000000.0 -2000000.0 -3000.0 -4.0 0.0 5.0 6000.0 7000000.0 8000000000.0");
+    }
+
+    [Test]
+    public void TestBinaryFixed3 ()
+    {
       DoTest ("parse binary -1000000000 -2000000 -3000 -4 0 5 6000 7000000 8000000000m", "-1000000000 -2000000 -3000 -4 0 5 6000 7000000 8000000000m");
+    }
+
+    [Test]
+    public void TestBinaryFixed4 ()
+    {
       DoTest ("parse binary -12345678.9 -234567.89 -3.456 -0.4 0 5 6.789 789.1234 8912.345678m", "-12345678.9 -234567.89 -3.456 -0.4 0 5 6.789 789.1234 8912.345678m");
+    }
+
+    [Test]
+    public void TestBinaryFixed5 ()
+    {
       DoTest ("parse binary true false true", "true false true");
+    }
+
+    [Test]
+    public void TestBinaryFixed6 ()
+    {
       DoTest ("parse binary \\x00 \\x01 \\x02", "\\x00 \\x01 \\x02");
+    }
+
+    [Test]
+    public void TestBinaryFixed7 ()
+    {
       DoTest ("parse binary ++ ++ ++", "++ ++ ++");
+    }
+
+    [Test]
+    public void TestBinaryFixed8 ()
+    {
       DoTest ("parse binary 2015.05.25 2015.05.26 2015.05.27", "2015.05.25 2015.05.26 2015.05.27");
+    }
+
+    [Test]
+    public void TestBinaryFixed9 ()
+    {
+      DoTest ("parse binary {<-$R * $R}", "{<-$R * $R}");
+    }
+
+    [Test]
+    public void TestBinaryFixed10 ()
+    {
+      DoTest ("parse binary {<-$R.x * $R.y}", "{<-$R.x * $R.y}");
+    }
+
+    [Test]
+    public void TestBinaryFixed11 ()
+    {
+      DoTest ("parse binary {<-$L lib.f $R}", "{<-$L lib.f $R}");
     }
 
     //Vectors of variable length types like string and reference.
     [Test]
-    public void TestBinaryString ()
+    public void TestBinaryString1 ()
     {
       DoTest ("parse binary \"a\" \"ba\" \"cba\" \"dcba\"", "\"a\" \"ba\" \"cba\" \"dcba\"");
-      //test with repeated values
+    }
+
+    //test with repeated values
+    [Test]
+    public void TestBinaryString2 ()
+    {
       DoTest ("parse binary \"x\" \"yy\" \"zzz\" \"yy\" \"x\" \"yy\" \"zzz\"", "\"x\" \"yy\" \"zzz\" \"yy\" \"x\" \"yy\" \"zzz\"");
     }
 
+    //With simple fixed types only.
     [Test]
-    public void TestBinaryReference ()
+    public void TestBinarySymbol1 ()
     {
-      DoTest ("parse binary {<-$R * $R}", "{<-$R * $R}");
-      DoTest ("parse binary {<-$R.x * $R.y}", "{<-$R.x * $R.y}");
-      DoTest ("parse binary {<-$L lib.f $R}", "{<-$L lib.f $R}");
-    }
-
-    [Test]
-    public void TestBinarySymbol ()
-    {
-      //With simple fixed types only.
       DoTest ("parse binary #1,2.0,true", "#1,2.0,true");
-      //With fixed types including decimal
-      DoTest ("parse binary #1,2.0,3m,true", "#1,2.0,3m,true");
-      //With more than one value
-      DoTest ("parse binary #1,2.0,3m #4,5.0,6m #7,8.0,9m", "#1,2.0,3m #4,5.0,6m #7,8.0,9m");
-      //With repeating values
-      DoTest ("parse binary #1,2.0,3m #4,5.0,6m #1,2.0,3m", "#1,2.0,3m #4,5.0,6m #1,2.0,3m");
-      //With strings (variable length)
-      DoTest ("parse binary #1,2.0,3m,true,abcdef", "#1,2.0,3m,true,abcdef");
-      //Mixing strings and repeated values.
-      //DoTest ("parse binary #abc #de,f #abc", "#abc #de,f #abc");
     }
 
+    //With fixed types including decimal
     [Test]
-    public void TestBinaryContainers ()
+    public void TestBinarySymbol2 ()
     {
-      //block as expression holder.
+      DoTest ("parse binary #1,2.0,3m,true", "#1,2.0,3m,true");
+    }
+    //With more than one value
+    [Test]
+    public void TestBinarySymbol3 ()
+    {
+      DoTest ("parse binary #1,2.0,3m #4,5.0,6m #7,8.0,9m", "#1,2.0,3m #4,5.0,6m #7,8.0,9m");
+    }
+    //With repeating values
+    [Test]
+    public void TestBinarySymbol4 ()
+    {
+      DoTest ("parse binary #1,2.0,3m #4,5.0,6m #1,2.0,3m", "#1,2.0,3m #4,5.0,6m #1,2.0,3m");
+    }
+    //With strings (variable length)
+    [Test]
+    public void TestBinarySymbol5 ()
+    {
+      DoTest ("parse binary #1,2.0,3m,true,abcdef", "#1,2.0,3m,true,abcdef");
+    }
+
+    //Mixing strings and repeated values.
+    //DoTest ("parse binary #abc #de,f #abc", "#abc #de,f #abc");
+
+    //block as expression holder.
+    [Test]
+    public void TestBinaryContainers1 ()
+    {
       DoTest ("parse binary {<-1 + 2.0}", "{<-1 + 2.0}");
-      //block with mixed variables.
+    }
+
+    //block with mixed variables.
+    [Test]
+    public void TestBinaryContainer2 ()
+    {
       DoTest ("parse binary {a:1 2 3 b:4.0 5.0 6.0 c:7 8 9m d:true false e:\"this\" \"a\" \"string\" f:#x,y,z #u,v,w #r,s,t}", "{a:1 2 3 b:4.0 5.0 6.0 c:7 8 9m d:true false e:\"this\" \"a\" \"string\" f:#x,y,z #u,v,w #r,s,t}");
-      //block with complex expression.
+    }
+
+    //block with complex expression.
+    [Test]
+    public void TestBinaryContainers3 ()
+    {
       DoTest ("parse binary {<-(1 - 2 * 4) - 3}", "{<-(1 - 2 * 4) - 3}");
-      //nested blocks
+    }
+
+    //nested blocks
+    [Test]
+    public void TestBinaryContainers4 ()
+    {
       DoTest ("parse binary {l:{a:0 b:1 c:2} d:{d:3.0 e:4.0 f:5.0} m:{g:6m h:7m i:8m}}", "{l:{a:0 b:1 c:2} d:{d:3.0 e:4.0 f:5.0} m:{g:6m h:7m i:8m}}");
     }
 
+    //cubes
     [Test]
-    public void TestBinaryCube ()
+    public void TestBinaryCube1 ()
     {
-      //cubes
       DoTest ("parse binary [S|l d m #a 10 -- -- #a 11 21.0 -- #a 12 22.0 32m]", "[S|l d m #a 10 -- -- #a 11 21.0 -- #a 12 22.0 32m]");
+    }
+
+    [Test]
+    public void TestBinaryCube2 ()
+    {
       DoTest ("parse binary [E|S|l d m 0 #a 10 -- -- 1 #a 11 21.0 -- 2l #a 12 22.0 32m]", "[E|S|l d m 0 #a 10 -- -- 1 #a 11 21.0 -- 2 #a 12 22.0 32m]");
     }
 
