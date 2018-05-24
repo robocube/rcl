@@ -1932,15 +1932,13 @@ namespace RCL.Core
     }
 
     [RCVerb ("count")]
-    public void CountOp (
-      RCRunner runner, RCClosure closure, RCCube right)
+    public void CountOp (RCRunner runner, RCClosure closure, RCCube right)
     {
       runner.Yield (closure, new RCLong (right.Count));
     }
 
     [RCVerb ("rename")]
-    public void RenameOp (
-      RCRunner runner, RCClosure closure, RCString left, RCCube right)
+    public void RenameOp (RCRunner runner, RCClosure closure, RCString left, RCCube right)
     {
       throw new Exception ("rename needs a new implementation specifically for cubes.");
     }
@@ -1968,8 +1966,7 @@ namespace RCL.Core
     }
 
     [RCVerb ("from")]
-    public void EvalFrom (
-      RCRunner runner, RCClosure closure, RCSymbol left, RCCube right)
+    public void EvalFrom (RCRunner runner, RCClosure closure, RCSymbol left, RCCube right)
     {
       RCCube result = new RCCube (right.Axis);
       for (int i = 0; i < left.Count; ++i)
@@ -1986,8 +1983,7 @@ namespace RCL.Core
     }
 
     [RCVerb ("from")]
-    public void EvalFrom (
-      RCRunner runner, RCClosure closure, RCString left, RCCube right)
+    public void EvalFrom (RCRunner runner, RCClosure closure, RCString left, RCCube right)
     {
       RCCube result = new RCCube (right.Axis);
       for (int i = 0; i < left.Count; ++i)
@@ -2004,22 +2000,19 @@ namespace RCL.Core
     }
 
     [RCVerb ("at")]
-    public void EvalAt (
-      RCRunner runner, RCClosure closure, RCCube left, RCSymbol right)
+    public void EvalAt (RCRunner runner, RCClosure closure, RCCube left, RCSymbol right)
     {
       EvalFrom (runner, closure, right, left);
     }
 
     [RCVerb ("at")]
-    public void EvalAt (
-      RCRunner runner, RCClosure closure, RCCube left, RCString right)
+    public void EvalAt (RCRunner runner, RCClosure closure, RCCube left, RCString right)
     {
       EvalFrom (runner, closure, right, left);
     }
 
     [RCVerb ("names")]
-    public void NamesOp (
-      RCRunner runner, RCClosure closure, RCCube right)
+    public void NamesOp (RCRunner runner, RCClosure closure, RCCube right)
     {
       string[] result = new string[right.Cols];
       for (int i = 0; i < result.Length; ++i)
@@ -2028,23 +2021,20 @@ namespace RCL.Core
     }
 
     [RCVerb ("print")]
-    public void EvalPrint (
-      RCRunner runner, RCClosure closure, RCCube right)
+    public void EvalPrint (RCRunner runner, RCClosure closure, RCCube right)
     {
       Console.Out.WriteLine (right.ToString ());
       runner.Yield (closure, new RCLong (0));
     }
 
     [RCVerb ("untimeline")]
-    public void EvalUntimeline (
-      RCRunner runner, RCClosure closure, RCCube cube)
+    public void EvalUntimeline (RCRunner runner, RCClosure closure, RCCube cube)
     {
       runner.Yield (closure, cube.Untimeline ());
     }
 
     [RCVerb ("retimeline")]
-    public void EvalRetimeline (
-      RCRunner runner, RCClosure closure, RCString tlcols, RCCube cube)
+    public void EvalRetimeline (RCRunner runner, RCClosure closure, RCString tlcols, RCCube cube)
     {
       runner.Yield (closure, cube.Retimeline (tlcols.Data));
     }
@@ -2104,8 +2094,7 @@ namespace RCL.Core
     }
 
     [RCVerb ("meta")]
-    public void EvalMeta (
-      RCRunner runner, RCClosure closure, RCBlock right)
+    public void EvalMeta (RCRunner runner, RCClosure closure, RCBlock right)
     {
       RCCube target = new RCCube (new RCArray<string> ("S"));
       Stack<object> names = new Stack<object> ();
@@ -2144,8 +2133,7 @@ namespace RCL.Core
     }
 
     [RCVerb ("cubify")]
-    public void EvalCubify (
-      RCRunner runner, RCClosure closure, RCBlock right)
+    public void EvalCubify (RCRunner runner, RCClosure closure, RCBlock right)
     {
       RCCube target = new RCCube (new RCArray<string> ("S"));
       target.ReserveColumn ("o");
