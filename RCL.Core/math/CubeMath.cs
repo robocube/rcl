@@ -736,15 +736,12 @@ namespace RCL.Core
         }
         if (data.Count > 0)
         {
-          Timeline axis = new Timeline (null, 
-                                        null, 
-                                        null, 
+          Timeline axis = new Timeline (null, null, null,
                                         new RCArray<RCSymbolScalar> (symbol));
           ColumnBase column = ColumnBase.FromArray (axis, index, data);
-          return new RCCube (
-            axis,
-            new RCArray<string> ("x"),
-            new RCArray<ColumnBase> (column));
+          return new RCCube (axis,
+                             new RCArray<string> ("x"),
+                             new RCArray<ColumnBase> (column));
         }
         else return new RCCube ();
       }
