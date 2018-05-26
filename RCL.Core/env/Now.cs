@@ -13,23 +13,15 @@ namespace RCL.Core
   public class Now
   {
     [RCVerb ("now")]
-    public void EvalNow (
-      RCRunner runner, RCClosure closure, RCBlock right)
+    public void EvalNow (RCRunner runner, RCClosure closure, RCBlock right)
     {
-      runner.Yield (closure,
-                    new RCTime (
-                      new RCTimeScalar (DateTime.UtcNow.Ticks, 
-                                        RCTimeType.Timestamp)));
+      runner.Yield (closure, new RCTime (new RCTimeScalar (DateTime.UtcNow.Ticks, RCTimeType.Timestamp)));
     }
 
     [RCVerb ("now")]
-    public void EvalNow (
-      RCRunner runner, RCClosure closure, RCSymbol right)
+    public void EvalNow (RCRunner runner, RCClosure closure, RCSymbol right)
     {
-      runner.Yield (closure,
-                    new RCTime (
-                      new RCTimeScalar (DateTime.UtcNow.Ticks, 
-                                        RCTimeType.Timestamp)));
+      runner.Yield (closure, new RCTime (new RCTimeScalar (DateTime.UtcNow.Ticks, RCTimeType.Timestamp)));
     }
   }
 }

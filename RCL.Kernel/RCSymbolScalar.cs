@@ -175,6 +175,10 @@ namespace RCL.Kernel
           --i;
           current = current.Previous;
         }
+        if (current == null)
+        {
+          throw new Exception (string.Format ("No part {0} in symbol {1}", p, this));
+        }
         return current.Key;
       }
       else
@@ -186,13 +190,26 @@ namespace RCL.Kernel
           --i;
           current = current.Previous;
         }
+        if (current == null)
+        {
+          throw new Exception (string.Format ("No part {0} in symbol {1}", p, this));
+        }
         return current.Key;
       }
     }
 
+    public RCSymbolScalar Part (long[] p)
+    {
+      object[] parts = new object[p.Length];
+      for (int i = 0; i < p.Length; ++i)
+      {
+        parts[i] = Part (p[i]);
+      }
+      return From (parts);
+    }
+
     public bool IsConcreteOf (RCSymbolScalar scalar)
     {
-      //bool trailing = m_string.Length > scalar.m_string.Length && m_string.StartsWith (scalar.m_string);
       RCSymbolScalar concrete = this;
       RCSymbolScalar @abstract = scalar;
 

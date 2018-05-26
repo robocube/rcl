@@ -185,6 +185,12 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestKeyWithPart ()
+    {
+      DoTest ("-1 -2 -3 key [S|x #a,b,c 0 #d,e,f 1]", "[S|x #c,b,a 0 #f,e,d 1]");
+    }
+
+    [Test]
     public void TestCubeNoSymbol ()
     {
       //Tests for simple cubes with no timeline.

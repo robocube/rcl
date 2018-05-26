@@ -185,33 +185,22 @@ namespace RCL.Core
     public delegate O SeqScalarOp <S, R, O> (ref S s, R r);
     public delegate O ConScalarOp <C, L, R, O> (C c, R r);
 
-    public delegate RCValue CubeOp <R, O> (
-      RCCube right, ScalarOp <R, O> op);
-    public delegate RCValue CumCubeOp <R, O> (
-      RCCube right, ScalarOp <R, R, O> op);
+    public delegate RCValue CubeOp <R, O> (RCCube right, ScalarOp <R, O> op);
+    public delegate RCValue CumCubeOp <R, O> (RCCube right, ScalarOp <R, R, O> op);
 
-    public delegate RCValue CubeOp <L, R, O> (
-      RCCube left, RCCube right, ScalarOp<L, R, O> op);
-    public delegate RCValue CubeOpLeftScalar <L, R, O> (
-      RCVector<L> left, RCCube right, ScalarOp<L, R, O> op);
-    public delegate RCValue CubeOpRightScalar <L, R, O> (
-      RCCube left, RCVector<R> right, ScalarOp<L, R, O> op);
+    public delegate RCValue CubeOp <L, R, O> (RCCube left, RCCube right, ScalarOp<L, R, O> op);
+    public delegate RCValue CubeOpLeftScalar <L, R, O> (RCVector<L> left, RCCube right, ScalarOp<L, R, O> op);
+    public delegate RCValue CubeOpRightScalar <L, R, O> (RCCube left, RCVector<R> right, ScalarOp<L, R, O> op);
 
-    public delegate RCValue SeqCubeOpM <S, R, O> (
-      RCCube right, SeqScalarOp<S, R, O> op);
-    public delegate RCValue SeqCubeOpD <S, R, O> (
-      RCLong left, RCCube right, SeqScalarOp<S, R, O> op);
-    public delegate RCValue ConCubeOp <C, L, R, O> (
-      RCVector<L> left, RCCube right, ConScalarOp<C, L, R, O> op);
+    public delegate RCValue SeqCubeOpM <S, R, O> (RCCube right, SeqScalarOp<S, R, O> op);
+    public delegate RCValue SeqCubeOpD <S, R, O> (RCLong left, RCCube right, SeqScalarOp<S, R, O> op);
+    public delegate RCValue ConCubeOp <C, L, R, O> (RCVector<L> left, RCCube right, ConScalarOp<C, L, R, O> op);
 
-    public static RCValue MonadicOp <R, O> (
-      RCCube right, ScalarOp<R, O> op)
+    public static RCValue MonadicOp <R, O> (RCCube right, ScalarOp<R, O> op)
       where O : IComparable
     {
       Comparer<O> c = Comparer<O>.Default;
-      Dictionary<RCSymbolScalar, IndexPair<O>> map =
-        new Dictionary<RCSymbolScalar, IndexPair<O>> ();
-
+      Dictionary<RCSymbolScalar, IndexPair<O>> map = new Dictionary<RCSymbolScalar, IndexPair<O>> ();
       RCArray<int> rindex = right.GetIndex<R> (0);
       RCArray<R> rdata = right.GetData<R> (0);
       RCArray<O> data = new RCArray<O> ();
@@ -261,8 +250,7 @@ namespace RCL.Core
       else return new RCCube ();
     }
 
-    public static RCValue ContextualOp <C, L, R, O> (
-      RCVector<L> left, RCCube right, ConScalarOp<C, L, R, O> op)
+    public static RCValue ContextualOp <C, L, R, O> (RCVector<L> left, RCCube right, ConScalarOp<C, L, R, O> op)
       where O : IComparable where C : Context<L>, new ()
     {
       C c = new C ();
@@ -689,16 +677,13 @@ namespace RCL.Core
     //Combine the significant statistics from RCScalar
     protected struct SeqState<S, O> { public S s; public O o; }
 
-    public static RCValue SequentialOpMonadic<S, R, O> (RCCube right, 
-                                                        SeqScalarOp<S, R, O> op) 
+    public static RCValue SequentialOpMonadic<S, R, O> (RCCube right, SeqScalarOp<S, R, O> op)
       where S : struct where O : struct
     {
       return SequentialOpDyadic <S, R, O> (null, right, op);
     }
 
-    public static RCValue SequentialOpDyadic<S, R, O> (RCLong left, 
-                                                       RCCube right, 
-                                                       SeqScalarOp<S, R, O> op) 
+    public static RCValue SequentialOpDyadic<S, R, O> (RCLong left, RCCube right, SeqScalarOp<S, R, O> op)
       where S : struct where O : struct
     {
       if (right.Count == 0)
@@ -710,7 +695,6 @@ namespace RCL.Core
         RCArray<int> rindex = right.GetIndex<R> (0);
         RCArray<R> rdata = right.GetData<R> (0);
         Dictionary<RCSymbolScalar, SeqState<S,O>> results = new Dictionary<RCSymbolScalar, SeqState<S,O>> ();
-
         int levels = left == null ? 0 : (int) left[0];
         for (int i = 0; i < rdata.Count; ++i)
         {
@@ -921,8 +905,7 @@ namespace RCL.Core
     [RCVerb ("and")] [RCVerb ("or")]
     [RCVerb ("==")] [RCVerb ("!=")] [RCVerb ("<")] [RCVerb (">")] [RCVerb ("<=")] [RCVerb (">=")]
     [RCVerb ("min")] [RCVerb ("max")]
-    public void EvalDyadic (
-      RCRunner runner, RCClosure closure, object left, RCCube right)
+    public void EvalDyadic (RCRunner runner, RCClosure closure, object left, RCCube right)
     {
       RCOperator op = (RCOperator) closure.Code;
       if (right.Cols == 0)
@@ -935,8 +918,7 @@ namespace RCL.Core
     [RCVerb ("and")] [RCVerb ("or")]
     [RCVerb ("==")] [RCVerb ("!=")] [RCVerb ("<")] [RCVerb (">")] [RCVerb ("<=")] [RCVerb (">=")]
     [RCVerb ("min")] [RCVerb ("max")]
-    public void EvalDyadic (
-      RCRunner runner, RCClosure closure, RCCube left, object right)
+    public void EvalDyadic (RCRunner runner, RCClosure closure, RCCube left, object right)
     {
       RCOperator op = (RCOperator) closure.Code;
       if (left.Cols == 0)
@@ -955,8 +937,7 @@ namespace RCL.Core
     [RCVerb ("nano")] [RCVerb ("date")] [RCVerb ("daytime")]
     [RCVerb ("datetime")] [RCVerb ("timestamp")] [RCVerb ("timespan")]
     [RCVerb ("any")] [RCVerb ("all")] [RCVerb ("none")]
-    public void EvalMonadic (
-      RCRunner runner, RCClosure closure, RCCube right)
+    public void EvalMonadic (RCRunner runner, RCClosure closure, RCCube right)
     {
       RCOperator op = (RCOperator) closure.Code;
       if (right.Cols == 0)
@@ -966,8 +947,7 @@ namespace RCL.Core
     }
 
     [RCVerb ("map")] [RCVerb ("replace")] [RCVerb ("part")]
-    public void EvalContextual (
-      RCRunner runner, RCClosure closure, object left, RCCube right)
+    public void EvalContextual (RCRunner runner, RCClosure closure, object left, RCCube right)
     {
       RCOperator op = (RCOperator) closure.Code;
       if (right.Cols == 0)  
@@ -977,8 +957,7 @@ namespace RCL.Core
     }
 
     [RCVerb ("sum")] [RCVerb ("avg")] [RCVerb ("high")] [RCVerb ("low")]
-    public void EvalAggregate (
-      RCRunner runner, RCClosure closure, RCLong left, RCCube right)
+    public void EvalAggregate (RCRunner runner, RCClosure closure, RCLong left, RCCube right)
     {
       RCOperator op = (RCOperator) closure.Code;
       if (right.Cols == 0)  
@@ -988,8 +967,7 @@ namespace RCL.Core
     }
 
     [RCVerb ("in")] [RCVerb ("like")]
-    public void EvalRightContextual (
-      RCRunner runner, RCClosure closure, RCCube left, object right)
+    public void EvalRightContextual (RCRunner runner, RCClosure closure, RCCube left, object right)
     {
       RCOperator op = (RCOperator) closure.Code;
       if (left.Cols == 0)
@@ -1001,8 +979,7 @@ namespace RCL.Core
     //Use a dedicated function for this because it has non-standard handling for the empty cube.
     //The default behavior is to yield a [] if there is an [] as an argument.
     [RCVerb ("switch")]
-    public void SwitchOp (
-      RCRunner runner, RCClosure closure, RCCube left, RCBlock right)
+    public void SwitchOp (RCRunner runner, RCClosure closure, RCCube left, RCBlock right)
     {
       RCOperator op = (RCOperator) closure.Code;
       if (left.Cols == 0)
@@ -1013,8 +990,7 @@ namespace RCL.Core
     [RCVerb ("read")] [RCVerb ("write")]
     [RCVerb ("dispatch")] [RCVerb ("gawk")] [RCVerb ("throttle")] [RCVerb ("peek")] [RCVerb ("poll")]
     [RCVerb ("reply")]
-    public void ConcurrencyOp (
-      RCRunner runner, RCClosure closure, RCCube left, object right)
+    public void ConcurrencyOp (RCRunner runner, RCClosure closure, RCCube left, object right)
     {
       RCOperator op = (RCOperator) closure.Code;
       if (left.Cols == 0)
@@ -1025,8 +1001,7 @@ namespace RCL.Core
     [RCVerb ("read")] [RCVerb ("write")]
     [RCVerb ("dispatch")] [RCVerb ("gawk")] [RCVerb ("throttle")] [RCVerb ("peek")] [RCVerb ("poll")]
     [RCVerb ("reply")]
-    public void ConcurrencyOp (
-      RCRunner runner, RCClosure closure, RCCube left, RCCube right)
+    public void ConcurrencyOp (RCRunner runner, RCClosure closure, RCCube left, RCCube right)
     {
       RCOperator op = (RCOperator) closure.Code;
       if (left.Cols == 0)
@@ -1038,16 +1013,14 @@ namespace RCL.Core
     }
 
     [RCVerb ("object")]
-    public void EvalObject (
-      RCRunner runner, RCClosure closure, RCCube cube)
+    public void EvalObject (RCRunner runner, RCClosure closure, RCCube cube)
     {
       RCCube result = Bang (cube, cube, null, false, true, true, false);
       runner.Yield (closure, result);
     }
 
     [RCVerb ("object")]
-    public void EvalObject (
-      RCRunner runner, RCClosure closure, RCSymbol left, RCCube right)
+    public void EvalObject (RCRunner runner, RCClosure closure, RCSymbol left, RCCube right)
     {
       RCCube result = Bang (right, right, null, false, true, true, false);
       string name = (string) left[0].Part (0);
@@ -1058,8 +1031,7 @@ namespace RCL.Core
     }
 
     [RCVerb ("fill")]
-    public void EvalFill (
-      RCRunner runner, RCClosure closure, RCCube cube)
+    public void EvalFill (RCRunner runner, RCClosure closure, RCCube cube)
     {
       RCCube result = new RCCube (cube.Axis);
       Filler filler = new Filler (result);
@@ -1067,16 +1039,28 @@ namespace RCL.Core
       runner.Yield (closure, result);
     }
 
+    /// <summary>
+    /// Given a long in the left argument, key will rearrange parts of the S column using the same behavior as the part operator.
+    /// </summary>
     [RCVerb ("key")]
-    public void EvalKey (
-      RCRunner runner, RCClosure closure, RCSymbol key, RCCube cube)
+    public void EvalKey (RCRunner runner, RCClosure closure, RCLong parts, RCCube cube)
+    {
+      RCArray<RCSymbolScalar> newKey = new RCArray<RCSymbolScalar> ();
+      for (int i = 0; i < cube.Axis.Count; ++i)
+      {
+        newKey.Write (cube.Axis.Symbol[i].Part (parts.Data.ToArray ()));
+      }
+      runner.Yield (closure, Key (newKey, cube));
+    }
+
+    [RCVerb ("key")]
+    public void EvalKey (RCRunner runner, RCClosure closure, RCSymbol key, RCCube cube)
     {
       runner.Yield (closure, Key (key.Data, cube));
     }
 
     [RCVerb ("key")]
-    public void EvalKey (
-      RCRunner runner, RCClosure closure, RCCube key, RCCube cube)
+    public void EvalKey (RCRunner runner, RCClosure closure, RCCube key, RCCube cube)
     {
       if (cube.Count == 0)
       {
@@ -1103,18 +1087,14 @@ namespace RCL.Core
       {
         throw new Exception ("New symbol column must have the same length as the old one.");
       }
-      Timeline axis = new Timeline (cube.Axis.Global,
-                                    cube.Axis.Event,
-                                    cube.Axis.Time,
-                                    key);
+      Timeline axis = new Timeline (cube.Axis.Global, cube.Axis.Event, cube.Axis.Time, key);
       axis.Count = cube.Count;
       RCArray<ColumnBase> columns = new RCArray<ColumnBase> ();
       RCArray<string> names = new RCArray<string> ();
       for (int i = 0; i < cube.Cols; ++i)
       {
         ColumnBase oldcol = cube.GetColumn (i);
-        ColumnBase newcol = ColumnBase.FromArray (
-          axis, oldcol.Index, oldcol.Array);
+        ColumnBase newcol = ColumnBase.FromArray (axis, oldcol.Index, oldcol.Array);
         columns.Write (newcol);
         names.Write (cube.NameAt (i));
       }
