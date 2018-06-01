@@ -37,7 +37,7 @@ namespace RCL.Kernel
 
     public override string TypeName
     {
-      get { return "decimal"; }
+      get { return DECIMAL_TYPENAME; }
     }
 
     public override int SizeOfScalar

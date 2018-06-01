@@ -330,7 +330,7 @@ namespace RCL.Core
       RCArray<T> result = new RCArray<T>();
       for (int i = 0; i < right.Count; ++i)
       {
-        RCVector<T> value = (RCVector<T>)right.Get(i);
+        RCVector<T> value = (RCVector<T>) right.Get(i);
         for (int j = 0; j < value.Count; ++j)
           result.Write (value[j]);
       }

@@ -212,12 +212,10 @@ namespace RCL.Kernel
     {
       RCSymbolScalar concrete = this;
       RCSymbolScalar @abstract = scalar;
-
       while (concrete.Length > @abstract.Length)
       {
         concrete = concrete.Previous;
       }
-
       while (@abstract != null)
       {
         if (!@abstract.Key.Equals ("*"))
@@ -317,31 +315,34 @@ namespace RCL.Kernel
     public override bool Equals (object obj)
     {
       RCSymbolScalar other = obj as RCSymbolScalar;
-      if (other == null) return false;
-      RCSymbolScalar current = this;
-      while (current != null)
+      if (other == null)
       {
-        if (other == null) return false;
-        if (!current.Key.Equals (other.Key))
-          return false;
-        other = other.Previous;
-        current = current.Previous;
+        return false;
       }
-      if (other != null) return false;
-      return true;
+      RCSymbolScalar current = this;
+      return current.m_string == other.m_string;
     }
 
     public int CompareTo (object obj)
     {
-      if (obj == null) return 1;
+      if (obj == null)
+      {
+        return 1;
+      }
       RCSymbolScalar other = obj as RCSymbolScalar;
-      if (other == null) return 1;
+      if (other == null)
+      {
+        return 1;
+      }
       return m_string.CompareTo (other.m_string);
     }
 
     public int CompareTo (RCSymbolScalar other)
     {
-      if (other == null) return 1;
+      if (other == null)
+      {
+        return 1;
+      }
       return m_string.CompareTo (other.m_string);
     }
   }

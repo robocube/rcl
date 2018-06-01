@@ -80,7 +80,7 @@ namespace RCL.Kernel
     /// </summary>
     public override string TypeName
     {
-      get { return "time"; }
+      get { return RCValue.TIME_TYPENAME; }
     }
 
     /// <summary>

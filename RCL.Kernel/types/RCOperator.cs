@@ -94,7 +94,7 @@ namespace RCL.Kernel
 
     public override string TypeName
     {
-      get { return "operator"; }
+      get { return RCValue.OPERATOR_TYPENAME; }
     }
 
     public override bool IsOperator
@@ -299,7 +299,7 @@ namespace RCL.Kernel
       RCL.Kernel.Format.DoFormat (this, builder, format, colmap, level);
     }
 
-    public override string TypeName { get { return "template"; } }
+    public override string TypeName { get { return RCValue.TEMPLATE_TYPENAME; } }
     public int EscapeCount { get { return m_escapeCount; } }
     public bool Multiline { get { return m_multiline; } }
   }

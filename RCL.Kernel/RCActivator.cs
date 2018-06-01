@@ -36,7 +36,7 @@ namespace RCL.Kernel
     protected Dictionary<string, Type> m_operator = new Dictionary<string, Type> ();
 
     //Lookup for final dispatching of the correct operator overload.
-    protected Dictionary<OverloadKey, OverloadValue> m_dispatch;
+    protected internal Dictionary<OverloadKey, OverloadValue> m_dispatch;
 
     //List of types to be treated as modules with state maintained by the bot.
     protected HashSet<Type> m_modules;
@@ -99,7 +99,6 @@ namespace RCL.Kernel
         m_extByToken[ext.StartToken] = extension;
         m_extByCode[ext.TypeCode] = extension;
       }
-
       //Is it a standalone module (with no operators)
       module = false;
       attributes = type.GetCustomAttributes (typeof (RCModule), false);
@@ -107,7 +106,6 @@ namespace RCL.Kernel
       {
         module = true;
       }
-
       foreach (MethodInfo method in type.GetMethods ())
       {
         attributes = method.GetCustomAttributes (typeof (RCVerb), false);
@@ -116,11 +114,10 @@ namespace RCL.Kernel
           RCVerb verb = (RCVerb) attributes[i];
           //Check to see if this verb has a custom implementation.
           //This is for operators that need to override methods on RCOperator
-          //like Next for example. Switch and each are good examples.
+          //like Next for example. switch and each are good examples.
           //Having an entry in m_operator is what distinguishes a built-in
           //operator from a UserOperator implemented in RCL.
-          //note that you cannot currently create a user operator with the same
-          //name as an existing built-in operator. This may turn out to be a problem.
+          //note: a user operator may obscure a built-in operator if it has the same name
           Type optype;
           m_operator.TryGetValue (verb.Name, out optype);
           if (optype == null || optype == typeof (RCOperator))
@@ -147,8 +144,7 @@ namespace RCL.Kernel
           }
           else if (parameters.Length == 4)
           {
-            OverloadKey key = new OverloadKey (
-              verb.Name, parameters[2].ParameterType, parameters[3].ParameterType);
+            OverloadKey key = new OverloadKey (verb.Name, parameters[2].ParameterType, parameters[3].ParameterType);
             if (result.ContainsKey (key))
             {
               throw new Exception ("dispatch table already contains the key:" + key);
@@ -213,7 +209,7 @@ namespace RCL.Kernel
       {
         Name = name;
         Left = left;
-        Right = right;
+        Right = right.IsSubclassOf (typeof (RCOperator)) ? typeof (RCOperator) : right;
 
         //xor the hashes together for name, left and right type.
         //No idea whether this technique is sufficient for good performance.
@@ -222,7 +218,7 @@ namespace RCL.Kernel
         //of int hashes.  And I don't really know how to modify them appropriately.
         //http://eternallyconfuzzled.com/tuts/algorithms/jsw_tut_hashing.aspx
         //I kind of wish MSFT gave me a HashCombiner somewhere in the framework.
-        //At any rate we will revisit this kind of thing when I start optimizing RC.
+        //At any rate we will revisit this kind of thing when I start optimizing RCL.
         //int h = 0;
         //h ^= name.GetHashCode ();
         //h ^= left == null ? 0 : left.GetHashCode ();
@@ -287,6 +283,7 @@ namespace RCL.Kernel
       OverloadValue overload;
       try
       {
+        //RCSystem.Log.Record (closure, "invoke", 0, name, right);
         if (m_dispatch.TryGetValue (new OverloadKey (name, null, right.GetType ()), out overload))
         {
           RCBot bot = runner.GetBot (closure.Bot);
@@ -294,6 +291,12 @@ namespace RCL.Kernel
           overload.Implementation.Invoke (state, new object[] {runner, closure, right});
         }
         else if (m_dispatch.TryGetValue (new OverloadKey (name, null, typeof (object)), out overload))
+        {
+          RCBot bot = runner.GetBot (closure.Bot);
+          object state = bot.GetModule (overload.Module);
+          overload.Implementation.Invoke (state, new object[] {runner, closure, right});
+        }
+        else if (m_dispatch.TryGetValue (new OverloadKey (name, null, typeof (RCOperator)), out overload))
         {
           RCBot bot = runner.GetBot (closure.Bot);
           object state = bot.GetModule (overload.Module);
@@ -329,6 +332,7 @@ namespace RCL.Kernel
       Type rtype = right.GetType ();
       try
       {
+        //Console.WriteLine("name:{0}, ltype:{1}, rtype:{2}", name, ltype.ToString (), rtype.ToString ());
         if (m_dispatch.TryGetValue (new OverloadKey (name, ltype, rtype), out overload))
         {
           RCBot bot = runner.GetBot (closure.Bot);
@@ -348,6 +352,12 @@ namespace RCL.Kernel
           overload.Implementation.Invoke (state, new object[] {runner, closure, left, right});
         }
         else if (m_dispatch.TryGetValue (new OverloadKey (name, typeof (object), typeof (object)), out overload))
+        {
+          RCBot bot = runner.GetBot (closure.Bot);
+          object state = bot.GetModule (overload.Module);
+          overload.Implementation.Invoke (state, new object[] {runner, closure, left, right});
+        }
+        else if (m_dispatch.TryGetValue (new OverloadKey (name, ltype, typeof (RCOperator)), out overload))
         {
           RCBot bot = runner.GetBot (closure.Bot);
           object state = bot.GetModule (overload.Module);

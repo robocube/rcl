@@ -8,6 +8,43 @@ namespace RCL.Kernel
 {
   public abstract class RCValue
   {
+    public static readonly string REFERENCE_TYPENAME = "reference";
+    public static readonly string BYTE_TYPENAME = "byte";
+    public static readonly string TIME_TYPENAME = "time";
+    public static readonly string BLOCK_TYPENAME = "block";
+    public static readonly string CUBE_TYPENAME = "cube";
+    public static readonly string OPERATOR_TYPENAME = "operator";
+    public static readonly string TEMPLATE_TYPENAME = "template";
+    public static readonly string BOOLEAN_TYPENAME = "boolean";
+    public static readonly string LONG_TYPENAME = "long";
+    public static readonly string DOUBLE_TYPENAME = "double";
+    public static readonly string DECIMAL_TYPENAME = "decimal";
+    public static readonly string SYMBOL_TYPENAME = "symbol";
+    public static readonly string STRING_TYPENAME = "string";
+    public static readonly string INCR_TYPENAME = "incr";
+
+    public static string TypeNameForType (Type type)
+    {
+      switch (type.Name)
+      {
+        case "RCBlock": return BLOCK_TYPENAME;
+        case "RCCube": return CUBE_TYPENAME;
+        case "RCOperator": return OPERATOR_TYPENAME;
+        case "RCReference": return REFERENCE_TYPENAME;
+        case "RCTemplate": return TEMPLATE_TYPENAME;
+        case "RCByte": return BYTE_TYPENAME;
+        case "RCTime": return TIME_TYPENAME;
+        case "RCBoolean": return BOOLEAN_TYPENAME;
+        case "RCLong": return LONG_TYPENAME;
+        case "RCDouble": return DOUBLE_TYPENAME;
+        case "RCDecimal": return DECIMAL_TYPENAME;
+        case "RCSymbol": return SYMBOL_TYPENAME;
+        case "RCString": return STRING_TYPENAME;
+        case "RCIncr": return INCR_TYPENAME;
+        default: return type.Name;
+      }
+    }
+
     protected bool m_lock = false;
 
     public RCValue () {}
@@ -53,8 +90,7 @@ namespace RCL.Kernel
       runner.Yield (closure, this);
     }
 
-    public virtual RCClosure Next (
-      RCRunner runner, RCClosure tail, RCClosure previous, RCValue result)
+    public virtual RCClosure Next (RCRunner runner, RCClosure tail, RCClosure previous, RCValue result)
     {
       return RCL.Kernel.Eval.DoNext (this, runner, tail, previous, result);
     }
@@ -64,8 +100,7 @@ namespace RCL.Kernel
       return RCL.Kernel.Eval.DoFinish (runner, closure, result);
     }
 
-    public virtual RCClosure Handle (
-      RCRunner runner, RCClosure closure, Exception exception, long status, out RCValue handled)
+    public virtual RCClosure Handle (RCRunner runner, RCClosure closure, Exception exception, long status, out RCValue handled)
     {
       handled = null;
       return null;
@@ -145,7 +180,6 @@ namespace RCL.Kernel
       if (obj == this) return true;
       RCValue other = obj as RCValue;
       if (other == null) return false;
-
       string thisText = this.ToString ();
       string otherText = other.ToString ();
       return thisText.Equals (otherText);
@@ -156,8 +190,7 @@ namespace RCL.Kernel
       return base.GetHashCode ();
     }
 
-    public virtual RCOperator AsOperator (
-      RCActivator activator, RCValue left, RCValue right)
+    public virtual RCOperator AsOperator (RCActivator activator, RCValue left, RCValue right)
     {
       RCOperator result = new InlineOperator (this);
       result.Init ("", left, right);

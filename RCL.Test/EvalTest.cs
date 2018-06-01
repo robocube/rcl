@@ -626,6 +626,18 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestNestedSwitch3 ()
+    {
+      DoEvalTest ("eval \"switch\" dyad {l:true r:{:true :false}}", "true");
+    }
+
+    [Test]
+    public void TestNestedSwitch4 ()
+    {
+      DoEvalTest ("{x:13} eval \"switch\" dyad {l:true r:{:$x + 1 :$x}}", "14");
+    }
+
+    [Test]
     public void TestSwitchInTake ()
     {
       DoEvalTest ("{<-#lock take {<-true switch {:0 :1}}}", "0");
@@ -694,6 +706,18 @@ namespace RCL.Test
     public void TestEachWithBlock1 ()
     {
       DoEvalTest ("{x:1} each {:{} :{}}", "{:{x:1} :{x:1}}");
+    }
+
+    [Test]
+    public void TestEachEval ()
+    {
+      DoEvalTest ("eval \"each\" dyad {l:{<-$R+1} r:1 2 3}", "{:2 :3 :4}");
+    }
+
+    [Test]
+    public void TestEachEval1 ()
+    {
+      DoEvalTest ("{x:7} eval \"each\" dyad {l:{<-$R+$x} r:1 2 3}", "{:8 :9 :10}");
     }
 
     [Test]

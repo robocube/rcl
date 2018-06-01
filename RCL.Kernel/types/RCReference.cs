@@ -51,7 +51,7 @@ namespace RCL.Kernel
 
     public override string TypeName
     {
-      get { return "reference"; }
+      get { return RCValue.REFERENCE_TYPENAME; }
     }
 
     public override char TypeCode

@@ -45,7 +45,7 @@ namespace RCL.Kernel
 
     public override string TypeName
     {
-      get { return "byte"; }
+      get { return RCValue.BYTE_TYPENAME; }
     }
 
     public override int SizeOfScalar

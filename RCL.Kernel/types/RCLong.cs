@@ -30,7 +30,7 @@ namespace RCL.Kernel
 
     public override string TypeName
     {
-      get { return "long"; }
+      get { return RCValue.LONG_TYPENAME; }
     }
 
     public override int SizeOfScalar

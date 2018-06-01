@@ -279,7 +279,7 @@ namespace RCL.Core
     [Primitive ("==")]
     public static bool Equals (double l, double r)
     {
-      return Math.Abs (l - r) < 0.000001;
+      return RCDouble.DoubleScalarEquals (l, r);
     }
 
     [Primitive ("==")]

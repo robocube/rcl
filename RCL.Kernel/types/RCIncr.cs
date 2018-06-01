@@ -53,7 +53,7 @@ namespace RCL.Kernel
 
     public override string TypeName
     {
-      get { return "incr"; }
+      get { return RCValue.INCR_TYPENAME; }
     }
 
     public override int SizeOfScalar

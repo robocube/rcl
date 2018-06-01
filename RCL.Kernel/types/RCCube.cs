@@ -516,7 +516,7 @@ namespace RCL.Kernel
 
     public override string TypeName
     {
-      get { return "cube"; }
+      get { return CUBE_TYPENAME; }
     }
 
     public override char TypeCode
@@ -636,6 +636,12 @@ namespace RCL.Kernel
       int column = m_names.IndexOf (name);
       if (column < 0) return null;
       return m_columns[column];
+    }
+
+    public RCValue Get (long index)
+    {
+      //Would it be better to return a cube here?
+      return GetSimpleVector ((int) index);
     }
 
     public ColumnBase GetColumn (int index)

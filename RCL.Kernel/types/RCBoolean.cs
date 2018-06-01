@@ -22,7 +22,7 @@ namespace RCL.Kernel
 
     public override string TypeName
     {
-      get { return "boolean"; }
+      get { return RCValue.BOOLEAN_TYPENAME; }
     }
 
     public override int SizeOfScalar

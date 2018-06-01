@@ -473,7 +473,11 @@ namespace RCL.Test
     [Test]
     public void TestEqXM() { DoTest ("\\x01==2m", "false"); }
     [Test]
-    public void TestEqDD() { DoTest("1.0==2.0", "false"); }
+    public void TestEqDD () { DoTest("1.0==2.0", "false"); }
+    [Test]
+    public void TestEqDD1 () { DoTest ("1.1==1.1", "true"); }
+    [Test]
+    public void TestEqDD2 () { DoTest ("NaN==NaN", "true"); }
     [Test]
     public void TestEqDL() { DoTest("1.0==2", "false"); }
     [Test]
@@ -502,6 +506,8 @@ namespace RCL.Test
     public void TestEqYY() { DoTest("#x==#y", "false"); }
     [Test]
     public void TestEqYY1() { DoTest("#x==#x", "true"); }
+    [Test]
+    public void TestEqYY2 () { DoTest ("#==symbol \"\"", "true"); }
     [Test]
     public void TestEqSS() { DoTest ("\"x\"==\"x\"", "true"); }
     [Test]
@@ -555,6 +561,8 @@ namespace RCL.Test
     public void TestEqualsYY() { DoTest("#x = #x", "true"); }
     [Test]
     public void TestEqualsYY1() { DoTest("#x #x = #x", "false"); }
+    [Test]
+    public void TestEqualsDD () { DoTest ("NaN 1.0 2.34 = NaN 1.0 2.34", "true"); }
 
     //Type coercion for vector types - we are not trying to round trip here.
     //Also not to be used for parsing and serializing object either.
@@ -1178,6 +1186,8 @@ namespace RCL.Test
     public void TestFromYK () { DoTest ("#y from {x:0 y:1 z:2}", "{y:1}"); }
     [Test]
     public void TestFromYK1 () { DoTest ("#'a b c' from {'a b c':1}", "{'a b c':1}"); }
+    [Test]
+    public void TestFromYK2 () { DoTest ("#a,c #e,f from {a:{b:1 c:2 d:3} e:{f:4 g:5}}", "{c:2 f:4}"); }
     [Test]
     public void TestFromSK () { DoTest ("\"y\" from {x:0 y:1 z:2}", "{y:1}"); }
     [Test]

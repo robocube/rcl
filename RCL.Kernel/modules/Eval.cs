@@ -598,16 +598,14 @@ namespace RCL.Kernel
         {
           @this = new RCArray<RCBlock> ();
         }
-        code = Resolve (op.m_reference.m_static,
-                        closure,
-                        op.m_reference.Parts,
-                        @this);
+        code = Resolve (op.m_reference.m_static, closure, op.m_reference.Parts, @this);
       }
       if (code == null)
       {
         throw new Exception (
           "Cannot find definition for operator: " + op.m_reference.Name);
       }
+      //RCSystem.Log.Record (closure, "invoke", 0, op.m_reference.Name, code);
       code.Eval (runner, UserOpClosure (closure, code, @this));
     }
 

@@ -536,19 +536,14 @@ namespace RCL.Core
       RCBlock result = RCBlock.Empty;
       for (int i = 0; i < right.Count; ++i)
       {
-        //O(n) lookup, kinda sucky.
-        if (right[i].Length > 1) 
-        {
-          throw new Exception ("at only supports block lookups using tuples of count 1.  But this could change.");
-        }
-        string name = (string) right[i].Key;
-        RCBlock next = left.GetName (name);
+        RCValue next = left.Get (right[i], null);
         if (next == null)
         {
-          string message = string.Format ("at: Name '{0}' not found within block", name);
+          string message = string.Format ("at: Name '{0}' not found within block", right[i]);
           throw new RCException (closure, RCErrors.Name, message);
         }
-        result = new RCBlock (result, next.Name, next.Evaluator, next.Value);
+        string name = right[i].Key as string;
+        result = new RCBlock (result, name, ":", next);
       }
       return result;
     }

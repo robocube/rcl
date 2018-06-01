@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Text;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
 using System.Reflection;
@@ -11,7 +12,7 @@ namespace RCL.Kernel
   /// There are a few things are accessible on a global basis: the log, the arguments to Program, and the activator.
   /// It is possible to have multiple runners operating within an appDomain, so a RCRunner instance is not available this way.
   /// </summary>
-  public static class RCSystem
+  public class RCSystem
   {
     static RCSystem ()
     {
@@ -46,6 +47,42 @@ namespace RCL.Kernel
       Args = args;
       Log = new RCLogger (Args.Nokeys, Args.Show);
       Log.SetVerbosity (Args.OutputEnum);
+    }
+
+    [RCVerb ("operators")]
+    public void Operators (RCRunner runner, RCClosure closure, RCBlock right)
+    {
+      RCCube result = new RCCube ("S");
+      result.ReserveColumn ("module");
+      result.ReserveColumn ("name");
+      result.ReserveColumn ("method");
+      result.ReserveColumn ("left");
+      result.ReserveColumn ("right");
+      foreach (KeyValuePair<RCActivator.OverloadKey, RCActivator.OverloadValue> kv in Activator.m_dispatch)
+      {
+        RCSymbolScalar sym;
+        if (kv.Key.Left == null)
+        {
+          sym = RCSymbolScalar.From ("operator", kv.Value.Module.Name, kv.Key.Name,
+                                     RCValue.TypeNameForType (kv.Key.Right));
+        }
+        else
+        {
+          sym = RCSymbolScalar.From ("operator", kv.Value.Module.Name, kv.Key.Name,
+                                     RCValue.TypeNameForType (kv.Key.Left),
+                                     RCValue.TypeNameForType (kv.Key.Right));
+        }
+        result.WriteCell ("name", sym, kv.Key.Name);
+        result.WriteCell ("module", sym, kv.Value.Module.Name);
+        result.WriteCell ("method", sym, kv.Value.Implementation.Name);
+        if (kv.Key.Left != null)
+        {
+          result.WriteCell ("left", sym, RCValue.TypeNameForType (kv.Key.Left));
+        }
+        result.WriteCell ("right", sym, RCValue.TypeNameForType (kv.Key.Right));
+        result.Axis.Write (sym);
+      }
+      runner.Yield (closure, result);
     }
 
     /// <summary>

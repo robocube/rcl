@@ -23,9 +23,25 @@ namespace RCL.Kernel
 
     public override Type ScalarType { get { return typeof (double); } }
 
+    public static bool DoubleScalarEquals (double x, double y)
+    {
+      if (Math.Abs (x - y) < 0.000001)
+      {
+        return true;
+      }
+      else if (double.IsNaN (x) && double.IsNaN (y))
+      {
+        return true;
+      }
+      else
+      {
+        return false;
+      }
+    }
+
     public override bool ScalarEquals (double x, double y)
     {
-      return x == y;
+      return DoubleScalarEquals (x, y);
     }
 
     public override string Suffix
@@ -40,7 +56,7 @@ namespace RCL.Kernel
 
     public override string TypeName
     {
-      get { return "double"; }
+      get { return RCValue.DOUBLE_TYPENAME; }
     }
 
     public override int SizeOfScalar

@@ -10,6 +10,7 @@ namespace RCL.Kernel
     RCValue Get (RCArray<string> name, RCArray<RCBlock> context);
     RCValue Get (string[] name, RCArray<RCBlock> context);
     RCValue Get (string name);
+    RCValue Get (long index);
   }
 
   public class RCName
@@ -285,7 +286,7 @@ namespace RCL.Kernel
 
     public override string TypeName
     {
-      get { return "block"; }
+      get { return RCValue.BLOCK_TYPENAME; }
     }
 
     public override char TypeCode
@@ -356,6 +357,41 @@ namespace RCL.Kernel
       return value;
     }
 
+    public RCValue Get (RCSymbolScalar name, RCArray<RCBlock> @this)
+    {
+      IRefable block = this;
+      RCValue value = null;
+      object[] array = name.ToArray ();
+      for (int i = 0; i < array.Length; ++i)
+      {
+        if (array[i] is long)
+        {
+          long index = (long) array[i];
+          value = block.Get (index);
+        }
+        else if (array[i] is string)
+        {
+          value = block.Get ((string) array[i]);
+        }
+        block = value as IRefable;
+        if (block == null)
+        {
+          //if it is the last value return it
+          if (i == name.Length - 1)
+          {
+            return value;
+          }
+          //if not, something is wrong
+          else return null;
+        }
+        if (@this != null && i < array.Length - 1)
+        {
+          @this.Write ((RCBlock) block);
+        }
+      }
+      return value;
+    }
+
     public RCValue Get (string name)
     {
       RCBlock obj = GetName (name);
@@ -375,6 +411,7 @@ namespace RCL.Kernel
       }
       return actual;
     }
+
 
     public RCBlock GetName (long index)
     {
