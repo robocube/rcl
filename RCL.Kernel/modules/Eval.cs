@@ -20,14 +20,14 @@ namespace RCL.Kernel
     [RCVerb ("eval")]
     public void EvalEval (RCRunner runner, RCClosure closure, RCBlock left, RCBlock right)
     {
-      RCClosure parent = UserOpClosure (closure, right, new RCArray<RCBlock> (left));
+      RCClosure parent = UserOpClosure (closure, right, new RCArray<RCBlock> (left), noClimb:true);
       DoEval (runner, parent, right);
     }
 
     [RCVerb ("eval")]
     public void EvalTemplate (RCRunner runner, RCClosure closure, RCBlock left, RCTemplate right)
     {
-      RCClosure parent = UserOpClosure (closure, right, new RCArray<RCBlock> (left));
+      RCClosure parent = UserOpClosure (closure, right, new RCArray<RCBlock> (left), noClimb:true);
       DoEval (runner, parent, right);
     }
 
@@ -58,7 +58,7 @@ namespace RCL.Kernel
     [RCVerb ("eval")]
     public void EvalEval (RCRunner runner, RCClosure closure, RCBlock left, RCOperator right)
     {
-      RCClosure parent = UserOpClosure (closure, right, new RCArray<RCBlock> (left));
+      RCClosure parent = UserOpClosure (closure, right, new RCArray<RCBlock> (left), noClimb:true);
       DoEval (runner, parent, right);
     }
 
@@ -78,7 +78,7 @@ namespace RCL.Kernel
     [RCVerb ("eval")]
     public void EvalEval (RCRunner runner, RCClosure closure, RCBlock left, RCReference right)
     {
-      RCClosure parent = UserOpClosure (closure, right, new RCArray<RCBlock> (left));
+      RCClosure parent = UserOpClosure (closure, right, new RCArray<RCBlock> (left), noClimb:true);
       DoEval (runner, parent, right);
     }
     
@@ -287,7 +287,7 @@ namespace RCL.Kernel
       RCValue virtop = Resolve (null, closure, new RCArray<string> (op.Name), null, true);
       if (virtop != null)
       {
-        RCClosure parent = UserOpClosure (closure, virtop, null);
+        RCClosure parent = UserOpClosure (closure, virtop, null, noClimb:false);
         virtop.Eval (runner, parent);
         return;
       }
@@ -541,6 +541,9 @@ namespace RCL.Kernel
                     Resolve (reference.m_static, closure, reference.Parts, null));
     }
 
+    /// <summary>
+    /// Find and return the value referenced by name. Throw if not found.
+    /// </summary>
     protected static RCValue Resolve (RCBlock context, 
                                       RCClosure closure, 
                                       RCArray<string> name, 
@@ -549,6 +552,9 @@ namespace RCL.Kernel
       return Resolve (context, closure, name, @this, false);
     }
 
+    /// <summary>
+    /// Find and return the value referenced by name. Return null if not found.
+    /// </summary>
     protected static RCValue Resolve (RCBlock context, 
                                       RCClosure closure, 
                                       RCArray<string> name, 
@@ -576,18 +582,27 @@ namespace RCL.Kernel
         {
           break;
         }
-        parent = parent.Parent;
+        if (!parent.NoClimb)
+        {
+          parent = parent.Parent;
+        }
+        else
+        {
+          break;
+        }
       }
       if (val == null && !returnNull)
       {
         //Delimit thing is annoying.
-        throw new RCException (closure,
-                               RCErrors.Name,
+        throw new RCException (closure, RCErrors.Name,
                                "Unable to resolve name " + RCReference.Delimit (name, "."));
       }
       return val;
     }
 
+    /// <summary>
+    /// Start evaluation for a user-defined operator.
+    /// </summary>
     public static void DoEvalUserOp (RCRunner runner, RCClosure closure, UserOperator op)
     {
       RCValue code = closure.UserOp;
@@ -602,18 +617,24 @@ namespace RCL.Kernel
       }
       if (code == null)
       {
-        throw new Exception (
-          "Cannot find definition for operator: " + op.m_reference.Name);
+        throw new Exception ("Cannot find definition for operator: " + op.m_reference.Name);
       }
       //RCSystem.Log.Record (closure, "invoke", 0, op.m_reference.Name, code);
-      code.Eval (runner, UserOpClosure (closure, code, @this));
+      code.Eval (runner, UserOpClosure (closure, code, @this, noClimb:false));
+    }
+
+    public static RCClosure UserOpClosure (RCClosure previous, RCValue code, RCArray<RCBlock> @this, bool noClimb)
+    {
+      return UserOpClosure (previous, code, @this, null, null, noClimb);
     }
 
     public static RCClosure UserOpClosure (RCClosure previous,
                                            RCValue code,
-                                           RCArray<RCBlock> @this)
+                                           RCArray<RCBlock> @this,
+                                           RCValue left,
+                                           RCValue right)
     {
-      return UserOpClosure (previous, code, @this, null, null);
+      return UserOpClosure (previous, code, @this, left, right, noClimb:false);
     }
 
     /// <summary>
@@ -625,7 +646,7 @@ namespace RCL.Kernel
                                            RCValue code,
                                            RCArray<RCBlock> @this,
                                            RCValue left,
-                                           RCValue right)
+                                           RCValue right, bool noClimb)
     {
       left = left != null ? left : previous.Result.Get ("0");
       right = right != null ? right : previous.Result.Get ("1");
@@ -657,12 +678,14 @@ namespace RCL.Kernel
       }
       //Passing code and @this here is important. NextParentOf will look
       //for the body of the executing function in that variable to detect tail calls.
-      RCClosure replacement = new RCClosure (previous.Parent,
-                                             previous.Bot,
+      RCClosure replacement = new RCClosure (previous.Bot,
+                                             previous.Fiber,
+                                             previous.Locks,
+                                             previous.Parent,
                                              previous.Code,
                                              previous.Left,
                                              result,
-                                             previous.Index, code, @this);
+                                             previous.Index, code, @this, noClimb);
       RCClosure child = new RCClosure (replacement,
                                        previous.Bot,
                                        code,
@@ -672,16 +695,12 @@ namespace RCL.Kernel
       return child;
     }
 
-    public static void DoEvalInline (RCRunner runner,
-                                     RCClosure closure,
-                                     InlineOperator op)
+    public static void DoEvalInline (RCRunner runner, RCClosure closure, InlineOperator op)
     {
-      op.m_code.Eval (runner, UserOpClosure (closure, op.m_code, null));
+      op.m_code.Eval (runner, UserOpClosure (closure, op.m_code, null, noClimb:false));
     }
 
-    public static void DoEvalTemplate (RCRunner runner,
-                                       RCClosure closure,
-                                       RCTemplate template)
+    public static void DoEvalTemplate (RCRunner runner, RCClosure closure, RCTemplate template)
     {
       throw new Exception ("Not implemented");
     }
@@ -757,7 +776,7 @@ namespace RCL.Kernel
                               previous.Parent, block, previous.Left,
                               NextBlock (runner, block, previous, result),
                               previous.Index + 1,
-                              previous.UserOp, previous.UserOpContext);
+                              previous.UserOp, previous.UserOpContext, noClimb:false);
       }
       else if (previous.Parent != null)
       {

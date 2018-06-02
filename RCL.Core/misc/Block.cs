@@ -1,12 +1,5 @@
 
 using System;
-using System.Threading;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
-using System.Web;
-using System.Net;
-using System.IO;
 using RCL.Kernel;
 
 namespace RCL.Core
@@ -68,8 +61,7 @@ namespace RCL.Core
     }
 
     [RCVerb ("names")]
-    public void EvalNames (
-      RCRunner runner, RCClosure closure, RCBlock right)
+    public void EvalNames (RCRunner runner, RCClosure closure, RCBlock right)
     {
       string[] result = new string[right.Count];
       for (int i = 0; i < result.Length; ++i)
@@ -81,8 +73,7 @@ namespace RCL.Core
     }
 
     [RCVerb ("rename")]
-    public void EvalRename (
-      RCRunner runner, RCClosure closure, RCString left, RCBlock right)
+    public void EvalRename (RCRunner runner, RCClosure closure, RCString left, RCBlock right)
     {
       if (left.Count != right.Count && left.Count != 1)
         throw new Exception ("left and right arguments must have the same length");
@@ -108,8 +99,7 @@ namespace RCL.Core
     }
 
     [RCVerb ("rename")]
-    public void EvalRename (
-      RCRunner runner, RCClosure closure, RCSymbol left, RCBlock right)
+    public void EvalRename (RCRunner runner, RCClosure closure, RCSymbol left, RCBlock right)
     {
       if (left.Count != right.Count && left.Count != 1)
         throw new Exception ("left and right arguments must have the same length");
@@ -137,8 +127,7 @@ namespace RCL.Core
     }
 
     [RCVerb ("has")]
-    public virtual void EvalHas (
-      RCRunner runner, RCClosure closure, RCBlock left, RCSymbol right)
+    public virtual void EvalHas (RCRunner runner, RCClosure closure, RCBlock left, RCSymbol right)
     {
       RCArray<bool> result = new RCArray<bool> ();
       for (int i = 0; i < right.Count; ++i)
@@ -149,8 +138,7 @@ namespace RCL.Core
     }
 
     [RCVerb ("has")]
-    public virtual void EvalHas (
-      RCRunner runner, RCClosure closure, RCBlock left, RCString right)
+    public virtual void EvalHas (RCRunner runner, RCClosure closure, RCBlock left, RCString right)
     {
       RCArray<bool> result = new RCArray<bool> ();
       for (int i = 0; i < right.Count; ++i)
@@ -161,8 +149,7 @@ namespace RCL.Core
     }
 
     [RCVerb ("unflip")]
-    public void EvalUnflip (
-      RCRunner runner, RCClosure closure, RCBlock right)
+    public void EvalUnflip (RCRunner runner, RCClosure closure, RCBlock right)
     {
       //Take a block of arrays and turn them into a block of rows.
       RCBlock[] blocks = new RCBlock[right.Get (0).Count];
@@ -189,8 +176,7 @@ namespace RCL.Core
     }
 
     [RCVerb ("flip")]
-    public void EvalFlip (
-      RCRunner runner, RCClosure closure, RCBlock right)
+    public void EvalFlip (RCRunner runner, RCClosure closure, RCBlock right)
     {
       RCBlock prototype = (RCBlock) right.Get (0);
       string[] names = new string[prototype.Count];
@@ -225,36 +211,31 @@ namespace RCL.Core
     }
   
     [RCVerb ("string")]
-    public void EvalString (
-      RCRunner runner, RCClosure closure, RCBlock right)
+    public void EvalString (RCRunner runner, RCClosure closure, RCBlock right)
     {
       runner.Yield (closure, new RCString (CoerceBlock<string> (right)));
     }
 
     [RCVerb ("long")]
-    public void EvalLong (
-      RCRunner runner, RCClosure closure, RCBlock right)
+    public void EvalLong (RCRunner runner, RCClosure closure, RCBlock right)
     {
       runner.Yield (closure, new RCLong (CoerceBlock<long> (right)));
     }
 
     [RCVerb ("double")]
-    public void EvalDouble (
-      RCRunner runner, RCClosure closure, RCBlock right)
+    public void EvalDouble (RCRunner runner, RCClosure closure, RCBlock right)
     {
       runner.Yield (closure, new RCDouble(CoerceBlock<double>(right)));
     }
 
     [RCVerb ("byte")]
-    public void EvalByte (
-      RCRunner runner, RCClosure closure, RCBlock right)
+    public void EvalByte (RCRunner runner, RCClosure closure, RCBlock right)
     {
       runner.Yield (closure, new RCByte (CoerceBlock<byte> (right)));
     }
 
     [RCVerb ("boolean")]
-    public void EvalBoolean (
-      RCRunner runner, RCClosure closure, RCBlock right)
+    public void EvalBoolean (RCRunner runner, RCClosure closure, RCBlock right)
     {
       runner.Yield (closure, new RCBoolean (CoerceBlock<bool> (right)));
     }
@@ -274,8 +255,7 @@ namespace RCL.Core
     }
 
     [RCVerb ("block")]
-    public void EvalBlock (
-      RCRunner runner, RCClosure closure, RCTemplate right)
+    public void EvalBlock (RCRunner runner, RCClosure closure, RCTemplate right)
     {
       RCBlock result = RCBlock.Empty;
       for (int i = 0; i < right.Count - 1; ++i)
@@ -287,8 +267,7 @@ namespace RCL.Core
     }
 
     [RCVerb ("template")]
-    public void EvalTemplate (
-      RCRunner runner, RCClosure closure, RCLong left, RCString right)
+    public void EvalTemplate (RCRunner runner, RCClosure closure, RCLong left, RCString right)
     {
       if (right.Count > 1)
       {
@@ -306,8 +285,7 @@ namespace RCL.Core
     }
 
     [RCVerb ("template")]
-    public void EvalTemplate (
-      RCRunner runner, RCClosure closure, RCString right)
+    public void EvalTemplate (RCRunner runner, RCClosure closure, RCString right)
     {
       if (right.Count > 1)
       {

@@ -68,8 +68,14 @@ namespace RCL.Kernel
     /// </summary>
     public readonly RCArray<RCBlock> UserOpContext;
 
+    /// <summary>
+    /// If true, variables above this closure will not be found by resolve.
+    /// NoClimb is set to true when you pass a variable block into the left argument of eval.
+    /// </summary>
+    public readonly bool NoClimb;
+
     public RCClosure (long bot, RCValue code)
-      :this (bot, 0, null, null, code, null, null, 0, null, null) {}
+      :this (bot, 0, null, null, code, null, null, 0, null, null, false) {}
 
     public RCClosure (RCClosure parent,
                       long bot,
@@ -116,17 +122,17 @@ namespace RCL.Kernel
       }
     }
 
-    public RCClosure (
-      long bot,
-      long fiber,
-      RCSymbol locks,
-      RCClosure parent,
-      RCValue code,
-      RCValue left,
-      RCBlock result,
-      int index,
-      RCValue userOp,
-      RCArray<RCBlock> userOpContext)
+    public RCClosure (long bot,
+                      long fiber,
+                      RCSymbol locks,
+                      RCClosure parent,
+                      RCValue code,
+                      RCValue left,
+                      RCBlock result,
+                      int index,
+                      RCValue userOp,
+                      RCArray<RCBlock> userOpContext,
+                      bool noClimb)
     {
       if (parent != null)
       {
@@ -152,6 +158,7 @@ namespace RCL.Kernel
       {
         UserOpContext = userOpContext;
       }
+      NoClimb = noClimb;
     }
 
     public override string ToString ()
@@ -268,7 +275,7 @@ namespace RCL.Kernel
           userOpContext.Write ((RCBlock) userOpContextBlock.Get (i));
         }
       }
-      return new RCClosure (botId, fiber, locks, parent, code, left, result, index, userOp, userOpContext);
+      return new RCClosure (botId, fiber, locks, parent, code, left, result, index, userOp, userOpContext, noClimb:false);
     }
   }
 }

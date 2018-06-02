@@ -72,17 +72,17 @@ public class Fiber : RCOperator
       }
       */
 
-    RCClosure clone = new RCClosure (
-      bot.Id,
-      fiber,
-      closure.Locks,
-      closure.Parent,
-      closure.Code,
-      closure.Left,
-      closure.Result,
-      closure.Index,
-      closure.UserOp,
-      closure.UserOpContext);
+    RCClosure clone = new RCClosure (bot.Id,
+                                     fiber,
+                                     closure.Locks,
+                                     closure.Parent,
+                                     closure.Code,
+                                     closure.Left,
+                                     closure.Result,
+                                     closure.Index,
+                                     closure.UserOp,
+                                     closure.UserOpContext,
+                                     noClimb:false);
 
     RCClosure next = new RCClosure (clone, bot.Id, code, clone.Left, RCBlock.Empty, 0);
     return next;

@@ -93,7 +93,7 @@ namespace RCL.Kernel
         return null;
       }
       RCBlock wrapper = new RCBlock (RCBlock.Empty, "", "<-", program);
-      RCClosure parent = new RCClosure (m_bots[0].Id, 0, null, null, wrapper, null, m_state, 0, null, null);
+      RCClosure parent = new RCClosure (m_bots[0].Id, 0, null, null, wrapper, null, m_state, 0, null, null, noClimb:false);
       RCClosure closure = new RCClosure (parent, m_bots[0].Id, program, null, RCBlock.Empty, 0, null, null);
       RCValue result = Run (closure);
       return result;
@@ -367,7 +367,7 @@ namespace RCL.Kernel
         if (variable.Value.ArgumentEval)
         {
           RCBlock program = new RCBlock (m_state, "", "<-", variable.Value);
-          RCClosure parent = new RCClosure (m_bots[0].Id, 0, null, null, program, null, m_state, m_state.Count, null, null);
+          RCClosure parent = new RCClosure (m_bots[0].Id, 0, null, null, program, null, m_state, m_state.Count, null, null, noClimb:false);
           RCClosure child = new RCClosure (parent, m_bots[0].Id, variable.Value, null, RCBlock.Empty, 0, null, null);
           RCValue result = Run (child);
           m_state = new RCBlock (m_state, variable.Name, ":", result);
@@ -383,9 +383,8 @@ namespace RCL.Kernel
       {
         RCBlock program = new RCBlock (m_state, "", "<-", peek);
         RCClosure parent = new RCClosure (
-          m_bots[0].Id, 0, null, null, program, null, m_state, m_state.Count, null, null);
-        RCClosure child = new RCClosure (
-          parent, m_bots[0].Id, peek, null, RCBlock.Empty, 0);
+          m_bots[0].Id, 0, null, null, program, null, m_state, m_state.Count, null, null, noClimb:false);
+        RCClosure child = new RCClosure (parent, m_bots[0].Id, peek, null, RCBlock.Empty, 0);
         RCValue result = Run (child);
         return result;
       }

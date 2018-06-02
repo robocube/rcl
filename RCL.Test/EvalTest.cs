@@ -845,13 +845,13 @@ namespace RCL.Test
     [Test]
     public void TestEvalWithStateAndReference ()
     {
-      DoEvalTest ("{k:{a:1 b:2 c:3} <-$k eval reference \"k\" \"b\"}", "2");
+      DoEvalTest ("{k:{a:{x:1} b:{x:2} c:{x:3}} <-$k eval reference \"b\" \"x\"}", "2");
     }
     
     [Test]
     public void TestEvalWithUserOperator ()
     {
-      DoEvalTest ("{k:{a:1} m1:{f:$a + $R} m2:{f:m1.f 10} <-$k eval $m2.f}", "11");
+      DoEvalTest ("{k:{v:{a:1} m1:{f:$v.a + $R} m2:{f:m1.f 10}} <-$k eval $k.m2.f}", "11");
     }
 
     [Test]

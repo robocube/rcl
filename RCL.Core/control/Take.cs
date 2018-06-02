@@ -63,12 +63,10 @@ namespace RCL.Core
 
     public void DoTake (RCRunner runner, RCClosure closure, RCSymbol symbols, RCValue section)
     {
-      RCClosure next = new RCClosure (
-        closure.Bot, closure.Fiber, symbols,
-        closure, section, closure.Left,
-        closure.Parent != null ? closure.Parent.Result : null, 0,
-        closure.UserOp, closure.UserOpContext);
-
+      RCClosure next = new RCClosure (closure.Bot, closure.Fiber, symbols,
+                                      closure, section, closure.Left,
+                                      closure.Parent != null ? closure.Parent.Result : null, 0,
+                                      closure.UserOp, closure.UserOpContext, noClimb:false);
       lock (m_takeLock)
       {
         if (TryGetLocks (next))
