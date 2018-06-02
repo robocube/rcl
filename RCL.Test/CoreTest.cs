@@ -2128,7 +2128,7 @@ namespace RCL.Test
     [Test]
     public void TestTryAsync0 ()
     {
-      DoTest ("{b:bot {<-try {<-#x assert #y}} <-$b}", "1");
+      DoTest ("{b:bot {<-try {<-#x assert #y}} <-0 < $b}", "true");
     }
 
     [Test]
