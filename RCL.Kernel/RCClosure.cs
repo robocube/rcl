@@ -246,6 +246,7 @@ namespace RCL.Kernel
         //TODO: make this List serialize
         //result = new RCBlock (result, "userOpContext", ":", this.Parent.Serialize ());
       }
+      result = new RCBlock (result, "noClimb", ":", this.NoClimb);
       return result;
     }
 
@@ -275,7 +276,8 @@ namespace RCL.Kernel
           userOpContext.Write ((RCBlock) userOpContextBlock.Get (i));
         }
       }
-      return new RCClosure (botId, fiber, locks, parent, code, left, result, index, userOp, userOpContext, noClimb:false);
+      bool noClimb = right.GetBoolean ("noClimb");
+      return new RCClosure (botId, fiber, locks, parent, code, left, result, index, userOp, userOpContext, noClimb);
     }
   }
 }

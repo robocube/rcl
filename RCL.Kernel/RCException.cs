@@ -11,55 +11,43 @@ namespace RCL.Kernel
   [Serializable]
   public class RCException : Exception
   {
+    protected static string MONADIC_OVERLOAD_FORMAT = "Operator {0} cannot receive a single argument of type {1}";
+    protected static string DYADIC_OVERLOAD_FORMAT = "Operator {0} cannot receive arguments of type {1} and {2}";
     public static RCException Overload (RCClosure closure, RCOperator op, RCValue right)
     {
-      string message = closure.ToString ();
-      message += "\n---- RCL Stack ----\n";
-      message += "Operator " + op.Name +
-        " can not receive arguments of type " + right.TypeName + ".";
+      string message = string.Format (MONADIC_OVERLOAD_FORMAT, op.Name, right.TypeName);
       return new RCException (closure, RCErrors.Type, message);
     }
 
     public static RCException Overload (RCClosure closure, RCOperator op, RCValue left, RCValue right)
     {
-      string message = "Operator " + op.Name +
-        " can not receive arguments of type " +
-        left.TypeName + " and " + right.TypeName + ".";
-      message += "\n---- RCL Stack ----\n";
-      message += closure.ToString ();
+      string message = string.Format (DYADIC_OVERLOAD_FORMAT, op.Name, left.TypeName, right.TypeName);
       return new RCException (closure, RCErrors.Type, message);
     }
 
     public static RCException Overload (RCClosure closure, string op, object right)
     {
-      string message = closure.ToString ();
-      message += "\n---- RCL Stack ----\n";
-      message += "Operator " + op +
-        " can not receive arguments of type " + right.GetType ().Name + ".";
+      string message = string.Format (MONADIC_OVERLOAD_FORMAT, op, RCValue.TypeNameForType (right.GetType ()));
       return new RCException (closure, RCErrors.Type, message);
     }
 
     public static RCException Overload (RCClosure closure, string op, object left, object right)
     {
-      string message = closure.ToString ();
-      message += "\n---- RCL Stack ----\n";
-      message += "Operator " + op +
-        " can not receive arguments of type " +
-        left.GetType ().Name + " and " + right.GetType ().Name + ".";
+      string message = string.Format (DYADIC_OVERLOAD_FORMAT, op,
+                                      RCValue.TypeNameForType (right.GetType ()),
+                                      RCValue.TypeNameForType (left.GetType()));
       return new RCException (closure, RCErrors.Type, message);
     }
 
     public static RCException Range (RCClosure closure, long i, long count)
     {
-      return new RCException (closure,
-                              RCErrors.Range,
+      return new RCException (closure, RCErrors.Range,
                               string.Format ("Index {0} is out of range. Count is {1}", i, count));
     }
 
     public static RCException LockViolation (RCClosure closure)
     {
-      return new RCException (closure,
-                              RCErrors.Lock,
+      return new RCException (closure, RCErrors.Lock,
                               "Attempted to mutate a value after it was locked.");
     }
 
@@ -107,19 +95,14 @@ namespace RCL.Kernel
     public readonly RCErrors Error;
     public readonly RCString Output;
 
-    public RCException (RCClosure closure,
-                        RCErrors error,
-                        string message)
+    public RCException (RCClosure closure, RCErrors error, string message)
       :base (message)
     {
       Closure = closure;
       Error = error;
     }
 
-    public RCException (RCClosure closure, 
-                        RCErrors error,
-                        string message,
-                        RCString output)
+    public RCException (RCClosure closure, RCErrors error, string message, RCString output)
       :base (message)
     {
       Closure = closure;
@@ -127,10 +110,7 @@ namespace RCL.Kernel
       Output = output;
     }
 
-    public RCException (RCClosure closure, 
-                        TargetInvocationException ex,
-                        RCErrors error,
-                        string message)
+    public RCException (RCClosure closure, TargetInvocationException ex, RCErrors error, string message)
       :base (message)
     {
       Closure = closure;
@@ -150,8 +130,6 @@ namespace RCL.Kernel
 
     public string ToTestString ()
     {
-      //return ToString ();
-      //return string.Format ("<<{0}>>", Error.ToString ());
       return ToStringInner (testString:true, messageOnTop:false, noStackOnNonNativeErrors:false, firstOnTop:true);
     }
 

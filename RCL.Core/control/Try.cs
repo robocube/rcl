@@ -42,17 +42,20 @@ namespace RCL.Core
       {
         message = exception.Message;
       }
-      //RCBlock report = new RCBlock ("", ":", new RCString (message));
-      //wrapper = new RCBlock (wrapper, "data", ":", new RCTemplate (report, 1, true));
-      wrapper = new RCBlock (wrapper, "data", ":", new RCString (message));
+      RCBlock report = new RCBlock ("", ":", new RCString (message));
+      if (RCSystem.Args.OutputEnum == RCOutput.Test)
+      {
+        wrapper = new RCBlock (wrapper, "data", ":", new RCString (message));
+      }
+      else
+      {
+        wrapper = new RCBlock (wrapper, "data", ":", new RCTemplate (report, 1, true));
+      }
       result = wrapper;
       return base.Next (runner, closure, closure, result);
     }
 
-    public override RCClosure Next (RCRunner runner,
-                                    RCClosure tail,
-		                                RCClosure previous,
-                                    RCValue result)
+    public override RCClosure Next (RCRunner runner, RCClosure tail, RCClosure previous, RCValue result)
     {
       if (previous.Index == 1)
       {

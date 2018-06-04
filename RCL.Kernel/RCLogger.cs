@@ -136,7 +136,14 @@ namespace RCL.Kernel
       {
         return;
       }
-      else if (bot == 0 && type == "fiber" && instance == 0 &&
+      else if ((!m_nokeys && m_level != RCOutput.Test) &&
+               (bot == 0 && instance == 0 && type == "fiber") &&
+               (state == "reported" || state == "failed"))
+      {
+        //In interactive mode, suppress reported stack frames from Program.Main
+        return;
+      }
+      else if (bot == 0 && instance == 0 && type == "fiber" &&
                (state == "start" || state == "done"))
       {
         return;
