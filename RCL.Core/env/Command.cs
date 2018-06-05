@@ -485,9 +485,11 @@ namespace RCL.Core
       }
     }
 
+    /// <summary>
+    /// This is deprecated. DO NOT USE!
+    /// </summary>
     [RCVerb ("module")]
-    public void EvalModule (
-      RCRunner runner, RCClosure closure, RCBlock right)
+    public void EvalModule (RCRunner runner, RCClosure closure, RCBlock right)
     {
       RCArray<RCReference> references = new RCArray<RCReference> ();
       RCBlock result = (RCBlock) right.Edit (runner, delegate (RCValue val)
@@ -510,7 +512,6 @@ namespace RCL.Core
         }
         else return null;
       });
-
       //Ugh there must be some better way than this.
       //But sometimes you just need to modify a value after allocation.
       //We can use the Lock() mechanism to tighten this up at least.
@@ -519,7 +520,6 @@ namespace RCL.Core
       {
         references[i].SetStatic (result);
       }
-
       runner.Yield (closure, result);
     }
 
@@ -569,6 +569,19 @@ namespace RCL.Core
     {
       string id = RCTime.DisplayTimeZone.Id;
       runner.Yield (closure, new RCString (id));
+    }
+
+    [RCVerb ("excount")]
+    public void ExceptionCount (RCRunner runner, RCClosure closure, RCBlock right)
+    {
+      runner.Yield (closure, new RCLong (runner.ExceptionCount));
+    }
+
+    [RCVerb ("reset")]
+    public void Reset (RCRunner runner, RCClosure closure, RCBlock right)
+    {
+      runner.ResetCount ();
+      runner.Yield (closure, new RCLong (0));
     }
 
     [RCVerb ("timezones")]

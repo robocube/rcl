@@ -119,7 +119,7 @@ namespace RCL.Exe
         {
           // Does this result in duplicate exception reports on the console?
           // I don't want it to, but without this there are errors that do not show up at all.
-          RCSystem.Log.Record (0, 0, "runner", 0, "fatal", ex);
+          RCSystem.Log.Record (0, 0, "fiber", 0, "fatal", ex);
           status = 1;
           if (IsolateCode != null)
           {

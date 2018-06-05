@@ -341,6 +341,19 @@ namespace RCL.Kernel
       }
     }
 
+    public void ResetCount ()
+    {
+      //Should I take the locks here? One or both? Both.
+      lock (m_queueLock)
+      {
+        lock (m_botLock)
+        {
+          m_exceptionCount = 0;
+          ++m_reset;
+        }
+      }
+    }
+
     public RCValue Rep (RCValue program)
     {
       RCValue result = Run (program);
@@ -382,8 +395,8 @@ namespace RCL.Kernel
       else
       {
         RCBlock program = new RCBlock (m_state, "", "<-", peek);
-        RCClosure parent = new RCClosure (
-          m_bots[0].Id, 0, null, null, program, null, m_state, m_state.Count, null, null, noClimb:false);
+        RCClosure parent = new RCClosure (m_bots[0].Id, 0, null, null, program, null,
+                                          m_state, m_state.Count, null, null, noClimb:false);
         RCClosure child = new RCClosure (parent, m_bots[0].Id, peek, null, RCBlock.Empty, 0);
         RCValue result = Run (child);
         return result;
