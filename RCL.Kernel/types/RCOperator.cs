@@ -118,21 +118,29 @@ namespace RCL.Kernel
     }
 
     protected static readonly Type[] CTOR = new Type[]{};
-    public override RCValue Edit (
-      RCRunner runner, RCValueDelegate editor)
+    public override RCValue Edit (RCRunner runner, RCValueDelegate editor)
     {
-      RCOperator result = (RCOperator)
-        base.Edit (runner, editor);
+      RCOperator result = (RCOperator) base.Edit (runner, editor);
       if (result != null)
+      {
         return result;
+      }
       RCValue left = null;
       if (m_left != null)
+      {
         left = m_left.Edit (runner, editor);
+      }
       RCValue right = m_right.Edit (runner, editor);
       if (left != null || right != null)
       {
-        if (left == null) left = m_left;
-        if (right == null) right = m_right;
+        if (left == null)
+        {
+          left = m_left;
+        }
+        if (right == null)
+        {
+          right = m_right;
+        }
         result = runner.New (m_name, left, right);
         return result;
       }
@@ -149,8 +157,7 @@ namespace RCL.Kernel
       RCL.Kernel.Eval.DoEvalOperator (runner, closure, this);
     }
 
-    public override RCClosure Next (
-      RCRunner runner, RCClosure head, RCClosure previous, RCValue result)
+    public override RCClosure Next (RCRunner runner, RCClosure head, RCClosure previous, RCValue result)
     {
       return RCL.Kernel.Eval.DoNext (this, runner, head, previous, result);
     }
@@ -165,20 +172,17 @@ namespace RCL.Kernel
       return RCL.Kernel.Eval.DoIsBeforeLastCall (closure, this);
     }
 
-    public override void Format (
-      StringBuilder builder, RCFormat args, int level)
+    public override void Format (StringBuilder builder, RCFormat args, int level)
     {
       RCL.Kernel.Format.DoFormat (this, builder, args, null, level);
     }
 
-    public override void Format (
-      StringBuilder builder, RCFormat args, RCColmap colmap, int level)
+    public override void Format (StringBuilder builder, RCFormat args, RCColmap colmap, int level)
     {
       RCL.Kernel.Format.DoFormat (this, builder, args, colmap, level);
     }
 
-    public virtual void BodyToString (
-      StringBuilder builder, RCFormat args, int level)
+    public virtual void BodyToString (StringBuilder builder, RCFormat args, int level)
     {
       builder.Append  (Name);
     }
@@ -196,11 +200,9 @@ namespace RCL.Kernel
         this.Left.Cubify (target, names);
         names.Pop ();
       }
-
       names.Push ("R");
       this.Right.Cubify (target, names);
       names.Pop ();
-
       object[] array = names.ToArray ();
       System.Array.Reverse (array);
       RCSymbolScalar symbol = RCSymbolScalar.From (array);
@@ -289,18 +291,38 @@ namespace RCL.Kernel
       m_multiline = multiline;
     }
 
+    public override void Format (StringBuilder builder, RCFormat args, int level)
+    {
+      RCFormat format = new RCFormat (args.Syntax, "  ", args.Newline, args.Delimeter,
+                                      args.RowDelimeter, args.Align, args.Showt, args.ParsableScalars);
+      RCL.Kernel.Format.DoFormat (this, builder, format, null, level);
+    }
+
     public override void Format (StringBuilder builder, RCFormat args, RCColmap colmap, int level)
     {
-      RCFormat format = new RCFormat (args.Syntax, "  ", 
-                                      args.Newline, args.Delimeter, 
-                                      args.RowDelimeter, args.Align, 
-                                      args.Showt, 
-                                      args.ParsableScalars);
+      RCFormat format = new RCFormat (args.Syntax, "  ", args.Newline, args.Delimeter,
+                                      args.RowDelimeter, args.Align, args.Showt, args.ParsableScalars);
       RCL.Kernel.Format.DoFormat (this, builder, format, colmap, level);
     }
 
-    public override string TypeName { get { return RCValue.TEMPLATE_TYPENAME; } }
-    public int EscapeCount { get { return m_escapeCount; } }
-    public bool Multiline { get { return m_multiline; } }
+    public override string TypeName
+    {
+      get { return RCValue.TEMPLATE_TYPENAME; }
+    }
+
+    public int EscapeCount
+    {
+      get { return m_escapeCount; }
+    }
+
+    public bool Multiline
+    {
+      get { return m_multiline; }
+    }
+
+    public override bool IsTemplate
+    {
+      get { return true; }
+    }
   }
 }

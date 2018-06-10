@@ -12,9 +12,7 @@ namespace RCL.Core
     [RCVerb ("stack")]
     public void EvalStack (RCRunner runner, RCClosure closure, RCBlock right)
     {
-      RCBlock result = new RCBlock (null, "depth", ":", new RCLong (closure.Depth));
-      result = new RCBlock (result, "fiber", ":", new RCLong (closure.Fiber));
-      runner.Yield (closure, result);
+      runner.Yield (closure, closure.Serialize ());
     }
 
     [RCVerb ("stack_trace")]

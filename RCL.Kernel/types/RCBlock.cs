@@ -754,12 +754,18 @@ namespace RCL.Kernel
 
     public RCBlock GetBlock (long i)
     {
-      RCBlock val = (RCBlock) Get (i);
-      if (val == null)
+      //Don't forget to update the rest of these
+      RCBlock block = Get (i) as RCBlock;
+      if (block == null)
       {
-        throw new Exception (string.Format ("No value at index {0} within block (count:{1})", i, Count));
+        RCValue val = Get (i);
+        if (val != null)
+        {
+          throw new Exception (string.Format ("Value at index {0} was not a block. Type was {1}", i, val.TypeName));
+        }
+        throw new Exception (string.Format ("No value at index {0} within block (count {1})", i, Count));
       }
-      else return val;
+      else return block;
     }
 
     public string GetString (long i)
@@ -767,7 +773,7 @@ namespace RCL.Kernel
       RCString val = (RCString) Get (i);
       if (val == null)
       {
-        throw new Exception (string.Format ("No value at index {0} within block (count:{1})", i, Count));
+        throw new Exception (string.Format ("No value at index {0} within block. Count: {1}", i, Count));
       }
       return val[0];
     }

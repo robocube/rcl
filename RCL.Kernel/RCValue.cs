@@ -75,6 +75,11 @@ namespace RCL.Kernel
       get { return false; }
     }
 
+    public virtual bool IsTemplate
+    {
+      get { return false; }
+    }
+
     public virtual bool IsVector
     {
       get { return false; }

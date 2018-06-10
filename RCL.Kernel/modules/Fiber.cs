@@ -89,22 +89,19 @@ public class Fiber : RCOperator
   }
 
   [RCVerb ("wait")]
-  public void EvalWait (
-    RCRunner runner, RCClosure closure, RCLong right)
+  public void EvalWait (RCRunner runner, RCClosure closure, RCLong right)
   {
     runner.Wait (closure, right);
   }
 
   [RCVerb ("wait")]
-  public void EvalWait (
-    RCRunner runner, RCClosure closure, RCLong left, RCLong right)
+  public void EvalWait (RCRunner runner, RCClosure closure, RCLong left, RCLong right)
   {
     runner.Wait (closure, left, right);
   }
 
   [RCVerb ("done")]
-  public void EvalDone (
-    RCRunner runner, RCClosure closure, RCLong right)
+  public void EvalDone (RCRunner runner, RCClosure closure, RCLong right)
   {
     runner.Done (closure, right);
   }

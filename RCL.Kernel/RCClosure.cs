@@ -159,6 +159,10 @@ namespace RCL.Kernel
         UserOpContext = userOpContext;
       }
       NoClimb = noClimb;
+      if (NoClimb)
+      {
+        Depth = 0;
+      }
     }
 
     public override string ToString ()

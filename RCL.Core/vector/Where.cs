@@ -88,7 +88,7 @@ namespace RCL.Core
     {
       if (left.Count != right.Count)
       {
-        throw new Exception (string.Format ("left.Count was {0} but right.Count was {1}. The counts must match.", left.Count, right.Count));
+        throw new Exception (string.Format ("Left count was {0} but right count was {1}. Counts must match", left.Count, right.Count));
       }
       RCBlock result = RCBlock.Empty;
       for (int i = 0; i < left.Count; ++i)
@@ -107,9 +107,30 @@ namespace RCL.Core
         }
         else if (rightValue is RCBoolean)
         {
-          if (right.GetBoolean (i))
+          if (rightValue.Count == 1)
           {
-            result = new RCBlock (result, leftName.Name, ":", leftName.Value);
+            if (right.GetBoolean (i))
+            {
+              result = new RCBlock (result, leftName.Name, ":", leftName.Value);
+            }
+          }
+          else
+          {
+            RCBoolean rightVector = (RCBoolean) rightValue;
+            RCBlock leftBlock = left.GetBlock (i);
+            RCBlock childResult = RCBlock.Empty;
+            for (int j = 0; j < rightVector.Count; ++j)
+            {
+              RCBlock leftVar = leftBlock.GetName (j);
+              if (rightVector[j])
+              {
+                childResult = new RCBlock (childResult, leftVar.Name, ":", leftVar.Value);
+              }
+            }
+            if (childResult.Count > 0)
+            {
+              result = new RCBlock (result, leftName.Name, leftName.Evaluator, childResult);
+            }
           }
         }
       }

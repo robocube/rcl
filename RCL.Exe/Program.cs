@@ -63,8 +63,7 @@ namespace RCL.Exe
       // string message = "\x1b[0;33mYELLOW\x1b[0;31m RED\x1b[0;34m BLUE\x1b[0;37m";
 
       // Initialize runner environment
-      AppDomain.CurrentDomain.UnhandledException +=
-        new UnhandledExceptionEventHandler (UnhandledException);
+      AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler (UnhandledException);
       string prompt = "RCL>";
       LineEditor editor = new LineEditor ("RCL");
       RCRunner runner = new RCRunner (workers:1);

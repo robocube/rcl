@@ -67,7 +67,7 @@ namespace RCL.Kernel
       if (m_operators.Count > 0)
       {
         MakeExpression ();
-      } 
+      }
       fragment = FinishBlock ();
       if (m_block != null)
       {
@@ -252,6 +252,7 @@ namespace RCL.Kernel
       if (m_left != null)
       {
         m_lefts.Peek ().Push (m_left);
+        m_left = null;
       }
     }
   

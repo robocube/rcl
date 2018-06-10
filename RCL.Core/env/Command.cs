@@ -463,10 +463,10 @@ namespace RCL.Core
       }
 
       [RCVerb ("print")]
-      public void EvalPrint (RCRunner runner, RCClosure closure, RCValue right)
+      public void EvalPrint (RCRunner runner, RCClosure closure, object right)
       {
         RCSystem.Log.Record (closure, "print", 0, "out", right);
-        runner.Yield (closure, right);
+        runner.Yield (closure, (RCValue) right);
       }
 
       [RCVerb ("print")]
@@ -580,7 +580,7 @@ namespace RCL.Core
     [RCVerb ("reset")]
     public void Reset (RCRunner runner, RCClosure closure, RCBlock right)
     {
-      runner.ResetCount ();
+      runner.ResetCount (closure.Bot);
       runner.Yield (closure, new RCLong (0));
     }
 

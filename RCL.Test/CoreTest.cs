@@ -1283,6 +1283,14 @@ namespace RCL.Test
     public void TestWhereKB () { DoTest ("{a:{x:1} b:{y:1} c:{z:1}} where true false true", "{a:{x:1} c:{z:1}}"); }
     [Test]
     public void TestWhereKK () { DoTest ("{a:{x:1} b:{x:2} c:{x:3} d:{x:4}} where {a:{x:true} b:{x:true} c:{x:false} d:{x:false}}", "{a:{x:1} b:{x:2}}"); }
+    [Test]
+    public void TestWhereKK1 () { DoTest ("{a:{x:1 y:2 z:3}} where {a:false true false}", "{a:{y:2}}"); }
+    [Test]
+    public void TestWhereKK2 () { DoTest ("{k:{a:{x:1 y:2 z:3}} <-$k where {<-\"y\" == names $R} each $k}", "{a:{y:2}}"); }
+    [Test]
+    public void TestWhereKK3 () { DoTest ("{a:{x:1 y:2 z:3}} where {a:{x:false y:true z:false}}", "{a:{y:2}}"); }
+    [Test]
+    public void TestWhereKK4 () { DoTest ("{k:{a:{x:1 y:2 z:3}} <-$k where {<-{<-($L == \"y\")} each $R} each $k}", "{a:{y:2}}"); }
 
     [Test]
     public void TestSortAscL() { DoTest ("#asc sort 2 0 1", "0 1 2"); }

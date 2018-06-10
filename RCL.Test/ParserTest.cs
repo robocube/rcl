@@ -443,6 +443,12 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestOperatorInlineMonadic ()
+    {
+      DoParserTest ("{<-$R + 1.0} 1.0 2.0 3.0");
+    }
+
+    [Test]
     public void TestOperatorInlineDyadic ()
     {
       //Aka lambda
@@ -450,9 +456,9 @@ namespace RCL.Test
     }
 
     [Test]
-    public void TestOperatorInlineMonadic ()
+    public void TestOperatorInlineDyadic1 ()
     {
-      DoParserTest ("{<-$R + 1.0} 1.0 2.0 3.0");
+      DoParserTest ("{x:1 {<-$R - $L} 4 y:{<-eval {<-1}}}");
     }
 
     [Test]
@@ -841,6 +847,12 @@ namespace RCL.Test
       //One code section per line, multiple lines.
       DoParserTest ("[?\n  [! \"a\" \"b\" \"c\" !]\n  [! \"x\" \"y\" \"z\" !]\n?]", 
                     "[?\n  [! \"a\" \"b\" \"c\" !]\n  [! \"x\" \"y\" \"z\" !]\n?]");
+    }
+
+    [Test]
+    public void TestTemplateAsInlineMonadicOperator ()
+    {
+      DoParserTest ("[? between [! $R !] words ?] \"the\"");
     }
 
     [Test]

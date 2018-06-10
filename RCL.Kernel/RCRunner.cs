@@ -6,20 +6,74 @@ namespace RCL.Kernel
 {
   public class RCRunner
   {
-    //I made these public for snap.
+    //I made these public for snap - but snap is not being used the way I originally thought
     public readonly object m_botLock = new object ();
+
+    /// <summary>
+    /// Maintains the existing bots for a running program. Synchronize using m_botLock
+    /// </summary>
     public Dictionary<long, RCBot> m_bots = new Dictionary<long, RCBot> ();
+
+    /// <summary>
+    /// Closures which are waiting for a bot to finish executing
+    /// </summary>
     protected Dictionary<long, Queue<RCClosure>> m_botWaiters = new Dictionary<long, Queue<RCClosure>> ();
+
+    /// <summary>
+    /// The series of closures being observed by watch. watch is used to build debugging tools for rcl
+    /// </summary>
     protected Dictionary<long, Queue<RCAsyncState>> m_output = new Dictionary<long, Queue<RCAsyncState>> ();
+
+    /// <summary>
+    /// Closures which are evaluating the watch operator
+    /// </summary>
     protected Dictionary<long, Queue<RCClosure>> m_watchers = new Dictionary<long, Queue<RCClosure>> ();
 
+    /// <summary>
+    /// The initial closure used to launch this runner and all of its bots and fibers
+    /// </summary>
     protected RCClosure m_root = null;
+
+    /// <summary>
+    /// The handle for the next bot created within this runner
+    /// </summary>
     protected long m_bot = 1;
+
+    /// <summary>
+    /// Counter tracking the number of times that the Reset method is invoked
+    /// Note: This tracks calls to ResetCount in addition to Reset
+    /// </summary>
     protected long m_reset = 0;
+
+    /// <summary>
+    /// Worker threads managed by this runner
+    /// </summary>
     protected RCArray<Thread> m_workers = new RCArray<Thread> ();
+
+    /// <summary>
+    /// Exit status to be returned via Program.Main
+    /// </summary>
     protected int m_exit = -1;
+
+    /// <summary>
+    /// The final result of evaluation
+    /// </summary>
     protected volatile RCValue m_result = null;
+
+    /// <summary>
+    /// If evaluation failed, the exception describing the failure
+    /// </summary>
     protected volatile Exception m_exception = null;
+
+    /// <summary>
+    /// The closure which threw m_exception
+    /// </summary>
+    protected volatile RCClosure m_exceptionClosure = null;
+
+    /// <summary>
+    /// Only the first exception thrown causes m_state to be reset. This is helpful when debugging --program
+    /// </summary>
+    protected bool m_firstException = false;
 
     /// <summary>
     /// Keeps a count of exceptions reported, mostly for unit testing purposes
@@ -31,12 +85,35 @@ namespace RCL.Kernel
     /// </summary>
     protected RCParser m_parser;
 
+    /// <summary>
+    /// Lock object for access to the queue of closures being worked
+    /// </summary>
     protected readonly object m_queueLock = new object ();
+
+    /// <summary>
+    /// The queue of closures being worked
+    /// </summary>
     protected Queue<RCClosure> m_queue = new Queue<RCClosure> ();
+
+    /// <summary>
+    /// Tracks closures which have completed initial execution but have not yet invoked Yield.
+    /// The closure is working asyncly.
+    /// </summary>
     protected Dictionary<long, Dictionary<long, RCClosure>> m_pending = new Dictionary<long, Dictionary<long, RCClosure>> ();
 
+    /// <summary>
+    /// Used by worker threads to wait when there are no more closures to execute
+    /// </summary>
     protected AutoResetEvent m_wait = new AutoResetEvent (false);
+
+    /// <summary>
+    /// Used by worker threads
+    /// </summary>
     protected AutoResetEvent m_done = new AutoResetEvent (false);
+
+    /// <summary>
+    /// The thread which invoked the runner constructor
+    /// </summary>
     protected Thread m_ctorThread;
 
     public static RCRunner TestRunner ()
@@ -48,6 +125,10 @@ namespace RCL.Kernel
     public RCRunner () : this (workers:1) {}
     public RCRunner (long workers)
     {
+      if (!RCSystem.Args.Nokeys)
+      {
+        m_firstException = true;
+      }
       m_ctorThread = Thread.CurrentThread;
       m_bots[0] = new RCBot (this, 0);
       m_output[0] = new Queue<RCAsyncState> ();
@@ -115,19 +196,27 @@ namespace RCL.Kernel
         }
         m_queue.Enqueue (root);
       }
-
       //Trigger a worker (don't care which) to take it.
       m_wait.Set ();
-
       //Wait for the work to be completed.
       m_done.WaitOne ();
-
       //If an exception was thrown, rethrow it on this thread.
       if (m_exception != null)
       {
         RCSystem.Log.Record (root, "runner", 0, "unhandled", m_exception);
         Exception exception = m_exception;
         m_exception = null;
+        if (m_firstException)
+        {
+          //Make the successfully computed values into the effective state of the environment
+          RCClosure top = m_exceptionClosure;
+          while (top.Parent != null && top.Parent.Parent != null)
+          {
+            top = top.Parent;
+          }
+          m_state = top.Result;
+          m_firstException = false;
+        }
         throw exception;
       }
       //The final result is assigned by the worker in Finish ().
@@ -178,8 +267,10 @@ namespace RCL.Kernel
             }
           }
         }
-        else live = true;
-
+        else
+        {
+          live = true;
+        }
         if (live)
         {
           if (next != null)
@@ -256,6 +347,7 @@ namespace RCL.Kernel
             catch (Exception sysex)
             {
               m_exception = sysex;
+              m_exceptionClosure = next;
               ++m_exceptionCount;
               m_done.Set ();
             }
@@ -329,6 +421,7 @@ namespace RCL.Kernel
           m_root = null;
           m_result = null;
           m_exception = null;
+          m_exceptionClosure = null;
           m_exceptionCount = 0;
           m_queue = new Queue<RCClosure> ();
           m_pending = new Dictionary<long, Dictionary<long, RCClosure>> ();
@@ -341,13 +434,19 @@ namespace RCL.Kernel
       }
     }
 
-    public void ResetCount ()
+    public void ResetCount (long botHandle)
     {
       //Should I take the locks here? One or both? Both.
       lock (m_queueLock)
       {
         lock (m_botLock)
         {
+          RCBot bot;
+          if (!m_bots.TryGetValue (botHandle, out bot))
+          {
+            throw new Exception (string.Format ("Invalid bot: {0}", botHandle));
+          }
+          //bot.Reset ();
           m_exceptionCount = 0;
           ++m_reset;
         }
@@ -469,6 +568,7 @@ namespace RCL.Kernel
         if (closure.Fiber == 0 && closure.Bot == 0)
         {
           m_exception = exception;
+          m_exceptionClosure = closure;
           m_done.Set ();
         }
         else
@@ -783,7 +883,10 @@ namespace RCL.Kernel
           Fiber fiber;
           lock (m_state.Runner.m_botLock)
           {
-            if (m_state.Runner.m_reset != m_resetCount) return;
+            if (m_state.Runner.m_reset != m_resetCount)
+            {
+              return;
+            }
             fiber = (Fiber) m_state.Runner.m_bots[fibers[0]].GetModule (typeof (Fiber));
           }
           lock (fiber.m_fiberLock)

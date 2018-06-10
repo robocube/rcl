@@ -35,7 +35,15 @@ namespace RCL.Core
       for (int i = 0; i < right.Count; ++i)
       {
         RCBlock name = right.GetName (i);
-        RCBlock val = (RCBlock) name.Value;
+        RCBlock val;
+        if (name.Value is RCBlock)
+        {
+          val = (RCBlock) name.Value;
+        }
+        else
+        {
+          throw new Exception (string.Format ("Expected a block. Actual type was {0}", name.Value.TypeName));
+        }
         RCValue newName = val.Get (nameProperty);
         string nameStr;
         RCString str = newName as RCString;

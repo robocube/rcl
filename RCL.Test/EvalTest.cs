@@ -864,20 +864,20 @@ namespace RCL.Test
     [Test]
     public void TestRecursionTailCall()
     {
-      DoEvalTest ("{f:{s:stack {} :assert 10 > $s.depth :assert 0 == $s.fiber <-($L < $R) switch {:($L + 1) f $R :$L}} <-0 f 100}", "100");
+      DoEvalTest ("{f:{s:stack {} :assert 20 > $s.depth :assert 0 == $s.fiber <-($L < $R) switch {:($L + 1) f $R :$L}} <-0 f 100}", "100");
     }
 
     [Test]
     public void TestRecursionTailCallFinite()
     {
-      DoEvalTest ("{loop:{s:stack {} :assert $s.depth < 10 :assert $s.fiber > 0 <-($L < $R) switch {:($L + 1l) loop $R :$L}} s0:stack{} :assert $s0.fiber == 0 f:eval {<-fiber {<-0 loop 100}} s1:stack {} :assert $s1.fiber == 0 :assert $f = 0 1 <-wait $f}", "100");
+      DoEvalTest ("{loop:{s:stack {} :assert $s.depth < 20 :assert $s.fiber > 0 <-($L < $R) switch {:($L + 1l) loop $R :$L}} s0:stack{} :assert $s0.fiber == 0 f:eval {<-fiber {<-0 loop 100}} s1:stack {} :assert $s1.fiber == 0 :assert ($f at 1) = 1 <-wait $f}", "100");
     }
 
     [Test]
     public void TestRecursionTailCallInfinite()
     {
       //This is not really what the return value of a fiber that throws and exception should be.
-      DoEvalTest ("{loop:{s:stack {} :1 assert $s.fiber :#x write {i:++} <-loop $R + 1} f:fiber {<-loop 0} :#x dispatch 100 :kill $f <-wait $f}", "System.Exception: fiber killed");
+      DoEvalTest ("{loop:{s:stack {} :1 assert $s.fiber :#x write {i:++} <-loop $R + 1} f:fiber {<-loop 0} :#x dispatch 100 :kill $f :wait $f <-0}", "0");
     }
 
     [Test]
@@ -909,13 +909,13 @@ namespace RCL.Test
     [Test]
     public void TestFiberUnparented0()
     {
-      DoEvalTest ("fiber {<-1 + 2}", "0 1");
+      DoEvalTest ("1 from fiber {<-1 + 2}", "1");
     }
 
     [Test]
     public void TestFiberUnparented1()
     {
-      DoEvalTest ("{<-fiber {<-1 + 2}}", "0 1");
+      DoEvalTest ("{<-1 from fiber {<-1 + 2}}", "1");
     }
 
     [Test]
@@ -940,7 +940,8 @@ namespace RCL.Test
     [Test]
     public void TestRDotWithoutBlock ()
     {
-      Assert.Throws<RCException> (delegate () { DoEvalTest ("{f:{<-$R.x} <-f 11}", "0"); });
+      //Assert.Throws<RCException> (delegate () { DoEvalTest ("{f:{<-$R.x} <-f 11}", "0"); });
+      DoEvalTest ("{f:{<-$R.x} <-unwrap #status from try {<-f 11}}", "1");
     }
 
     [Test]
@@ -950,33 +951,28 @@ namespace RCL.Test
       //Assert.That(() => DoEvalTest ("{f:{<-$R get \"x\"} <-f {}}", "0"),
       //  Throws.TypeOf<RCException> ()
       //    .With.Message.EqualTo ("Unable to resolve name x"));
-      DoTestException ("{f:{<-$R get \"x\"} <-f {}}",
-                      RCErrors.Name,
-                      "Unable to resolve name x");
+      //DoTestException ("{f:{<-$R get \"x\"} <-f {}}", RCErrors.Name, "Unable to resolve name x");
+      DoEvalTest ("{f:{<-$R get \"x\"} <-unwrap #status from try {<-f {}}}", "1");
     }
 
     [Test]
     public void TestLGetMissingName ()
     {
-      DoTestException ("{f:{<-\"x\" get $R} <-f {}}",
-                      RCErrors.Name,
-                      "Unable to resolve name x");
+      //DoTestException ("{f:{<-\"x\" get $R} <-f {}}", RCErrors.Name, "Unable to resolve name x");
+      DoEvalTest ("{f:{<-\"x\" get $R} <-unwrap #status from try {<-f {}}}", "1");
     }
 
     [Test]
     public void TestRGetMissingIndex ()
     {
-      DoTestException ("{f:{<-1 get $R} <-f {}}",
-                       RCErrors.Range,
-                       "Index 1 is out of range");
+      //DoTestException ("{f:{<-1 get $R} <-f {}}", RCErrors.Range, "Index 1 is out of range");
+      DoEvalTest ("{f:{<-1 get $R} <-unwrap #status from try {<-f {}}}", "1");
     }
 
     [Test]
     public void TestLGetMissingIndex ()
     {
-      DoTestException ("{f:{<-$R get 1} <-f {}}",
-                       RCErrors.Range,
-                       "Index 1 is out of range");
+      DoEvalTest ("{f:{<-$R get 1} <-unwrap #status from try {<-f {}}}", "1");
     }
 
     [Test]
@@ -992,7 +988,6 @@ namespace RCL.Test
     }
 
     [Test]
-    //[ExpectedException(typeof(RCException))]
     public void TestWriteChecksCount()
     {
       Assert.Throws<RCException> (delegate () { DoEvalTest ("#x write {a:1 10 b:2 20 c:3 30}", "0"); });
@@ -1032,9 +1027,9 @@ namespace RCL.Test
     }
 
     [Test]
-    public void TestWriteReadSparse()
+    public void TestWriteReadSparse ()
     {
-      DoEvalTest("{:write [S|x y #a 0 10 #a 1 10] <-#a read 1}", "[S|x y #a 1 10]");
+      DoEvalTest ("{:write [S|x y #a 0 10 #a 1 10] <-#a read 1}", "[S|x y #a 1 10]");
     }
 
     [Test]
@@ -1044,19 +1039,19 @@ namespace RCL.Test
     }
 
     [Test]
-    public void TestWriteReadSparseMultipleSymbol()
+    public void TestWriteReadSparseMultipleSymbol ()
     {
-      DoEvalTest("{:write [S|x y #a,0 0 10 #a,1 1 11 #a,0 1 -- #a,1 2 --] <-#a,* read 2}", "[S|x y #a,0 1 10 #a,1 2 11]");
+      DoEvalTest ("{:write [S|x y #a,0 0 10 #a,1 1 11 #a,0 1 -- #a,1 2 --] <-#a,* read 2}", "[S|x y #a,0 1 10 #a,1 2 11]");
     }
 
     [Test]
-    public void TestWriteLastSparse()
+    public void TestWriteLastSparse ()
     {
-      DoEvalTest("{:write [S|x y #a 0 10 #a 1 10] <-#a last 0}", "[S|x y #a 1 10]");
+      DoEvalTest ("{:write [S|x y #a 0 10 #a 1 10] <-#a last 0}", "[S|x y #a 1 10]");
     }
 
     [Test]
-    public void TestWriteLastSparser()
+    public void TestWriteLastSparser ()
     {
   //[
   //G|                  T|S        |id      x    y  mx  my    w    h selected dockto
@@ -1095,7 +1090,7 @@ namespace RCL.Test
     [Ignore ("because")]
     public void TestWriteGTSWithBlock()
     {
-      DoEvalTest ("{:write {T:25 S:#s,a x:456.7} <-#s read 0 0}", "[G|T|S|x 0 25 #s,a 456.7]", RCFormat.Default);
+      DoEvalTest ("{:write {E:25 S:#s,a x:456.7} <-#s read 0 0}", "[G|E|S|x 0 25 #s,a 456.7]", RCFormat.Default);
     }
 
     [Test]
@@ -1249,17 +1244,17 @@ namespace RCL.Test
     [Test]
     public void TestWriteDispatchWildcardMultipleMultipleTimes()
     {
-      DoEvalTest ("{:write [S|a #x,0 1] r0:fiber {<-eval {c0:#x,* dispatch 2 c1:#x,* dispatch 2}} :sleep 20 :write [S|a #x,1 2 #x,0 10 #x,1 20] <-wait $r0}", "{c0:[S|a #x,0 1 #x,1 2] c1:[S|a #x,0 10 #x,1 20]}");
+      DoEvalTest ("{:write [S|a #x,0 1] r0:fiber {<-eval {c0:#x,* dispatch 2 c1:#x,* dispatch 2}} :sleep 20 :write [S|a #x,1 2 #x,0 10 #x,1 20] out:wait $r0 :assert $out.c0 = [S|a #x,0 1 #x,1 2] :assert $out.c1 = [S|a #x,0 10 #x,1 20] <-0}", "0");
     }
 
     [Test]
-    public void TestWriteDispatchFutureNullsNotAccepted()
+    public void TestWriteDispatchFutureNullsNotAccepted ()
     {
       DoEvalTest ("{:write [S|a b #x,0 0 #const #x,1 0 #const #x,0 1 #const1 #x,1 1 -- #x,0 2 --] c:#x,* dispatch 2 <-count $c.b}", "2");
     }
 
     [Test]
-    public void TestWriteDispatchNoCandidates()
+    public void TestWriteDispatchNoCandidates ()
     {
       DoEvalTest ("{reader:fiber {<-#x dispatch 1} :#y write {a:1} <-0}", "0");
     }
@@ -1628,7 +1623,7 @@ namespace RCL.Test
       //Now we have a better set of tests for this in CoreTest.
       //DoEvalTest ("{f1:{<-f1 $R + 1l} f2:{<-f2 $R & 1l} b:bot {:fiber {<-f1 0l} :fiber {<-f2 0l} <-wait 0l} :(#log,fiber + (symbol $b) + #1l #2l) dispatch 1l :kill $b <-(#log,fiber + (symbol $b) + #1l #2l) dispatch 1l}", "[S|state #log,fiber,1l,1l \"killed\" #log,fiber,1l,2l \"killed\"]");
       //I think we are going to need to convert RCNative into RCException and give it some proper syntax.
-      DoEvalTest ("{f1:{<-f1 $R + 1} f2:{<-f2 $R & 1} b:bot {:fiber {<-f1 0} :fiber {<-f2 0} <-wait 0} :kill $b <-wait $b}", "System.Exception: fiber killed");
+      DoEvalTest ("{f1:{<-f1 $R + 1} f2:{<-f2 $R & 1} b:bot {:fiber {<-f1 0} :fiber {<-f2 0} <-wait 0} :kill $b <-unwrap #status from try {<-wait $b}}", "1");
     }
 
     [Test]
