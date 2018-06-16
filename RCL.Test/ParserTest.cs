@@ -578,11 +578,15 @@ namespace RCL.Test
     }
 
     [Test]
-    public void TestCubeWithNull ()
+    public void TestCubeWithNullTestCanonical ()
     {
-      //We don't represent nulls as data internally.
-      //The implementation will depend on a timeline.
-      DoParserTest ("[S|x #a 10.0 #a -- #a 30.0]", "[S|x #a 10.0 #a 30.0]");
+      DoParserTest ("[S|x #a 10.0 #a -- #a 30.0]", "[S|x #a 10.0 #a -- #a 30.0]", RCFormat.TestCanonical);
+    }
+
+    [Test]
+    public void TestCubeWithNullCanonical ()
+    {
+      DoParserTest ("[S|x #a 10.0 #a -- #a 30.0]", "[\n  S |   x\n  #a 10.0\n  #a   --\n  #a 30.0\n]", RCFormat.Canonical);
     }
 
     [Test]

@@ -9,8 +9,7 @@ namespace RCL.Kernel
     [RCVerb ("format")]
     public void EvalFormat (RCRunner runner, RCClosure closure, object right)
     {
-      EvalFormat (runner, closure,
-                  new RCSymbol (new RCSymbolScalar (null, "default")), right);
+      EvalFormat (runner, closure, new RCSymbol (new RCSymbolScalar (null, "default")), right);
     }
 
     [RCVerb ("format")]
@@ -29,6 +28,14 @@ namespace RCL.Kernel
       else if (which.Equals ("pretty"))
       {
         result = content.Format (RCFormat.Pretty);
+      }
+      else if (which.Equals ("canonical"))
+      {
+        result = content.Format (RCFormat.Canonical);
+      }
+      else if (which.Equals ("testcanonical"))
+      {
+        result = content.Format (RCFormat.TestCanonical);
       }
       else if (which.Equals ("html"))
       {

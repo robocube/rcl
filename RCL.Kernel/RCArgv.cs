@@ -83,12 +83,18 @@ namespace RCL.Kernel
     /// </summary>
     public readonly string[] Show;
 
+    /// <summary>
+    /// Show all available stack trace info, even when --output=test
+    /// </summary>
+    public readonly bool FullStack;
+
     public RCLArgv (params string[] argv)
     {
       Exit = false;
       Batch = false;
       Nokeys = false;
       Version = false;
+      FullStack = false;
       Program = "";
       Action = "";
       Output = "full";
@@ -118,6 +124,10 @@ namespace RCL.Kernel
             else if (option.Equals ("noread"))
             {
               Noread = true;
+            }
+            else if (option.Equals ("fullstack"))
+            {
+              FullStack = true;
             }
             else if (option.Equals ("version"))
             {
@@ -205,6 +215,7 @@ namespace RCL.Kernel
       Options = new RCBlock (Options, "noread", ":", new RCBoolean (Noread));
       Options = new RCBlock (Options, "exit", ":", new RCBoolean (Exit));
       Options = new RCBlock (Options, "version", ":", new RCBoolean (Version));
+      Options = new RCBlock (Options, "fullstack", ":", new RCBoolean (FullStack));
       OutputEnum = (RCOutput) Enum.Parse (typeof (RCOutput), Output, true);
       for (int i = 0; i < custom.Count; ++i)
       {

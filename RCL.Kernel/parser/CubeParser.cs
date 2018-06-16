@@ -53,8 +53,9 @@ namespace RCL.Kernel
     {
       State s = (State) state;
       if (s.m_cube == null)
+      {
         return new RCCube ();
-
+      }
       if (!s.m_hasTimeline && s.m_cube.Axis.Exists)
       {
         //s.m_cube.m_count = s.m_cube.Axis.Count;
@@ -72,7 +73,6 @@ namespace RCL.Kernel
       State s = (State) state;
       s.m_tnames.Write (token.Text);
       s.m_tcolumn = (s.m_tcolumn + 1) % s.m_tnames.Count;
-
       if (token.Text == "E")
       {
         s.m_tlcolnames.Write ("E");
@@ -87,14 +87,13 @@ namespace RCL.Kernel
     public override void AcceptScalar (object state, RCToken token, RCLexer lexer)
     {
       State s = (State) state;
-
       //Move the column number forward.
       s.m_tcolumn = (s.m_tcolumn + 1) % s.m_tnames.Count;
-
       //Create the cube if necessary.
       if (s.m_cube == null)
+      {
         s.m_cube = new RCCube (s.m_tlcolnames);
-
+      }
       if (s.m_tcolumn < s.m_tlcolnames.Count)
       {
         string colname = s.m_tnames[s.m_tcolumn];
@@ -122,21 +121,21 @@ namespace RCL.Kernel
         object val = token.Parse (lexer);
         if (val != null)
         {
-          s.m_cube.WriteCell (
-            s.m_tnames[s.m_tcolumn], s.m_symbol, val, -1, true, true);
+          s.m_cube.WriteCell (s.m_tnames[s.m_tcolumn], s.m_symbol, val, -1, true, true);
         }
         else
         {
           s.m_cube.ReserveColumn (s.m_tnames[s.m_tcolumn]);
         }
       }
-
       if (s.m_tcolumn == s.m_tnames.Count - 1)
       {
         //If there is no time column in the source text then create a
         //series of ascending integers.
         if (!s.m_hasT)
+        {
           ++s.m_event;
+        }
         s.m_cube.Write (s.m_global, s.m_event, s.m_time, s.m_symbol);
       }
     }
@@ -145,11 +144,12 @@ namespace RCL.Kernel
     {
       State s = (State) state;
       if (token.Text == "|")
+      {
         s.m_hasTimeline = true;
+      }
     }
 
-    public override RCValue BinaryParse (
-      RCActivator activator, RCArray<byte> array, ref int start)
+    public override RCValue BinaryParse (RCActivator activator, RCArray<byte> array, ref int start)
     {
       start += sizeof (int);
       RCArray<string> tlnames = Binary.ReadVectorString (array, ref start);

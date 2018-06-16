@@ -24,7 +24,7 @@ namespace RCL.Kernel
     protected int m_col = 0;
     //The indent level.
     protected int m_level = 0;
-  
+
     public Formatter (StringBuilder builder, RCFormat args, RCColmap colmap, int level)     
     {
       m_builder = builder;
@@ -36,7 +36,7 @@ namespace RCL.Kernel
         m_colmap = new RCColmap ();
       }
     }
-  
+
     public void Format (RCCube source)
     {
       if (source.Count == 0)
@@ -51,7 +51,6 @@ namespace RCL.Kernel
       m_columns = new List<List<string>> ();
       m_max = new List<int> ();
       m_leftAlign = new List<bool> ();
-
       int tcols = 0;
       bool useGRows = false;
       if (source.Axis.Has ("G") && m_args.Showt)
@@ -97,7 +96,14 @@ namespace RCL.Kernel
         m_leftAlign.Add (type == 'y' || type == 's');
       }
       //Populate m_columns and m_max.
-      source.VisitCellsForward (this, 0, source.Count);
+      if (m_args.CanonicalCubes)
+      {
+        source.VisitCellsCanonical (this, 0, source.Count);
+      }
+      else
+      {
+        source.VisitCellsForward (this, 0, source.Count);
+      }
       if (m_args.Syntax == "RCL")
       {
         FormatRC (tcols);
@@ -462,7 +468,7 @@ namespace RCL.Kernel
       m_columns[m_col].Add (scalar);
       m_col = (m_col + 1) % m_names.Count;
     }
-  
+
     public override void SymbolCol (RCSymbolScalar symbol)
     {
       string scalar = symbol.ToString ();
@@ -474,7 +480,7 @@ namespace RCL.Kernel
       m_columns[m_col].Add (scalar);
       m_col = (m_col + 1) % m_names.Count;
     }
-  
+
     public override void VisitNull<T> (string name, Column<T> column, int row)
     {
       m_columns[m_col].Add (m_args.ParsableScalars ? "--" : "");

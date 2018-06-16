@@ -130,7 +130,7 @@ namespace RCL.Kernel
 
     public string ToTestString ()
     {
-      return ToStringInner (testString:true, messageOnTop:false, noStackOnNonNativeErrors:false, firstOnTop:true);
+      return ToStringInner (testString:!RCSystem.Args.FullStack, messageOnTop:false, noStackOnNonNativeErrors:false, firstOnTop:true);
     }
 
     public string ToStringInner (bool testString, bool messageOnTop, bool noStackOnNonNativeErrors, bool firstOnTop)

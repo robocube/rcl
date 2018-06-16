@@ -2014,6 +2014,18 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestCanonicalCubeFormat ()
+    {
+      DoEvalTest ("#testcanonical format parse \"[S|x #a 10.0 #a -- #a 30.0]\"", "\"[S|x #a 10.0 #a -- #a 30.0]\"");
+    }
+
+    [Test]
+    public void TestCanonicalCubeFormat1 ()
+    {
+      DoEvalTest ("#testcanonical format parse \"[S|bp ap #x 1001 1003 #y 2002 -- #x 1002 -- #x 1001 1002]\"", "\"[S|bp ap #x 1001 1003 #y 2002 -- #x 1002 -- #x 1001 1002]\"");
+    }
+
+    [Test]
     public void TestTemplateEval ()
     {
       DoEvalTest ("eval [?\n  aaa bbb ccc ddd eee\n?]", "\"aaa bbb ccc ddd eee\\n\"");

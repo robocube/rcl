@@ -1,6 +1,5 @@
 
 using System;
-using System.Text;
 using System.Collections.Generic;
 
 namespace RCL.Kernel
@@ -29,13 +28,12 @@ namespace RCL.Kernel
       m_keepIncrs = keepIncrs;
       m_force = force;
     }
- 
+
     public RCArray<RCSymbolScalar> Write (RCCube source)
     {
       m_source = source;
       //This controls the value E will take if it is not provided by source.
-      if (m_target.Axis.Event != null &&
-          m_target.Axis.Event.Count > 0)
+      if (m_target.Axis.Event != null && m_target.Axis.Event.Count > 0)
       {
         m_e = m_target.Axis.Event[m_target.Axis.Event.Count - 1] + 1;
       }
@@ -52,7 +50,7 @@ namespace RCL.Kernel
       m_writeAxis = false;
       m_delete = false;
     }
-  
+
     public override void AfterRow (long e, RCTimeScalar t, RCSymbolScalar symbol, int row)
     {
       if (!m_writeAxis)
@@ -78,10 +76,8 @@ namespace RCL.Kernel
       //blackboard cubes. Wow.
       //So to solve this initially I can add m_initg to row to get g.
       //But ultimately we need to make G truly global.
-
       long targetLastG = -1;
-      if (m_target.Axis.Global != null &&
-          m_target.Axis.Global.Count > 0)
+      if (m_target.Axis.Global != null && m_target.Axis.Global.Count > 0)
       {
         targetLastG = Math.Abs (m_target.Axis.Global[m_target.Axis.Global.Count - 1]);
       }
@@ -111,7 +107,7 @@ namespace RCL.Kernel
       }
       m_target.Axis.Write (g, e, t, symbol);
     }
-  
+
     public override void VisitScalar<T> (string name, Column<T> column, int i)
     {
       //Can I turn this into WriteCell<T> and get rid of the boxing?

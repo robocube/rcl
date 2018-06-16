@@ -1082,7 +1082,7 @@ namespace RCL.Core
     {
       if (key.Count != cube.Count)
       {
-        throw new Exception ("New symbol column must have the same length as the old one.");
+        throw new Exception (string.Format ("New symbol column must have the same count as the old one. New count: {0}, old count: {1}", key.Count, cube.Count));
       }
       Timeline axis = new Timeline (cube.Axis.Global, cube.Axis.Event, cube.Axis.Time, key);
       axis.Count = cube.Count;

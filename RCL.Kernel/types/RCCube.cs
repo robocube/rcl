@@ -502,14 +502,12 @@ namespace RCL.Kernel
       get { return m_reader.AcceptedSymbols; }
     }
 
-    public override void Format (
-      StringBuilder builder, RCFormat args, int level)
+    public override void Format (StringBuilder builder, RCFormat args, int level)
     {
       new Formatter (builder, args, null, level).Format (this);
     }
 
-    public override void Format (
-      StringBuilder builder, RCFormat args, RCColmap colmap, int level)
+    public override void Format (StringBuilder builder, RCFormat args, RCColmap colmap, int level)
     {
       new Formatter (builder, args, colmap, level).Format (this);
     }
@@ -1202,14 +1200,12 @@ namespace RCL.Kernel
                                           RCArray<string> names,
                                           RCArray<ColumnBase> columns,
                                           int start,
-                                          int end)
+                                          int end,
+                                          bool canonical)
     {
       //Row number in the source data grid.
+      //NOT THE DESTINATION!
       int tlrow = start;
-      //if (timeline.Global != null && timeline.Count > 0)
-      //{
-      //  tlrow -= (int) timeline.Global [0];
-      //}
       //last timestamp on each column.
       long[] times = new long[columns.Count];
       //last index in each column.
@@ -1244,7 +1240,8 @@ namespace RCL.Kernel
       Queue<int> mincols = new Queue<int> ();
       RCSymbolScalar symbol = null;
       RCTimeScalar time = new RCTimeScalar (new DateTime (0), RCTimeType.Timestamp);
-
+      int destTlRow = int.MinValue;
+      int nextSourceRow = int.MaxValue;
       //Basic merge sort code.
       //Normally you use a heap with log(k) lookups.
       //But I don't want the overhead of a heap given that I expect
@@ -1258,6 +1255,19 @@ namespace RCL.Kernel
         {
           continue;
         }
+        if (columns[col].Index[vrow[col]] < nextSourceRow)
+        {
+          nextSourceRow = columns[col].Index[vrow[col]];
+        }
+        if (canonical)
+        {
+          destTlRow = tlrow;
+        }
+        else
+        {
+          destTlRow = nextSourceRow;
+        }
+
         if (timeline.Event != null)
         {
           times[col] = timeline.Event[columns[col].Index[vrow[col]]];
@@ -1277,6 +1287,7 @@ namespace RCL.Kernel
             symbol = timeline.Symbol[columns[col].Index[vrow[col]]];
             if (timeline.Time != null)
             {
+              // Not sure whether to use destTlRow here - I think we should? Maybe
               time = timeline.Time[tlrow];
             }
           }
@@ -1289,8 +1300,7 @@ namespace RCL.Kernel
         else if (times[col] == mintime)
         {
           //If they have the same symbol then put them on the same row.
-          if (symbol == null ||
-              timeline.Symbol[columns[col].Index[vrow[col]]].Equals (symbol))
+          if (symbol == null || timeline.Symbol[columns[col].Index[vrow[col]]].Equals (symbol))
           {
             mincols.Enqueue (col);
           }
@@ -1322,11 +1332,25 @@ namespace RCL.Kernel
       visitor.BetweenCols (-1);
 
       int j = 0;
+      if (canonical && destTlRow < nextSourceRow)
+      {
+        while (mincols.Count > 0)
+        {
+          columns[j].AcceptNull (names[j], visitor, vrow[j]);
+          if (j < columns.Count - 1)
+          {
+            visitor.BetweenCols (j);
+          }
+          mincols.Dequeue ();
+          ++j;
+        }
+      }
       while (mincols.Count > 0)
       {
         mincol = mincols.Dequeue ();
         while (j < mincol)
         {
+          //Do the nulls before the mincolth column
           columns[j].AcceptNull (names[j], visitor, vrow[j]);
           if (j < columns.Count - 1)
           {
@@ -1334,6 +1358,7 @@ namespace RCL.Kernel
           }
           ++j;
         }
+        //Do the value at the mincolth column
         columns[mincol].Accept (names[mincol], visitor, vrow[mincol]);
         ++j;
         if (mincol < columns.Count - 1)
@@ -1347,6 +1372,7 @@ namespace RCL.Kernel
           ++numDoneCols;
         }
       }
+      //Do the remaining nulls after the mincolth column
       while (j < columns.Count)
       {
         columns[j].AcceptNull (names[j], visitor, vrow[j]);
@@ -1356,12 +1382,16 @@ namespace RCL.Kernel
         }
         ++j;
       }
+      //Finish this row
       if (numDoneCols < columns.Count)
       {
         visitor.AfterRow (mintime, time, symbol, tlrow);
         visitor.BetweenRows (tlrow);
         ++tlrow;
-        if (tlrow == end) goto DONE;
+        if (tlrow == end)
+        {
+          goto DONE;
+        }
         goto LOOP;
       }
       else
@@ -1383,7 +1413,12 @@ namespace RCL.Kernel
     /// </summary>
     public virtual long VisitCellsForward (Visitor visitor, int start, int end)
     {
-      return VisitCellsForward (Axis, visitor, m_names, m_columns, start, end);
+      return VisitCellsForward (Axis, visitor, m_names, m_columns, start, end, false);
+    }
+
+    public virtual long VisitCellsCanonical (Visitor visitor, int start, int end)
+    {
+      return VisitCellsForward (Axis, visitor, m_names, m_columns, start, end, true);
     }
 
     public static long VisitCellsBackward (Timeline timeline,

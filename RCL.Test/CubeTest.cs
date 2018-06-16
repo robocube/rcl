@@ -332,42 +332,42 @@ namespace RCL.Test
     }
 
     [Test]
-    public void TestBlockCubeConversions1 ()
+    public void TestCubify1 ()
     {
       DoTest ("cubify {s:+ 1}", "[S|o l #s,R,0 -- 1 #s \"+\" --]");
       //DoTest ("block cube {s:+ 1}", "{s:+ 1}"); 
     }
 
     [Test]
-    public void TestBlockCubeConversions2 ()
+    public void TestCubify2 ()
     {
       DoTest ("cubify {s:1 + 1}", "[S|o l #s,L,0 -- 1 #s,R,0 -- 1 #s \"+\" --]");
       //DoTest ("block cube {s:1 + 1}", "{s:1 + 1}");
     }
 
     [Test]
-    public void TestBlockCubeConversions3 ()
+    public void TestCubify3 ()
     {
       DoTest ("cubify {s:1 + 1 2}", "[S|o l #s,L,0 -- 1 #s,R,0 -- 1 #s,R,1 -- 2 #s \"+\" --]");
       //DoTest ("block cube {s:1 + 1 2}", "{s:1 + 1 2}");
     }
 
     [Test]
-    public void TestBlockCubeConversions4 ()
+    public void TestCubify4 ()
     {
       DoTest ("cubify {s:1 2 + 1}", "[S|o l #s,L,0 -- 1 #s,L,1 -- 2 #s,R,0 -- 1 #s \"+\" --]");
       //DoTest ("block cube {s:1 2 + 1}", "{s:1 2 + 1}");
     }
 
     [Test]
-    public void TestBlockCubeConversions5 ()
+    public void TestCubify5 ()
     {
       DoTest ("cubify {t:{s:1 + 1}}", "[S|o l #t,s,L,0 -- 1 #t,s,R,0 -- 1 #t,s \"+\" --]");
       //DoTest ("block cube {t:{s:1 + 1}}", "{t:{s:1 + 1}}");
     }
 
     [Test]
-    public void TestBlockCubeConversions6 ()
+    public void TestCubify6 ()
     {
       DoTest ("cubify {t:{s:1 + 1 b:2}}", "[S|o l #t,s,L,0 -- 1 #t,s,R,0 -- 1 #t,s \"+\" -- #t,b,0 -- 2]");
       //DoTest ("block cube {t:{s:1 + 1 b:2}}", "{t:{s:1 + 1 b:2}}");
@@ -1463,6 +1463,15 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestColofl ()
+    {
+      DoTest ("colofl []", "~l");
+      DoTest ("colofl [x 0 1 2]", "0 1 2");
+      DoTest ("colofl [S|x #a 0 #b 1 #c 2]", "0 1 2");
+      DoTest ("0 colofl [S|x #a -- #b 1 #c 2]", "0 1 2");
+    }
+
+    [Test]
     public void TestColofl0 ()
     {
       DoTest ("colofl [S|x #a 0 #a 1 #a 2]", "0 1 2");
@@ -1472,6 +1481,12 @@ namespace RCL.Test
     public void TestColofl1 ()
     {
       DoTest ("sum colofl [S|x #a 0 #a 1 #a 2]", "3");
+    }
+
+    [Test]
+    public void TestColofl2 ()
+    {
+      DoTest ("0 colofl [S|x #a -- #b 1 #c 2]", "0 1 2");
     }
 
     [Test]
@@ -1502,15 +1517,6 @@ namespace RCL.Test
     public void TestColofd4 ()
     {
       DoTest ("0.0 colofd [S|x #a -- #b 1.0 #c 2.0]", "0.0 1.0 2.0");
-    }
-
-    [Test]
-    public void TestColofl ()
-    {
-      DoTest ("colofl []", "~l");
-      DoTest ("colofl [x 0 1 2]", "0 1 2");
-      DoTest ("colofl [S|x #a 0 #b 1 #c 2]", "0 1 2");
-      DoTest ("0 colofl [S|x #a -- #b 1 #c 2]", "0 1 2");
     }
 
     [Test]
@@ -1832,9 +1838,7 @@ namespace RCL.Test
     [Ignore ("because")]
     public void TestRank ()
     {
-      DoTest (RCFormat.Default,
-              "#asc rank [T|S|x 0 #a 30 1 #a 10 2 #a 20]",
-              "[T|S|x 0 #a 1 1 #a 2 2 #a 0]");
+      DoTest (RCFormat.Default, "#asc rank [E|S|x 0 #a 30 1 #a 10 2 #a 20]", "[E|S|x 0 #a 1 1 #a 2 2 #a 0]");
       //We should also do a test with multiple symbols.  I've got a feeling...
       //Yea, I just don't know how to do this for cubes yet.
       //But making it work will be awesome.
