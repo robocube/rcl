@@ -57,8 +57,7 @@ namespace RCL.Core
     }
 
     [RCVerb ("merge")]
-    public virtual void EvalMerge (
-      RCRunner runner, RCClosure closure, RCBlock left, RCBlock right)
+    public virtual void EvalMerge (RCRunner runner, RCClosure closure, RCBlock left, RCBlock right)
     {
       runner.Yield (closure, InnerMerge (left, right));
     }
@@ -88,23 +87,17 @@ namespace RCL.Core
             {
               RCBlock lblock = (RCBlock) lname.Value;
               RCBlock rblock = (RCBlock) rname.Value;
-              result = new RCBlock (result,
-                                    rname.Name,
-                                    rname.Evaluator,
-                                    InnerMerge (lblock, rblock));
+              result = new RCBlock (result, rname.Name, rname.Evaluator, InnerMerge (lblock, rblock));
               handled.Add (rname.Name);
             }
             else if (lname.Value is RCOperator)
             {
-              result = new RCBlock (result,
-                                    rname.Name,
-                                    rname.Evaluator,
-                                    rname.Value);
+              result = new RCBlock (result, rname.Name, rname.Evaluator, rname.Value);
               handled.Add (rname.Name);
             }
             else
             {
-              throw new Exception (rname.Name + " must be a block. Was " + lname.Value.TypeName);
+              throw new Exception (rname.Name + " must be a block. Was type " + lname.Value.TypeName + ".");
             }
           }
           else
@@ -115,8 +108,7 @@ namespace RCL.Core
         }
         else
         {
-          result = new RCBlock (
-            result, lname.Name, lname.Evaluator, lname.Value);
+          result = new RCBlock (result, lname.Name, lname.Evaluator, lname.Value);
         }
       }
       for (int i = 0; i < right.Count; ++i)
@@ -124,10 +116,7 @@ namespace RCL.Core
         RCBlock rname = right.GetName (i);
         if (!handled.Contains (rname.Name))
         {
-          result = new RCBlock (result,
-                                rname.Name,
-                                rname.Evaluator,
-                                rname.Value);
+          result = new RCBlock (result, rname.Name, rname.Evaluator, rname.Value);
         }
       }
       return result;

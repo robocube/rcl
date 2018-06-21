@@ -1522,8 +1522,6 @@ namespace RCL.Test
     public void TestUniqueY () { DoTest ("unique #x #y #z #y", "#x #y #z"); }
     [Test]
     public void TestUniqueT () { DoTest ("unique 2015.05.25 2015.05.26 2015.05.27 2015.05.26", "2015.05.25 2015.05.26 2015.05.27"); }
-    [Test][Ignore ("because")]
-    public void TestUniqueK () { /*???*/ }
 
     [Test]
     public void TestMapL () { DoTest ("1 10 2 20 map 1 1 2 2 1 3", "10 10 20 20 10 3"); }
@@ -1541,8 +1539,6 @@ namespace RCL.Test
     public void TestMapY () { DoTest ("#x #y #1 #10 map #x #x #y #10 #1 #1", "#y #y #y #10 #10 #10"); }
     [Test]
     public void TestMapT () { DoTest ("2015.05.25 2015.06.25 2015.05.26 2015.06.26 map 2015.05.25 2015.05.25 2015.06.25 2015.06.26 2015.05.26 2015.05.26", "2015.06.25 2015.06.25 2015.06.25 2015.06.26 2015.06.26 2015.06.26"); }
-    [Test][Ignore ("because")]
-    public void TestMapK () { /*???*/ }
 
     //Flow Control Operators
     [Test]
@@ -2918,13 +2914,6 @@ namespace RCL.Test
     }
 
     [Test]
-    [Ignore ("There some issue spawning a bash shell under the debugger env. Would like to know why.")]
-    public void TestExec2 ()
-    {
-      DoTest ("{sh:startx \"sh\" :$sh writex \"set\\\\nmkdir foo\" <-try {<-waitx $sh}}", "{status:1 data:~s}");
-    }
-
-    [Test]
     [Ignore ("Ditto for unix commands like ls and rm")]
     public void TestExec ()
     {
@@ -2933,6 +2922,13 @@ namespace RCL.Test
       DoTest ("{:exec \"mkdir foo\" <-count exec \"ls foo\"}", "0");
       DoTest ("{:exec \"touch foo/bar\" <-exec \"ls foo\"}", "\"bar\"");
       DoTest ("{:exec \"rm foo/bar\" :exec \"rmdir foo\" <-0}", "0");
+    }
+
+    [Test]
+    [Ignore ("There some issue spawning a bash shell under the debugger env. Would like to know why.")]
+    public void TestExecBash ()
+    {
+      DoTest ("{sh:startx \"sh\" :$sh writex \"set\\\\nmkdir foo\" <-try {<-waitx $sh}}", "{status:1 data:~s}");
     }
 #endif
   }

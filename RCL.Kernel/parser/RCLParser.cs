@@ -56,26 +56,34 @@ namespace RCL.Kernel
     /// </summary>
     public override RCValue Parse (RCArray<RCToken> tokens, out bool fragment)
     {
-      for (int i = 0; i < tokens.Count; ++i)
+      int i = 0;
+      try
       {
-        tokens[i].Type.Accept (this, tokens[i]);
+        for (i = 0; i < tokens.Count; ++i)
+        {
+          tokens[i].Type.Accept (this, tokens[i]);
+        }
+        if (m_vector != null || m_reference != null)
+        {
+          FinishValue (false);
+        }
+        if (m_operators.Count > 0)
+        {
+          MakeExpression ();
+        }
+        fragment = FinishBlock ();
+        if (m_block != null)
+        {
+          return m_block;
+        }
+        else
+        {
+          return m_result;
+        }
       }
-      if (m_vector != null || m_reference != null)
+      catch (Exception ex)
       {
-        FinishValue (false);
-      }
-      if (m_operators.Count > 0)
-      {
-        MakeExpression ();
-      }
-      fragment = FinishBlock ();
-      if (m_block != null)
-      {
-        return m_block;
-      }
-      else
-      {
-        return m_result;
+        throw new Exception (string.Format ("Parse error at token: {0} value: {1}", i, tokens[i].Text), ex);
       }
     }
 

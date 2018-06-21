@@ -35,18 +35,11 @@ namespace RCL.Kernel
 
     public static RCValue Parse (string code, out bool fragment)
     {
-      try
-      {
-        RCParser parser = new RCLParser (Activator);
-        RCArray<RCToken> tokens = new RCArray<RCToken> ();
-        parser.Lex (code, tokens);
-        RCValue result = parser.Parse (tokens, out fragment);
-        return result;
-      }
-      catch (Exception ex)
-      {
-        throw new Exception (string.Format ("Failed to parse code:\n {0}", code), ex);
-      }
+      RCParser parser = new RCLParser (Activator);
+      RCArray<RCToken> tokens = new RCArray<RCToken> ();
+      parser.Lex (code, tokens);
+      RCValue result = parser.Parse (tokens, out fragment);
+      return result;
     }
 
     public static void Reconfigure (RCLArgv args)

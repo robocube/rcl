@@ -293,15 +293,35 @@ namespace RCL.Kernel
         return -1;
       }
       int current = start + 1;
+      int escapeCount = 0;
       while (current < text.Length)
       {
         if (text[current] == delimeter)
         {
+          if (text[current - 1] != '\\')
+          {
+            break;
+          }
+          else if (text[current - 2] == '\\')
+          {
+            int lookback = current - 2;
+            while (lookback >= 0 && text[lookback] == '\\')
+            {
+              ++escapeCount;
+              --lookback;
+            }
+            if (escapeCount % 2 == 1)
+            {
+              break;
+            }
+          }
+          /*
           if (text[current - 1] != '\\' ||
               text[current - 1] == '\\' && text[current-2] == '\\')
           {
             break;
           }
+          */
         }
         ++current;
       }

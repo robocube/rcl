@@ -23,26 +23,32 @@ namespace RCL.Kernel
       //The only scenario requiring a lookback is for disambiguating
       //negative numbers from a minus (-) operator.
       RCToken previous = null;
-      while (i < input.Length)
+      try
       {
-        RCToken token = null;
-        foreach (RCTokenType tokenType in m_types)
+        while (i < input.Length)
         {
-          token = tokenType.TryParseToken (input, i, tokenIndex, previous);
-          if (token != null)
+          RCToken token = null;
+          foreach (RCTokenType tokenType in m_types)
           {
-            output.Write (token);
-            previous = token;
-            tokenIndex++;
-            i += token.Text.Length;
-            break;
+            token = tokenType.TryParseToken (input, i, tokenIndex, previous);
+            if (token != null)
+            {
+              output.Write (token);
+              previous = token;
+              tokenIndex++;
+              i += token.Text.Length;
+              break;
+            }
+          }
+          if (token == null)
+          {
+            throw new Exception (string.Format ("Unable to lex: '{0}', i={1}", input, i));
           }
         }
-        if (token == null)
-        {
-          throw new Exception (
-            string.Format ("unable to lex: '{0}', i={1}", input, i));
-        }
+      }
+      catch (Exception ex)
+      {
+        throw new Exception (string.Format ("Lex error at char: {0}@{1} previous token: {2}@{3}", input[i], i, previous.Text, tokenIndex), ex);
       }
     }
 

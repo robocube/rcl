@@ -1688,6 +1688,7 @@ namespace RCL.Test
       DoTest ("#status from try {<-[] switch {:#foo :#bar}}", "{status:1}");
     }
 
+    /*
     [Test]
     [Ignore ("because")]
     public void TestRepeat ()
@@ -1699,6 +1700,7 @@ namespace RCL.Test
       //But as a musician, I would need to control how frequently the sequence repeats.
       //DoTest (RCFormat.Default, "repeat
     }
+    */
 
     [Test]
     public void TestPart ()
@@ -1826,9 +1828,11 @@ namespace RCL.Test
 
     //Find - what I want to do with find is return the indices that you would use with at or from.
     //Again you probably need a visitor.
+    /*
     [Test]
     [Ignore ("because")]
     public void TestFind () {}
+    */
 
     //Sort - cubes are always and forever sorted by time so there is no need of a sort routine.
 
@@ -1866,9 +1870,11 @@ namespace RCL.Test
     //Split - this doesn't map that easily because it produces two or more columns of output rather than one.
     //That isn't necessarily a showstopper and will probably be needed at some point.
     //But it can wait.
+    /*
     [Test]
     [Ignore ("because")]
     public void TestSplit () {}
+    */
 
     [Test]
     public void TestReplace ()
@@ -2333,10 +2339,10 @@ namespace RCL.Test
     public void TestRetimeline2 ()
     {
       //These don't work quite right because of the weird behavoir with S and T.
-      //DoTest ("\"G\" retimeline [G|T|S|x 0 0 #a 0]", "[G|x 0 0]");
-      //DoTest ("\"S\" retimeline [G|T|S|x 0 0 #a 0]", "[S|x #a 0]");
-      //DoTest ("\"T\" retimeline [G|T|S|x 0 0 #a 0]", "[T|x 0 0]");
-      //DoTest ("\"G\" \"S\" retimeline [G|T|S|x 0 0 #a 0]", "[G|S|x 0 #a 0]");
+      DoTest ("\"G\" retimeline [G|E|S|x 0 0 #a 0]", "[G|x 0 0]");
+      DoTest ("\"S\" retimeline [G|E|S|x 0 0 #a 0]", "[S|x #a 0]");
+      DoTest ("\"T\" retimeline [G|E|S|x 0 0 #a 0]", "[E|x 0 0]");
+      DoTest ("\"G\" \"S\" retimeline [G|E|S|x 0 0 #a 0]", "[G|S|x 0 #a 0]");
     }
 
     protected RCRunner runner = RCRunner.TestRunner ();

@@ -50,6 +50,12 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestEscapedStringsWithEscapeSymbols ()
+    {
+      DoParserTest ("{x:\"\\\"\\\\\\\\\\\"\" y:\"\\\"\\\\\\\\\\\"\"}");
+    }
+
+    [Test]
     public void TestDouble ()
     {
       DoParserTest ("1 2 3d", "1.0 2.0 3.0");
@@ -860,42 +866,6 @@ namespace RCL.Test
     }
 
     [Test]
-    public void TestIncrementalVectorParsing ()
-    {
-      runner.Reset ();
-      RCValue vector0 = runner.Read ("1 2 3");
-      RCValue vector1 = runner.Read ("4 5 6");
-      Assert.AreEqual ("1 2 3", vector0.ToString ());
-      Assert.AreEqual ("1 2 3 4 5 6", vector1.ToString ());
-    }
-
-    [Test]
-    public void TestProgrammaticSymbolBuilding ()
-    {
-      Assert.AreEqual ("#1,2,3", RCSymbolScalar.From ((long) 1, (long) 2, (long) 3).ToString ());
-      Assert.AreEqual ("#1,2,3", RCSymbolScalar.From ((long) 1, (int) 2, (long) 3).ToString ());
-      Assert.AreEqual ("#a,b,c", RCSymbolScalar.From ("a", "b", "c").ToString ());
-      Assert.AreEqual ("#'a-b',c,d", RCSymbolScalar.From ("a-b", "c", "d").ToString ());
-      Assert.AreEqual ("#a_b,c,d", RCSymbolScalar.From ("a_b", "c", "d").ToString ());
-      Assert.AreEqual ("#'1','2','3'", RCSymbolScalar.From ("1", "2", "3").ToString ());
-    }
-
-    [Test]
-    public void TestProgrammaticSymbolBuildingWithIntFirst ()
-    {
-      Assert.AreEqual ("#1,2,3", RCSymbolScalar.From ((int) 1, (long) 2, (long) 3).ToString ());
-    }
-
-    [Test]
-    public void TestProgrammaticPartExtraction ()
-    {
-      //RCSymbolScalar symbol = RCSymbolScalar.From ((long) 0, "CDwindow-2b19bc6d-b257-4c8d-8104-0d2bae022016");
-      bool fragment;
-      RCSymbol symbol = (RCSymbol) RCSystem.Parse ("#0,'this-is-a-test'", out fragment);
-      Assert.AreEqual ("this-is-a-test", symbol[0].Part (1));
-    }
-
-    [Test]
     public void TestEmptyVector ()
     {
       DoParserTest ("~x", "~x");
@@ -923,10 +893,7 @@ namespace RCL.Test
     {
       runner.Reset ();
       RCValue result = runner.Read (code);
-      //Console.Out.WriteLine ("code:{0}", code);
-      //Console.Out.WriteLine ("expected:{0}", expected);
       string actual = result.Format (format);
-      //Console.Out.WriteLine ("actual:{0}", actual);
       Assert.IsNotNull (actual, "RCParser.Parse result was null");
       actual = actual.Replace("\\r\\n", "\\n");
       Assert.AreEqual (expected, actual);

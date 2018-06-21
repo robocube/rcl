@@ -9,8 +9,7 @@ namespace RCL.Kernel
 {
   public class StringToken : RCTokenType
   {
-    public override RCToken TryParseToken (
-      string text, int startPos, int index, RCToken previous)
+    public override RCToken TryParseToken (string text, int startPos, int index, RCToken previous)
     {
       int length = LengthOfEnclosedLiteral (text, startPos, '"');
       if (length < 0) return null;
@@ -19,7 +18,6 @@ namespace RCL.Kernel
     }
 
     public override bool IsEnclosedLiteral { get { return true; } }
-    //public override bool IsLiteral { get { return true; } }
 
     public override void Accept (RCParser parser, RCToken token)
     {

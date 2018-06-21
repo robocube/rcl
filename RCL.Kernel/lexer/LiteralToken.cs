@@ -1,21 +1,22 @@
 
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.IO;
-using System.Globalization;
 
 namespace RCL.Kernel
 {
   public class LiteralToken : RCTokenType
   {
-    public override RCToken TryParseToken (
-      string text, int start, int index, RCToken previous)
+    public override RCToken TryParseToken (string text, int start, int index, RCToken previous)
     {
       int end = start;
-      if (text[end] != '\\') return null;
+      if (text[end] != '\\')
+      {
+        return null;
+      }
       ++end;
-      if (end >= text.Length) return null;
+      if (end >= text.Length)
+      {
+        return null;
+      }
       char type = text[end];
       ++end;
       int length = -1;
