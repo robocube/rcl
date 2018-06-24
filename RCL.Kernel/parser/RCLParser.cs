@@ -54,8 +54,9 @@ namespace RCL.Kernel
     /// <summary>
     /// Parse a given set of tokens, generally aquired using RCLexer.
     /// </summary>
-    public override RCValue Parse (RCArray<RCToken> tokens, out bool fragment)
+    public override RCValue Parse (RCArray<RCToken> tokens, out bool fragment, bool canonical)
     {
+      m_canonical = canonical;
       int i = 0;
       try
       {
@@ -156,6 +157,8 @@ namespace RCL.Kernel
     /// </summary>
     protected Stack<Stack<RCValue>> m_lefts = new Stack<Stack<RCValue>> ();
     protected Stack<Stack<RCValue>> m_operators = new Stack<Stack<RCValue>> ();
+
+    protected bool m_canonical = false;
 
     protected class TemplateVars
     {
@@ -360,7 +363,7 @@ namespace RCL.Kernel
         PushArgument ();
         PushExpression ();
         m_extension = m_activator.ExtensionFor (token.Text);
-        m_extarg = m_extension.StartParsing ();
+        m_extarg = m_extension.StartParsing (m_canonical);
       }
       else if (token.Text == "]")
       {

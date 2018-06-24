@@ -38,7 +38,7 @@ namespace RCL.Kernel
       RCParser parser = new RCLParser (Activator);
       RCArray<RCToken> tokens = new RCArray<RCToken> ();
       parser.Lex (code, tokens);
-      RCValue result = parser.Parse (tokens, out fragment);
+      RCValue result = parser.Parse (tokens, out fragment, canonical:false);
       return result;
     }
 

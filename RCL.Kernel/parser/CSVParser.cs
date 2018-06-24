@@ -26,7 +26,7 @@ namespace RCL.Kernel
     protected RCArray<string> m_names = new RCArray<string> ();
     protected RCArray<RCArray<string>> m_data = new RCArray<RCArray<string>> ();
 
-    public override RCValue Parse (RCArray<RCToken> tokens, out bool fragment)
+    public override RCValue Parse (RCArray<RCToken> tokens, out bool fragment, bool canonical)
     {
       for (int i = 0; i < tokens.Count; ++i)
       {

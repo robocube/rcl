@@ -41,12 +41,17 @@ namespace RCL.Kernel
       // True if the cube has a timeline.
       public bool m_hasTimeline = false;
 
+      // True if cube should contain rows and columns consisting entirely of nulls
+      public bool m_canonical = false;
+
       public RCArray<string> m_tlcolnames = new RCArray<string> ();
     }
 
-    public override RCActivator.ParserState StartParsing ()
+    public override RCActivator.ParserState StartParsing (bool canonical)
     {
-      return new State ();
+      State state = new State ();
+      state.m_canonical = canonical;
+      return state;
     }
 
     public override RCValue EndParsing (object state)
@@ -121,11 +126,16 @@ namespace RCL.Kernel
         object val = token.Parse (lexer);
         if (val != null)
         {
+          ColumnBase column = s.m_cube.GetColumn (s.m_tnames[s.m_tcolumn]);
+          if (s.m_canonical && column != null && column is RCCube.ColumnOfNothing)
+          {
+            s.m_cube.UnreserveColumn (s.m_tnames[s.m_tcolumn]);
+          }
           s.m_cube.WriteCell (s.m_tnames[s.m_tcolumn], s.m_symbol, val, -1, true, true);
         }
         else
         {
-          s.m_cube.ReserveColumn (s.m_tnames[s.m_tcolumn]);
+          s.m_cube.ReserveColumn (s.m_tnames[s.m_tcolumn], canonical:s.m_canonical); //, canonical:true);
         }
       }
       if (s.m_tcolumn == s.m_tnames.Count - 1)

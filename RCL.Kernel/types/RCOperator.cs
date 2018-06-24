@@ -70,11 +70,13 @@ namespace RCL.Kernel
       m_count += m_left != null && m_left.IsOperator ? m_left.Count : 1;
     }
 
-    public override void Lock ()
+    public override void Lock (bool canonical)
     {
       if (m_left != null)
-        m_left.Lock ();
-      m_right.Lock ();
+      {
+        m_left.Lock (canonical);
+      }
+      m_right.Lock (canonical);
     }
 
     public RCValue Left

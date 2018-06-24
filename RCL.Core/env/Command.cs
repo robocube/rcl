@@ -1,5 +1,6 @@
 
 using System;
+using System.Reflection;
 using System.Text;
 using System.IO;
 using System.Threading;
@@ -408,9 +409,16 @@ namespace RCL.Core
       }
     }
 
+    [RCVerb ("codebase")]
+    public void EvalCodebase (RCRunner runner, RCClosure closure, RCBlock right)
+    {
+      Uri codebase = new Uri (Assembly.GetExecutingAssembly ().CodeBase);
+      DirectoryInfo dir = new FileInfo (codebase.LocalPath).Directory;
+      runner.Yield (closure, new RCString (dir.FullName));
+    }
+
     [RCVerb ("getenv")]
-    public void EvalGetenv (
-      RCRunner runner, RCClosure closure, RCString right)
+    public void EvalGetenv (RCRunner runner, RCClosure closure, RCString right)
     {
       RCArray<string> result = new RCArray<string> (right.Count);
       for (int i = 0; i < right.Count; ++i)
@@ -426,8 +434,7 @@ namespace RCL.Core
     }
 
     [RCVerb ("getenv")]
-    public void EvalGetenv (
-      RCRunner runner, RCClosure closure, RCString left, RCString right)
+    public void EvalGetenv (RCRunner runner, RCClosure closure, RCString left, RCString right)
     {
       RCArray<string> result = new RCArray<string> (right.Count);
       for (int i = 0; i < right.Count; ++i)
@@ -443,8 +450,7 @@ namespace RCL.Core
     }
 
     [RCVerb ("setenv")]
-    public void EvalSetenv (
-      RCRunner runner, RCClosure closure, RCString left, RCString right)
+    public void EvalSetenv (RCRunner runner, RCClosure closure, RCString left, RCString right)
     {
       for (int i = 0; i < left.Count; ++i)
       {

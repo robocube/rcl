@@ -58,7 +58,7 @@ namespace RCL.Kernel
       Bold
     }
 
-    public override RCValue Parse (RCArray<RCToken> tokens, out bool fragment)
+    public override RCValue Parse (RCArray<RCToken> tokens, out bool fragment, bool canonical)
     {
       m_initialState = m_state;
       for (int i = 0; i < tokens.Count; ++i)
@@ -555,7 +555,7 @@ namespace RCL.Kernel
       MarkdownParser parser = new MarkdownParser ();
       parser.m_state = state;
       bool fragment;
-      RCBlock result = (RCBlock) parser.Parse (tokens, out fragment);
+      RCBlock result = (RCBlock) parser.Parse (tokens, out fragment, canonical:false);
       reentered = parser.m_reentered;
       //Console.Out.WriteLine ("Reentry result: '{0}'" + result.ToString ());
       return result;

@@ -141,7 +141,6 @@ namespace RCL.Kernel
         ++m_skipCount;
         return;
       }
-
       m_accept = true;
       m_symbol = s;
       m_inLines.Write (row);
@@ -153,7 +152,6 @@ namespace RCL.Kernel
         m_inSymbols[s] = inCount++;
       }
       ++spec.count;
-  
       m_fill = false;
       //if inCount is one then this is the first row and we need to fill in values from prior states.
       //if symbol == null then every single row and column needs to be included in the output.
@@ -163,7 +161,7 @@ namespace RCL.Kernel
       }
       else m_fill = false;
     }
-  
+
     public override void AfterRow (long e, RCTimeScalar t, RCSymbolScalar s, int row)
     {
       if (!m_accept)
@@ -180,7 +178,7 @@ namespace RCL.Kernel
       }
       m_target.Write (g, e, t, s);
     }
- 
+
     public override void VisitNull<T> (string name, Column<T> column, int row)
     {
       if (!m_accept)
@@ -198,7 +196,7 @@ namespace RCL.Kernel
         m_target.WriteCell (name, m_symbol, last);
       }
     }
-  
+
     public override void VisitScalar<T> (string name, Column<T> column, int row)
     {
       if (!m_accept)

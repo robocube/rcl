@@ -158,16 +158,17 @@ namespace RCL.Kernel
     
     public class ColumnOfNothing : Column<object>
     {
-      public ColumnOfNothing (Timeline timeline)
-        : base (timeline) {}
+      public ColumnOfNothing (Timeline timeline) : base (timeline) {}
 
-      public ColumnOfNothing (
-        Timeline timeline, RCArray<int> index, object data)
+      public ColumnOfNothing (Timeline timeline, RCArray<int> index, object data)
         : base (timeline, index, data) {}
 
       public override bool Write (RCSymbolScalar key, int index, object box, bool force)
       {
-        throw new Exception ("Cannot write to an EmptyColumn");
+        //throw new Exception ("Cannot write to an EmptyColumn");
+        m_data.Write (box);
+        m_index.Write (index);
+        return true;
       }
 
       public override Type GetElementType ()
@@ -189,8 +190,6 @@ namespace RCL.Kernel
 
       public override void Accept (string name, Visitor visitor, int i)
       {
-        //visitor.VisitScalar<object> (name, this, i);
-        //throw new NotImplementedException ();
         visitor.VisitNull<object> (name, this, i);
       }
 
@@ -438,7 +437,7 @@ namespace RCL.Kernel
       return thisString.Equals (otherString);
     }
 
-    public override void Lock ()
+    public override void Lock (bool canonical)
     {
       Axis.Lock ();
       m_names.Lock ();
@@ -446,19 +445,26 @@ namespace RCL.Kernel
       {
         m_reader.Lock ();
       }
-      m_columns.Lock ();
       RCArray<int> missingCols = new RCArray<int> ();
       for (int i = 0; i < m_columns.Count; ++i)
       {
         if (m_columns[i] == null)
         {
-          missingCols.Write (i);
+          if (canonical)
+          {
+            m_columns.Write (i, new ColumnOfNothing (Axis));
+          }
+          else
+          {
+            missingCols.Write (i);
+          }
         }
         else
         {
           m_columns[i].Lock ();
         }
       }
+      m_columns.Lock ();
 
       //This happens because of the way cubes are parsed,
       //As they are read in we use WriteCell and something called ReserveColumn
@@ -644,7 +650,14 @@ namespace RCL.Kernel
 
     public ColumnBase GetColumn (int index)
     {
-      return m_columns[index];
+      if (index < 0 || index >= m_columns.Count)
+      {
+        return null;
+      }
+      else
+      {
+        return m_columns[index];
+      }
     }
 
     public Type GetType (int index)
@@ -741,7 +754,18 @@ namespace RCL.Kernel
         }
         else throw new Exception ("Unknown column \"" + name + "\"");
       }
-      else return m_columns[column].TypeCode;
+      if (column >= m_columns.Count)
+      {
+        throw new Exception (string.Format ("Column with name {0} not found in cube.", name));
+      }
+      else
+      {
+        if (m_columns[column] == null)
+        {
+          return '~';
+        }
+        else return m_columns[column].TypeCode;
+      }
     }
 
     public int FindColumn (string name)
@@ -980,15 +1004,37 @@ namespace RCL.Kernel
       return new Writer (this, counter, keepIncrs, force, initg).Write (cube);
     }
 
+    public void UnreserveColumn (string name)
+    {
+      int index = m_names.IndexOf (name);
+      if (m_names.IndexOf (name) < 0)
+      {
+        throw new Exception (string.Format ("Unknown column name: {0}", name));
+      }
+      m_columns.Write (index, (ColumnBase) null);
+    }
+
     //This method is used to Reserve a spot in the column order
     //for a column whose first row is null.
-    public void ReserveColumn (string name)
+    public void ReserveColumn (string name, bool canonical)
     {
       if (m_names.IndexOf (name) < 0)
       {
         m_names.Write (name);
-        m_columns.Write ((ColumnBase) null);
+        if (canonical)
+        {
+          m_columns.Write (new ColumnOfNothing (Axis));
+        }
+        else
+        {
+          m_columns.Write ((ColumnBase) null);
+        }
       }
+    }
+
+    public void ReserveColumn (string name)
+    {
+      ReserveColumn (name, canonical:false);
     }
 
     public RCSymbolScalar WriteCell (string name, object box)
@@ -1212,7 +1258,14 @@ namespace RCL.Kernel
       int[] vrow = new int[columns.Count];
       for (int i = 0; i < columns.Count; ++i)
       {
-        vrow[i] = columns[i].CountBefore (tlrow);
+        if (columns[i] != null)
+        {
+          vrow[i] = columns[i].CountBefore (tlrow);
+        }
+        else
+        {
+          vrow[i] = 0;
+        }
         visitor.BeforeCol (i, names[i]);
       }
 
@@ -1222,7 +1275,7 @@ namespace RCL.Kernel
       bool[] doneCols = new bool[columns.Count];
       for (int i = 0; i < doneCols.Length; ++i)
       {
-        if (vrow[i] >= columns[i].Count)
+        if (columns[i] == null || vrow[i] >= columns[i].Count)
         {
           doneCols[i] = true;
           ++numDoneCols;

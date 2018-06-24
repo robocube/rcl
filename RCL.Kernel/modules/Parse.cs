@@ -11,7 +11,7 @@ namespace RCL.Kernel
     public void EvalParse (
       RCRunner runner, RCClosure closure, RCString right)
     {
-      runner.Yield (closure, DoParse (new RCLParser (RCSystem.Activator), right));
+      runner.Yield (closure, DoParse (new RCLParser (RCSystem.Activator), right, false));
     }
 
     [RCVerb ("parse")]
@@ -19,6 +19,7 @@ namespace RCL.Kernel
       RCRunner runner, RCClosure closure, RCSymbol left, RCString right)
     {
       RCParser parser = null;
+      bool canonical = false;
       string which = left[0].Part (0).ToString ();
       if (which.Equals ("csv"))
       {
@@ -36,6 +37,11 @@ namespace RCL.Kernel
       {
         parser = new RCLParser (RCSystem.Activator);
       }
+      else if (which.Equals ("canonical"))
+      {
+        parser = new RCLParser (RCSystem.Activator);
+        canonical = true;
+      }
       else if (which.Equals ("log"))
       {
         parser = new LogParser ();
@@ -45,7 +51,7 @@ namespace RCL.Kernel
         parser = new MarkdownParser ();
       }
       else throw new Exception ("Unknown parser: " + which);
-      runner.Yield (closure, DoParse (parser, right));
+      runner.Yield (closure, DoParse (parser, right, canonical));
     }
 
     [RCVerb ("lex")]
@@ -61,13 +67,13 @@ namespace RCL.Kernel
       runner.Yield (closure, new RCString (result));
     }
 
-    protected RCValue DoParse (RCParser parser, RCString right)
+    protected RCValue DoParse (RCParser parser, RCString right, bool canonical)
     {
       RCArray<RCToken> tokens = new RCArray<RCToken> ();
       for (int i = 0; i < right.Count; ++i)
         parser.Lex (right[i], tokens);
       bool fragment;
-      RCValue result = parser.Parse (tokens, out fragment);
+      RCValue result = parser.Parse (tokens, out fragment, canonical);
       return result;
     }
   }

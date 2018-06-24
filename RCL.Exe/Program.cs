@@ -87,7 +87,7 @@ namespace RCL.Exe
             string file = File.ReadAllText (cmd.Program, Encoding.UTF8);
             code = runner.Read (file);
           }
-          codeResult = runner.Rep (code);
+          codeResult = runner.Rep (code, restoreStateOnError:true);
           if (cmd.Action != "")
           {
             RCValue result = runner.Rep (string.Format ("{0} #", cmd.Action));
@@ -171,7 +171,7 @@ namespace RCL.Exe
             }
             bool fragment;
             RCValue code = RCSystem.Parse (text.ToString (), out fragment);
-            RCValue result = runner.Rep (code);
+            RCValue result = runner.Rep (code, restoreStateOnError:true);
             if (result != null)
             {
               Console.Out.WriteLine (result.Format (RCFormat.Pretty, RCSystem.Log.GetColmap ()));

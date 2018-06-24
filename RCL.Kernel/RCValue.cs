@@ -212,7 +212,7 @@ namespace RCL.Kernel
     }
 
     //Types that have child objects need to override this and lock the children.
-    public virtual void Lock ()
+    public virtual void Lock (bool canonical)
     {
       m_lock = true;
     }

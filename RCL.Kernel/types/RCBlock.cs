@@ -530,13 +530,13 @@ namespace RCL.Kernel
       get { return m_count; }
     }
 
-    public override void Lock ()
+    public override void Lock (bool canonical)
     {
-      base.Lock ();
+      base.Lock (canonical);
       RCBlock current = this;
       while (current.Count > 0)
       {
-        current.Value.Lock ();
+        current.Value.Lock (canonical);
         current = current.Previous;
       }
     }

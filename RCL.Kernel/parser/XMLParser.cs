@@ -26,7 +26,7 @@ namespace RCL.Kernel
       m_lexer = m_xmlLexer;
     }
   
-    public override RCValue Parse (RCArray<RCToken> tokens, out bool fragment)
+    public override RCValue Parse (RCArray<RCToken> tokens, out bool fragment, bool canonical)
     {
       //There is always a root element in the stack.
       //This is to support fragments.

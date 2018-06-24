@@ -1045,21 +1045,17 @@ namespace RCL.Test
     [Test]
     public void TestRowsWithInitialNulls ()
     {
-      string t = "[a b c d e 1 10 100 1000 -- 2 20 -- 2000 20000 3 30 300 3000 -- 4 -- -- -- -- 5 50 500 -- 50000]";
-      string t01 = "[a b c d e 1 10 100 1000 -- 2 20 -- 2000 20000]";
-      DoTest (string.Format ("0 1 rows {0}", t), t01);
+      DoTest ("0 1 rows [a b c d e 1 10 100 1000 -- 2 20 -- 2000 20000 3 30 300 3000 -- 4 -- -- -- -- 5 50 500 -- 50000]", "[a b c d e 1 10 100 1000 -- 2 20 -- 2000 20000]");
     }
 
     [Test]
     public void TestRowsColumnsWithOnlyNulls ()
     {
-      string t = "[a b c d e 1 10 100 1000 -- 2 20 -- 2000 -- 3 30 300 3000 -- 4 -- -- -- -- 5 50 500 -- 50000]";
-      string t01 = "[a b c d e 1 10 100 1000 -- 2 20 -- 2000 --]";
-      DoTest (string.Format ("0 1 rows {0}", t), t01);
+      DoTest ("0 1 rows [a b c d e 1 10 100 1000 -- 2 20 -- 2000 -- 3 30 300 3000 -- 4 -- -- -- -- 5 50 500 -- 50000]", "[a b c d e 1 10 100 1000 -- 2 20 -- 2000 --]");
     }
 
     [Test]
-    public void TestInitialValue ()
+    public void TestInitialValue1 ()
     {
       // The first value in a time series must be included in the output
       // even if its value is equal to the inital value for the corresponding data type.
@@ -1068,18 +1064,26 @@ namespace RCL.Test
       // Simultaneous initial values.
       DoTest (RCFormat.Default, "[E|S|x 0 #a -1 1 #a 0 2 #a 1] > [E|S|x 0 #a 1 1 #a 0 2 #a -1]",
               "[E|S|x 0 #a false 2 #a true]");
+    }
       
+    [Test]
+    public void TestInitialValue2 ()
+    {
       // Inital value on left.
       DoTest (RCFormat.Default, "[E|S|x 0 #a -1 2 #a 0 3 #a 1] > [E|S|x 1 #a 1 2 #a 0 3 #a -1]",
               "[E|S|x 1 #a false 3 #a true]");
+    }
       
+    [Test]
+    public void TestInitialValue3 ()
+    {
       // Initial value on right.
       DoTest (RCFormat.Default, "[E|S|x 1 #a -1 2 #a 0 3 #a 1] > [E|S|x 0 #a 1 2 #a 0 3 #a -1]",
               "[E|S|x 1 #a false 3 #a true]");
     }
 
     [Test]
-    public void TestLatestTimestamp ()
+    public void TestLatestTimestamp1 ()
     {
       // Make sure that the timestamp in the result is the one with the greatest value from the right and left.
       
@@ -1087,7 +1091,11 @@ namespace RCL.Test
       DoTest (RCFormat.Default,
               "[E|S|x 0 #a true 2 #a false] or [E|S|x 0 #a true 1 #a false 2 #a true 3 #a false]",
               "[E|S|x 0 #a true 3 #a false]");
-      
+    }
+
+    [Test]
+    public void TestLatestTimestamp2 ()
+    {
       // In this example the value x changes at T==3l on the LEFT side.
       DoTest (RCFormat.Default,
               "[E|S|x 0 #a true 1 #a false 2 #a true 3 #a false] or [E|S|x 0 #a true 2 #a false]",
@@ -1101,41 +1109,121 @@ namespace RCL.Test
     public void TestPlus ()
     {
       DoTest ("[S|x #a 10 #a 11 #a 12] + 1", "[S|x #a 11 #a 12 #a 13]");
+    }
+
+    [Test]
+    public void TestPlus2 ()
+    {
       DoTest ("1 + [S|x #a 10 #a 11 #a 12]", "[S|x #a 11 #a 12 #a 13]");
+    }
+
+    [Test]
+    public void TestPlus3 ()
+    {
       DoTest ("[E|S|x 0 #a 1 1 #a 2 2 #a 3] + [E|S|x 0 #a 10 1 #a 11 2 #a 12]", "[E|S|x 0 #a 11 1 #a 13 2 #a 15]");
+    }
+
+    [Test]
+    public void TestPlus4 ()
+    {
       DoTest ("[S|x #a 1 #a 2 #a 3] + [S|x #a 10 #a 11 #a 12]", "[S|x #a 15]");
+    }
+
+    [Test]
+    public void TestPlus5 ()
+    {
       DoTest ("[] + [S|x #a 1]", "[S|x #a 1]");
+    }
+
+    [Test]
+    public void TestPlus6 ()
+    {
       DoTest ("[S|x #a 1] + []", "[S|x #a 1]");
+    }
+
+    [Test]
+    public void TestPlus7 ()
+    {
       //add this test for the other arithmetic.
       DoTest ("{u:[a b 10 1 20 2 30 3] <-$u.a + $u.b}", "[x 11 22 33]");
     }
 
     [Test]
-    public void TestMinus ()
+    public void TestMinus1 ()
     {
       DoTest ("[S|x #a 10 #a 11 #a 12] - 1", "[S|x #a 9 #a 10 #a 11]");
+    }
+
+    [Test]
+    public void TestMinus2 ()
+    {
       DoTest ("1 - [S|x #a 10 #a 11 #a 12]", "[S|x #a -9 #a -10 #a -11]");
+    }
+
+    [Test]
+    public void TestMinus3 ()
+    {
       DoTest ("[S|x #a 1 #a 2 #a 3] - [S|x #a 10 #a 11 #a 12]", "[S|x #a -9]");
+    }
+
+    [Test]
+    public void TestMinus4 ()
+    {
       DoTest ("{u:[a b 10 1 20 2 30 3] <-$u.a - $u.b}", "[x 9 18 27]");
     }
 
     [Test]
-    public void TestMultiply ()
+    public void TestMultiply1 ()
     {
       DoTest ("[S|x #a 10 #a 11 #a 12] * 2", "[S|x #a 20 #a 22 #a 24]");
+    }
+
+    [Test]
+    public void TestMultiply2 ()
+    {
       DoTest ("2 * [S|x #a 10 #a 11 #a 12]", "[S|x #a 20 #a 22 #a 24]");
+    }
+
+    [Test]
+    public void TestMultiply3 ()
+    {
       DoTest ("[E|S|x 0 #a 1 1 #a 2 2 #a 3] * [E|S|x 0 #a 10 1 #a 11 2 #a 12]", "[E|S|x 0 #a 10 1 #a 22 2 #a 36]");
+    }
+
+    [Test]
+    public void TestMultiply4 ()
+    {
       DoTest ("[S|x #a 1 #a 2 #a 3] * [S|x #a 10 #a 11 #a 12]", "[S|x #a 36]");
+    }
+
+    [Test]
+    public void TestMultiply5 ()
+    {
       DoTest ("{u:[a b 10 1 20 2 30 3] <-$u.a * $u.b}", "[x 10 40 90]");
     }
 
     [Test]
-    public void TestDivide ()
+    public void TestDivide1 ()
     {
       //Let's mix up the data types a little bit now.
       DoTest ("[S|x #a 10.0 #a 11.0 #a 12.0] / 2", "[S|x #a 5.0 #a 5.5 #a 6.0]");
+    }
+
+    [Test]
+    public void TestDivide2 ()
+    {
       DoTest ("10 / [S|x #a 2.0 #a 4.0 #a 5.0]", "[S|x #a 5.0 #a 2.5 #a 2.0]");
+    }
+
+    [Test]
+    public void TestDivide3 ()
+    {
       DoTest ("[S|x #a 10 #a 20 #a 30] / [S|x #a 10 #a 20 #a 30]", "[S|x #a 1]");
+    }
+
+    [Test]
+    public void TestDivide4 ()
+    {
       DoTest ("{u:[a b 10 1 20 2 30 3] <-$u.a / $u.b}", "[x 10 10 10]");
     }
 
@@ -1202,19 +1290,37 @@ namespace RCL.Test
     }
 
     [Test]
-    public void TestAny ()
+    public void TestAny1 ()
     {
       DoTest ("any [S|x #a false #a false #a true #a false #a false]", "[S|x # true #a true]");
+    }
+
+    [Test]
+    public void TestAny2 ()
+    {
       DoTest ("any [S|x #a false #a false #b true #b false #a false]", "[S|x # true #a false #b true]");
+    }
+
+    [Test]
+    public void TestAny3 ()
+    {
       DoTest ("any [S|x #a,x false #a,x false #b,x true #b,x false #a,x false]",
               "[S|x # true #a false #a,x false #b true #b,x true]");
     }
 
     [Test]
-    public void TestAll ()
+    public void TestAll1 ()
     {
       DoTest ("all [S|x #a false #a false #a true #a false #a false]", "[S|x # false #a false]");
+    }
+
+    public void TestAll2 ()
+    {
       DoTest ("all [S|x #a false #a false #b true #b true #a false]", "[S|x # false #a false #b true]");
+    }
+
+    public void TestAll3 ()
+    {
       DoTest ("all [S|x #a,x false #a,x false #b,x true #b,x true #a,x false]",
               "[S|x # false #a false #a,x false #b true #b,x true]");
     }
@@ -1223,7 +1329,17 @@ namespace RCL.Test
     public void TestNone ()
     {
       DoTest ("none [S|x #a false #a false #a true #a false #a false]", "[S|x # false #a false]");
+    }
+
+    [Test]
+    public void TestNone2 ()
+    {
       DoTest ("none [S|x #a false #a false #b true #b true #a false]", "[S|x # false #a true #b false]");
+    }
+
+    [Test]
+    public void TestNone3 ()
+    {
       DoTest ("none [S|x #a,x false #a,x false #b,x true #b,x true #a,x false]",
               "[S|x # false #a true #a,x true #b false #b,x false]");
     }
@@ -1331,18 +1447,38 @@ namespace RCL.Test
     }
 
     [Test]
-    public void TestAnd ()
+    public void TestAnd1 ()
     {
       DoTest ("[E|S|x 0 #a true 1 #a true 2 #a false 3 #a false] and [E|S|x 0 #a true 1 #a false 2 #a true 3 #a false]", "[E|S|x 0 #a true 1 #a false]");
+    }
+
+    [Test]
+    public void TestAnd2 ()
+    {
       DoTest ("[E|S|x 0 #a true 1 #a true 2 #a false 3 #a false] and true", "[E|S|x 0 #a true 2 #a false]");
+    }
+
+    [Test]
+    public void TestAnd3 ()
+    {
       DoTest ("true and [E|S|x 0 #a true 1 #a true 2 #a false 3 #a false]", "[E|S|x 0 #a true 2 #a false]");
     }
 
     [Test]
-    public void TestOr ()
+    public void TestOr1 ()
     {
       DoTest ("[E|S|x 0 #a true 2 #a false] or [E|S|x 0 #a true 1 #a false 2 #a true 3 #a false]", "[E|S|x 0 #a true 3 #a false]");
+    }
+
+    [Test]
+    public void TestOr2 ()
+    {
       DoTest ("[E|S|x 0 #a true 1 #a true 2 #a false 3 #a false] or false", "[E|S|x 0 #a true 2 #a false]");
+    }
+
+    [Test]
+    public void TestOr3 ()
+    {
       DoTest ("false or [E|S|x 0 #a true 1 #a true 2 #a false 3 #a false]", "[E|S|x 0 #a true 2 #a false]");
     }
 
@@ -1356,7 +1492,17 @@ namespace RCL.Test
     public void TestGreaterThan ()
     {
       DoTest ("[E|S|x 0 #a -1 1 #a 0 2 #a 1] > [E|S|x 0 #a 1 1 #a 0 2 #a -1]", "[E|S|x 0 #a false 2 #a true]");
+    }
+
+    [Test]
+    public void TestGreaterThan2 ()
+    {
       DoTest ("0 > [E|S|x 0 #a 1 1 #a 0 2 #a -1]", "[E|S|x 0 #a false 2 #a true]");
+    }
+
+    [Test]
+    public void TestGreaterThan3 ()
+    {
       DoTest ("[E|S|x 0 #a 1 1 #a 0 2 #a -1] > 0", "[E|S|x 0 #a true 1 #a false]");
     }
 
@@ -1364,23 +1510,53 @@ namespace RCL.Test
     public void TestGreaterThanOrEqual ()
     {
       DoTest ("[E|S|x 0 #a -1 1 #a 0 2 #a 1] >= [E|S|x 0 #a 1 1 #a 0 2 #a -1]", "[E|S|x 0 #a false 1 #a true]");
+    }
+
+    [Test]
+    public void TestGreaterThanOrEqual2 ()
+    {
       DoTest ("0 >= [E|S|x 0 #a 1 1 #a 0 2 #a -1]", "[E|S|x 0 #a false 1 #a true]");
+    }
+
+    [Test]
+    public void TestGreaterThanOrEqual3 ()
+    {
       DoTest ("[E|S|x 0 #a 1 1 #a 0 2 #a -1] >= 0", "[E|S|x 0 #a true 2 #a false]");
     }
 
     [Test]
-    public void TestLessThan ()
+    public void TestLessThan1 ()
     {
       DoTest ("[E|S|x 0 #a -1 1 #a 0 2 #a 1] < [E|S|x 0 #a 1 1 #a 0 2 #a -1]", "[E|S|x 0 #a true 1 #a false]");
+    }
+
+    [Test]
+    public void TestLessThan2 ()
+    {
       DoTest ("0 < [E|S|x 0 #a 1 1 #a 0 2 #a -1]", "[E|S|x 0 #a true 1 #a false]");
+    }
+
+    [Test]
+    public void TestLessThan3 ()
+    {
       DoTest ("[E|S|x 0 #a 1 1 #a 0 2 #a -1] < 0", "[E|S|x 0 #a false 2 #a true]");
     }
 
     [Test]
-    public void TestLessThanOrEqual ()
+    public void TestLessThanOrEqual1 ()
     {
       DoTest ("[E|S|x 0 #a -1 1 #a 0 2 #a 1] <= [E|S|x 0 #a 1 1 #a 0 2 #a -1]", "[E|S|x 0 #a true 2 #a false]");
+    }
+
+    [Test]
+    public void TestLessThanOrEqual2 ()
+    {
       DoTest ("0 <= [E|S|x 0 #a 1 1 #a 0 2 #a -1]", "[E|S|x 0 #a true 2 #a false]");
+    }
+
+    [Test]
+    public void TestLessThanOrEqual3 ()
+    {
       DoTest ("[E|S|x 0 #a 1 1 #a 0 2 #a -1] <= 0", "[E|S|x 0 #a false 1 #a true]");
     }
 
@@ -1388,40 +1564,95 @@ namespace RCL.Test
     public void TestVectorEquals ()
     {
       DoTest ("[E|S|x 0 #a -1 1 #a 0 2 #a 1] == [E|S|x 0 #a 1 1 #a 0 2 #a -1]", "[E|S|x 0 #a false 1 #a true 2 #a false]");
+    }
+
+    [Test]
+    public void TestVectorEquals2 ()
+    {
       DoTest ("0 == [E|S|x 0 #a 1 1 #a 0 2 #a -1]", "[E|S|x 0 #a false 1 #a true 2 #a false]");
+    }
+
+    [Test]
+    public void TestVectorEquals3 ()
+    {
       DoTest ("[E|S|x 0 #a 1 1 #a 0 2 #a -1] == 0", "[E|S|x 0 #a false 1 #a true 2 #a false]");
     }
 
     [Test]
-    public void TestVectorNotEquals ()
+    public void TestVectorNotEquals1 ()
     {
       DoTest ("[E|S|x 0 #a -1 1 #a 0 2 #a 1] != [E|S|x 0 #a 1 1 #a 0 2 #a -1]", "[E|S|x 0 #a true 1 #a false 2 #a true]");
+    }
+
+    [Test]
+    public void TestVectorNotEquals2 ()
+    {
       DoTest ("0 != [E|S|x 0 #a 1 1 #a 0 2 #a -1]", "[E|S|x 0 #a true 1 #a false 2 #a true]");
+    }
+
+    [Test]
+    public void TestVectorNotEquals3 ()
+    {
       DoTest ("[E|S|x 0 #a 1 1 #a 0 2 #a -1] != 0", "[E|S|x 0 #a true 1 #a false 2 #a true]");
     }
 
     [Test]
-    public void TestEquals ()
+    public void TestEquals1 ()
     {
       DoTest ("[E|S|x 0 #a -1 1 #a 0 2 #a 1] = [E|S|x 0 #a 1 1 #a 0 2 #a -1]", "false");
+    }
+
+    [Test]
+    public void TestEquals2 ()
+    {
       DoTest ("[E|S|x 0 #a -1 1 #a 0 2 #a 1] = [E|S|x 0 #a -1 1 #a 0 2 #a 1]", "true");
+    }
+
+    [Test]
+    public void TestEquals3 ()
+    {
       DoTest ("0 = [E|S|x 0 #a 1 1 #a 0 2 #a -1]", "false");
+    }
+
+    [Test]
+    public void TestEquals4 ()
+    {
       DoTest ("[E|S|x 0 #a 1 1 #a 0 2 #a -1] = 0", "false");
     }
 
     [Test]
-    public void TestAbs ()
+    public void TestAbs1 ()
     {
       DoTest ("abs [S|x #a -1 #b 2 #c -3]", "[S|x #a 1 #b 2 #c 3]");
+    }
+
+    [Test]
+    public void TestAbs2 ()
+    {
       DoTest ("abs [S|x #a -1.0 #b 2.0 #c -3.0]", "[S|x #a 1.0 #b 2.0 #c 3.0]");
+    }
+
+    [Test]
+    public void TestAbs3 ()
+    {
       DoTest ("abs [S|x #a -1m #b 2m #c -3m]", "[S|x #a 1m #b 2m #c 3m]");
     }
 
     [Test]
-    public void TestCount ()
+    public void TestCount1 ()
     {
       DoTest ("count [S|x #a 0 #b 10 #c 100]", "3");
+    }
+
+    [Test]
+    public void TestCount2 ()
+    {
       DoTest ("count [S|x #a 0 #a 1]", "2");
+    }
+
+    [Test]
+    public void TestCount3 ()
+    {
       DoTest ("count []", "0");
     }
 
@@ -1463,28 +1694,43 @@ namespace RCL.Test
     }
 
     [Test]
-    public void TestColofl ()
+    public void TestColofl1 ()
     {
       DoTest ("colofl []", "~l");
+    }
+
+    [Test]
+    public void TestColofl2 ()
+    {
       DoTest ("colofl [x 0 1 2]", "0 1 2");
+    }
+
+    [Test]
+    public void TestColofl3 ()
+    {
       DoTest ("colofl [S|x #a 0 #b 1 #c 2]", "0 1 2");
+    }
+
+    [Test]
+    public void TestColofl4 ()
+    {
       DoTest ("0 colofl [S|x #a -- #b 1 #c 2]", "0 1 2");
     }
 
     [Test]
-    public void TestColofl0 ()
+    public void TestColofl5 ()
     {
       DoTest ("colofl [S|x #a 0 #a 1 #a 2]", "0 1 2");
     }
 
     [Test]
-    public void TestColofl1 ()
+    public void TestColofl6 ()
     {
       DoTest ("sum colofl [S|x #a 0 #a 1 #a 2]", "3");
     }
 
     [Test]
-    public void TestColofl2 ()
+    public void TestColofl7 ()
     {
       DoTest ("0 colofl [S|x #a -- #b 1 #c 2]", "0 1 2");
     }
@@ -1520,38 +1766,98 @@ namespace RCL.Test
     }
 
     [Test]
-    public void TestColofm ()
+    public void TestColofm1 ()
     {
       DoTest ("colofm []", "~m");
+    }
+
+    [Test]
+    public void TestColofm2 ()
+    {
       DoTest ("colofm [x 0m 1m 2m]", "0 1 2m");
+    }
+
+    [Test]
+    public void TestColofm3 ()
+    {
       DoTest ("colofm [S|x #a 0m #b 1m #c 2m]", "0 1 2m");
+    }
+
+    [Test]
+    public void TestColofm4 ()
+    {
       DoTest ("0m colofm [S|x #a -- #b 1m #c 2m]", "0 1 2m");
     }
 
     [Test]
-    public void TestColofx ()
+    public void TestColofx1 ()
     {
       DoTest ("colofx []", "~x");
+    }
+
+    [Test]
+    public void TestColofx2 ()
+    {
       DoTest ("colofx [x \\x00 \\x01 \\x02]", "\\x00 \\x01 \\x02");
+    }
+
+    [Test]
+    public void TestColofx3 ()
+    {
       DoTest ("colofx [S|x #a \\x00 #b \\x01 #c \\x02]", "\\x00 \\x01 \\x02");
+    }
+
+    [Test]
+    public void TestColofx4 ()
+    {
       DoTest ("\\x00 colofx [S|x #a -- #b \\x01 #c \\x02]", "\\x00 \\x01 \\x02");
     }
 
     [Test]
-    public void TestColofb ()
+    public void TestColofb1 ()
     {
       DoTest ("colofb []", "~b");
+    }
+
+    [Test]
+    public void TestColofb2 ()
+    {
       DoTest ("colofb [x false true]", "false true");
+    }
+
+    [Test]
+    public void TestColofb3 ()
+    {
       DoTest ("colofb [S|x #a true #b false #c true]", "true false true");
+    }
+
+    [Test]
+    public void TestColofb4 ()
+    {
       DoTest ("false colofb [S|x #a -- #b false #c true]", "false false true");
     }
 
     [Test]
-    public void TestColofs ()
+    public void TestColofs1 ()
     {
       DoTest ("colofs []", "~s");
+    }
+
+    [Test]
+    public void TestColofs2 ()
+    {
       DoTest ("colofs [x \"0\" \"1\" \"2\"]", "\"0\" \"1\" \"2\"");
+    }
+
+    [Test]
+    public void TestColofs3 ()
+    {
       DoTest ("colofs [S|x #a \"0\" #b \"1\" #c \"2\"]", "\"0\" \"1\" \"2\"");
+    }
+
+    [Test]
+    public void TestColofs4 ()
+    {
       DoTest ("\"0\" colofs [S|x #a -- #b \"1\" #c \"2\"]", "\"0\" \"1\" \"2\"");
     }
 
@@ -1585,100 +1891,205 @@ namespace RCL.Test
     */
 
     [Test]
-    public void TestColofy ()
+    public void TestColofy1 ()
     {
       DoTest ("colofy []", "~y");
+    }
+
+    [Test]
+    public void TestColofy2 ()
+    {
       DoTest ("colofy [x #0 #1 #2]", "#0 #1 #2");
+    }
+
+    [Test]
+    public void TestColofy3 ()
+    {
       DoTest ("colofy [S|x #a #0 #b #1 #c #2]", "#0 #1 #2");
+    }
+
+    [Test]
+    public void TestColofy4 ()
+    {
       DoTest ("#0 colofy [S|x #a -- #b #1 #c #2]", "#0 #1 #2");
     }
 
     [Test]
-    public void TestColoft ()
+    public void TestColoft1 ()
     {
       DoTest ("coloft []", "~t");
+    }
+
+    [Test]
+    public void TestColoft2 ()
+    {
       DoTest ("coloft [x 08:00 09:00 10:00]", "08:00 09:00 10:00");
+    }
+
+    [Test]
+    public void TestColoft3 ()
+    {
       DoTest ("coloft [S|x #a 08:00 #b 09:00 #c 10:00]", "08:00 09:00 10:00");
+    }
+
+    [Test]
+    public void TestColoft4 ()
+    {
       DoTest ("08:00 coloft [S|x #a -- #b 09:00 #c 10:00]", "08:00 09:00 10:00");
     }
-      
+
     [Test]
-    public void TestColofError ()
+    public void TestColoflError ()
     {
       DoTest ("#status from try {<-colofl [S|x #a -- #b 1 #c 2]}", "{status:1}");
+    }
+
+    [Test]
+    public void TestColofmError ()
+    {
       DoTest ("#status from try {<-colofm [S|x #a -- #b 1m #c 2m]}", "{status:1}");
+    }
+
+    [Test]
+    public void TestColofdError ()
+    {
       DoTest ("#status from try {<-colofd [S|x #a -- #b 1.0 #c 2.0]}", "{status:1}");
+    }
+
+    [Test]
+    public void TestColofxError ()
+    {
       DoTest ("#status from try {<-colofx [S|x #a -- #b \\x01 #c \\x02]}", "{status:1}");
+    }
+
+    [Test]
+    public void TestColofbError ()
+    {
       DoTest ("#status from try {<-colofb [S|x #a -- #b false #c true]}", "{status:1}");
+    }
+
+    [Test]
+    public void TestColofsError ()
+    {
       DoTest ("#status from try {<-colofs [S|x #a -- #b \"1\" #c \"2\"]}", "{status:1}");
+    }
+
+    [Test]
+    public void TestColofyError ()
+    {
       DoTest ("#status from try {<-colofy [S|x #a -- #b #1 #c #2]}", "{status:1}");
     }
 
     [Test]
-    public void TestSwitch ()
+    public void TestSwitch1 ()
     {
       DoTest ("[S|x #a false] switch {:#it,was,true :#it,was,false}", "#it,was,false");
+    }
+
+    [Test]
+    public void TestSwitch2 ()
+    {
       DoTest ("[S|x #a true] switch {:#it,was,true :#it,was,false}", "#it,was,true");
     }
 
     [Test]
-    public void TestMin ()
+    public void TestMin1 ()
     {
       DoTest ("0.0 min [S|x #0 1.0]", "[S|x #0 0.0]");
+    }
+
+    [Test]
+    public void TestMin2 ()
+    {
       DoTest ("[S|x #0 1.0] min 0.0", "[S|x #0 0.0]");
     }
 
     [Test]
-    public void TestMax ()
+    public void TestMax1 ()
     {
       DoTest ("0.0 max [S|x #0 1.0]", "[S|x #0 1.0]");
+    }
+
+    [Test]
+    public void TestMax2 ()
+    {
       DoTest ("[S|x #0 1.0] max 0.0", "[S|x #0 1.0]");
     }
 
     [Test]
-    public void TestWriteRead ()
+    public void TestWriteRead1 ()
     {
       //write should be able to accept a cube on the left.
       //read should be able to do the same.
       //This test is to ensure the overload works, not the semantics of the write operator.
       DoTest (RCFormat.DefaultNoT, "{:[S|x #ignore #a] write {i:++} <-[S|x #ignore #a] read 0}", "[S|i #a 0]");
+    }
+
+    [Test]
+    public void TestWriteRead2 ()
+    {
       DoTest (RCFormat.DefaultNoT, "{:[S|x #ignore #a] write {i:++} <-[S|x #ignore #a] read [S|x #ignore 0]}", "[S|i #a 0]");
     }
 
     [Test]
-    public void TestWriteDispatch ()
+    public void TestWriteDispatch1 ()
     {
       DoTest (RCFormat.DefaultNoT, "{:[S|x #ignore #a] write {i:++} <-[S|x #ignore #a] dispatch 1}", "[S|i #a 0]");
+    }
+
+    [Test]
+    public void TestWriteDispatch2 ()
+    {
       DoTest (RCFormat.DefaultNoT, "{:[S|x #ignore #a] write {i:++} <-[S|x #ignore #a] dispatch [S|x #ignore 1]}", "[S|i #a 0]");
     }
 
     [Test]
-    public void TestWriteGawk ()
+    public void TestWriteGawk1 ()
     {
       DoTest (RCFormat.DefaultNoT, "{:[S|x #ignore #a] write {i:++} <-[S|x #ignore #a] gawk 1}", "[S|i #a 0]");
+    }
+
+    [Test]
+    public void TestWriteGawk2 ()
+    {
       DoTest (RCFormat.DefaultNoT, "{:[S|x #ignore #a] write {i:++} <-[S|x #ignore #a] gawk [S|x #ignore 1]}", "[S|i #a 0]");
     }
 
     [Test]
-    public void TestPeek ()
+    public void TestPeek1 ()
     {
       //read should be able to do the same.
       //This test is to ensure the overload works, not the semantics of the operators.
       DoTest ("[S|x #ignore #a] peek 1", "false");
+    }
+
+    [Test]
+    public void TestPeek2 ()
+    {
       DoTest ("[S|x #ignore #a] peek [S|x #ignore 1]", "false");
     }
 
     [Test]
-    public void TestThrottle ()
+    public void TestThrottle1 ()
     {
       DoTest ("[S|x #ignore #a] throttle 1", "0");
+    }
+
+    [Test]
+    public void TestThrottle2 ()
+    {
       DoTest ("[S|x #ignore #a] throttle [S|x #ignore 1]", "0");
     }
 
     [Test]
-    public void TestPoll ()
+    public void TestPoll1 ()
     {
       DoTest ("[S|x #ignore #a] poll 1", "[]");
+    }
+
+    [Test]
+    public void TestPoll2 ()
+    {
       DoTest ("[S|x #ignore #a] poll [S|x #ignore 1]", "[]");
     }
 
@@ -1815,14 +2226,32 @@ namespace RCL.Test
     }
 
     [Test]
-    [Ignore ("because")]
-    public void TestFrom1 ()
+    [Ignore ("undefined behavior")]
+    public void TestFromTimelineG ()
     {
       //This cannot be because right because from is supposed to return a cube.
       //You will have to use the dot notation to access the timeline arrays.
       DoTest ("#G from [G|E|T|S|x 1 2 08:00 #a 3]", "1");
+    }
+
+    [Test]
+    [Ignore ("undefined behavior")]
+    public void TestFromTimelineE ()
+    {
       DoTest ("#E from [G|E|T|S|x 1 2 08:00 #a 3]", "2");
+    }
+
+    [Test]
+    [Ignore ("undefined behavior")]
+    public void TestFromTimelineT ()
+    {
       DoTest ("#T from [G|E|T|S|x 1 2 08:00 #a 3]", "08:00");
+    }
+
+    [Test]
+    [Ignore ("undefined behavior")]
+    public void TestFromTimelineS ()
+    {
       DoTest ("#S from [G|E|T|S|x 1 2 08:00 #a 3]", "#a");
     }
 
@@ -1916,15 +2345,12 @@ namespace RCL.Test
       //   0 0 0 #x 1
       //]
       DoTest ("untimeline [G E T S|a 0 0 00:00 #x 1]", "[G E T S a 0 0 00:00 #x 1]");
-      //DoTest ("timeline [G E T S a 0 0 0 #x 1]", "[G E T S|a 0 0 0 #x 1]");
     }
 
     [Test]
     public void TestBlock ()
     {
-      string cube = "[a b c d e 1 10 100 1000 -- 2 20 -- 2000 -- 3 30 300 3000 -- 4 -- -- -- -- 5 50 500 -- 50000]";
-      string block = "{:{a:1 b:10 c:100 d:1000} :{a:2 b:20 d:2000} :{a:3 b:30 c:300 d:3000} :{a:4} :{a:5 b:50 c:500 e:50000}}";
-      DoTest ("block " + cube, block);
+      DoTest ("block [a b c d e 1 10 100 1000 -- 2 20 -- 2000 -- 3 30 300 3000 -- 4 -- -- -- -- 5 50 500 -- 50000]",  "{:{a:1 b:10 c:100 d:1000} :{a:2 b:20 d:2000} :{a:3 b:30 c:300 d:3000} :{a:4} :{a:5 b:50 c:500 e:50000}}");
     }
 
     //Rename
@@ -1944,90 +2370,184 @@ namespace RCL.Test
     {
       //Empty cube on the right.
       DoTest ("[S|x #a 0 #b 1] ! []", "[S|x #a 0 #b 1]");
-      //Empty cube on the left.
-      DoTest ("[] ! [S|x #a 0 #b 1]", "[S|x #a 0 #b 1]");
-      //Simple update scenario.
-      DoTest ("[S|x #a 0 #b 10] ! [S|x #b 11]", "[S|x #a 0 #b 11]");
-      //Simple insert scenario.
-      DoTest ("[S|x #a 0] ! [S|x #b 11]", "[S|x #a 0 #b 11]");
-      //New columns added with overlap
-      DoTest ("[S|x #a 1 #b 2] ! [S|x y #a 2 10 #b 3 20]", "[S|x y #a 2 10 #b 3 20]");
-      //New columns have been added, no overlap
-      DoTest ("[S|x #a 1 #b 2] ! [S|y #a 10 #b 20]", "[S|x y #a 1 10 #b 2 20]");
-      //New columns added, no overlap, null in right
-      DoTest ("[S|x #a 1 #b 2] ! [S|y #a 10]", "[S|x y #a 1 10 #b 2 --]");
-      //Test incr
-      DoTest ("[S|x #a 1 #b 2] ! [S|i #a ++]", "[S|x i #a 1 0 #b 2 --]");
-      DoTest ("[S|x #a 1 #b 2] ! [S|x #b ++]", "[S|x #a 1 #b 3]");
     }
 
     [Test]
     public void TestBang1 ()
     {
-      //empty cube bang
-      DoTest ("!{}", "[]");
-      DoTest ("!{u0:[S|x #a 1]}", "[S|u0 #a 1]");
-      //vertical extension
-      DoTest ("!{:[S|x #a 1] :[S|x #b 2] :[S|x #c 3]}", "[S|x #a 1 #b 2 #c 3]");
-      //horizontal extension
-      DoTest ("!{x:[S|x #a 1 #b 2 #c 3] y:[S|x #a 10 #b 20 #c 30] z:[S|x #a 100 #b 200 #c 300]}", "[S|x y z #a 1 10 100 #b 2 20 200 #c 3 30 300]");
-      //horizontal extension, scalar
-      DoTest ("!{x:[S|x #a 1 #b 2 #c 3] y:13}", "[S|x y #a 1 13 #b 2 13 #c 3 13]");
-      //horizontal extension, vector
-      DoTest ("!{x:[S|x #a 1 #b 2 #c 3] y:11 12 13}", "[S|x y #a 1 11 #b 2 12 #c 3 13]");
-      //horizontal extension, unordered
-      DoTest ("!{x:[S|x #a 1 #b 2 #c 3] y:[S|x #b 20 #a 10 #c 30] z:[S|x #c 300 #b 200 #a 100]}", "[S|x y z #a 1 10 100 #b 2 20 200 #c 3 30 300]");
-      //horizontal extension, shared source.
-      DoTest ("{u:[S|x y z #a 1 10 100 #b 2 20 200 #c 3 30 300] <-!eval {x:$u.x y:$u.y z:$u.z}}", "[S|x y z #a 1 10 100 #b 2 20 200 #c 3 30 300]");
-      //update, unordered
-      DoTest ("!{:[S|x #a 1 #b 2 #c 3] :[S|x #c 30 #a 10]}", "[S|x #a 10 #b 2 #c 30]");
-      //update filling nulls - notice the center square is updated
-      DoTest ("!{u0:[S|x y z #a -- 1 -- #b 3 4 5 #c -- 7 --] u1:[S|x y z #a 0 -- 2 #b -- 9 -- #c 6 -- 8]}", "[S|x y z #a 0 1 2 #b 3 9 5 #c 6 7 8]");
-      //apply bang multiple times
-      DoTest ("{u:[S|x #a 1 #b 2 #c 3] u:$u ! eval {y:$u.x + 1} u:$u ! eval {z:$u.y + 1} <-$u}", "[S|x y z #a 1 2 3 #b 2 3 4 #c 3 4 5]");
-      //test incrementing a variable
-      DoTest ("[S|x #a 11] ! {:[S|x #a ++] :[S|x #a ++]}", "[S|x #a 13]");
-      //DoTest ("!{:[S|x #a 11 #b 101 #c 1001] :[S|x #b ++] :[S|x #a ++]}", "[S|x #a 12 #b 102 #c 1001]");
-      //DoTest ("!{:[S|x #a 11] :[S|x #a ++] :[S|x #a ++]}", "[S|x #a 13]");
+      //Empty cube on the left.
+      DoTest ("[] ! [S|x #a 0 #b 1]", "[S|x #a 0 #b 1]");
     }
 
     [Test]
     public void TestBang2 ()
+    {
+      //Simple update scenario.
+      DoTest ("[S|x #a 0 #b 10] ! [S|x #b 11]", "[S|x #a 0 #b 11]");
+    }
+
+    [Test]
+    public void TestBang3 ()
+    {
+      //Simple insert scenario.
+      DoTest ("[S|x #a 0] ! [S|x #b 11]", "[S|x #a 0 #b 11]");
+    }
+
+    [Test]
+    public void TestBang4 ()
+    {
+      //New columns added with overlap
+      DoTest ("[S|x #a 1 #b 2] ! [S|x y #a 2 10 #b 3 20]", "[S|x y #a 2 10 #b 3 20]");
+    }
+
+    [Test]
+    public void TestBang5 ()
+    {
+      //New columns have been added, no overlap
+      DoTest ("[S|x #a 1 #b 2] ! [S|y #a 10 #b 20]", "[S|x y #a 1 10 #b 2 20]");
+    }
+
+    [Test]
+    public void TestBang6 ()
+    {
+      //New columns added, no overlap, null in right
+      DoTest ("[S|x #a 1 #b 2] ! [S|y #a 10]", "[S|x y #a 1 10 #b 2 --]");
+    }
+
+    [Test]
+    public void TestBang7 ()
+    {
+      //Test incr
+      DoTest ("[S|x #a 1 #b 2] ! [S|i #a ++]", "[S|x i #a 1 0 #b 2 --]");
+    }
+
+    [Test]
+    public void TestBang8 ()
+    {
+      //Test incr
+      DoTest ("[S|x #a 1 #b 2] ! [S|x #b ++]", "[S|x #a 1 #b 3]");
+    }
+
+    [Test]
+    public void TestBang9 ()
+    {
+      //empty cube bang
+      DoTest ("!{}", "[]");
+    }
+
+    [Test]
+    public void TestBang10 ()
+    {
+      DoTest ("!{u0:[S|x #a 1]}", "[S|u0 #a 1]");
+    }
+
+    [Test]
+    public void TestBang11 ()
+    {
+      //vertical extension
+      DoTest ("!{:[S|x #a 1] :[S|x #b 2] :[S|x #c 3]}", "[S|x #a 1 #b 2 #c 3]");
+    }
+
+    [Test]
+    public void TestBang12 ()
+    {
+      //horizontal extension
+      DoTest ("!{x:[S|x #a 1 #b 2 #c 3] y:[S|x #a 10 #b 20 #c 30] z:[S|x #a 100 #b 200 #c 300]}", "[S|x y z #a 1 10 100 #b 2 20 200 #c 3 30 300]");
+    }
+
+    [Test]
+    public void TestBang13 ()
+    {
+      //horizontal extension, scalar
+      DoTest ("!{x:[S|x #a 1 #b 2 #c 3] y:13}", "[S|x y #a 1 13 #b 2 13 #c 3 13]");
+    }
+
+    [Test]
+    public void TestBang14 ()
+    {
+      //horizontal extension, vector
+      DoTest ("!{x:[S|x #a 1 #b 2 #c 3] y:11 12 13}", "[S|x y #a 1 11 #b 2 12 #c 3 13]");
+    }
+
+    [Test]
+    public void TestBang15 ()
+    {
+      //horizontal extension, unordered
+      DoTest ("!{x:[S|x #a 1 #b 2 #c 3] y:[S|x #b 20 #a 10 #c 30] z:[S|x #c 300 #b 200 #a 100]}", "[S|x y z #a 1 10 100 #b 2 20 200 #c 3 30 300]");
+    }
+
+    [Test]
+    public void TestBang16 ()
+    {
+      //horizontal extension, shared source.
+      DoTest ("{u:[S|x y z #a 1 10 100 #b 2 20 200 #c 3 30 300] <-!eval {x:$u.x y:$u.y z:$u.z}}", "[S|x y z #a 1 10 100 #b 2 20 200 #c 3 30 300]");
+    }
+
+    [Test]
+    public void TestBang17 ()
+    {
+      //update, unordered
+      DoTest ("!{:[S|x #a 1 #b 2 #c 3] :[S|x #c 30 #a 10]}", "[S|x #a 10 #b 2 #c 30]");
+    }
+
+    [Test]
+    public void TestBang18 ()
+    {
+      //update filling nulls - notice the center square is updated
+      DoTest ("!{u0:[S|x y z #a -- 1 -- #b 3 4 5 #c -- 7 --] u1:[S|x y z #a 0 -- 2 #b -- 9 -- #c 6 -- 8]}", "[S|x y z #a 0 1 2 #b 3 9 5 #c 6 7 8]");
+    }
+
+    [Test]
+    public void TestBang19 ()
+    {
+      //apply bang multiple times
+      DoTest ("{u:[S|x #a 1 #b 2 #c 3] u:$u ! eval {y:$u.x + 1} u:$u ! eval {z:$u.y + 1} <-$u}", "[S|x y z #a 1 2 3 #b 2 3 4 #c 3 4 5]");
+    }
+
+    [Test]
+    public void TestBang20 ()
+    {
+      //test incrementing a variable
+      DoTest ("[S|x #a 11] ! {:[S|x #a ++] :[S|x #a ++]}", "[S|x #a 13]");
+    }
+
+    [Test]
+    public void TestBang21 ()
     {
       DoTest ("{u0:[S|x y #a 0 0 #b 1 1 #c 2 2 #d 3 3 #e 4 4 #f 5 -- #g 6 5 #h 7 --] u1:$u0 ! eval {y:0 to (count $u0) - 1} <-$u1}",
               "[S|x y #a 0 0 #b 1 1 #c 2 2 #d 3 3 #e 4 4 #f 5 5 #g 6 6 #h 7 7]");
     }
 
     [Test]
-    public void TestBang3 ()
+    public void TestBang22 ()
     {
       DoTest ("{u0:[S|x y #b 1 1 #c 2 2 #d 3 3 #e 4 4 #f 5 -- #g 6 5 #h 7 --] u1:$u0 ! eval {y:0 to (count $u0) - 1l} <-$u1}",
               "[S|x y #b 1 0 #c 2 1 #d 3 2 #e 4 3 #f 5 4 #g 6 5 #h 7 6]");
     }
 
     [Test]
-    public void TestBang4 ()
+    public void TestBang23 ()
     {
       DoTest ("{u0:[S|x y #a 0 0 #b 1 1 #c 2 2] u1:$u0 ! eval {y:13} <-$u1}",
               "[S|x y #a 0 13 #b 1 13 #c 2 13]");
     }
 
     [Test]
-    public void TestBang5 ()
+    public void TestBang24 ()
     {
       //Duplicates on the right side.
       DoTest ("count [S|x y z #a 1 10 100] ! #b #b cube eval {x:2 2 y:20 20 z:200 200}", "2");
     }
 
     [Test]
-    public void TestBang6 ()
+    public void TestBang25 ()
     {
       //"[S|type varname varcount varrev #canvas,meta,3,0,0,0,diner \"M\" #3,0,0,0,diner 1 0] ! {varrow:0 removed:false}"
       DoTest ("[S|x #a 1] ! {y:10 z:100}", "[S|x y z #a 1 10 100]");
     }
 
     [Test]
-    public void TestBang7 ()
+    public void TestBang26 ()
     {
       DoTest ("[S|y #a -1 #b 1 #c 1 #d -1] ! {y:[S|x #a -2 #b 2 #c 2 #d -2]}", "[S|y #a -2 #b 2 #c 2 #d -2]");
     }
@@ -2335,13 +2855,31 @@ namespace RCL.Test
     }
 
     [Test]
-    [Ignore ("because")]
+    [Ignore ("don't work quite right because of the weird behavoir with S and T")]
     public void TestRetimeline2 ()
     {
       //These don't work quite right because of the weird behavoir with S and T.
       DoTest ("\"G\" retimeline [G|E|S|x 0 0 #a 0]", "[G|x 0 0]");
+    }
+
+    [Test]
+    [Ignore ("don't work quite right because of the weird behavior with S and T")]
+    public void TestRetimeline3 ()
+    {
       DoTest ("\"S\" retimeline [G|E|S|x 0 0 #a 0]", "[S|x #a 0]");
+    }
+
+    [Test]
+    [Ignore ("don't work quite right because of the weird behavior with S and T")]
+    public void TestRetimeline4 ()
+    {
       DoTest ("\"T\" retimeline [G|E|S|x 0 0 #a 0]", "[E|x 0 0]");
+    }
+
+    [Test]
+    [Ignore ("don't work quite right because of the weird behavior with S and T")]
+    public void TestRetimeline5 ()
+    {
       DoTest ("\"G\" \"S\" retimeline [G|E|S|x 0 0 #a 0]", "[G|S|x 0 #a 0]");
     }
 

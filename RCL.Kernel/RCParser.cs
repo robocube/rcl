@@ -20,7 +20,7 @@ namespace RCL.Kernel
       return tokens;
     }
   
-    public abstract RCValue Parse (RCArray<RCToken> tokens, out bool fragment);
+    public abstract RCValue Parse (RCArray<RCToken> tokens, out bool fragment, bool canonical);
   
     public virtual void AcceptName (RCToken token) {}
     public virtual void AcceptWhitespace (RCToken token) {}

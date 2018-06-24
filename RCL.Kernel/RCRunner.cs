@@ -71,11 +71,6 @@ namespace RCL.Kernel
     protected volatile RCClosure m_exceptionClosure = null;
 
     /// <summary>
-    /// Only the first exception thrown causes m_state to be reset. This is helpful when debugging --program
-    /// </summary>
-    protected bool m_firstException = false;
-
-    /// <summary>
     /// Keeps a count of exceptions reported, mostly for unit testing purposes
     /// </summary>
     public volatile int m_exceptionCount = 0;
@@ -125,10 +120,6 @@ namespace RCL.Kernel
     public RCRunner () : this (workers:1) {}
     public RCRunner (long workers)
     {
-      if (!RCSystem.Args.Nokeys)
-      {
-        m_firstException = true;
-      }
       m_ctorThread = Thread.CurrentThread;
       m_bots[0] = new RCBot (this, 0);
       m_output[0] = new Queue<RCAsyncState> ();
@@ -168,6 +159,11 @@ namespace RCL.Kernel
 
     public RCValue Run (RCValue program)
     {
+      return Run (program, restoreStateOnError:false);
+    }
+
+    public RCValue Run (RCValue program, bool restoreStateOnError)
+    {
       //Shouldn't this be an exception?
       if (program == null)
       {
@@ -176,11 +172,11 @@ namespace RCL.Kernel
       RCBlock wrapper = new RCBlock (RCBlock.Empty, "", "<-", program);
       RCClosure parent = new RCClosure (m_bots[0].Id, 0, null, null, wrapper, null, m_state, 0, null, null, noClimb:false);
       RCClosure closure = new RCClosure (parent, m_bots[0].Id, program, null, RCBlock.Empty, 0, null, null);
-      RCValue result = Run (closure);
+      RCValue result = Run (closure, restoreStateOnError);
       return result;
     }
 
-    protected RCValue Run (RCClosure root)
+    protected RCValue Run (RCClosure root, bool restoreStateOnError)
     {
       lock (m_queueLock)
       {
@@ -206,7 +202,7 @@ namespace RCL.Kernel
         RCSystem.Log.Record (root, "runner", 0, "unhandled", m_exception);
         Exception exception = m_exception;
         m_exception = null;
-        if (m_firstException)
+        if (restoreStateOnError)
         {
           //Make the successfully computed values into the effective state of the environment
           RCClosure top = m_exceptionClosure;
@@ -215,7 +211,6 @@ namespace RCL.Kernel
             top = top.Parent;
           }
           m_state = top.Result;
-          m_firstException = false;
         }
         throw exception;
       }
@@ -397,12 +392,12 @@ namespace RCL.Kernel
     public RCValue Read (string code)
     {
       bool fragment;
-      return m_parser.Parse (m_parser.Lex (code), out fragment);
+      return m_parser.Parse (m_parser.Lex (code), out fragment, canonical:false);
     }
 
-    public RCValue Read (string code, out bool fragment)
+    public RCValue Read (string code, out bool fragment, bool canonical)
     {
-      return m_parser.Parse (m_parser.Lex (code), out fragment);
+      return m_parser.Parse (m_parser.Lex (code), out fragment, canonical);
     }
 
     public RCArray<RCToken> Lex (string code)
@@ -453,9 +448,9 @@ namespace RCL.Kernel
       }
     }
 
-    public RCValue Rep (RCValue program)
+    public RCValue Rep (RCValue program, bool restoreStateOnError)
     {
-      RCValue result = Run (program);
+      RCValue result = Run (program, restoreStateOnError);
       RCBlock state = result as RCBlock;
       if (state != null)
       {
@@ -481,7 +476,7 @@ namespace RCL.Kernel
           RCBlock program = new RCBlock (m_state, "", "<-", variable.Value);
           RCClosure parent = new RCClosure (m_bots[0].Id, 0, null, null, program, null, m_state, m_state.Count, null, null, noClimb:false);
           RCClosure child = new RCClosure (parent, m_bots[0].Id, variable.Value, null, RCBlock.Empty, 0, null, null);
-          RCValue result = Run (child);
+          RCValue result = Run (child, restoreStateOnError:false);
           m_state = new RCBlock (m_state, variable.Name, ":", result);
         }
         else
@@ -497,7 +492,7 @@ namespace RCL.Kernel
         RCClosure parent = new RCClosure (m_bots[0].Id, 0, null, null, program, null,
                                           m_state, m_state.Count, null, null, noClimb:false);
         RCClosure child = new RCClosure (parent, m_bots[0].Id, peek, null, RCBlock.Empty, 0);
-        RCValue result = Run (child);
+        RCValue result = Run (child, restoreStateOnError:false);
         return result;
       }
     }
@@ -587,6 +582,11 @@ namespace RCL.Kernel
     public void Yield (RCClosure closure, RCValue result)
     {
       RCL.Kernel.Eval.DoYield (this, closure, result);
+    }
+
+    public void YieldCanonical (RCClosure closure, RCValue result)
+    {
+      RCL.Kernel.Eval.DoYield (this, closure, result, canonical:true);
     }
 
     public void Output (RCClosure closure, RCSymbolScalar name, RCValue val)

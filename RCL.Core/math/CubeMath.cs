@@ -1689,8 +1689,7 @@ namespace RCL.Core
       return result;
     }
 
-    public RCCube Bang (RCCube left, RCVectorBase right, 
-                        string colname, bool force, bool keepIncrs)
+    public RCCube Bang (RCCube left, RCVectorBase right, string colname, bool force, bool keepIncrs)
     {
       if (colname == null)
       {
@@ -1708,11 +1707,8 @@ namespace RCL.Core
         return left;
       }
       int col = left.FindColumn (colname);
-      //Console.WriteLine("colname: " + colname);
       if (col < 0)
       {
-        //Console.WriteLine("colname was not found");
-        //Console.WriteLine("right.Count:" + right.Count + " left.Count:" + left.Count);
         if (right.Count == 1)
         {
           object box = right.Child (0);
@@ -2055,7 +2051,6 @@ namespace RCL.Core
           ColumnBase column = result.GetColumn (i);
           if (column == null)
           {
-            //result.m_columns.Write (i, new RCCube.ColumnOfNothing (result.Axis));
             result.Columns.Write (i, new RCCube.ColumnOfNothing (result.Axis));
           }
         }

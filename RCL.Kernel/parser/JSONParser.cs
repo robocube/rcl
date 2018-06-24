@@ -42,7 +42,7 @@ namespace RCL.Kernel
       Value = 2
     }
 
-    public override RCValue Parse (RCArray<RCToken> tokens, out bool fragment)
+    public override RCValue Parse (RCArray<RCToken> tokens, out bool fragment, bool canonical)
     {
       for (int i = 0; i < tokens.Count; ++i)
       {

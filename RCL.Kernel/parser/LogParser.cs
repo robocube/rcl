@@ -33,7 +33,7 @@ namespace RCL.Kernel
       m_lexer = m_logLexer;
     }
   
-    public override RCValue Parse (RCArray<RCToken> tokens, out bool fragment)
+    public override RCValue Parse (RCArray<RCToken> tokens, out bool fragment, bool canonical)
     {
       fragment = false;
       m_result = new RCCube (new Timeline ());

@@ -125,10 +125,6 @@ namespace RCL.Kernel
 
     protected void FormatRC (int tlcols)
     {
-      //for (int i = 0; i < m_level; ++i)
-      //{
-      //  m_builder.Append (m_args.Indent);
-      //}
       m_builder.Append ("[");
       m_builder.Append (m_args.Newline);
 

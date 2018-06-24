@@ -400,7 +400,7 @@ namespace RCL.Kernel
     public abstract class ParserExtension
     {
       public abstract RCValue BinaryParse (RCActivator activator, RCArray<byte> data, ref int start);
-      public abstract ParserState StartParsing ();
+      public abstract ParserState StartParsing (bool canonical);
       public abstract void AcceptName (object state, RCToken token);
       public abstract void AcceptScalar (object state, RCToken token, RCLexer lexer);
       public abstract void AcceptSpacer (object state, RCToken token);

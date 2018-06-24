@@ -644,11 +644,26 @@ namespace RCL.Test
     }
 
     [Test]
-    public void TestSwitchWithString ()
+    public void TestSwitchWithString1 ()
     {
       DoEvalTest ("\"a\" switch {a:1 b:2 c:3}", "1");
+    }
+
+    [Test]
+    public void TestSwitchWithString2 ()
+    {
       DoEvalTest ("\"b\" switch {a:1 b:2 c:3}", "2");
+    }
+
+    [Test]
+    public void TestSwitchWithString3 ()
+    {
       DoEvalTest ("\"c\" switch {a:1 b:2 c:3}", "3");
+    }
+
+    [Test]
+    public void TestSwitchWithString4 ()
+    {
       DoEvalTest ("\"d\" switch {a:1 b:2 c:3}", "{}");
     }
 
@@ -994,18 +1009,23 @@ namespace RCL.Test
     }
 
     [Test]
-    public void TestWriteRead()
+    public void TestWriteRead ()
     {
       DoEvalTest("{:#x write {a:1 b:2 c:3} :(#x read 0) assert [S|a b c #x 1 2 3] <-0}", "0");
     }
 
     [Test]
-    public void TestWriteReadX()
+    public void TestWriteReadX1 ()
     {
       //I added these tests because I found after adding bytes vectors they didn't work correctly
       //With read and write.
-      DoEvalTest("{:#x write {a:\\x00 b:\\x01 c:\\x02} :(#x read 0) assert [S|a b c #x \\x00 \\x01 \\x02] <-0}", "0");
-      DoEvalTest("{:write [S|a b c #x \\x00 \\x01 \\x02] :(#x read 0) assert [S|a b c #x \\x00 \\x01 \\x02] <-0}", "0");
+      DoEvalTest ("{:#x write {a:\\x00 b:\\x01 c:\\x02} :(#x read 0) assert [S|a b c #x \\x00 \\x01 \\x02] <-0}", "0");
+    }
+
+    [Test]
+    public void TestWriteReadX2 ()
+    {
+      DoEvalTest ("{:write [S|a b c #x \\x00 \\x01 \\x02] :(#x read 0) assert [S|a b c #x \\x00 \\x01 \\x02] <-0}", "0");
     }
 
     [Test]
@@ -1588,19 +1608,21 @@ namespace RCL.Test
     }
 
     [Test]
-    public void TestLeadingStars ()
+    public void TestLeadingStars1 ()
     {
-      string ustring = "[S|x y z #1,a,0 1 10 100 #1,b,0 2 20 200 #2,b,0 3 30 300]";
-      //DoEvalTest (string.Format ("", ustring), "", RCFormat.Default);
-      DoEvalTest (string.Format ("#1,*,0 select {0}", ustring), "[G|S|x y z 0 #1,a,0 1 10 100 1 #1,b,0 2 20 200]", RCFormat.Default);
-      DoEvalTest (string.Format ("#*,*,0 select {0}", ustring), "[G|S|x y z 0 #1,a,0 1 10 100 1 #1,b,0 2 20 200 2 #2,b,0 3 30 300]", RCFormat.Default);
+      DoEvalTest ("#1,*,0 select [S|x y z #1,a,0 1 10 100 #1,b,0 2 20 200 #2,b,0 3 30 300]", "[G|S|x y z 0 #1,a,0 1 10 100 1 #1,b,0 2 20 200]", RCFormat.Default);
     }
 
     [Test]
-    public void TestLeadingStars1 ()
+    public void TestLeadingStars2 ()
     {
-      string ustring = "[S|x y z #1,a,0 1 10 100 #1,b,0 2 20 200 #2,b,0 3 30 300]";
-      DoEvalTest (string.Format ("#*,b,* select {0}", ustring), "[G|S|x y z 1 #1,b,0 2 20 200 2 #2,b,0 3 30 300]", RCFormat.Default);
+      DoEvalTest ("#*,*,0 select [S|x y z #1,a,0 1 10 100 #1,b,0 2 20 200 #2,b,0 3 30 300]", "[G|S|x y z 0 #1,a,0 1 10 100 1 #1,b,0 2 20 200 2 #2,b,0 3 30 300]", RCFormat.Default);
+    }
+
+    [Test]
+    public void TestLeadingStars3 ()
+    {
+      DoEvalTest ("#*,b,* select [S|x y z #1,a,0 1 10 100 #1,b,0 2 20 200 #2,b,0 3 30 300]", "[G|S|x y z 1 #1,b,0 2 20 200 2 #2,b,0 3 30 300]", RCFormat.Default);
     }
 
     [Test]
@@ -1634,37 +1656,92 @@ namespace RCL.Test
     }
 
     [Test]
-    public void TestCubeArgumentsUL ()
+    public void TestCubeArgumentsUL1 ()
     {
       DoEvalTest ("[S|a #x 10 #x 11 #x 12] - 1", "[S|x #x 9 #x 10 #x 11]");
+    }
+
+    [Test]
+    public void TestCubeArgumentsUL2 ()
+    {
       DoEvalTest ("[S|a #x 10 #x 11 #x 12] + 1", "[S|x #x 11 #x 12 #x 13]");
+    }
+
+    [Test]
+    public void TestCubeArgumentsUL3 ()
+    {
       DoEvalTest ("[S|a #x 10 #x 20 #x 30] / 2", "[S|x #x 5 #x 10 #x 15]");
+    }
+
+    [Test]
+    public void TestCubeArgumentsUL4 ()
+    {
       DoEvalTest ("[S|a #x 5 #x 10 #x 15] * 2", "[S|x #x 10 #x 20 #x 30]");
     }
 
     [Test]
-    public void TestCubeArgumentsLU ()
+    public void TestCubeArgumentsLU1 ()
     {
       DoEvalTest ("1 - [S|a #x 10 #x 11 #x 12]", "[S|x #x -9 #x -10 #x -11]");
+    }
+
+    [Test]
+    public void TestCubeArgumentsLU2 ()
+    {
       DoEvalTest ("1 + [S|a #x 10 #x 11 #x 12]", "[S|x #x 11 #x 12 #x 13]");
+    }
+
+    [Test]
+    public void TestCubeArgumentsLU3 ()
+    {
       DoEvalTest ("12 / [S|a #x 1 #x 2 #x 3]", "[S|x #x 12 #x 6 #x 4]");
+    }
+
+    [Test]
+    public void TestCubeArgumentsLU4 ()
+    {
       DoEvalTest ("2 * [S|a #x 5 #x 10 #x 15]", "[S|x #x 10 #x 20 #x 30]");
     }
 
     [Test]
-    public void TestCubeOpWithNoResult ()
+    public void TestCubeOpWithNoResult1 ()
     {
       DoEvalTest ("{u:[E|S|a b 0 #x 1 -- 1 #y -- 2] <-$u.a + $u.b}", "[]");
+    }
+
+    [Test]
+    public void TestCubeOpWithNoResult2 ()
+    {
       DoEvalTest ("{u:[S|a b #x 1 -- #y -- 2] <-$u.a + $u.b}", "[S|x #x 1 #y 2]");
     }
 
     [Test]
-    public void TestCubeEmptyArguments ()
+    public void TestCubeEmptyArguments1 ()
     {
       DoEvalTest ("[S|a #x 1] * []", "[S|a #x 1]");
+    }
+
+    [Test]
+    public void TestCubeEmptyArguments2 ()
+    {
       DoEvalTest ("[] * [S|a #x 1]", "[S|a #x 1]");
+    }
+
+    [Test]
+    public void TestCubeEmptyArguments3 ()
+    {
       DoEvalTest ("[E|S|a 0 #x 1] * []", "[]");
+    }
+
+    [Test]
+    public void TestCubeEmptyArguments4 ()
+    {
       DoEvalTest ("[] * [E|S|a 0 #x 1]", "[]");
+    }
+
+    [Test]
+    public void TestCubeEmptyArguments5 ()
+    {
       DoEvalTest ("[] * []", "[]");
     }
 
@@ -2074,8 +2151,7 @@ namespace RCL.Test
     [Test]
     public void TestSelfExecWithExit ()
     {
-      DoEvalTest ("\"exit.rcl\" save #pretty format {go:exit 21}", "\"exit.rcl\"");
-      DoEvalTest ("unwrap #status from try {<-exec \"mono --debug rcl.exe --program=exit.rcl --action=go\"}", "21");
+      DoEvalTest ("unwrap #status from try {:\"exit.rcl\" save #pretty format {go:exit 21} exe:(codebase {}) + \"/rcl.exe\" <-exec \"mono --debug \" + $exe + \" rcl.exe --program=exit.rcl --action=go\"}", "21");
     }
 #endif
 

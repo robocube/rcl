@@ -707,6 +707,11 @@ namespace RCL.Kernel
 
     public static void DoYield (RCRunner runner, RCClosure closure, RCValue result)
     {
+      DoYield (runner, closure, result, canonical:false);
+    }
+
+    public static void DoYield (RCRunner runner, RCClosure closure, RCValue result, bool canonical)
+    {
       if (result == null)
       {
         throw new ArgumentNullException ("result");
@@ -719,7 +724,7 @@ namespace RCL.Kernel
         return;
       }
       //Do not permit any further changes to result or its children values.
-      result.Lock ();
+      result.Lock (canonical);
       RCClosure next = closure.Code.Next (runner, closure, closure, result);
       if (next == null)
       {
