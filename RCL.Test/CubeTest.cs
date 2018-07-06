@@ -146,18 +146,56 @@ namespace RCL.Test
     }
 
     [Test]
-    public void TestCube ()
+    public void TestCube1 ()
     {
       DoTest ("{u:[S|x #a 0 #b 1] <-$u cube eval {y:$u.x + 10}}", "[S|x y #a 0 10 #b 1 11]");
-      DoTest ("{u:[S|x #a 0 #b 1] <-$u.S cube eval {y:$u.x + 10}}", "[S|y #a 10 #b 11]");
-      DoTest ("{u:[S|x #a 0 #b 1] <-$u cube eval {y:$u.x + 10}}", "[S|x y #a 0 10 #b 1 11]");
-      DoTest ("{u:[S|x #a 0 #b 1] <-$u.S cube eval {y:$u.x + 10}}", "[S|y #a 10 #b 11]");
-      DoTest ("{u:[S|x #a 0 #b 1] <-$u cube eval {y:10 + $u.x}}", "[S|x y #a 0 10 #b 1 11]");
-      DoTest ("{u:[S|x #a 0 #b 1] <-$u.S cube eval {y:10 + $u.x}}", "[S|y #a 10 #b 11]");
-      DoTest ("{u:[S|x #a 0 #b 1] <-$u.S cube eval {y:10}}", "[S|y #a 10 #b 10]");
-      DoTest ("{u:[S|x #a 0 #b 1] <-$u cube eval {y:10}}", "[S|x y #a 0 10 #b 1 10]");
+    }
 
-      //Test incr
+    [Test]
+    public void TestCube2 ()
+    {
+      DoTest ("{u:[S|x #a 0 #b 1] <-$u.S cube eval {y:$u.x + 10}}", "[S|y #a 10 #b 11]");
+    }
+
+    [Test]
+    public void TestCube3 ()
+    {
+      DoTest ("{u:[S|x #a 0 #b 1] <-$u cube eval {y:$u.x + 10}}", "[S|x y #a 0 10 #b 1 11]");
+    }
+
+    [Test]
+    public void TestCube4 ()
+    {
+      DoTest ("{u:[S|x #a 0 #b 1] <-$u.S cube eval {y:$u.x + 10}}", "[S|y #a 10 #b 11]");
+    }
+
+    [Test]
+    public void TestCube5 ()
+    {
+      DoTest ("{u:[S|x #a 0 #b 1] <-$u cube eval {y:10 + $u.x}}", "[S|x y #a 0 10 #b 1 11]");
+    }
+
+    [Test]
+    public void TestCube6 ()
+    {
+      DoTest ("{u:[S|x #a 0 #b 1] <-$u.S cube eval {y:10 + $u.x}}", "[S|y #a 10 #b 11]");
+    }
+
+    [Test]
+    public void TestCube7 ()
+    {
+      DoTest ("{u:[S|x #a 0 #b 1] <-$u.S cube eval {y:10}}", "[S|y #a 10 #b 10]");
+    }
+
+    [Test]
+    public void TestCube8 ()
+    {
+      DoTest ("{u:[S|x #a 0 #b 1] <-$u cube eval {y:10}}", "[S|x y #a 0 10 #b 1 10]");
+    }
+
+    [Test]
+    public void TestCube9 ()
+    {
       DoTest ("{u:[S|x #a 0 #b 1] <-$u.S cube eval {i:++}}", "[S|i #a ++ #b ++]");
     }
 
@@ -168,7 +206,7 @@ namespace RCL.Test
     }
 
     [Test]
-    public void TestCubeReplaceSymbol ()
+    public void TestCubeReplaceSymbol1 ()
     {
       // Replace the symbol column
       // DoTest ("{u:[S|x #a 0l #b 10l] <-$u join eval {S:#c #d x:$u.x}}", "[S|x #c 0l #d 10l]");
@@ -181,6 +219,11 @@ namespace RCL.Test
       
       // Now we replace symbols like this.
       DoTest ("{u:[S|x #a 10] <-(#vars + $u.S) key $u}", "[S|x #vars,a 10]");
+    }
+
+    [Test]
+    public void TestCubeReplaceSymbol2 ()
+    {
       DoTest ("{u:[S|x #a 10] <-(#vars + $u.S) key cube eval {x:$u.x + 1}}", "[S|x #vars,a 11]");
     }
 
@@ -191,11 +234,15 @@ namespace RCL.Test
     }
 
     [Test]
-    public void TestCubeNoSymbol ()
+    public void TestCubeNoSymbol1 ()
     {
       //Tests for simple cubes with no timeline.
       DoTest ("[x y z 1 2 3 10 20 30] cube [z 4 40]", "[x y z 1 2 4 10 20 40]");
-      
+    }
+
+    [Test]
+    public void TestCubeNoSymbol2 ()
+    {
       //This test is to ensure that interior columns can also be replaced.
       DoTest ("[x y z 1 2 4 10 20 40] cube [y 3 30]", "[x y z 1 3 4 10 30 40]");
     }
@@ -207,17 +254,37 @@ namespace RCL.Test
     }
 
     [Test]
-    public void TestCubeNoSymbolWithBlock ()
+    public void TestCubeNoSymbolWithBlock1 ()
     {
       DoTest ("{u:[x y 100 1 200 2 300 3 400 4 500 5] <-$u cube eval {z:$u.x + $u.y}}", "[x y z 100 1 101 200 2 202 300 3 303 400 4 404 500 5 505]");
+    }
+
+    [Test]
+    public void TestCubeNoSymbolWithBlock2 ()
+    {
       DoTest ("{u:[x y 100 1 200 2 300 3 400 4 500 5] <-cube eval {z:$u.x + $u.y}}", "[z 101 202 303 404 505]");
+    }
+
+    [Test]
+    public void TestCubeNoSymbolWithBlock3 ()
+    {
       DoTest ("{u:[x 100 200 300 400 500] <-cube eval {z:5 repeat 13}}", "[z 13 13 13 13 13]");
+    }
+
+    [Test]
+    public void TestCubeNoSymbolWithBlock4 ()
+    {
       DoTest ("{u1:[x 100 200 300 400 500] u2:[x 1 2 3 4 5] <-$u1 cube eval {z:$u1.x + $u2.x}}", "[x z 100 101 200 202 300 303 400 404 500 505]");
+    }
+
+    [Test]
+    public void TestCubeNoSymbolWithBlock5 ()
+    {
       DoTest ("{u1:[x 100 200 300 400 500] u2:[x 1 2 3 4 5] <-cube eval {z:$u1.x + $u2.x}}", "[z 101 202 303 404 505]");
     }
 
     [Test]
-    public void TestCubeNoSymbolWithBlock1 ()
+    public void TestCubeNoSymbolWithBlock6 ()
     {
       DoTest ("{u:[x 100 200 300 400 500] <-$u cube {z:13}}", "[x z 100 13 200 13 300 13 400 13 500 13]");
     }
@@ -321,13 +388,38 @@ namespace RCL.Test
     }
 
     [Test]
-    public void TestBlockCubeConversions ()
+    public void TestBlockCubeConversions1 ()
     {
       DoTest ("cube block []", "[]");
+    }
+
+    [Test]
+    public void TestBlockCubeConversions2 ()
+    {
       DoTest ("block cube {}", "{}");
+    }
+
+    [Test]
+    public void TestBlockCubeConversions3 ()
+    {
       DoTest ("cube block [x 0]", "[x 0]");
+    }
+
+    [Test]
+    public void TestBlockCubeConversions4 ()
+    {
       DoTest ("block cube {:{x:0}}", "{:{x:0}}");
+    }
+
+    [Test]
+    public void TestBlockCubeConversions5 ()
+    {
       DoTest ("cube block [S|x #a 0]", "[S|x #a 0]");
+    }
+
+    [Test]
+    public void TestBlockCubeConversions6 ()
+    {
       DoTest ("block cube {a:{x:0}}", "{a:{x:0}}");
     }
 
@@ -433,37 +525,82 @@ namespace RCL.Test
     }
 
     [Test]
-    public void TestMeta ()
+    public void TestMeta1 ()
     {
       //What should meta give me?
       //type, count, min, max
       DoTest ("meta {x:1 2 3}", "[S|type count #x #long 3]");
+    }
+
+    [Test]
+    public void TestMeta2 ()
+    {
       DoTest ("meta {x:{:1 2 3}}", "[S|type count #x,0 #long 3]");
+    }
+
+    [Test]
+    public void TestMeta3 ()
+    {
       DoTest ("meta {x:1l y:2d z:3m}", "[S|type count #x #long 1 #y #double 1 #z #decimal 1]");
+    }
+
+    [Test]
+    public void TestMeta4 ()
+    {
       DoTest ("meta {:1l :2d :3m}", "[S|type count #0 #long 1 #1 #double 1 #2 #decimal 1]");
+    }
+
+    [Test]
+    public void TestMeta5 ()
+    {
       DoTest ("meta {x:{y:{z:1 2 3}}}", "[S|type count #x,y,z #long 3]");
+    }
+
+    [Test]
+    public void TestMeta6 ()
+    {
       DoTest ("meta {x:1 2 3 y:$x + 4}", "[S|type count #x #long 3 #y #operator 2]");
+    }
+
+    [Test]
+    public void TestMeta7 ()
+    {
       DoTest ("meta {x:$a}", "[S|type count #x #reference 1]");
     }
 
     [Test]
-    public void TestTreeL ()
+    public void TestTreeL1 ()
     {
       DoTest ("#k #v from tree 1 2 3", "[S|k v # # \"\" #0 #0 \"1\" #1 #1 \"2\" #2 #2 \"3\"]");
+    }
+
+    [Test]
+    public void TestTreeL2 ()
+    {
       DoTest ("#x #y from tree -1 -2 -3", "[S|x y # 0.0 0.0 #0 0.0000000000000002383287471377 -1.9461661814331 #1 -1.88781514014697 1.0899305793441 #2 2.04311121652593 1.17959081084559]");
     }
 
     [Test]
-    public void TestTreeD ()
+    public void TestTreeD1 ()
     {
       DoTest ("#k #v from tree 1.0 2.0 3.0", "[S|k v # # \"\" #0 #0 \"1\" #1 #1 \"2\" #2 #2 \"3\"]");
+    }
+
+    [Test]
+    public void TestTreeD2 ()
+    {
       DoTest ("#x #y from tree -1.0 -2.0 -3.0", "[S|x y # 0.0 0.0 #0 0.0000000000000002383287471377 -1.9461661814331 #1 -1.88781514014697 1.0899305793441 #2 2.04311121652593 1.17959081084559]");
     }
 
     [Test]
-    public void TestTreeM ()
+    public void TestTreeM1 ()
     {
       DoTest ("#k #v from tree 1 2 3m", "[S|k v # # \"\" #0 #0 \"1\" #1 #1 \"2\" #2 #2 \"3\"]");
+    }
+
+    [Test]
+    public void TestTreeM2 ()
+    {
       DoTest ("#x #y from tree -1 -2 -3m", "[S|x y # 0.0 0.0 #0 0.0000000000000002383287471377 -1.9461661814331 #1 -1.88781514014697 1.0899305793441 #2 2.04311121652593 1.17959081084559]");
     }
 
@@ -818,6 +955,7 @@ namespace RCL.Test
               "[S|r c l k v #0,0,0 0 0 0 #x \"x\" #0,1,0 0 1 0 #x,0 \"1\" #1,0,0 1 0 0 #S \"S\" #1,1,0 1 1 0 #S,0 \"#a\"]");
     }
 
+    /*
     [Test]
     public void TestPlusWithOneColNoTimeline ()
     {
@@ -848,35 +986,84 @@ namespace RCL.Test
       //DoTest (string.Format ("{0} + {1}", null00, null22), "[x y z -- 10 100 4 40 400 6 60 --]");
       //DoTest (string.Format ("{0} + {1}", null11, null22), "[x y z 2 20 200 4 -- 400 6 60 --]");
     }
+    */
 
     [Test]
-    public void TestSortWithNoTimeline ()
+    public void TestPlusWithOneColNoTimeline1 ()
     {
-      string col1row1 = "[x 1]";
-      string col2row1 = "[x y 1 10]";
-      string col3row1 = "[x y z 1 10 100]";
-      string col1row2 = "[x 1 2]";
-      string col2row2 = "[x y 1 10 2 20]";
-      string col3row2 = "[x y z 1 10 100 2 20 200]";
-      string col3row3 = "[x y z 1 10 100 2 20 200 3 30 300]";
-      //string col1row3 = "[x 1l 2l 3l]";
-      string null00 = "[x y z -- 10 100 2 20 200 3 30 300]";
-      string null11 = "[x y z 1 10 100 2 -- 200 3 30 300]";
-      string null22 = "[x y z 1 10 100 2 20 200 3 30 --]";
-      
-      DoTest (string.Format ("#desc,x sort {0}", col1row1), "[x 1]");
-      DoTest (string.Format ("#desc,y sort {0}", col2row1), "[x y 1 10]");
-      DoTest (string.Format ("#desc,z sort {0}", col3row1), "[x y z 1 10 100]");
-      DoTest (string.Format ("#desc,x sort {0}", col1row2), "[x 2 1]");
-      DoTest (string.Format ("#desc,y sort {0}", col2row2), "[x y 2 20 1 10]");
-      DoTest (string.Format ("#desc,z sort {0}", col3row2), "[x y z 2 20 200 1 10 100]");
-      DoTest (string.Format ("#desc,y sort {0}", col3row3), "[x y z 3 30 300 2 20 200 1 10 100]");
-      //DoTest (string.Format ("#desc,x sort {0}", null00), "[x y z 3l 30l 300l 2l 20l 200l -- 10l 100l]");
-      //It should really be the way commented above this line.
-      //Gotta fix that column ordering bug.
-      DoTest (string.Format ("#desc,x sort {0}", null00), "[x y z 3 30 300 2 20 200 -- 10 100]");
-      DoTest (string.Format ("#desc,y sort {0}", null11), "[x y z 3 30 300 1 10 100 2 -- 200]");
-      DoTest (string.Format ("#desc,z sort {0}", null22), "[x y z 2 20 200 1 10 100 3 30 --]");
+      DoTest ("[x 1] + [x 1]", "[x 2]");
+    }
+
+    [Test]
+    public void TestPlusWithOneColNoTimeline2 ()
+    {
+      DoTest ("[x 1 2] + [x 1 2]", "[x 2 4]");
+    }
+
+    [Test]
+    public void TestPlusWithOneColNoTimeline3 ()
+    {
+      DoTest ("[x 1 2 3] + [x 1 2 3]", "[x 2 4 6]");
+    }
+
+    [Test]
+    public void TestSortWithNoTimeline1 ()
+    {
+      DoTest ("#desc,x sort [x 1]", "[x 1]");
+    }
+
+    [Test]
+    public void TestSortWithNoTimeline2 ()
+    {
+      DoTest ("#desc,y sort [x y 1 10]", "[x y 1 10]");
+    }
+
+    [Test]
+    public void TestSortWithNoTimeline3 ()
+    {
+      DoTest ("#desc,z sort [x y z 1 10 100]", "[x y z 1 10 100]");
+    }
+
+    [Test]
+    public void TestSortWithNoTimeline4 ()
+    {
+      DoTest ("#desc,x sort [x 1 2]", "[x 2 1]");
+    }
+
+    [Test]
+    public void TestSortWithNoTimeline5 ()
+    {
+      DoTest ("#desc,y sort [x y 1 10 2 20]", "[x y 2 20 1 10]");
+    }
+
+    [Test]
+    public void TestSortWithNoTimeline6 ()
+    {
+      DoTest ("#desc,z sort [x y z 1 10 100 2 20 200]", "[x y z 2 20 200 1 10 100]");
+    }
+
+    [Test]
+    public void TestSortWithNoTimeline7 ()
+    {
+      DoTest ("#desc,y sort [x y z 1 10 100 2 20 200 3 30 300]", "[x y z 3 30 300 2 20 200 1 10 100]");
+    }
+
+    [Test]
+    public void TestSortWithNoTimeline8 ()
+    {
+      DoTest ("#desc,x sort [x y z 1 10 100 2 20 200 3 30 300]", "[x y z 3 30 300 2 20 200 1 10 100]");
+    }
+
+    [Test]
+    public void TestSortWithNoTimeline9 ()
+    {
+      DoTest ("#desc,y sort [x y z 1 10 100 2 -- 200 3 30 300]", "[x y z 3 30 300 1 10 100 2 -- 200]");
+    }
+
+    [Test]
+    public void TestSortWithNoTimeline10 ()
+    {
+      DoTest ("#desc,z sort [x y z 1 10 100 2 20 200 3 30 --]", "[x y z 2 20 200 1 10 100 3 30 --]");
     }
 
     /* Please come back to this soon
@@ -914,8 +1101,7 @@ namespace RCL.Test
     [Test]
     public void TestSortColumnsStayInOrder ()
     {
-      string null00 = "[x y z -- 10 100 2 20 200 3 30 300]";
-      DoTest (string.Format ("#desc,x sort {0}", null00), "[x y z 3 30 300 2 20 200 -- 10 100]");
+      DoTest ("#desc,x sort [x y z -- 10 100 2 20 200 3 30 300]", "[x y z 3 30 300 2 20 200 -- 10 100]");
     }
 
     [Test]

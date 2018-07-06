@@ -2270,7 +2270,7 @@ namespace RCL.Test
     }
 
     [Test]
-    public void TestWaitWithConflictingResult ()
+    public void TestWaitWithConflictingResult1 ()
     {
       DoTest ("{f1:fiber {:read #a} f2:fiber {:try {<-200 wait $f1} :try {<-kill $f1}} :wait $f2 <-0}", "0");
       // The single exception is for the killed fiber
@@ -2278,21 +2278,21 @@ namespace RCL.Test
     }
 
     [Test]
-    public void TestWaitWithConflictingResult1 ()
+    public void TestWaitWithConflictingResult2 ()
     {
       DoTest ("{p:{f1:fiber {:read #a} f2:fiber {:try {<-200 wait $f1} :try {<-kill $f1}} :wait $f2} :p {} :p {} <-0}", "0");
       Assert.AreEqual (2, runner.ExceptionCount);
     }
 
     [Test]
-    public void TestWaitWithConflictingResult2 ()
+    public void TestWaitWithConflictingResult3 ()
     {
       DoTest ("{p:{f1:fiber {out:#a read 0 <-$out} f2:fiber {:kill $f1 :wait $f1 :#a write {x:0}} :wait $f2 <-0} :p {} :clear #a :p {} <-0}", "0");
       Assert.AreEqual (2, runner.ExceptionCount);
     }
 
     [Test]
-    public void TestWaitWithConflictingResult3 ()
+    public void TestWaitWithConflictingResult4 ()
     {
       DoTest ("{f:fiber {:#a read 0 :#m putm 1} :200 wait $f :kill $f :#a write {x:1} :wait $f :assert not hasm #m <-0}", "0");
     }
@@ -2914,13 +2914,37 @@ namespace RCL.Test
     }
 
     [Test]
-    [Ignore ("Ditto for unix commands like ls and rm")]
-    public void TestExec ()
+    [Ignore ("problem with bash shell under debugger")]
+    public void TestExec1 ()
     {
       DoTest ("{:try {<-exec \"rm foo/bar\"} :try {<-exec \"rmdir foo\"} <-0}", "0");
+    }
+
+    [Test]
+    [Ignore ("problem with bash shell under debugger")]
+    public void TestExec2 ()
+    {
       DoTest ("try {<-exec \"ls foo\"}", "{status:1 data:\"Non-zero exit status\"}");
+    }
+
+    [Test]
+    [Ignore ("problem with bash shell under debugger")]
+    public void TestExec3 ()
+    {
       DoTest ("{:exec \"mkdir foo\" <-count exec \"ls foo\"}", "0");
+    }
+
+    [Test]
+    [Ignore ("problem with bash shell under debugger")]
+    public void TestExec4 ()
+    {
       DoTest ("{:exec \"touch foo/bar\" <-exec \"ls foo\"}", "\"bar\"");
+    }
+
+    [Test]
+    [Ignore ("problem with bash shell under debugger")]
+    public void TestExec5 ()
+    {
       DoTest ("{:exec \"rm foo/bar\" :exec \"rmdir foo\" <-0}", "0");
     }
 
