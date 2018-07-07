@@ -67,11 +67,26 @@ namespace RCL.Kernel
       runner.Yield (closure, new RCString (result));
     }
 
+    [RCVerb ("lextype")]
+    public void EvalLexType (RCRunner runner, RCClosure closure, RCString right)
+    {
+      RCArray<RCToken> output = new RCArray<RCToken> ();
+      RCLParser.m_o2Lexer.Lex (right[0], output);
+      RCArray<string> result = new RCArray<string> (right.Count);
+      for (int i = 0; i < output.Count; i++)
+      {
+        result.Write (output[i].Type.TypeName);
+      }
+      runner.Yield (closure, new RCString (result));
+    }
+
     protected RCValue DoParse (RCParser parser, RCString right, bool canonical)
     {
       RCArray<RCToken> tokens = new RCArray<RCToken> ();
       for (int i = 0; i < right.Count; ++i)
+      {
         parser.Lex (right[i], tokens);
+      }
       bool fragment;
       RCValue result = parser.Parse (tokens, out fragment, canonical);
       return result;

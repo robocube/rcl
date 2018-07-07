@@ -432,6 +432,13 @@ namespace RCL.Test
       return runner.Lex (code);
     }
 
+
+    public void LexTest (string code, string tokens, string types)
+    {
+      Assert.AreEqual (tokens, runner.Rep (string.Format ("lex format {0}", code)).ToString ());
+      Assert.AreEqual (types, runner.Rep (string.Format ("lextype format {0}", code)).ToString ());
+    }
+
     /// <summary>
     /// The usual xunit convention is that the expected parameter comes first,
     /// but given that the expected parameter is an array that needs to be 
