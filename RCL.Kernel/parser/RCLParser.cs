@@ -716,8 +716,6 @@ namespace RCL.Kernel
       {
         RCValue op = m_operators.Peek ().Pop ();
         RCValue left = m_lefts.Peek ().Count > 0 ? m_lefts.Peek ().Pop () : null;
-        //When references are parsed they never have a built in context.
-        //Use the module operator to create one.
         m_result = op.AsOperator (m_activator, left, m_result);
       }
     }

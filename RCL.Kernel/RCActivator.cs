@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Threading;
 using System.Reflection;
 using System.Collections.Generic;
 using System.IO;
@@ -76,11 +77,7 @@ namespace RCL.Kernel
         foreach (Type type in types)
         {
           bool module;
-          CreateVerbTable (m_dispatch, type, out module);
-          if (module)
-          {
-            m_modules.Add (type);
-          }
+          CreateVerbTable (type, out module);
         }
       }
     }
@@ -88,8 +85,9 @@ namespace RCL.Kernel
     protected Dictionary<string, ParserExtension> m_extByToken = new Dictionary<string, ParserExtension> ();
     protected Dictionary<char, ParserExtension> m_extByCode = new Dictionary<char, ParserExtension> ();
 
-    public void CreateVerbTable (Dictionary<OverloadKey, OverloadValue> result, Type type, out bool module)
+    public RCBlock CreateVerbTable (Type type, out bool module)
     {
+      RCBlock result = RCBlock.Empty;
       //Is it an extension?
       object[] attributes = type.GetCustomAttributes (typeof (RCExtension), false);
       if (attributes.Length > 0)
@@ -135,25 +133,34 @@ namespace RCL.Kernel
           if (parameters.Length == 3)
           {
             OverloadKey key = new OverloadKey (verb.Name, null, parameters[2].ParameterType);
-            if (result.ContainsKey (key))
+            if (m_dispatch.ContainsKey (key))
             {
               throw new Exception ("dispatch table already contains the key:" + key);
             }
-            result.Add (key, new OverloadValue (type, method));
+            OverloadValue value = new OverloadValue (type, method);
+            m_dispatch.Add (key, value);
+            result = new RCBlock (result, verb.Name, ":", verb.Name);
             module = true;
           }
           else if (parameters.Length == 4)
           {
             OverloadKey key = new OverloadKey (verb.Name, parameters[2].ParameterType, parameters[3].ParameterType);
-            if (result.ContainsKey (key))
+            if (m_dispatch.ContainsKey (key))
             {
               throw new Exception ("dispatch table already contains the key:" + key);
             }
-            result.Add (key, new OverloadValue (type, method));
+            OverloadValue value = new OverloadValue (type, method);
+            m_dispatch.Add (key, value);
+            result = new RCBlock (result, verb.Name, ":", verb.Name);
             module = true;
           }
         }
       }
+      if (module)
+      {
+        m_modules.Add (type);
+      }
+      return result;
     }
 
     protected static readonly Type[] m_ctor = new Type[] { };
@@ -240,10 +247,22 @@ namespace RCL.Kernel
 
       public bool Equals (OverloadKey other)
       {
-        if (Left == null && other.Left != null) return false;
-        if (other.Left == null && Left != null) return false;
-        if (!Right.Equals (other.Right)) return false;
-        if (!Name.Equals (other.Name)) return false;
+        if (Left == null && other.Left != null)
+        {
+          return false;
+        }
+        if (other.Left == null && Left != null)
+        {
+          return false;
+        }
+        if (!Right.Equals (other.Right))
+        {
+          return false;
+        }
+        if (!Name.Equals (other.Name))
+        {
+          return false;
+        }
         return true;
       }
 
@@ -283,7 +302,6 @@ namespace RCL.Kernel
       OverloadValue overload;
       try
       {
-        //RCSystem.Log.Record (closure, "invoke", 0, name, right);
         if (m_dispatch.TryGetValue (new OverloadKey (name, null, right.GetType ()), out overload))
         {
           RCBot bot = runner.GetBot (closure.Bot);

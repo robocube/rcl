@@ -1,4 +1,4 @@
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -43,6 +43,7 @@
     <Compile Include="control\Throw.cs" />
     <Compile Include="control\Try.cs" />
     <Compile Include="control\Sleep.cs" />
+    <Compile Include="env\CodeDom.cs" />
     <Compile Include="math\Primitive.cs" />
     <Compile Include="math\Profile.cs" />
     <Compile Include="math\ScalarMath.cs" />
@@ -195,12 +196,5 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
-  <ItemGroup>
-    <Folder Include="control\" />
-    <Folder Include="math\" />
-    <Folder Include="vector\" />
-    <Folder Include="net\" />
-    <Folder Include="env\" />
-    <Folder Include="misc\" />
-  </ItemGroup>
+  <ItemGroup />
 </Project>

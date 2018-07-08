@@ -206,14 +206,6 @@ namespace RCL.Kernel
       DoEval (runner, parent, left);
     }
 
-    //This higher order thingy needs to go away it makes no sense.
-    /*
-    public override bool IsHigherOrder ()
-    {
-      return false;
-    }
-    */
-
     public override bool IsLastCall (RCClosure closure, RCClosure arg)
     {
       if (arg == null)
@@ -619,8 +611,24 @@ namespace RCL.Kernel
       {
         throw new Exception ("Cannot find definition for operator: " + op.m_reference.Name);
       }
-      //RCSystem.Log.Record (closure, "invoke", 0, op.m_reference.Name, code);
-      code.Eval (runner, UserOpClosure (closure, code, @this, noClimb:false));
+      if (code.TypeCode == 's')
+      {
+        string name = ((RCString) code)[0];
+        RCValue left = closure.Result.Get ("0");
+        RCValue right = closure.Result.Get ("1");
+        if (left != null)
+        {
+          RCSystem.Activator.Invoke (runner, closure, name, left, right);
+        }
+        else
+        {
+          RCSystem.Activator.Invoke (runner, closure, name, right);
+        }
+      }
+      else
+      {
+        code.Eval (runner, UserOpClosure (closure, code, @this, noClimb: false));
+      }
     }
 
     public static RCClosure UserOpClosure (RCClosure previous, RCValue code, RCArray<RCBlock> @this, bool noClimb)
@@ -651,7 +659,6 @@ namespace RCL.Kernel
       left = left != null ? left : previous.Result.Get ("0");
       right = right != null ? right : previous.Result.Get ("1");
       RCBlock result = null;
-      //But what if Parent is null? Can that happen?
       if (@this != null && @this.Count > 0)
       {
         result = @this [0];
