@@ -7,7 +7,7 @@ using RCL.Kernel;
 
 namespace RCL.Core
 {
-  public class CodeDom
+  public class Compile
   {
     [RCVerb ("compile")]
     public void EvalCompile (RCRunner runner, RCClosure closure, RCString right)

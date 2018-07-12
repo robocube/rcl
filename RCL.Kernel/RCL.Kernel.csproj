@@ -40,6 +40,7 @@
     <Compile Include="modules\Eval.cs" />
     <Compile Include="modules\Format.cs" />
     <Compile Include="modules\Parse.cs" />
+    <Compile Include="modules\Assert.cs" />
     <Compile Include="RCArgv.cs" />
     <Compile Include="RCColmap.cs" />
     <Compile Include="RCSystem.cs" />

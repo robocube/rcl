@@ -435,8 +435,8 @@ namespace RCL.Test
 
     public void LexTest (string code, string tokens, string types)
     {
-      Assert.AreEqual (tokens, runner.Rep (string.Format ("lex format {0}", code)).ToString ());
-      Assert.AreEqual (types, runner.Rep (string.Format ("lextype format {0}", code)).ToString ());
+      NUnit.Framework.Assert.AreEqual (tokens, runner.Rep (string.Format ("lex format {0}", code)).ToString ());
+      NUnit.Framework.Assert.AreEqual (types, runner.Rep (string.Format ("lextype format {0}", code)).ToString ());
     }
 
     /// <summary>
@@ -446,19 +446,19 @@ namespace RCL.Test
     /// </summary>
     public void CheckTokens (RCArray<RCToken> actual, params string[] expected)
     {
-      Assert.AreEqual (expected.Length, actual.Count);
+      NUnit.Framework.Assert.AreEqual (expected.Length, actual.Count);
       for (int i = 0; i < actual.Count; ++i)
       {
-        Assert.AreEqual (expected[i], actual[i].Text);
+        NUnit.Framework.Assert.AreEqual (expected[i], actual[i].Text);
       }
     }
 
     public void CheckTypes (RCArray<RCToken> actual, params RCTokenType[] expected)
     {
-      Assert.AreEqual(expected.Length, actual.Count);
+      NUnit.Framework.Assert.AreEqual(expected.Length, actual.Count);
       for (int i = 0; i < actual.Count; ++i)
       {
-        Assert.AreEqual(expected[i], actual[i].Type);
+        NUnit.Framework.Assert.AreEqual(expected[i], actual[i].Type);
       }
     }
   }

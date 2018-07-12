@@ -18,10 +18,10 @@ namespace RCL.Test
         Console.Out.Write (method + ": ");
         RCValue program = runner.Read (code);
         RCValue result = runner.Run (program);
-        Assert.IsNotNull (result, "RCRunner.Run result was null");
+        NUnit.Framework.Assert.IsNotNull (result, "RCRunner.Run result was null");
         string actual = result.Format (args);
         actual = actual.Replace ("\\r\\n", "\\n");
-        Assert.AreEqual (expected, actual);
+        NUnit.Framework.Assert.AreEqual (expected, actual);
         Console.Out.WriteLine ("P");
       }
       catch (RCException ex)
@@ -33,7 +33,7 @@ namespace RCL.Test
       catch (Exception ex)
       {
         Console.Out.WriteLine ("F");
-        Assert.Fail (ex.ToString ());
+        NUnit.Framework.Assert.Fail (ex.ToString ());
       }
     }
 
@@ -57,7 +57,7 @@ namespace RCL.Test
       catch (Exception ex)
       {
         Console.Out.WriteLine ("F");
-        Assert.Fail (ex.ToString ());
+        NUnit.Framework.Assert.Fail (ex.ToString ());
       }
       throw new Exception ("WTF");
     }
@@ -74,16 +74,16 @@ namespace RCL.Test
         runner.Reset ();
         RCValue program = runner.Read (code);
         runner.Run (program);
-        Assert.Fail ("No exception thrown.");
+        NUnit.Framework.Assert.Fail ("No exception thrown.");
       }
       catch (RCException ex)
       {
-        Assert.AreEqual (message, ex.Message);
-        Assert.AreEqual (error, ex.Error);
+        NUnit.Framework.Assert.AreEqual (message, ex.Message);
+        NUnit.Framework.Assert.AreEqual (error, ex.Error);
       }
       catch (Exception ex)
       {
-        Assert.Fail (ex.ToString ());
+        NUnit.Framework.Assert.Fail (ex.ToString ());
       }
     }
   }
@@ -113,7 +113,7 @@ namespace RCL.Test
     public void TestPlusDL() { DoTest("1.0+2.0", "3.0"); }
     [Test]
     //[ExpectedException(typeof(RCException))]
-    public void TestPlusDM() { Assert.Throws<RCException> (delegate () { DoTest("1.0+2m", "3.0"); }); }
+    public void TestPlusDM() { NUnit.Framework.Assert.Throws<RCException> (delegate () { DoTest("1.0+2m", "3.0"); }); }
     [Test]
     public void TestPlusDX() { DoTest("1.0 + \\x02", "3.0"); }
     [Test]
@@ -127,7 +127,7 @@ namespace RCL.Test
     [Test]
     public void TestPlusMM() { DoTest("1m+2m", "3m"); }
     [Test]
-    public void TestPlusMD() { Assert.Throws<RCException> (delegate () { DoTest("1m+2.0", "3m"); }); }
+    public void TestPlusMD() { NUnit.Framework.Assert.Throws<RCException> (delegate () { DoTest("1m+2.0", "3m"); }); }
     [Test]
     public void TestPlusML() { DoTest("1m+2", "3m"); }
     [Test]
@@ -177,7 +177,7 @@ namespace RCL.Test
     [Test]
     public void TestMinusDL() { DoTest("1.0-2", "-1.0"); }
     [Test]
-    public void TestMinusDM() { Assert.Throws<RCException> (delegate () { DoTest("1.0-2m", "-1.0"); }); }
+    public void TestMinusDM() { NUnit.Framework.Assert.Throws<RCException> (delegate () { DoTest("1.0-2m", "-1.0"); }); }
     [Test]
     public void TestMinusDX() { DoTest("1.0-\\x02", "-1.0"); }
     [Test]
@@ -191,7 +191,7 @@ namespace RCL.Test
     [Test]
     public void TestMinusMM() { DoTest("1m-2m", "-1m"); }
     [Test]
-    public void TestMinusMD() { Assert.Throws<RCException> (delegate () { DoTest("1m-2d", "-1m"); }); }
+    public void TestMinusMD() { NUnit.Framework.Assert.Throws<RCException> (delegate () { DoTest("1m-2d", "-1m"); }); }
     [Test]
     public void TestMinusML() { DoTest("1m-2", "-1m"); }
     [Test]
@@ -226,7 +226,7 @@ namespace RCL.Test
     [Test]
     public void TestMultiplyDL() { DoTest ("1.0*2", "2.0"); }
     [Test]
-    public void TestMultiplyDM() { Assert.Throws<RCException> (delegate () { DoTest ("1.0*2m", "2.0"); }); }
+    public void TestMultiplyDM() { NUnit.Framework.Assert.Throws<RCException> (delegate () { DoTest ("1.0*2m", "2.0"); }); }
     [Test]
     public void TestMultiplyDX() { DoTest ("1.0*\\x02", "2.0"); }
     [Test]
@@ -240,7 +240,7 @@ namespace RCL.Test
     [Test]
     public void TestMultiplyMM() { DoTest ("1m*2m", "2m"); }
     [Test]
-    public void TestMultiplyMD() { Assert.Throws<RCException> (delegate () { DoTest ("1m*2.0", "2.0"); }); }
+    public void TestMultiplyMD() { NUnit.Framework.Assert.Throws<RCException> (delegate () { DoTest ("1m*2.0", "2.0"); }); }
     [Test]
     public void TestMultiplyML() { DoTest ("1m*2", "2m"); }
     [Test]
@@ -260,7 +260,7 @@ namespace RCL.Test
     [Test]
     public void TestDivideDL() { DoTest("4.0/2", "2.0"); }
     [Test]
-    public void TestDivideDM() { Assert.Throws<RCException> (delegate () { DoTest("4.0/2m", "2.0"); }); }
+    public void TestDivideDM() { NUnit.Framework.Assert.Throws<RCException> (delegate () { DoTest("4.0/2m", "2.0"); }); }
     [Test]
     public void TestDivideDX() { DoTest("4.0/\\x02", "2.0"); }
     [Test]
@@ -274,7 +274,7 @@ namespace RCL.Test
     [Test]
     public void TestDivideMM() { DoTest("4m/2m", "2m"); }
     [Test]
-    public void TestDivideMD() { Assert.Throws<RCException> (delegate () { DoTest("4m/2.0", "2.0"); }); }
+    public void TestDivideMD() { NUnit.Framework.Assert.Throws<RCException> (delegate () { DoTest("4m/2.0", "2.0"); }); }
     [Test]
     public void TestDivideML() { DoTest("4m/2", "2m"); }
     [Test]
@@ -314,7 +314,7 @@ namespace RCL.Test
     //.Net doesn't allow comparing decimal and double.
     //I think this is too conservative, but I will tow the line for now.
     [Test]
-    public void TestGtDM() { Assert.Throws<RCException> (delegate () { DoTest("1.0>2m", "false"); }); }
+    public void TestGtDM() { NUnit.Framework.Assert.Throws<RCException> (delegate () { DoTest("1.0>2m", "false"); }); }
     [Test]
     public void TestGtDX() { DoTest("1.0>\\x02", "false"); }
     [Test]
@@ -326,7 +326,7 @@ namespace RCL.Test
     [Test]
     public void TestGtLX() { DoTest("1>\\x02", "false"); }
     [Test]
-    public void TestGtMD() { Assert.Throws<RCException> (delegate () { DoTest("1m>2.0", "false"); }); }
+    public void TestGtMD() { NUnit.Framework.Assert.Throws<RCException> (delegate () { DoTest("1m>2.0", "false"); }); }
     [Test]
     public void TestGtML() { DoTest("1m>2", "false"); }
     [Test]
@@ -355,7 +355,7 @@ namespace RCL.Test
     //.Net doesn't allow comparing decimal and double.
     //I think this is too conservative, but I will tow the line for now.
     [Test]
-    public void TestGteDM() { Assert.Throws<RCException> (delegate () { DoTest("1.0>=2m", "false"); }); }
+    public void TestGteDM() { NUnit.Framework.Assert.Throws<RCException> (delegate () { DoTest("1.0>=2m", "false"); }); }
     [Test]
     public void TestGteDX() { DoTest("1.0>=\\x02", "false"); }
     [Test]
@@ -367,7 +367,7 @@ namespace RCL.Test
     [Test]
     public void TestGteLX() { DoTest("1>=\\x02", "false"); }
     [Test]
-    public void TestGteMD() { Assert.Throws<RCException> (delegate () { DoTest("1m>=2.0", "false"); }); }
+    public void TestGteMD() { NUnit.Framework.Assert.Throws<RCException> (delegate () { DoTest("1m>=2.0", "false"); }); }
     [Test]
     public void TestGteML() { DoTest("1m>=2", "false"); }
     [Test]
@@ -395,7 +395,7 @@ namespace RCL.Test
     [Test]
     public void TestLtDL() { DoTest("1.0<2", "true"); }
     [Test]
-    public void TestLtDM() { Assert.Throws<RCException> (delegate () { DoTest("1.0<2m", "true"); }); }
+    public void TestLtDM() { NUnit.Framework.Assert.Throws<RCException> (delegate () { DoTest("1.0<2m", "true"); }); }
     [Test]
     public void TestLtDX() { DoTest ("1.0<\\x02", "true"); }
     [Test]
@@ -407,7 +407,7 @@ namespace RCL.Test
     [Test]
     public void TestLtLX() { DoTest ("1<\\x02", "true"); }
     [Test]
-    public void TestLtMD() { Assert.Throws<RCException> (delegate () { DoTest("1m<2.0", "true"); }); }
+    public void TestLtMD() { NUnit.Framework.Assert.Throws<RCException> (delegate () { DoTest("1m<2.0", "true"); }); }
     [Test]
     public void TestLtML() { DoTest("1m<2", "true"); }
     [Test]
@@ -437,7 +437,7 @@ namespace RCL.Test
     //.Net doesn't allow comparing decimal and double.
     //I think this is too conservative, but I will tow the line for now.
     [Test]
-    public void TestLteDM() { Assert.Throws<RCException> (delegate () { DoTest("1.0<=2m", "true"); }); }
+    public void TestLteDM() { NUnit.Framework.Assert.Throws<RCException> (delegate () { DoTest("1.0<=2m", "true"); }); }
     [Test]
     public void TestLteDX() { DoTest ("1.0<=\\x02", "true"); }
     [Test]
@@ -449,7 +449,7 @@ namespace RCL.Test
     [Test]
     public void TestLteLX() { DoTest("1<=\\x02", "true"); }
     [Test]
-    public void TestLteMD() { Assert.Throws<RCException> (delegate () { DoTest("1m<=2.0", "true"); }); }
+    public void TestLteMD() { NUnit.Framework.Assert.Throws<RCException> (delegate () { DoTest("1m<=2.0", "true"); }); }
     [Test]
     public void TestLteML() { DoTest("1m<=1", "true"); }
     [Test]
@@ -481,7 +481,7 @@ namespace RCL.Test
     [Test]
     public void TestEqDL() { DoTest("1.0==2", "false"); }
     [Test]
-    public void TestEqDM() { Assert.Throws<RCException> (delegate () { DoTest ("1.0==2m", "false"); }); }
+    public void TestEqDM() { NUnit.Framework.Assert.Throws<RCException> (delegate () { DoTest ("1.0==2m", "false"); }); }
     [Test]
     public void TestEqDX() { DoTest("1.0==\\x02", "false"); }
     [Test]
@@ -493,7 +493,7 @@ namespace RCL.Test
     [Test]
     public void TestEqLX() { DoTest("1==\\x02", "false"); }
     [Test]
-    public void TestEqMD() { Assert.Throws<RCException> (delegate () { DoTest ("1m==2.0", "false"); }); }
+    public void TestEqMD() { NUnit.Framework.Assert.Throws<RCException> (delegate () { DoTest ("1m==2.0", "false"); }); }
     [Test]
     public void TestEqML() { DoTest("1m==2", "false"); }
     [Test]
@@ -529,7 +529,7 @@ namespace RCL.Test
     [Test]
     public void TestNeqDL() { DoTest("1.0!=2", "true"); }
     [Test]
-    public void TestNeqDM() { Assert.Throws<RCException> (delegate () { DoTest ("1.0!=2m", "true"); }); }
+    public void TestNeqDM() { NUnit.Framework.Assert.Throws<RCException> (delegate () { DoTest ("1.0!=2m", "true"); }); }
     [Test]
     public void TestNeqDX() { DoTest("1.0!=\\x02", "true"); }
     [Test]
@@ -541,7 +541,7 @@ namespace RCL.Test
     [Test]
     public void TestNeqLX() { DoTest("1!=\\x02", "true"); }
     [Test]
-    public void TestNeqMD() { Assert.Throws<RCException> (delegate () { DoTest ("1m!=2.0", "true"); }); }
+    public void TestNeqMD() { NUnit.Framework.Assert.Throws<RCException> (delegate () { DoTest ("1m!=2.0", "true"); }); }
     [Test]
     public void TestNeqML() { DoTest("1m!=2", "true"); }
     [Test]
@@ -831,7 +831,10 @@ namespace RCL.Test
     public void TestCountN () { DoTest ("count ++", "1"); }
     [Test]
     public void TestCountU() { DoTest ("{u:[S|x #a 0] <-count #b cube $u}", "0"); }
-
+    [Test]
+    public void TestCountR() { DoTest ("count reference \"x.y.z\"", "1"); }
+    [Test]
+    public void TestCountP() { DoTest ("count [? foo bar baz ?]", "2"); }
 
     //Length for strings
     [Test]
@@ -1197,12 +1200,12 @@ namespace RCL.Test
     [Test]
     public void TestFromSKNameError ()
     {
-      Assert.Throws<RCException> (delegate () { DoTest ("\"a\" \"b\" \"c\" from {a:1 b:2}", "{}"); });
+      NUnit.Framework.Assert.Throws<RCException> (delegate () { DoTest ("\"a\" \"b\" \"c\" from {a:1 b:2}", "{}"); });
     }
     [Test]
     public void TestFromYKNameError ()
     {
-      Assert.Throws<RCException> (delegate () { DoTest ("#a #b #c from {a:1 b:2}", "{}"); });
+      NUnit.Framework.Assert.Throws<RCException> (delegate () { DoTest ("#a #b #c from {a:1 b:2}", "{}"); });
     }
 
     [Test]
@@ -1214,7 +1217,7 @@ namespace RCL.Test
     [Test]
     public void TestUnwrapEx ()
     {
-      Assert.Throws<RCException> (delegate () { DoTest ("unwrap {:0 :1 :2}", "{}"); });
+      NUnit.Framework.Assert.Throws<RCException> (delegate () { DoTest ("unwrap {:0 :1 :2}", "{}"); });
     }
 
     //Oh no! What if find doesn't find anything.  How do I represent the result?
@@ -2274,21 +2277,21 @@ namespace RCL.Test
     {
       DoTest ("{f1:fiber {:read #a} f2:fiber {:try {<-200 wait $f1} :try {<-kill $f1}} :wait $f2 <-0}", "0");
       // The single exception is for the killed fiber
-      Assert.AreEqual (1, runner.ExceptionCount);
+      NUnit.Framework.Assert.AreEqual (1, runner.ExceptionCount);
     }
 
     [Test]
     public void TestWaitWithConflictingResult2 ()
     {
       DoTest ("{p:{f1:fiber {:read #a} f2:fiber {:try {<-200 wait $f1} :try {<-kill $f1}} :wait $f2} :p {} :p {} <-0}", "0");
-      Assert.AreEqual (2, runner.ExceptionCount);
+      NUnit.Framework.Assert.AreEqual (2, runner.ExceptionCount);
     }
 
     [Test]
     public void TestWaitWithConflictingResult3 ()
     {
       DoTest ("{p:{f1:fiber {out:#a read 0 <-$out} f2:fiber {:kill $f1 :wait $f1 :#a write {x:0}} :wait $f2 <-0} :p {} :clear #a :p {} <-0}", "0");
-      Assert.AreEqual (2, runner.ExceptionCount);
+      NUnit.Framework.Assert.AreEqual (2, runner.ExceptionCount);
     }
 
     [Test]
@@ -2886,7 +2889,7 @@ namespace RCL.Test
     [Test]
     public void TestGetm ()
     {
-      Assert.Throws<RCException> (delegate () { DoTest ("getm #foo", "{}"); });
+      NUnit.Framework.Assert.Throws<RCException> (delegate () { DoTest ("getm #foo", "{}"); });
     }
 
     [Test]

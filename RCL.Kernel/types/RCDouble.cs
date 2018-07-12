@@ -23,9 +23,9 @@ namespace RCL.Kernel
 
     public override Type ScalarType { get { return typeof (double); } }
 
-    public static bool DoubleScalarEquals (double x, double y)
+    public static bool DoubleScalarEquals (double x, double y, double threshold)
     {
-      if (Math.Abs (x - y) < 0.000001)
+      if (Math.Abs (x - y) < threshold)
       {
         return true;
       }
@@ -37,6 +37,11 @@ namespace RCL.Kernel
       {
         return false;
       }
+    }
+
+    public static bool DoubleScalarEquals (double x, double y)
+    {
+      return DoubleScalarEquals (x, y, 0.000001);
     }
 
     public override bool ScalarEquals (double x, double y)

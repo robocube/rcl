@@ -1005,7 +1005,7 @@ namespace RCL.Test
     [Test]
     public void TestWriteChecksCount()
     {
-      Assert.Throws<RCException> (delegate () { DoEvalTest ("#x write {a:1 10 b:2 20 c:3 30}", "0"); });
+      NUnit.Framework.Assert.Throws<RCException> (delegate () { DoEvalTest ("#x write {a:1 10 b:2 20 c:3 30}", "0"); });
     }
 
     [Test]

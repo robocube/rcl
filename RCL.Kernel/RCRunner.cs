@@ -496,6 +496,16 @@ namespace RCL.Kernel
         return result;
       }
     }
+   
+    public string RepString (string code)
+    {
+      RCValue result = Rep (code);
+      if (result == null)
+      {
+        return "";
+      }
+      return result.Format (RCFormat.DefaultNoT);
+    }
 
     public void Finish (RCClosure closure, RCValue result)
     {

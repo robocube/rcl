@@ -13,107 +13,107 @@ namespace RCL.Test
     public void TestEmptyStringIsNoop ()
     {
       RCRunner runner = new RCRunner ();
-      Assert.AreEqual ("", RepString (runner, ""));
+      RCL.Kernel.Assert.AreEqual ("", RepString (runner, ""));
     }
 
     [Test]
     public void TestLiteral ()
     {
       RCRunner runner = new RCRunner ();
-      Assert.AreEqual ("1.0 2.0 3.0", RepString (runner, "1 2 3d"));
+      RCL.Kernel.Assert.AreEqual ("1.0 2.0 3.0", RepString (runner, "1 2 3d"));
     }
 
     [Test]
     public void TestEmptyStringAfterStatement ()
     {
       RCRunner runner = new RCRunner ();
-      Assert.AreEqual ("", RepString (runner, "a:1 2 3"));
-      Assert.AreEqual ("", RepString (runner, ""));
+      RCL.Kernel.Assert.AreEqual ("", RepString (runner, "a:1 2 3"));
+      RCL.Kernel.Assert.AreEqual ("", RepString (runner, ""));
     }
 
     [Test]
     public void TestInteractive ()
     {
       RCRunner runner = new RCRunner ();
-      Assert.AreEqual ("", RepString (runner, "x:1 2 3"));
-      Assert.AreEqual ("", RepString (runner, "y:4 5 6"));
-      Assert.AreEqual ("5 7 9", RepString (runner, "$x+$y"));
+      RCL.Kernel.Assert.AreEqual ("", RepString (runner, "x:1 2 3"));
+      RCL.Kernel.Assert.AreEqual ("", RepString (runner, "y:4 5 6"));
+      RCL.Kernel.Assert.AreEqual ("5 7 9", RepString (runner, "$x+$y"));
     }
 
     [Test]
     public void TestNestedBlock ()
     {
       RCRunner runner = new RCRunner ();
-      Assert.AreEqual ("", RepString (runner, "x:{a:1 2 3d}"));
-      Assert.AreEqual ("{a:1.0 2.0 3.0}", RepString (runner, "$x"));
+      RCL.Kernel.Assert.AreEqual ("", RepString (runner, "x:{a:1 2 3d}"));
+      RCL.Kernel.Assert.AreEqual ("{a:1.0 2.0 3.0}", RepString (runner, "$x"));
     }
 
     [Test]
     public void TestNestedBlockWithPriorVariables ()
     {
       RCRunner runner = new RCRunner ();
-      Assert.AreEqual ("", RepString (runner, "x:1 2 3"));
-      Assert.AreEqual ("", RepString (runner, "y:4 5 6"));
-      Assert.AreEqual ("", RepString (runner, "a:{x:10 y:20}"));
-      Assert.AreEqual ("{x:10 y:20}", RepString (runner, "$a"));
+      RCL.Kernel.Assert.AreEqual ("", RepString (runner, "x:1 2 3"));
+      RCL.Kernel.Assert.AreEqual ("", RepString (runner, "y:4 5 6"));
+      RCL.Kernel.Assert.AreEqual ("", RepString (runner, "a:{x:10 y:20}"));
+      RCL.Kernel.Assert.AreEqual ("{x:10 y:20}", RepString (runner, "$a"));
     }
 
     [Test]
     public void TestBlockAfterReadingVariable()
     {
       RCRunner runner = new RCRunner();
-      Assert.AreEqual("", RepString (runner, "a:1.0"));
-      Assert.AreEqual("1.0", RepString (runner, "$a"));
-      Assert.AreEqual("", RepString (runner, "b:{x:10.0}"));
-      Assert.AreEqual("{x:10.0}", RepString (runner, "$b"));
+      RCL.Kernel.Assert.AreEqual("", RepString (runner, "a:1.0"));
+      RCL.Kernel.Assert.AreEqual("1.0", RepString (runner, "$a"));
+      RCL.Kernel.Assert.AreEqual("", RepString (runner, "b:{x:10.0}"));
+      RCL.Kernel.Assert.AreEqual("{x:10.0}", RepString (runner, "$b"));
     }
 
     [Test]
     public void TestInvokeNestedOperatorDefinition ()
     {
       RCRunner runner = new RCRunner ();
-      Assert.AreEqual ("", RepString (runner, "lib:{f:{<-$R * $R}}"));
-      Assert.AreEqual ("4", RepString (runner, "lib.f 2"));
+      RCL.Kernel.Assert.AreEqual ("", RepString (runner, "lib:{f:{<-$R * $R}}"));
+      RCL.Kernel.Assert.AreEqual ("4", RepString (runner, "lib.f 2"));
     }
 
     [Test]
     public void TestInvokeNestedOperatorAndSave ()
     {
       RCRunner runner = new RCRunner ();
-      Assert.AreEqual ("", RepString (runner, "lib:{f:{<-$R * $R}}"));
-      Assert.AreEqual ("", RepString (runner, "square:lib.f 2"));
-      Assert.AreEqual ("4", RepString (runner, "$square"));
+      RCL.Kernel.Assert.AreEqual ("", RepString (runner, "lib:{f:{<-$R * $R}}"));
+      RCL.Kernel.Assert.AreEqual ("", RepString (runner, "square:lib.f 2"));
+      RCL.Kernel.Assert.AreEqual ("4", RepString (runner, "$square"));
     }
 
     [Test]
     public void TestYieldingABlock ()
     {
       RCRunner runner = new RCRunner ();
-      Assert.AreEqual ("", RepString (runner, "f:{<-eval {x:$R * $R}}"));
-      Assert.AreEqual ("", RepString (runner, "r:f 10"));
-      Assert.AreEqual ("{x:100}", RepString (runner, "$r"));
+      RCL.Kernel.Assert.AreEqual ("", RepString (runner, "f:{<-eval {x:$R * $R}}"));
+      RCL.Kernel.Assert.AreEqual ("", RepString (runner, "r:f 10"));
+      RCL.Kernel.Assert.AreEqual ("{x:100}", RepString (runner, "$r"));
     }
 
     [Test]
     public void TestReplBotWorks ()
     {
       RCRunner runner = new RCRunner ();
-      Assert.AreEqual ("1", RepString (runner, "write [S|a #x 1]"));
-      Assert.AreEqual ("[S|a #x 1]",  RepString (runner, "#x read 0"));
+      RCL.Kernel.Assert.AreEqual ("1", RepString (runner, "write [S|a #x 1]"));
+      RCL.Kernel.Assert.AreEqual ("[S|a #x 1]",  RepString (runner, "#x read 0"));
     }
 
     [Test]
     public void TestEvalBlock ()
     {
       RCRunner runner = new RCRunner ();
-      Assert.AreEqual ("{a:1 b:2 c:3}", RepString (runner, "{a:1 b:2 c:3}"));
+      RCL.Kernel.Assert.AreEqual ("{a:1 b:2 c:3}", RepString (runner, "{a:1 b:2 c:3}"));
     }
 
     [Test]
     public void TestForConflictingResults ()
     {
       RCRunner runner = new RCRunner ();
-      Assert.AreEqual ("{status:0 data:5}", 
+      RCL.Kernel.Assert.AreEqual ("{status:0 data:5}", 
                        RepString (runner, "first #r from eval {serve:{b:bot {<-try {<-eval {<-2 + 3}}} f1:fiber {r:wait $b <-$r} <-wait $f1} r:wait fiber {<-serve #}}"));
     }
 
@@ -126,7 +126,7 @@ namespace RCL.Test
         RepString (runner, "$a+$b");
       }
       catch (Exception) {}
-      Assert.AreEqual ("3.0", RepString (runner, "1.0+2.0"));
+      RCL.Kernel.Assert.AreEqual ("3.0", RepString (runner, "1.0+2.0"));
     }
 
     [Test]
@@ -145,7 +145,7 @@ namespace RCL.Test
           Thread.ResetAbort ();
           caught = true;
         }
-        Assert.IsTrue (caught);
+        RCL.Kernel.Assert.IsTrue (caught);
         runner.Reset ();
       }
     }
@@ -154,7 +154,7 @@ namespace RCL.Test
     public void TestTryError()
     {
       RCRunner runner = RCRunner.TestRunner ();
-      Assert.AreEqual ("{status:1 data:\"<<Assert,Failed: assert false>>\"}", runner.Rep ("try {<-assert false}").ToString ());
+      RCL.Kernel.Assert.AreEqual ("{status:1 data:\"<<Assert,Failed: assert false>>\"}", runner.Rep ("try {<-assert false}").ToString ());
     }
 
 #if __MonoCS__
@@ -199,7 +199,7 @@ namespace RCL.Test
       RCRunner runner = new RCRunner ();
       runner.Rep ("\"exit.o2\" save #pretty format {:exit 1}");
       runner.Rep ("p:startx \"mono rcl.exe --output=clean --show=print --nokeys --program=exit.o2\"");
-      Assert.AreEqual ("{status:1 data:\"<<Exec,exit status 1>>\"}", runner.Rep ("try {<-waitx $p}").ToString ());
+      RCL.Kernel.Assert.AreEqual ("{status:1 data:\"<<Exec,exit status 1>>\"}", runner.Rep ("try {<-waitx $p}").ToString ());
     }
 
     [Test]
@@ -213,8 +213,8 @@ namespace RCL.Test
       RCString custom2 = (RCString) runner.Rep ("\"\\n\" readx $p");
       runner.Rep ("$p writex \"exit\"");
       runner.Rep ("waitx $p");
-      Assert.AreEqual ("\"one\"", custom1[0]);
-      Assert.AreEqual ("true", custom2[0]);
+      RCL.Kernel.Assert.AreEqual ("\"one\"", custom1[0]);
+      RCL.Kernel.Assert.AreEqual ("true", custom2[0]);
     }
 
     [Test]
@@ -226,7 +226,7 @@ namespace RCL.Test
       RCString result = (RCString) runner.Rep ("\"\\n\" readx $p");
       runner.Rep ("$p writex \"exit\"");
       runner.Rep ("waitx $p");
-      Assert.AreEqual ("\"first_argument\" \"second_argument\"", result[0]);
+      RCL.Kernel.Assert.AreEqual ("\"first_argument\" \"second_argument\"", result[0]);
     }
 
     [Test]
@@ -243,7 +243,7 @@ namespace RCL.Test
       runner.Rep ("waitx $p");
       string before = pwdBefore [0].TrimEnd ('"');
       string after = pwdAfter [0].TrimEnd ('"');
-      Assert.IsTrue (before.StartsWith (after));
+      RCL.Kernel.Assert.IsTrue (before.StartsWith (after));
     }
 #endif
 

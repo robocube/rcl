@@ -12,7 +12,6 @@ namespace RCL.Kernel
 
     public readonly string Name;
     public readonly RCArray<string> Parts;
-
     protected internal RCBlock m_static;
 
     public RCReference (string name)
@@ -76,14 +75,12 @@ namespace RCL.Kernel
       return builder.ToString ();
     }
 
-    public override void Format (
-      StringBuilder builder, RCFormat args, int level)
+    public override void Format (StringBuilder builder, RCFormat args, int level)
     {
       RCL.Kernel.Format.DoFormat (this, builder, args, null, level);
     }
 
-    public override void Format (
-      StringBuilder builder, RCFormat args, RCColmap colmap, int level)
+    public override void Format (StringBuilder builder, RCFormat args, RCColmap colmap, int level)
     {
       RCL.Kernel.Format.DoFormat (this, builder, args, colmap, level);
     }
@@ -97,8 +94,7 @@ namespace RCL.Kernel
       m_static = context;
     }
 
-    public override RCOperator AsOperator (
-      RCActivator activator, RCValue left, RCValue right)
+    public override RCOperator AsOperator (RCActivator activator, RCValue left, RCValue right)
     {
       return activator.New (Name, left, right);
     }
@@ -106,6 +102,11 @@ namespace RCL.Kernel
     public override void ToByte (RCArray<byte> result)
     {
       Binary.WriteReference (result, this);
+    }
+
+    public override int Count
+    {
+      get { return 1; }
     }
   }
 }

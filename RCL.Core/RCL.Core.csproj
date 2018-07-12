@@ -40,10 +40,9 @@
     <Compile Include="control\Each.cs" />
     <Compile Include="control\Switch.cs" />
     <Compile Include="control\Take.cs" />
-    <Compile Include="control\Throw.cs" />
     <Compile Include="control\Try.cs" />
     <Compile Include="control\Sleep.cs" />
-    <Compile Include="env\CodeDom.cs" />
+    <Compile Include="env\Compile.cs" />
     <Compile Include="math\Primitive.cs" />
     <Compile Include="math\Profile.cs" />
     <Compile Include="math\ScalarMath.cs" />

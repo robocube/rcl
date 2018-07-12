@@ -1188,9 +1188,9 @@ namespace RCL.Test
       bool canonical = format == RCFormat.Canonical || format == RCFormat.TestCanonical;
       RCValue result = runner.Read (code, out fragment, canonical);
       string actual = result.Format (format);
-      Assert.IsNotNull (actual, "RCParser.Parse result was null");
+      NUnit.Framework.Assert.IsNotNull (actual, "RCParser.Parse result was null");
       actual = actual.Replace("\\r\\n", "\\n");
-      Assert.AreEqual (expected, actual);
+      NUnit.Framework.Assert.AreEqual (expected, actual);
     }
   }
 }

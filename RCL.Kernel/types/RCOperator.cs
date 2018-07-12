@@ -311,6 +311,11 @@ namespace RCL.Kernel
       get { return RCValue.TEMPLATE_TYPENAME; }
     }
 
+    public override char TypeCode
+    {
+      get { return 'p'; }
+    }
+
     public int EscapeCount
     {
       get { return m_escapeCount; }
