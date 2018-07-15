@@ -1566,7 +1566,7 @@ namespace RCL.Test
     }
 
     [Test]
-    public void TestSelect ()
+    public void TestSelect1 ()
     {
       string ustring = "[S|x y z #a 1 10 100 #b 2 20 200 #c 3 30 300]";
       DoEvalTest (string.Format ("#a select {0}", ustring), "[G|S|x y z 0 #a 1 10 100]", RCFormat.Default);

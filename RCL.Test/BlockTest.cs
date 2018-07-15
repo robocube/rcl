@@ -208,7 +208,7 @@ namespace RCL.Test
     }
 
     [Test]
-    public void RawNames ()
+    public void TestRawNames ()
     {
       runner.Reset ();
       RCBlock k = (RCBlock) RCSystem.Parse ("{'Set-Cookie':\"abcdefg\"}");

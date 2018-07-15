@@ -466,17 +466,65 @@ namespace RCL.Test
     }
 
     [Test]
-    [Ignore ("because")]
-    public void TestBlockCubeCorrespondence ()
+    [Ignore ("experimental")]
+    public void TestBlockCubeCorrespondence1 ()
     {
-      //DoTest ("cube block []", "[]");
-      //DoTest ("block cube {}", "{}");
-      //DoTest ("cube block [S|x #a 0l]", "[S|x #a 0l]");
-      //DoTest ("block cube {a:{x:0l}}", "{a:{x:0l}}");
+      DoTest ("cube block []", "[]");
+    }
+
+    [Test]
+    [Ignore ("experimental")]
+    public void TestBlockCubeCorrespondence2 ()
+    {
+      DoTest ("block cube {}", "{}");
+    }
+
+    [Test]
+    [Ignore ("experimental")]
+    public void TestBlockCubeCorrespondence3 ()
+    {
+      DoTest ("cube block [S|x #a 0l]", "[S|x #a 0l]");
+    }
+
+    [Test]
+    [Ignore ("experimental")]
+    public void TestBlockCubeCorrespondence4 ()
+    {
+      DoTest ("block cube {a:{x:0l}}", "{a:{x:0l}}");
+    }
+
+    [Test]
+    [Ignore ("experimental")]
+    public void TestBlockCubeCorrespondence5 ()
+    {
       DoTest ("cube block [S|x #a,b 0]", "[S|x #a,b 0]");
+    }
+
+    [Test]
+    [Ignore ("experimental")]
+    public void TestBlockCubeCorrespondence6 ()
+    {
       DoTest ("block cube {a:{b:{x:0}}}", "{a:{b:{x:0}}}");
+    }
+
+    [Test]
+    [Ignore ("experimental")]
+    public void TestBlockCubeCorrespondence7 ()
+    {
       DoTest ("cube block [S|x #a 0 #b 1]", "[S|x #a 0 #b 1]");
+    }
+
+    [Test]
+    [Ignore ("experimental")]
+    public void TestBlockCubeCorrespondence8 ()
+    {
       DoTest ("block cube {a:{x:0} b:{x:1}}", "{a:{x:0} b:{x:1}}");
+    }
+
+    [Test]
+    [Ignore ("experimental")]
+    public void TestBlockCubeCorrespondence9 ()
+    {
       //Is it really ok to use E here as a kind of index?
       //G was invented for paging purposes but I started thinking about it as other things.
       //E was invented to allow multiple values to change at the same moment. A logical Event identifier.
@@ -495,29 +543,149 @@ namespace RCL.Test
       //Update 2015.06.03 : We are not going to do what I said above, using the E row to identify array indices. 
       //symbols should always be used for that purpose. If too many symbols are a concern then make them more efficient.
       DoTest ("cube block [E S|x 0 #a 10 0 #a 11]", "[E S|x 0 #a 10 0 #a 11]");
+    }
+
+    [Test]
+    [Ignore ("experimental")]
+    public void TestBlockCubeCorrespondence10 ()
+    {
       DoTest ("block cube {a:{x:10 11}}", "{a:{x:10 11}}");
+    }
+
+    [Test]
+    [Ignore ("experimental")]
+    public void TestBlockCubeCorrespondence11 ()
+    {
       DoTest ("cube block [E S|x 0 #a 10 1 #a 11]", "[E S|x 0 #a 10 1 #a 11]");
+    }
+
+    [Test]
+    [Ignore ("experimental")]
+    public void TestBlockCubeCorrespondence12 ()
+    {
       DoTest ("block cube {a:{x:10} a:{x:11}}", "{a:{x:10} a:{x:11}}");
+    }
+
+    [Test]
+    [Ignore ("experimental")]
+    public void TestBlockCubeCorrespondence13 ()
+    {
       DoTest ("cube block [E S|x 0 #a 10 0 #b 11]", "[E S|x 0 #a 10 0 #b 11]");
+    }
+
+    [Test]
+    [Ignore ("experimental")]
+    public void TestBlockCubeCorrespondence14 ()
+    {
       DoTest ("block cube {a:{x:10} b:{x:11}}", "{a:{x:10} b:{x:11}}");
+    }
+
+    [Test]
+    [Ignore ("experimental")]
+    public void TestBlockCubeCorrespondence15 ()
+    {
       DoTest ("cube block [E S|x 0 #a 10 0 #b 11 1 #a 12 1 #b 13]", "[E S|x 0 #a 10 0 #b 11 1 #a 12 1 #b 13]");
+    }
+
+    [Test]
+    [Ignore ("experimental")]
+    public void TestBlockCubeCorrespondence16 ()
+    {
       DoTest ("block cube {a:{x:10} b:{x:11} a:{x:12} b:{x:13}}", "{a:{x:10} b:{x:11} a:{x:12} b:{x:13}}");
+    }
+
+    [Test]
+    [Ignore ("experimental")]
+    public void TestBlockCubeCorrespondence17 ()
+    {
       DoTest ("cube block [E S|x 0 #a 10 0 #b 11 0 #a 12 0 #b 13]", "[E S|x 0 #a 10 0 #b 11 0 #a 12 0 #b 13]");
+    }
+
+    [Test]
+    [Ignore ("experimental")]
+    public void TestBlockCubeCorrespondence18 ()
+    {
       DoTest ("block cube {a:{x:10 12} b:{x:11 13}}", "{a:{x:10 12} b:{x:11 13}}");
+    }
+
       //This is actually not bad so far.
       //Maybe we can start at an even more basic level.
       //So start with vectors as in:
+    [Test]
+    [Ignore ("experimental")]
+    public void TestBlockCubeCorrespondence19 ()
+    {
       DoTest ("block [x 1 2 3]", "{x:1 2 3}");
+    }
+
+    [Test]
+    [Ignore ("experimental")]
+    public void TestBlockCubeCorrespondence20 ()
+    {
       DoTest ("block [x y 1 10 2 20 3 30]", "{x:1 2 3 y:10 20 30}");
+    }
+
+    [Test]
+    [Ignore ("experimental")]
+    public void TestBlockCubeCorrespondence21 ()
+    {
       DoTest ("block [S|x #a 1 #a 2 #a 3]", "{a:{x:1 2 3}}");
+    }
+
+    [Test]
+    [Ignore ("experimental")]
+    public void TestBlockCubeCorrespondence22 ()
+    {
       DoTest ("block [S|x #a 1 #b 2 #c 3]", "{a:{x:1} b:{x:2} c:{x:3}}");
+    }
+
+    [Test]
+    [Ignore ("experimental")]
+    public void TestBlockCubeCorrespondence23 ()
+    {
       DoTest ("block [S|x y #a 1 10 #a 2 20 #a 3 30]", "{a:{x:1 2 3 y:10 20 30}}");
+    }
+
+    [Test]
+    [Ignore ("experimental")]
+    public void TestBlockCubeCorrespondence24 ()
+    {
       DoTest ("block [S|x y #a 1 10 #b 2 20]", "{a:{x:1 y:10} b:{x:2 y:20}}");
+    }
+
+    [Test]
+    [Ignore ("experimental")]
+    public void TestBlockCubeCorrespondence25 ()
+    {
       DoTest ("block [E S|x 0 #a 1 0 #a 2 0 #a 3]", "{a:{x:1 2 3}}");
+    }
+
+    [Test]
+    [Ignore ("experimental")]
+    public void TestBlockCubeCorrespondence26 ()
+    {
       DoTest ("block [E S|x 0 #a 1 1 #a 2 2 #a 3]", "{a:{x:1} a:{x:2} a:{x:3}}");
+    }
+
+    [Test]
+    [Ignore ("experimental")]
+    public void TestBlockCubeCorrespondence27 ()
+    {
       DoTest ("block [E S|x 0 #a 1 0 #b 10]", "{a:{x:1} b:{x:10}}");
+    }
+
+    [Test]
+    [Ignore ("experimental")]
+    public void TestBlockCubeCorrespondence28 ()
+    {
       //Nothing is different between the result below and above. Is that a problem?
       DoTest ("block [E S|x 0 #a 1 1 #b 10]", "{a:{x:1} b:{x:10}}");
+    }
+
+    [Test]
+    [Ignore ("experimental")]
+    public void TestBlockCubeCorrespondence29 ()
+    {
       //But here there is a difference, there are two a blocks rather than one.
       DoTest ("block [E S|x 0 #a 1 1 #a 2]", "{a:{x:1} a:{x:2}}");
       //If the same symbol appears multiple times with the same E that means the value held multiple scalars at that time.
@@ -1175,7 +1343,7 @@ namespace RCL.Test
     }
 
     [Test]
-    public void SortVariousDataTypes ()
+    public void TestSortVariousDataTypes ()
     {
       //[
       //   l   m     d      s     b     x  y
