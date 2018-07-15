@@ -75,7 +75,7 @@ namespace RCL.Core
     [RCVerb ("except")]
     public void EvalExcept (RCRunner runner, RCClosure closure, RCBlock left, RCBlock right)
     {
-      throw new NotImplementedException ("Implementation should be similar to merge");
+      throw new System.NotImplementedException ("Implementation should be similar to merge");
     }
 
     protected RCArray<T> DoExcept<T> (RCVector<T> left, RCVector<T> right)
