@@ -361,14 +361,29 @@ namespace RCL.Kernel
       for (int i = 0; i < str.Length; ++i)
       {
         char current = str[i];
-        if (current == '\n') builder.Append ("\\n");
-        else if (current == '\r') builder.Append ("\\r");
-        else if (current == '\t') builder.Append ("\\t");
-        else if (current == '\a') builder.Append ("\\a");
-        else if (current == '\\') builder.Append ("\\\\");
+        if (current == '\n')
+        {
+          builder.Append ("\\n");
+        }
+        else if (current == '\r')
+        {
+          builder.Append ("\\r");
+        }
+        else if (current == '\t')
+        {
+          builder.Append ("\\t");
+        }
+        else if (current == '\a')
+        {
+          builder.Append ("\\a");
+        }
+        else if (current == '\\')
+        {
+          builder.Append ("\\\\");
+        }
         else if (current == delimeter)
         {
-          builder.Append("\\");
+          builder.Append ("\\");
           builder.Append (delimeter);
         }
         else builder.Append (current);
@@ -381,7 +396,7 @@ namespace RCL.Kernel
     /// </summary>
     public static string UnescapeControlChars (string str, char delimiter)
     {
-      StringBuilder builder = new StringBuilder();
+      StringBuilder builder = new StringBuilder ();
       for (int i = 0; i < str.Length; ++i)
       {
         // This code block should be used instead of the one above, 
@@ -391,28 +406,47 @@ namespace RCL.Kernel
           if (i < str.Length - 1)
           {
             char next = str[i + 1];
-            if (next == '\\') builder.Append('\\');
-            else if (next == 'n') builder.Append('\n');
-            else if (next == 'r') builder.Append('\r');
-            else if (next == 't') builder.Append('\t');
-            else if (next == 'a') builder.Append('\a');
+            if (next == '\\')
+            {
+              builder.Append ('\\');
+            }
+            else if (next == 'n')
+            {
+              builder.Append ('\n');
+            }
+            else if (next == 'r')
+            {
+              builder.Append ('\r');
+            }
+            else if (next == 't')
+            {
+              builder.Append ('\t');
+            }
+            else if (next == 'a')
+            {
+              builder.Append ('\a');
+            }
             else if (next == 'u')
             {
-              builder.Append(
-                (char) ushort.Parse (str.Substring (i+2, 4), NumberStyles.AllowHexSpecifier));
+              builder.Append ((char) ushort.Parse (str.Substring (i+2, 4), NumberStyles.AllowHexSpecifier));
               i+=4;
             }
-            else if (next == '/') builder.Append ('/');
-            else if (next == delimiter) builder.Append(delimiter);
-            else throw new Exception(
-              "unescaped backslash at position " + i + " within \"" + str + "\"");
+            else if (next == '/')
+            {
+              builder.Append ('/');
+            }
+            else if (next == delimiter)
+            {
+              builder.Append (delimiter);
+            }
+            else throw new Exception ("unescaped backslash at position " + i + " within \"" + str + "\"");
             //skip over the additional character.
             ++i;
           }
         }
-        else builder.Append(str[i]);
+        else builder.Append (str[i]);
       }
-      return builder.ToString();
+      return builder.ToString ();
     }
     
     public virtual bool IsEnclosedLiteral { get { return false; } }

@@ -1,0 +1,917 @@
+{
+  TestByte:{
+    skip:false
+    src:format parse "\\x0A \\x1B \\x2C"
+    bin:"\\x0A \\x1B \\x2C"
+  }
+  TestString:{
+    skip:false
+    src:format parse "\"test\" \"some\" \"strings\""
+    bin:"\"test\" \"some\" \"strings\""
+  }
+  TestStringEscapeChars:{
+    skip:false
+    src:format parse "\"\\\\n\" \"\\\\r\" \"\\\\t\" \"\\\\a\" \"\\\\\""
+    bin:"\"\\\\n\" \"\\\\r\" \"\\\\t\" \"\\\\a\" \"\\\\\""
+  }
+  TestStringUnescapedChars:{
+    skip:false
+    src:format parse "\"\\n\" \"\\r\" \"\\t\" \"\\a\""
+    bin:"\"\\n\" \"\\r\" \"\\t\" \"\\a\""
+  }
+  TestEscapedForwardSlashInString:{
+    skip:false
+    src:format parse "\"a\\/b\\/c\""
+    bin:"\"a/b/c\""
+  }
+  TestEscapedUnicodeString:{
+    skip:false
+    src:format parse "\"\\u8ba1\\u7b97\\u673a\\u2022\\u7f51\\u7edc\\u2022\\u6280\\u672f\\u7c7b\""
+    bin:"\"计算机•网络•技术类\""
+  }
+  TestEscapedStringsWithEscapeSymbols:{
+    skip:false
+    src:format parse "{x:\"\\\"\\\\\\\\\\\"\" y:\"\\\"\\\\\\\\\\\"\"}"
+    bin:"{x:\"\\\"\\\\\\\\\\\"\" y:\"\\\"\\\\\\\\\\\"\"}"
+  }
+  TestDouble:{
+    skip:false
+    src:format parse "1 2 3d"
+    bin:"1.0 2.0 3.0"
+  }
+  TestDoubleWithThousands:{
+    skip:false
+    src:format parse "1000.0"
+    bin:"1000.0"
+  }
+  TestNaN:{
+    skip:false
+    src:format parse "NaN"
+    bin:"NaN"
+  }
+  TestNoDotsDefaultToLong:{
+    skip:false
+    src:format parse "1 2 3"
+    bin:"1 2 3"
+  }
+  TestNoDotOrSuffixDefaultsToLong:{
+    skip:false
+    src:format parse "100 200 300"
+    bin:"100 200 300"
+  }
+  TestDotsDefaultToDouble:{
+    skip:false
+    src:format parse "1.0 2.0 3.0"
+    bin:"1.0 2.0 3.0"
+  }
+  TestDecimal:{
+    skip:false
+    src:format parse "10.01 10.0125 10.015m"
+    bin:"10.01 10.0125 10.015m"
+  }
+  TestBoolean:{
+    skip:false
+    src:format parse "true false true false false"
+    bin:"true false true false false"
+  }
+  TestIncr:{
+    skip:false
+    src:format parse "++ +- +~"
+    bin:"++ +- +~"
+  }
+  TestTimestamp:{
+    skip:false
+    src:format parse "2015.05.24 08:12:00.1234567 2015.05.25 09:13:00.1234567 2015.05.26 10:14:00.1234567"
+    bin:"2015.05.24 08:12:00.1234567 2015.05.25 09:13:00.1234567 2015.05.26 10:14:00.1234567"
+  }
+  TestDate:{
+    skip:false
+    src:format parse "2015.05.24 2015.05.25 2015.05.26"
+    bin:"2015.05.24 2015.05.25 2015.05.26"
+  }
+  TestTime:{
+    skip:false
+    src:format parse "08:12 09:13 10:14"
+    bin:"08:12 09:13 10:14"
+  }
+  TestDatetime:{
+    skip:false
+    src:format parse "2015.05.24 08:12 2015.05.25 09:13 2015.05.26 10:14"
+    bin:"2015.05.24 08:12 2015.05.25 09:13 2015.05.26 10:14"
+  }
+  TestTimespan:{
+    skip:false
+    src:format parse "100.07:29:00.0000001 -10.07:30:00.0000001 1.07:31:00.0000001"
+    bin:"100.07:29:00.0000001 -10.07:30:00.0000001 1.07:31:00.0000001"
+  }
+  TestSymbolSimple:{
+    skip:false
+    src:format parse "#x"
+    bin:"#x"
+  }
+  TestSymbolMulti:{
+    skip:false
+    src:format parse "#x,y"
+    bin:"#x,y"
+  }
+  TestSymbolEmpty:{
+    skip:false
+    src:format parse "#"
+    bin:"#"
+  }
+  TestSymbolTyped:{
+    skip:false
+    src:format parse "#10,20,30"
+    bin:"#10,20,30"
+  }
+  TestSymbolNegative:{
+    skip:false
+    src:format parse "#-1"
+    bin:"#-1"
+  }
+  TestSymbolNegative1:{
+    skip:false
+    src:format parse "#foo,-1"
+    bin:"#foo,-1"
+  }
+  TestSymbolWithDouble:{
+    skip:false
+    src:format parse "#1.2"
+    bin:"#1.2"
+  }
+  TestSymbolMixed:{
+    skip:false
+    src:format parse "#x #x,y #10,20,30"
+    bin:"#x #x,y #10,20,30"
+  }
+  TestSymbolInBlock:{
+    skip:false
+    src:format parse "{x:#a,b #c,d}"
+    bin:"{x:#a,b #c,d}"
+  }
+  TestSymbolInExpression:{
+    skip:false
+    src:format parse "#a,b #c,d + #e,f #g,h"
+    bin:"#a,b #c,d + #e,f #g,h"
+  }
+  TestSymbolWithByte:{
+    skip:false
+    src:format parse "#\\xFF"
+    bin:"#\\xFF"
+  }
+  TestSimpleMonadicExpressionWithLiteral:{
+    skip:false
+    src:format parse "sum 1 2 3"
+    bin:"sum 1 2 3"
+  }
+  TestSimpleDyadicExpressionWithLiteral:{
+    skip:false
+    src:format parse "1 2 3 + 4 5 6"
+    bin:"1 2 3 + 4 5 6"
+  }
+  TestSimpleDyadicExpressionWithReference:{
+    skip:false
+    src:format parse "$x + $y"
+    bin:"$x + $y"
+  }
+  TestSimpleMonadicExpressionWithReference:{
+    skip:false
+    src:format parse "sum $x"
+    bin:"sum $x"
+  }
+  TestNestedMonadicExpressions:{
+    skip:false
+    src:format parse "not not true"
+    bin:"not not true"
+  }
+  TestMultipleOperatorsInExpression:{
+    skip:false
+    src:format parse "$w + $x / $y - $z"
+    bin:"$w + $x / $y - $z"
+  }
+  TestMinusProblem:{
+    skip:false
+    src:format parse "1-2"
+    bin:"1 - 2"
+  }
+  TestMinusProblemAlone:{
+    skip:false
+    src:format parse "-1"
+    bin:"-1"
+  }
+  TestMinusProblemWithSymbol:{
+    skip:false
+    src:format parse "$x-1.0"
+    bin:"$x - 1.0"
+  }
+  TestMinusProblemWithParen:{
+    skip:false
+    src:format parse "(-1.0)"
+    bin:"-1.0"
+  }
+  TestMinusProblemWithParen1:{
+    skip:false
+    src:format parse "(-1.0)-1.0"
+    bin:"-1.0 - 1.0"
+  }
+  TestMinusProblemWithBlock:{
+    skip:false
+    src:format parse "{:-1.0}"
+    bin:"{:-1.0}"
+  }
+  TestVectorWithNegativeLong:{
+    skip:false
+    src:format parse "1 -2"
+    bin:"1 -2"
+  }
+  TestMeaninglessParens:{
+    skip:false
+    src:format parse "($x + $y)"
+    bin:"$x + $y"
+  }
+  TestMeaninglessParensWithMultipleLiterals:{
+    skip:false
+    src:format parse "(1 - 2 - 3)"
+    bin:"1 - 2 - 3"
+  }
+  TestMeaninglessParensWithMultipleOperators:{
+    skip:false
+    src:format parse "$x + ($y / $z)"
+    bin:"$x + $y / $z"
+  }
+  TestMeaninglessParensAroundVector:{
+    skip:false
+    src:format parse "(1 2 3)"
+    bin:"1 2 3"
+  }
+  TestLeftParenInExpression:{
+    skip:false
+    src:format parse "($x + $y) / $z"
+    bin:"($x + $y) / $z"
+  }
+  TestLeftParenInExpressionWithLiteral:{
+    skip:false
+    src:format parse "($x + 1) / $y"
+    bin:"($x + 1) / $y"
+  }
+  TestMixedNestingExpressions:{
+    skip:false
+    src:format parse "(1 - 2 - 3) - 4"
+    bin:"(1 - 2 - 3) - 4"
+  }
+  TestMixedNestingExpressionsWithReference:{
+    skip:false
+    src:format parse "($w - $x - $y) - $z"
+    bin:"($w - $x - $y) - $z"
+  }
+  TestMultipleNestedExpressions:{
+    skip:false
+    src:format parse "((1 - 2 - 3) - 4) - 5"
+    bin:"((1 - 2 - 3) - 4) - 5"
+  }
+  TestMultipleMixedNestedExpressions:{
+    skip:false
+    src:format parse "((1 - 2) - 3 - 4) - 5"
+    bin:"((1 - 2) - 3 - 4) - 5"
+  }
+  TestMeaninglessParensInComplexExpression:{
+    skip:false
+    src:format parse "((1 - 2) - (3 - 4)) - 5"
+    bin:"((1 - 2) - 3 - 4) - 5"
+  }
+  TestMixedNestingExpressions1:{
+    skip:false
+    src:format parse "1.0 - (2.0 - 3.0) / 4.0"
+    bin:"1.0 - (2.0 - 3.0) / 4.0"
+  }
+  TestEmptyBlock:{
+    skip:false
+    src:format parse "{}"
+    bin:"{}"
+  }
+  TestBlockWithOneVariable:{
+    skip:false
+    src:format parse "{x:1}"
+    bin:"{x:1}"
+  }
+  TestBlockWithMultipleVariables:{
+    skip:false
+    src:format parse "{x:1 y:2 z:3}"
+    bin:"{x:1 y:2 z:3}"
+  }
+  TestNestedEmptyBlock:{
+    skip:false
+    src:format parse "{x:{}}"
+    bin:"{x:{}}"
+  }
+  TestNestedBlock:{
+    skip:false
+    src:format parse "{x:{a:1}}"
+    bin:"{x:{a:1}}"
+  }
+  TestNestedBlockWithExpression:{
+    skip:false
+    src:format parse "{x:{a:1 - 2}}"
+    bin:"{x:{a:1 - 2}}"
+  }
+  TestImpliedBlock:{
+    skip:false
+    src:format parse "x:1"
+    bin:"{x:1}"
+  }
+  TestImpliedBlockNested:{
+    skip:false
+    src:format parse "x:{a:1}"
+    bin:"{x:{a:1}}"
+  }
+  TestUnnamedBlock:{
+    skip:false
+    src:format parse "{:1}"
+    bin:"{:1}"
+  }
+  TestUnnamedBlockWithTwoVariables:{
+    skip:false
+    src:format parse "{:1 :2}"
+    bin:"{:1 :2}"
+  }
+  TestUnnamedBlockWithTwoExpressions:{
+    skip:false
+    src:format parse "{:1 + 2 :3 + 4}"
+    bin:"{:1 + 2 :3 + 4}"
+  }
+  TestUnnamedImpliedBlock:{
+    skip:false
+    src:format parse ":1"
+    bin:"{:1}"
+  }
+  TestExpressionInBlocks:{
+    skip:false
+    src:format parse "{x:1 + 2}"
+    bin:"{x:1 + 2}"
+  }
+  TestTwiceNestedEmptyBlock:{
+    skip:false
+    src:format parse "{x:1 y:{a:{}}}"
+    bin:"{x:1 y:{a:{}}}"
+  }
+  TestBlocksAsArguments:{
+    skip:false
+    src:format parse "{a:1 b:2 c:3} == {a:1 b:2 c:4}"
+    bin:"{a:1 b:2 c:3} == {a:1 b:2 c:4}"
+  }
+  TestOperatorInlineMonadic:{
+    skip:false
+    src:format parse "{<-$R + 1.0} 1.0 2.0 3.0"
+    bin:"{<-$R + 1.0} 1.0 2.0 3.0"
+  }
+  TestOperatorInlineDyadic:{
+    skip:false
+    src:format parse "1.0 2.0 3.0 {<-$right - $left} 4.0 5.0 6.0"
+    bin:"1.0 2.0 3.0 {<-$right - $left} 4.0 5.0 6.0"
+  }
+  TestOperatorInlineDyadic1:{
+    skip:false
+    src:format parse "{x:1 {<-$R - $L} 4 y:{<-eval {<-1}}}"
+    bin:"{x:1 {<-$R - $L} 4 y:{<-eval {<-1}}}"
+  }
+  TestOperatorWithLeftBlock:{
+    skip:false
+    src:format parse "{} + 1.0"
+    bin:"{} + 1.0"
+  }
+  TestEmptyBlocksAsArgumentsNested:{
+    skip:false
+    src:format parse "{x:{} == {}}"
+    bin:"{x:{} == {}}"
+  }
+  TestOperatorConsecutiveNames:{
+    skip:false
+    src:format parse "1 - sum 2"
+    bin:"1 - sum 2"
+  }
+  TestUserOperator:{
+    skip:false
+    src:format parse "{x:1.0 y:sum 1.0}"
+    bin:"{x:1.0 y:sum 1.0}"
+  }
+  TestNumericNamesInBlock:{
+    skip:false
+    src:format parse "{'0':1 '2':3 '4':5}"
+    bin:"{'0':1 '2':3 '4':5}"
+  }
+  TestNumericNamesInBlockShorthand:{
+    skip:true
+    src:format parse "{0:1 2:3 4:5}"
+    bin:"{'0':1 '2':3 '4':5}"
+  }
+  TestQuotedNamesInReferences1:{
+    skip:false
+    src:format parse "{'a b c':1 2 3 '!@#$%^&*':4 5 6}"
+    bin:"{'a b c':1 2 3 '!@#$%^&*':4 5 6}"
+  }
+  TestQuotedNamesInReferences2:{
+    skip:false
+    src:format parse "{x:\"a\" \"b\" c:1 2 3}"
+    bin:"{x:\"a\" \"b\" c:1 2 3}"
+  }
+  TestQuotedNamesInReferences3:{
+    skip:false
+    src:format parse "{x:\"a\" \"b\" 'c-d':1 2 3}"
+    bin:"{x:\"a\" \"b\" 'c-d':1 2 3}"
+  }
+  TestQuotedNamesInReferences4:{
+    skip:false
+    src:format parse "$'a b'.c.'d e'"
+    bin:"$'a b'.c.'d e'"
+  }
+  TestQuotedNamesInSymbol:{
+    skip:false
+    src:format parse "#'..','..'"
+    bin:"#'..','..'"
+  }
+  TestQuotedNamesInSymbol1:{
+    skip:false
+    src:format parse "#'a b c','d e f'"
+    bin:"#'a b c','d e f'"
+  }
+  TestQuotedNamesInSymbol2:{
+    skip:false
+    src:format parse "#x,'y'"
+    bin:"#x,y"
+  }
+  TestCubeMultiRow:{
+    skip:false
+    src:format parse "[S|x #a 10.0 #a 20.0 #a 30.0]"
+    bin:"[S|x #a 10.0 #a 20.0 #a 30.0]"
+  }
+  TestCubeMultiCol:{
+    skip:false
+    src:format parse "[S|a b c #x 1 2 3]"
+    bin:"[S|a b c #x 1 2 3]"
+  }
+  TestCubeEmpty:{
+    skip:false
+    src:format parse "[]"
+    bin:"[]"
+  }
+  TestCubesWithNoTimeline1:{
+    skip:false
+    src:format parse "[]"
+    bin:"[]"
+  }
+  TestCubesWithNoTimeline3:{
+    skip:false
+    src:format parse "[x 1]"
+    bin:"[x 1]"
+  }
+  TestCubesWithNoTimeline4:{
+    skip:false
+    src:format parse "[x y 1 10]"
+    bin:"[x y 1 10]"
+  }
+  TestCubesWithNoTimeline5:{
+    skip:false
+    src:format parse "[x y z 1 10 100]"
+    bin:"[x y z 1 10 100]"
+  }
+  TestCubesWithNoTimeline6:{
+    skip:false
+    src:format parse "[x 1 2]"
+    bin:"[x 1 2]"
+  }
+  TestCubesWithNoTimeline7:{
+    skip:false
+    src:format parse "[x y 1 10 2 20]"
+    bin:"[x y 1 10 2 20]"
+  }
+  TestCubesWithNoTimeline8:{
+    skip:false
+    src:format parse "[x y z 1 10 100 2 20 200 3 30 300]"
+    bin:"[x y z 1 10 100 2 20 200 3 30 300]"
+  }
+  TestCubesWithNoTimeline9:{
+    skip:false
+    src:format parse "[x y z -- 10 100 2 20 200 3 30 300]"
+    bin:"[x y z -- 10 100 2 20 200 3 30 300]"
+  }
+  TestCubesWithNoTimeline10:{
+    skip:false
+    src:format parse "[x y z 1 10 100 2 -- 200 3 30 300]"
+    bin:"[x y z 1 10 100 2 -- 200 3 30 300]"
+  }
+  TestCubesWithNoTimeline11:{
+    skip:false
+    src:format parse "[x y z 1 10 100 2 20 200 3 30 --]"
+    bin:"[x y z 1 10 100 2 20 200 3 30 --]"
+  }
+  TestCubesWithNoTimelineHavingGETS1:{
+    skip:false
+    src:format parse "[S a #x 1]"
+    bin:"[S a #x 1]"
+  }
+  TestCubesWithNoTimelineHavingGETS2:{
+    skip:false
+    src:format parse "[T S a 00:00 #x 1]"
+    bin:"[T S a 00:00 #x 1]"
+  }
+  TestCubesWithNoTimelineHavingGETS3:{
+    skip:false
+    src:format parse "[E T S a 0 00:00 #x 1]"
+    bin:"[E T S a 0 00:00 #x 1]"
+  }
+  TestCubesWithNoTimelineHavingGETS4:{
+    skip:false
+    src:format parse "[G E T S a 0 0 00:00 #x 1]"
+    bin:"[G E T S a 0 0 00:00 #x 1]"
+  }
+  TestCubeDupWithTwoColumns:{
+    skip:false
+    src:format parse "[S|bp ap #x 1000 1002 #x -- 1004 #x 1001 1003]"
+    bin:"[S|bp ap #x 1000 1002 #x -- 1004 #x 1001 1003]"
+  }
+  TestCubeWithNullRowTestCanonical:{
+    skip:false
+    src:#testcanonical format parse "[S|x #a 10.0 #a -- #a 30.0]"
+    bin:"[S|x #a 10.0 #a -- #a 30.0]"
+  }
+  TestCubeWithNullRowCanonical:{
+    skip:false
+    src:#canonical format parse "[S|x #a 10.0 #a -- #a 30.0]"
+    bin:"[\n  S |   x\n  #a 10.0\n  #a   --\n  #a 30.0\n]"
+  }
+  TestCubeWithNullColumnLastTestCanonical:{
+    skip:false
+    src:#testcanonical format #canonical parse "[a b c d e 1 10 100 1000 -- 2 20 -- 2000 --]"
+    bin:"[a b c d e 1 10 100 1000 -- 2 20 -- 2000 --]"
+  }
+  TestCubeWithNullColumnFirstTestCanonical:{
+    skip:false
+    src:#testcanonical format #canonical parse "[a b c d e -- 10 100 1000 1 -- 20 200 2000 2]"
+    bin:"[a b c d e -- 10 100 1000 1 -- 20 200 2000 2]"
+  }
+  TestCubeCanonicalParse:{
+    skip:false
+    src:format parse "[S|l d m #a 10 -- -- #a 11 21.0 -- #a 12 22.0 32m]"
+    bin:"[S|l d m #a 10 -- -- #a 11 21.0 -- #a 12 22.0 32m]"
+  }
+  TestCubeWithNullInFirstRow:{
+    skip:false
+    src:format parse "[S|x #a -- #a -- #a 10.0]"
+    bin:"[S|x #a 10.0]"
+  }
+  TestCubeWithNullInLastRow:{
+    skip:false
+    src:format parse "[S|x #a 10 #a --]"
+    bin:"[S|x #a 10]"
+  }
+  TestCubeDupsAreNotIgnored:{
+    skip:false
+    src:format parse "[S|x #a 10 #a 10]"
+    bin:"[S|x #a 10 #a 10]"
+  }
+  TestCubeDupsAreNotIgnoredBoolean:{
+    skip:false
+    src:format parse "[S|x #a false #a false]"
+    bin:"[S|x #a false #a false]"
+  }
+  TestCubeDupsAreNotIgnoredEvent:{
+    skip:false
+    src:format parse "[E|S|x 0 #a 0 1 #a 0]"
+    bin:"[E|S|x 0 #a 0 1 #a 0]"
+  }
+  TestCubeSymbolColumn:{
+    skip:false
+    src:format parse "[S|x #a #i #b #j]"
+    bin:"[S|x #a #i #b #j]"
+  }
+  TestCubeIncrColumn:{
+    skip:false
+    src:format parse "[S|x #a ++ #b ++]"
+    bin:"[S|x #a ++ #b ++]"
+  }
+  TestCubeWithExplicitTime1:{
+    skip:false
+    src:format parse "[E|S|a 1 #x 200]"
+    bin:"[E|S|a 1 #x 200]"
+  }
+  TestCubeWithExplicitTime2:{
+    skip:false
+    src:format parse "[E|S|a 1 #x 100 3 #y 300]"
+    bin:"[E|S|a 1 #x 100 3 #y 300]"
+  }
+  TestCubeWithExplicitTimeAndNulls:{
+    skip:false
+    src:format parse "[E|S|a b 1 #x 100 -- 3 #y -- 3000]"
+    bin:"[E|S|a b 1 #x 100 -- 3 #y -- 3000]"
+  }
+  TestCubeWithG:{
+    skip:false
+    src:format parse "[G|E|S|a 1000 1 #x 200]"
+    bin:"[G|E|S|a 1000 1 #x 200]"
+  }
+  TestCubeInExpression:{
+    skip:false
+    src:format parse "[S|y #0 1 #0 2] = [S|y #0 1 #0 2]"
+    bin:"[S|y #0 1 #0 2] = [S|y #0 1 #0 2]"
+  }
+  TestColumnOrderStableWithNullsInTheFirstRow:{
+    skip:false
+    src:format parse "[x y z -- 10 100 2 20 200 3 30 300]"
+    bin:"[x y z -- 10 100 2 20 200 3 30 300]"
+  }
+  TestCubeWithColumnOfBlock1:{
+    skip:true
+    src:format parse "[x {a:1} {b:2} {c:3}]"
+    bin:"[x {a:1} {b:2} {c:3}]"
+  }
+  TestCubeWithColumnOfBlock2:{
+    skip:true
+    src:format parse "{u:[x {a:1} {b:2} {c:3}]}"
+    bin:"{u:[x {a:1} {b:2} {c:3}]}"
+  }
+  TestCubeWithColumnOfBlock3:{
+    skip:true
+    src:format parse "[S|x #a {:1} #b {:2} #c {:3}]"
+    bin:"[S|x #a {:1} #b {:2} #c {:3}]"
+  }
+  TestCubeWithColumnOfBlock4:{
+    skip:true
+    src:format parse "[S|x #a {<-$a0 + $a1} #b {<-$b0 + $b1} #c {<-$c0 + $c1}]"
+    bin:"[S|x #a {<-$a0 + $a1} #b {<-$b0 + $b1} #c {<-$c0 + $c1}]"
+  }
+  TestCubeWithColumnOfBlock5:{
+    skip:true
+    src:format parse "[x {a:[q 1]} {b:[r 2]} {c:[s 3]}]"
+    bin:"[x {a:[q 1]} {b:[r 2]} {c:[s 3]}]"
+  }
+  TestCubeWithColumnOfBlock6:{
+    skip:true
+    src:format parse "[x {t:[?This is a [!$R.parameter!]?] <-t {parameter:\"template\"}}]"
+    bin:"[x {t:[?This is a [!$R.parameter!]?] <-t {parameter:\"template\"}}]"
+  }
+  TestRandom:{
+    skip:false
+    src:format parse "{:#0 #1 write {x:1 10} :#0 #1 write {x:2 20} :(0 read #0) assert [S|x #0 1 #0 10] :(0 read #1) assert [S|x #1 2 #1 20] <-true}"
+    bin:"{:#0 #1 write {x:1 10} :#0 #1 write {x:2 20} :(0 read #0) assert [S|x #0 1 #0 10] :(0 read #1) assert [S|x #1 2 #1 20] <-true}"
+  }
+  TestTemplateWithoutCode1:{
+    skip:false
+    src:format parse "[? ?]"
+    bin:"[? ?]"
+  }
+  TestTemplateWithoutCode2:{
+    skip:false
+    src:format parse "[? some free text ?]"
+    bin:"[? some free text ?]"
+  }
+  TestTemplateWithoutCode3:{
+    skip:false
+    src:format parse "[?<html></html>?]"
+    bin:"[?<html></html>?]"
+  }
+  TestTemplateWithoutCode4:{
+    skip:false
+    src:format parse "[? ?]"
+    bin:"[? ?]"
+  }
+  TestTemplateWithoutCode5:{
+    skip:false
+    src:format parse "[??]"
+    bin:"[??]"
+  }
+  TestTemplateWithoutCode6:{
+    skip:false
+    src:format parse "[?? [? ?] ??]"
+    bin:"[?? [? ?] ??]"
+  }
+  TestTemplateWithoutCode7:{
+    skip:false
+    src:format parse "[??? [??] ???]"
+    bin:"[??? [??] ???]"
+  }
+  TestTemplateWithoutCode8:{
+    skip:false
+    src:format parse "[???[??]???]"
+    bin:"[???[??]???]"
+  }
+  TestTemplateWithCode1:{
+    skip:false
+    src:format parse "[? [! $x !] ?]"
+    bin:"[? [! $x !] ?]"
+  }
+  TestTemplateWithCode2:{
+    skip:false
+    src:format parse "[? [! $x !] ?]"
+    bin:"[? [! $x !] ?]"
+  }
+  TestTemplateWithCode3:{
+    skip:false
+    src:format parse "[?[! $x !]?]"
+    bin:"[?[! $x !]?]"
+  }
+  TestTemplateWithCode4:{
+    skip:false
+    src:format parse "[?!][! $x !]?]"
+    bin:"[?!][! $x !]?]"
+  }
+  TestTemplateWithCode5:{
+    skip:false
+    src:format parse "[?[! $x !]!]?]"
+    bin:"[?[! $x !]!]?]"
+  }
+  TestTemplateWithCode6:{
+    skip:false
+    src:format parse "[??[![!! $x !!]!]??]"
+    bin:"[??[![!! $x !!]!]??]"
+  }
+  TestTemplateWithCode7:{
+    skip:false
+    src:format parse "[?[! \"[? ?]\" !]?]"
+    bin:"[?[! \"[? ?]\" !]?]"
+  }
+  TestTemplateWithCode8:{
+    skip:false
+    src:format parse "[?this is a question??]"
+    bin:"[?this is a question??]"
+  }
+  TestTemplateWithCode9:{
+    skip:false
+    src:format parse "[?before[! $x + $y !]after?]"
+    bin:"[?before[! $x + $y !]after?]"
+  }
+  TestTemplateWithCode10:{
+    skip:false
+    src:format parse "[?before[! {<-$x - $y} !]after?]"
+    bin:"[?before[! {<-$x - $y} !]after?]"
+  }
+  TestTemplateWithCode11:{
+    skip:false
+    src:format parse "[?before[! {x:1 y:2 z:3} !]after?]"
+    bin:"[?before[! {x:1 y:2 z:3} !]after?]"
+  }
+  TestTemplateWithCode12:{
+    skip:false
+    src:format parse "[?before[! [] !]after?]"
+    bin:"[?before[! [] !]after?]"
+  }
+  TestTemplateWithCode13:{
+    skip:false
+    src:format parse "[?before[! $x !]between[! $y !]after?]"
+    bin:"[?before[! $x !]between[! $y !]after?]"
+  }
+  TestTemplateWithCode14:{
+    skip:false
+    src:format parse "[?before[! [?inside?] !]after?]"
+    bin:"[?before[! [?inside?] !]after?]"
+  }
+  TestTemplateWithCode15:{
+    skip:false
+    src:format parse "[?before[! {x:[?one?] y:[?two?] z:[?three?]} !]after?]"
+    bin:"[?before[! {x:[?one?] y:[?two?] z:[?three?]} !]after?]"
+  }
+  TestTemplateWithCodeEx1:{
+    skip:false
+    src:format parse "[?foo[! operator {} !]?]"
+    bin:"[?foo[! operator {} !]?]"
+  }
+  TestTemplateWithCodeEx2:{
+    skip:false
+    src:format parse "{t:[?text?]}"
+    bin:"{t:[?text?]}"
+  }
+  TestTemplateWithCodeEx3:{
+    skip:false
+    src:format parse "{head:[?a head?] body:[?a body?] html:[?<html>[! head {} !][! body {} !]</html>?] <-html {}}"
+    bin:"{head:[?a head?] body:[?a body?] html:[?<html>[! head {} !][! body {} !]</html>?] <-html {}}"
+  }
+  TestTemplateMultiline1:{
+    skip:false
+    src:format parse "[?\n  line number one\n  line number two\n  line number three\n?]"
+    bin:"[?\n  line number one\n  line number two\n  line number three\n?]"
+  }
+  TestTemplateMultiline2:{
+    skip:false
+    src:format parse "    [?\n    line number one\n    line number two\n    line number three\n  ?]"
+    bin:"[?\n  line number one\n  line number two\n  line number three\n?]"
+  }
+  TestTemplateMultiline3:{
+    skip:false
+    src:format parse "[?\n  <html>\n    [! head {} !]\n    [! body {} !]\n  </html>\n?]"
+    bin:"[?\n  <html>\n    [! head {} !]\n    [! body {} !]\n  </html>\n?]"
+  }
+  TestTemplateMultilineCRLF1:{
+    skip:false
+    src:format parse "[?\r\n  line number one\r\n  line number two\r\n  line number three\r\n?]"
+    bin:"[?\n  line number one\n  line number two\n  line number three\n?]"
+  }
+  TestTemplateMultilineCRLF2:{
+    skip:false
+    src:format parse "    [?\r\n    line number one\r\n    line number two\r\n    line number three\r\n  ?]"
+    bin:"[?\n  line number one\n  line number two\n  line number three\n?]"
+  }
+  TestTemplateMultilineCRLF3:{
+    skip:false
+    src:format parse "[?\r\n  <html>\r\n    [! head {} !]\r\n    [! body {} !]\r\n  </html>\r\n?]"
+    bin:"[?\n  <html>\n    [! head {} !]\n    [! body {} !]\n  </html>\n?]"
+  }
+  TestTemplateMultilineEx:{
+    skip:false
+    src:format parse "[?\n  <html>\n    <h1>[! string $R !]</h1>\n  </html>\n?]"
+    bin:"[?\n  <html>\n    <h1>[! string $R !]</h1>\n  </html>\n?]"
+  }
+  TestTemplateMultilineWithMultipleSectionsOnOne:{
+    skip:false
+    src:format parse "[?\n  first line\n  this [! $R.is !] the [! $R.middle !] line\n  last line\n?]"
+    bin:"[?\n  first line\n  this [! $R.is !] the [! $R.middle !] line\n  last line\n?]"
+  }
+  TestTemplateWithStringArray:{
+    skip:false
+    src:format parse "[?\na\n          [! \"w\" \"x\" \"y\" \"z\" !]\n?]"
+    bin:"[?\n  a\n            [! \"w\" \"x\" \"y\" \"z\" !]\n?]"
+  }
+  TestTemplateWithLongArray:{
+    skip:false
+    src:format parse "[?\na\n          [! 1 2 3 4 5 !]\n?]"
+    bin:"[?\n  a\n            [! 1 2 3 4 5 !]\n?]"
+  }
+  TestTemplateMultilineMultipleCodeSections0:{
+    skip:false
+    src:format parse "[?\n[! \"a\" \"b\" \"c\" !][! \"x\" \"y\" \"z\" !]\n?]"
+    bin:"[?\n  [! \"a\" \"b\" \"c\" !][! \"x\" \"y\" \"z\" !]\n?]"
+  }
+  TestTemplateMultilineMultipleCodeSections1:{
+    skip:false
+    src:format parse "[?\n  [! \"a\" \"b\" \"c\" !][! \"x\" \"y\" \"z\" !]\n?]"
+    bin:"[?\n  [! \"a\" \"b\" \"c\" !][! \"x\" \"y\" \"z\" !]\n?]"
+  }
+  TestTemplateMultilineMultipleCodeSections2:{
+    skip:false
+    src:format parse "[?\n  [! \"a\" \"b\" \"c\" !]\n    [! \"d\" \"e\" \"f\" !]\n      [! \"g\" \"h\" \"i\" !]?]"
+    bin:"[?\n  [! \"a\" \"b\" \"c\" !]\n    [! \"d\" \"e\" \"f\" !]\n      [! \"g\" \"h\" \"i\" !]?]"
+  }
+  TestTemplateMultilineMultipleCodeSections3:{
+    skip:false
+    src:format parse "[?\n  [! \"a\" !] [! \"b\" \"c\" !]\n    [! \"d\" \"e\" !] [! \"f\" !]\n      [! \"g\" !] [! \"h\" !] [! \"i\" !]?]"
+    bin:"[?\n  [! \"a\" !] [! \"b\" \"c\" !]\n    [! \"d\" \"e\" !] [! \"f\" !]\n      [! \"g\" !] [! \"h\" !] [! \"i\" !]?]"
+  }
+  TestTemplateMultilineMultipleCodeSections4:{
+    skip:false
+    src:format parse "[?\n  [! \"a\" \"b\" \"c\" !]\n  [! \"x\" \"y\" \"z\" !]\n?]"
+    bin:"[?\n  [! \"a\" \"b\" \"c\" !]\n  [! \"x\" \"y\" \"z\" !]\n?]"
+  }
+  TestTemplateAsInlineMonadicOperator:{
+    skip:false
+    src:format parse "[? between [! $R !] words ?] \"the\""
+    bin:"[? between [! $R !] words ?] \"the\""
+  }
+  TestEmptyVectorx:{
+    skip:false
+    src:format parse "~x"
+    bin:"~x"
+  }
+  TestEmptyVectorb:{
+    skip:false
+    src:format parse "~b"
+    bin:"~b"
+  }
+  TestEmptyVectorl:{
+    skip:false
+    src:format parse "~l"
+    bin:"~l"
+  }
+  TestEmptyVectord:{
+    skip:false
+    src:format parse "~d"
+    bin:"~d"
+  }
+  TestEmptyVectorm:{
+    skip:false
+    src:format parse "~m"
+    bin:"~m"
+  }
+  TestEmptyVectory:{
+    skip:false
+    src:format parse "~y"
+    bin:"~y"
+  }
+  TestEmptyVectort:{
+    skip:false
+    src:format parse "~t"
+    bin:"~t"
+  }
+  TestEmptyVectorn:{
+    skip:false
+    src:format parse "~n"
+    bin:"~n"
+  }
+  TestCubeWithNullTestCanonical:{
+    skip:false
+    src:#testcanonical format parse "[S|x #a 10.0 #a -- #a 30.0]"
+    bin:"[S|x #a 10.0 #a -- #a 30.0]"
+  }
+  TestCubeWithNullCanonical:{
+    skip:false
+    src:#canonical format parse "[S|x #a 10.0 #a -- #a 30.0]"
+    bin:"[\n  S |   x\n  #a 10.0\n  #a   --\n  #a 30.0\n]"
+  }
+}

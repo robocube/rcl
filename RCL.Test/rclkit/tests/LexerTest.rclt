@@ -1,0 +1,563 @@
+{
+  TestByteLiterals:{
+    skip:false
+    src:{
+      :lex "\\xA0 \\xB1 \\xC2"
+      :lextype "\\xA0 \\xB1 \\xC2"
+    }
+    bin:{
+      :"\\xA0" " " "\\xB1" " " "\\xC2"
+      :"literal" "whitespace" "literal" "whitespace" "literal"
+    }
+  }
+  TestNumbers:{
+    skip:false
+    src:{
+      :lex "1.0 2.0 3.0"
+      :lextype "1.0 2.0 3.0"
+    }
+    bin:{
+      :"1.0" " " "2.0" " " "3.0"
+      :"number" "whitespace" "number" "whitespace" "number"
+    }
+  }
+  TestDouble:{
+    skip:false
+    src:{
+      :lex "1 2 3d"
+      :lextype "1 2 3d"
+    }
+    bin:{
+      :"1" " " "2" " " "3d"
+      :"number" "whitespace" "number" "whitespace" "number"
+    }
+  }
+  TestBoolean:{
+    skip:false
+    src:{
+      :lex "true"
+      :lextype "true"
+    }
+    bin:{
+      :"true"
+      :"boolean"
+    }
+  }
+  TestNumber:{
+    skip:false
+    src:{
+      :lex " 37 "
+      :lextype " 37 "
+    }
+    bin:{
+      :" " "37" " "
+      :"whitespace" "number" "whitespace"
+    }
+  }
+  TestNumberWithE:{
+    skip:false
+    src:{
+      :lex "3.4e5d"
+      :lextype "3.4e5d"
+    }
+    bin:{
+      :"3.4e5d"
+      :"number"
+    }
+  }
+  TestNumberWithEPlus:{
+    skip:false
+    src:{
+      :lex "1.026451811E+15d"
+      :lextype "1.026451811E+15d"
+    }
+    bin:{
+      :"1.026451811E+15d"
+      :"number"
+    }
+  }
+  TestString:{
+    skip:false
+    src:{
+      :lex "\"HelloWorld\""
+      :lextype "\"HelloWorld\""
+    }
+    bin:{
+      :"\"HelloWorld\""
+      :"string"
+    }
+  }
+  TestStringWithWhitespace:{
+    skip:false
+    src:{
+      :lex "\" Hello World! \""
+      :lextype "\" Hello World! \""
+    }
+    bin:{
+      :"\" Hello World! \""
+      :"string"
+    }
+  }
+  TestIncr:{
+    skip:false
+    src:{
+      :lex "++ +- +~"
+      :lextype "++ +- +~"
+    }
+    bin:{
+      :"++" " " "+-" " " "+~"
+      :"incr" "whitespace" "incr" "whitespace" "incr"
+    }
+  }
+  TestReference:{
+    skip:false
+    src:{
+      :lex "$var"
+      :lextype "$var"
+    }
+    bin:{
+      :"$var"
+      :"reference"
+    }
+  }
+  TestTypedReference:{
+    skip:false
+    src:{
+      :lex "i$var"
+      :lextype "i$var"
+    }
+    bin:{
+      :"i$var"
+      :"reference"
+    }
+  }
+  TestOperatorNextToName:{
+    skip:false
+    src:{
+      :lex "$R+$L"
+      :lextype "$R+$L"
+    }
+    bin:{
+      :"$R" "+" "$L"
+      :"reference" "name" "reference"
+    }
+  }
+  TestOperatorNextToNameAndFollowedByDecimalPoint:{
+    skip:false
+    src:{
+      :lex "$R+.5d"
+      :lextype "$R+.5d"
+    }
+    bin:{
+      :"$R" "+" ".5d"
+      :"reference" "name" "number"
+    }
+  }
+  TestNestedReference:{
+    skip:false
+    src:{
+      :lex "$var.block.target"
+      :lextype "$var.block.target"
+    }
+    bin:{
+      :"$var.block.target"
+      :"reference"
+    }
+  }
+  TestSymbol:{
+    skip:false
+    src:{
+      :lex "#var"
+      :lextype "#var"
+    }
+    bin:{
+      :"#var"
+      :"symbol"
+    }
+  }
+  TestTimestamp:{
+    skip:false
+    src:{
+      :lex "2015.05.24 08:12:00.1234567"
+      :lextype "2015.05.24 08:12:00.1234567"
+    }
+    bin:{
+      :"2015.05.24 08:12:00.1234567"
+      :"time"
+    }
+  }
+  TestTimestamp1:{
+    skip:false
+    src:{
+      :lex "2015.05.24 08:12:00.1234567 2015.05.25 09:13:00.1234567"
+      :lextype "2015.05.24 08:12:00.1234567 2015.05.25 09:13:00.1234567"
+    }
+    bin:{
+      :"2015.05.24 08:12:00.1234567" " " "2015.05.25 09:13:00.1234567"
+      :"time" "whitespace" "time"
+    }
+  }
+  TestTimespan:{
+    skip:false
+    src:{
+      :lex "0.08:00:00.0000000 10.08:00:00.0000000 100.08:00:00.0000000"
+      :lextype "0.08:00:00.0000000 10.08:00:00.0000000 100.08:00:00.0000000"
+    }
+    bin:{
+      :"0.08:00:00.0000000" " " "10.08:00:00.0000000" " " "100.08:00:00.0000000"
+      :"time" "whitespace" "time" "whitespace" "time"
+    }
+  }
+  TestDate:{
+    skip:false
+    src:{
+      :lex "2015.05.24"
+      :lextype "2015.05.24"
+    }
+    bin:{
+      :"2015.05.24"
+      :"time"
+    }
+  }
+  TestTime:{
+    skip:false
+    src:{
+      :lex "08:12"
+      :lextype "08:12"
+    }
+    bin:{
+      :"08:12"
+      :"time"
+    }
+  }
+  TestDatetime:{
+    skip:false
+    src:{
+      :lex "2015.05.24 08:12"
+      :lextype "2015.05.24 08:12"
+    }
+    bin:{
+      :"2015.05.24 08:12"
+      :"time"
+    }
+  }
+  TestSymbolTwoPart:{
+    skip:false
+    src:{
+      :lex "#part0,part1"
+      :lextype "#part0,part1"
+    }
+    bin:{
+      :"#part0,part1"
+      :"symbol"
+    }
+  }
+  TestSymbolThreePart:{
+    skip:false
+    src:{
+      :lex "#part0,part1,part2"
+      :lextype "#part0,part1,part2"
+    }
+    bin:{
+      :"#part0,part1,part2"
+      :"symbol"
+    }
+  }
+  TestSymbolTyped:{
+    skip:false
+    src:{
+      :lex "#id,43,23"
+      :lextype "#id,43,23"
+    }
+    bin:{
+      :"#id,43,23"
+      :"symbol"
+    }
+  }
+  TestSymbolWithDouble:{
+    skip:false
+    src:{
+      :lex "#id,1.2,3.4"
+      :lextype "#id,1.2,3.4"
+    }
+    bin:{
+      :"#id,1.2,3.4"
+      :"symbol"
+    }
+  }
+  TestEmptySymbol:{
+    skip:false
+    src:{
+      :lex "#"
+      :lextype "#"
+    }
+    bin:{
+      :"#"
+      :"symbol"
+    }
+  }
+  TestWildcardSymbol:{
+    skip:false
+    src:{
+      :lex "#page,*"
+      :lextype "#page,*"
+    }
+    bin:{
+      :"#page,*"
+      :"symbol"
+    }
+  }
+  TestQuotedSymbols:{
+    skip:false
+    src:{
+      :lex "#'a sym' #'b sym' #'c sym'"
+      :lextype "#'a sym' #'b sym' #'c sym'"
+    }
+    bin:{
+      :"#'a sym'" " " "#'b sym'" " " "#'c sym'"
+      :"symbol" "whitespace" "symbol" "whitespace" "symbol"
+    }
+  }
+  TestEmptyBlock:{
+    skip:false
+    src:{
+      :lex "{}"
+      :lextype "{}"
+    }
+    bin:{
+      :"{" "}"
+      :"block" "block"
+    }
+  }
+  TestAnonymousBlocks:{
+    skip:false
+    src:{
+      :lex "{:23 :true :\"My String\"}"
+      :lextype "{:23 :true :\"My String\"}"
+    }
+    bin:{
+      :"{" ":" "23" " " ":" "true" " " ":" "\"My String\"" "}"
+      :"block" "evaluator" "number" "whitespace" "evaluator" "boolean" "whitespace" "evaluator" "string" "block"
+    }
+  }
+  TestNamedBlocks:{
+    skip:false
+    src:{
+      :lex "{number:23 boolean:true string:\"this is a string\"}"
+      :lextype "{number:23 boolean:true string:\"this is a string\"}"
+    }
+    bin:{
+      :"{" "number" ":" "23" " " "boolean" ":" "true" " " "string" ":" "\"this is a string\"" "}"
+      :"block" "name" "evaluator" "number" "whitespace" "name" "evaluator" "boolean" "whitespace" "name" "evaluator" "string" "block"
+    }
+  }
+  TestMixingNestedNamedAndAnonymousBlocks:{
+    skip:false
+    src:{
+      :lex "{number:23 :true nestedBlock:{nestedString:\"aNestedString\"}string:\"a string\"}"
+      :lextype "{number:23 :true nestedBlock:{nestedString:\"aNestedString\"}string:\"a string\"}"
+    }
+    bin:{
+      :"{" "number" ":" "23" " " ":" "true" " " "nestedBlock" ":" "{" "nestedString" ":" "\"aNestedString\"" "}" "string" ":" "\"a string\"" "}"
+      :"block" "name" "evaluator" "number" "whitespace" "evaluator" "boolean" "whitespace" "name" "evaluator" "block" "name" "evaluator" "string" "block" "name" "evaluator" "string" "block"
+    }
+  }
+  TestOperator:{
+    skip:false
+    src:{
+      :lex "or{left:true right:false}"
+      :lextype "or{left:true right:false}"
+    }
+    bin:{
+      :"or" "{" "left" ":" "true" " " "right" ":" "false" "}"
+      :"name" "block" "name" "evaluator" "boolean" "whitespace" "name" "evaluator" "boolean" "block"
+    }
+  }
+  TestNestedOperator:{
+    skip:false
+    src:{
+      :lex "or{left:and{left:true right:true}right:false}"
+      :lextype "or{left:and{left:true right:true}right:false}"
+    }
+    bin:{
+      :"or" "{" "left" ":" "and" "{" "left" ":" "true" " " "right" ":" "true" "}" "right" ":" "false" "}"
+      :"name" "block" "name" "evaluator" "name" "block" "name" "evaluator" "boolean" "whitespace" "name" "evaluator" "boolean" "block" "name" "evaluator" "boolean" "block"
+    }
+  }
+  TestGteExpression:{
+    skip:false
+    src:{
+      :lex "1d>=2d"
+      :lextype "1d>=2d"
+    }
+    bin:{
+      :"1d" ">=" "2d"
+      :"number" "name" "number"
+    }
+  }
+  TestWhiteSpace:{
+    skip:false
+    src:{
+      :lex " \t \a \n \r "
+      :lextype " \t \a \n \r "
+    }
+    bin:{
+      :" \t \a \n \r "
+      :"whitespace"
+    }
+  }
+  TestBooleanWithWhitespace:{
+    skip:false
+    src:{
+      :lex " \t true "
+      :lextype " \t true "
+    }
+    bin:{
+      :" \t " "true" " "
+      :"whitespace" "boolean" "whitespace"
+    }
+  }
+  TestBackslashInStringToken:{
+    skip:false
+    src:{
+      :lex "{a:\"\\\\A\" b:\"B\"}"
+      :lextype "{a:\"\\\\A\" b:\"B\"}"
+    }
+    bin:{
+      :"{" "a" ":" "\"\\\\A\"" " " "b" ":" "\"B\"" "}"
+      :"block" "name" "evaluator" "string" "whitespace" "name" "evaluator" "string" "block"
+    }
+  }
+  TestStringWithSyntaxEmbedded:{
+    skip:false
+    src:{
+      :lex "\"assert failed:=={l:1l r:2l}\""
+      :lextype "\"assert failed:=={l:1l r:2l}\""
+    }
+    bin:{
+      :"\"assert failed:=={l:1l r:2l}\""
+      :"string"
+    }
+  }
+  TestEscapedBackslashJunk:{
+    skip:false
+    src:{
+      :lex "\\"
+      :lextype "\\"
+    }
+    bin:{
+      :"\\"
+      :"junk"
+    }
+  }
+  TestMultipleEscapedBackslashInString:{
+    skip:false
+    src:{
+      :lex "\"\\\\\\\\\""
+      :lextype "\"\\\\\\\\\""
+    }
+    bin:{
+      :"\"\\\\\\\\\""
+      :"string"
+    }
+  }
+  Test3Spacers:{
+    skip:false
+    src:{
+      :lex "--- --- ---"
+      :lextype "--- --- ---"
+    }
+    bin:{
+      :"---" " " "---" " " "---"
+      :"spacer" "whitespace" "spacer" "whitespace" "spacer"
+    }
+  }
+  TestConsecutiveSpecialOperators:{
+    skip:false
+    src:{
+      :lex "!*%-+/"
+      :lextype "!*%-+/"
+    }
+    bin:{
+      :"!" "*" "%" "-" "+" "/"
+      :"name" "name" "name" "name" "name" "name"
+    }
+  }
+  TestSymbolWithDollarSign:{
+    skip:false
+    src:{
+      :lex "a:$ref"
+      :lextype "a:$ref"
+    }
+    bin:{
+      :"a" ":" "$ref"
+      :"name" "evaluator" "reference"
+    }
+  }
+  TestDashNotAllowedInNames:{
+    skip:false
+    src:{
+      :lex "a-b-c"
+      :lextype "a-b-c"
+    }
+    bin:{
+      :"a" "-" "b" "-" "c"
+      :"name" "name" "name" "name" "name"
+    }
+  }
+  TestUnderscoreAllowedInNames:{
+    skip:false
+    src:{
+      :lex "a_b_c"
+      :lextype "a_b_c"
+    }
+    bin:{
+      :"a_b_c"
+      :"name"
+    }
+  }
+  TestQuotedName:{
+    skip:false
+    src:{
+      :lex "{'t h i s h a s s p a c e s':1 2 3l}"
+      :lextype "{'t h i s h a s s p a c e s':1 2 3l}"
+    }
+    bin:{
+      :"{" "'t h i s h a s s p a c e s'" ":" "1" " " "2" " " "3l" "}"
+      :"block" "name" "evaluator" "number" "whitespace" "number" "whitespace" "number" "block"
+    }
+  }
+  TestLeadingUnderscore:{
+    skip:false
+    src:{
+      :lex "_private"
+      :lextype "_private"
+    }
+    bin:{
+      :"_private"
+      :"name"
+    }
+  }
+  TestMultiLeadingUnderscore:{
+    skip:false
+    src:{
+      :lex "___private"
+      :lextype "___private"
+    }
+    bin:{
+      :"___private"
+      :"name"
+    }
+  }
+  TestPipe:{
+    skip:false
+    src:{
+      :lex "x|y"
+      :lextype "x|y"
+    }
+    bin:{
+      :"x" "|" "y"
+      :"name" "spacer" "name"
+    }
+  }
+}

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'rclt' ">
     <StartAction>Project</StartAction>
@@ -8,5 +8,19 @@
     <EnvironmentVariables>
       <Variable name="RCL_BUILD" value="dev" />
     </EnvironmentVariables>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <StartArguments>--program=rcl/rclt.rcl --program=rcl/rclt.rcl tests/CoreTest1.rclt tests/CoreTest2.rclt tests/CoreTest3.rclt tests/EvalTest.rclt tests/CubeTest.rclt tests/LexerTest.rclt tests/BlockTest.rclt tests/RunnerTest.rclt tests/ParserTest.rclt --action=main</StartArguments>
+    <StartWorkingDirectory>Y:\dev\src\rcl\RCL.Test\rclkit\</StartWorkingDirectory>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PublishUrlHistory>publish\</PublishUrlHistory>
+    <InstallUrlHistory />
+    <SupportUrlHistory />
+    <UpdateUrlHistory />
+    <BootstrapperUrlHistory />
+    <ErrorReportUrlHistory />
+    <FallbackCulture>en-US</FallbackCulture>
+    <VerifyUploadedFiles>false</VerifyUploadedFiles>
   </PropertyGroup>
 </Project>

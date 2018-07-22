@@ -1,0 +1,1789 @@
+{
+  TestOpenSendReceiveCloseCube:{
+    skip:true
+    src:{
+      handle:open #cube,'..','..',data,test
+      :$handle receive $handle send {
+        verb:#write
+        symbol:#a
+        data:{
+          a:1
+          b:2.0
+          c:3m
+          d:"x"
+          e:#x
+          f:true
+        }
+      }
+      <-$handle receive $handle send {
+        verb:#read
+        symbol:#a
+        rows:0
+      }
+    }
+    bin:[
+      S | a   b  c d   e     f
+      #a  1 2.0 3m "x" #x true
+    ]
+  }
+  TestSaveLoadDelete:{
+    skip:false
+    src:{
+      x:parse load "file" save format {
+        a:1.0
+        b:2.0
+        c:3.0
+      }
+      :delete "file"
+      <-$x
+    }
+    bin:{
+      a:1.0
+      b:2.0
+      c:3.0
+    }
+  }
+  TestSaveLoadExtraLine:{
+    skip:false
+    src:{
+      :"file" save "line0" "line1" "line2"
+      text:load "file"
+      :delete "file"
+      <-$text
+    }
+    bin:"line0\nline1\nline2"
+  }
+  TestSaveLoadUnderline:{
+    skip:false
+    src:{
+      :"file" save "line0" "line1" "line2"
+      :"file" save "line0" "line1"
+      text:load "file"
+      :delete "file"
+      <-$text
+    }
+    bin:"line0\nline1"
+  }
+  TestSavebinLoadbinDelete:{
+    skip:false
+    src:{
+      x:parse loadbin "file" savebin binary {
+        a:1.0
+        b:2.0
+        c:3.0
+      }
+      :delete "file"
+      <-$x
+    }
+    bin:{
+      a:1.0
+      b:2.0
+      c:3.0
+    }
+  }
+  TestPath:{
+    skip:false
+    src:(path #home,env,'env.rclb') like "*/env/env.rclb"
+    bin:true
+  }
+  TestFile:{
+    skip:false
+    src:{
+      before:file "file"
+      :"file" save #pretty format {
+        a:1
+        b:2
+        c:3
+      }
+      after:file "file"
+      :delete "file"
+      <-$before & $after
+    }
+    bin:false true
+  }
+  TestFileAndPath:{
+    skip:false
+    src:{
+      before:file #work,file
+      :#work,file save #pretty format {
+        a:1
+        b:2
+        c:3
+      }
+      after:file #work,file
+      :delete #work,file
+      <-$before & $after
+    }
+    bin:false true
+  }
+  TestTryFail:{
+    skip:false
+    src:try {
+      <-900 fail "fail with status 900"
+    }
+    bin:{
+      status:900
+      data:"<<Custom,fail with status 900>>"
+    }
+  }
+  TestTryFail1:{
+    skip:false
+    src:try {
+      <-fail "rando failure message"
+    }
+    bin:{
+      status:8
+      data:"<<Custom,rando failure message>>"
+    }
+  }
+  TestWatchf:{
+    skip:true
+    src:{
+      h:exec "mkdir test"
+      :cd "test"
+      fsw:watchf pwd {}
+      :exec "touch foo"
+      create:waitf $fsw
+      :"foo" save "bar"
+      update:waitf $fsw
+      :exec "rm foo"
+      delete:waitf $fsw
+      :cd ".."
+      :exec "rmdir test"
+      <-eval {
+        create:#event #name from last $create
+        update:#event #name from last $update
+        delete:#event #name from last $delete
+      }
+    }
+    bin:{
+      create:{
+        event:"created"
+        name:"foo"
+      }
+      update:{
+        event:"changed"
+        name:"foo"
+      }
+      delete:{
+        event:"deleted"
+        name:"foo"
+      }
+    }
+  }
+  TestTryFailAssert:{
+    skip:false
+    src:#status from try {
+      <-#x assert #y
+    }
+    bin:{
+      status:1
+    }
+  }
+  TestTryOk:{
+    skip:false
+    src:#status #data from try {
+      <-#x assert #x
+    }
+    bin:{
+      status:0
+      data:true
+    }
+  }
+  TestTryEval:{
+    skip:false
+    src:try {
+      <-eval {
+        a:1
+      }
+    }
+    bin:{
+      status:0
+      data:{
+        a:1
+      }
+    }
+  }
+  TestTryEval1:{
+    skip:false
+    src:try try {
+      <-eval {
+        a:1
+      }
+    }
+    bin:{
+      status:0
+      data:{
+        status:0
+        data:{
+          a:1
+        }
+      }
+    }
+  }
+  TestTryEval2:{
+    skip:false
+    src:try try try {
+      <-eval {
+        a:1
+      }
+    }
+    bin:{
+      status:0
+      data:{
+        status:0
+        data:{
+          status:0
+          data:{
+            a:1
+          }
+        }
+      }
+    }
+  }
+  TestTrySwitchLast:{
+    skip:false
+    src:#status from try {
+      <-true switch {
+        :load "/not/a/file"
+      }
+    }
+    bin:{
+      status:1
+    }
+  }
+  TestTryBadReference:{
+    skip:false
+    src:#status from try {
+      <-$foo
+    }
+    bin:{
+      status:1
+    }
+  }
+  TestTryAsync0:{
+    skip:false
+    src:{
+      b:bot {
+        <-try {
+          <-#x assert #y
+        }
+      }
+      <-0 < $b
+    }
+    bin:true
+  }
+  TestTryAsync1:{
+    skip:false
+    src:{
+      b:bot {
+        <-try {
+          <-#x assert #y
+        }
+      }
+      :print "async try"
+      <-#status from wait $b
+    }
+    bin:{
+      status:1
+    }
+  }
+  TestTryAsync2:{
+    skip:false
+    src:{
+      b:bot {
+        <-try {
+          <-#x assert #x
+        }
+      }
+      <-#status from wait $b
+    }
+    bin:{
+      status:0
+    }
+  }
+  TestTryAsync3:{
+    skip:false
+    src:{
+      b:bot {
+        <-try {
+          <-#foo read 0
+        }
+      }
+      :kill $b
+      <-#status from wait $b
+    }
+    bin:{
+      status:2
+    }
+  }
+  TestTryAsync4:{
+    skip:false
+    src:{
+      b:bot {
+        <-try {
+          <-#foo read 0
+        }
+      }
+      :kill $b
+      f:fiber {
+        <-#status from wait $b
+      }
+      <-wait $f
+    }
+    bin:{
+      status:2
+    }
+  }
+  TestTryAssert:{
+    skip:false
+    src:try {
+      <-assert false
+    }
+    bin:{
+      status:1
+      data:"<<Assert,Failed: assert false>>"
+    }
+  }
+  TestBotWithChildFibers:{
+    skip:false
+    src:{
+      b:bot {
+        add_one:{
+          <-$R + 1
+        }
+        f:fiber {
+          <-add_one 10
+        }
+        <-wait $f
+      }
+      <-wait $b
+    }
+    bin:11
+  }
+  TestFiberWithChildFibers:{
+    skip:false
+    src:{
+      p:fiber {
+        <-eval {
+          add_one:{
+            <-$R + 1
+          }
+          c:fiber {
+            <-add_one 10
+          }
+          <-wait $c
+        }
+      }
+      <-wait $p
+    }
+    bin:11
+  }
+  TestTryWaitKill:{
+    skip:false
+    src:{
+      b:bot {
+        <-try {
+          w:{
+            :#x write {
+              i:++
+            }
+            <-w $R
+          }
+          :fiber {
+            <-w 0
+          }
+          <-wait 0
+        }
+      }
+      :sleep 0
+      :fiber {
+        :#y dispatch 1
+        <-kill $b
+      }
+      :#y write {
+        i:++
+      }
+      r:wait $b
+      <-#status from $r
+    }
+    bin:{
+      status:2
+    }
+  }
+  TestTryWaitKill1:{
+    skip:false
+    src:{
+      b:bot {
+        <-try {
+          w:{
+            :#x write {
+              i:++
+            }
+            <-w $R
+          }
+          :fiber {
+            <-w 0
+          }
+          <-123
+        }
+      }
+      :sleep 0
+      :fiber {
+        :#y dispatch 1
+        <-kill $b
+      }
+      :#y write {
+        i:++
+      }
+      <-wait $b
+    }
+    bin:{
+      status:0
+      data:123
+    }
+  }
+  TestTryWaitKill2:{
+    skip:false
+    src:{
+      b:bot {
+        <-try {
+          w:{
+            :#x write {
+              i:++
+            }
+            <-w $R
+          }
+          :fiber {
+            <-w 0
+          }
+          :fiber {
+            <-w 0
+          }
+          :fiber {
+            <-w 0
+          }
+          <-123
+        }
+      }
+      :wait $b & 0
+      :kill $b
+      <-wait $b
+    }
+    bin:{
+      status:0
+      data:123
+    }
+  }
+  TestTryWaitKill3:{
+    skip:false
+    src:{
+      p:{
+        serve:{
+          b:bot {
+            <-try {
+              <-eval {
+                <-2 + 3
+              }
+            }
+          }
+          f1:fiber {
+            br:wait $b
+            <-$br
+          }
+          <-wait $f1
+        }
+        r:wait fiber {
+          <-serve #
+        }
+      }
+      <-first #r from eval $p
+    }
+    bin:{
+      status:0
+      data:5
+    }
+  }
+  TestTryWaitKill4:{
+    skip:false
+    src:{
+      p:{
+        b:bot {
+          <-try {
+            <-eval {
+              :12
+              :13
+            }
+          }
+        }
+        f:fiber {
+          br:wait $b
+          <-$br
+        }
+        r:wait $f
+      }
+      <-first #r from eval $p
+    }
+    bin:{
+      status:0
+      data:{
+        :12
+        :13
+      }
+    }
+  }
+  TestTryWaitKill5:{
+    skip:false
+    src:{
+      w:{
+        :#x write {
+          i:++
+        }
+        <-w $R
+      }
+      f0:fiber {
+        <-w 0
+      }
+      f1:fiber {
+        <-w 0
+      }
+      f2:fiber {
+        <-w 0
+      }
+      :kill $f0
+      :#x dispatch 0
+      :#x dispatch 10
+      :kill $f1
+      :kill $f2
+      <-0
+    }
+    bin:0
+  }
+  TestTryWaitKill6:{
+    skip:false
+    src:{
+      w:{
+        :#x write {
+          i:++
+        }
+        <-w $R
+      }
+      f0:fiber {
+        <-w 0
+      }
+      f1:fiber {
+        <-w 0
+      }
+      f2:fiber {
+        <-assert false
+      }
+      :wait $f2
+      :#x dispatch 0
+      :#x dispatch 10
+      :kill $f0
+      :kill $f1
+      <-0
+    }
+    bin:0
+  }
+  TestKillAfterThrow:{
+    skip:false
+    src:{
+      b:bot {
+        :assert false
+      }
+      :wait $b
+      :kill $b
+      <-0
+    }
+    bin:0
+  }
+  TestWaitFiberTimeout:{
+    skip:false
+    src:#status get try {
+      <-500 wait fiber {
+        <-read #a
+      }
+    }
+    bin:1
+  }
+  TestWaitBotTimeout:{
+    skip:false
+    src:#status get try {
+      <-500 wait bot {
+        <-read #a
+      }
+    }
+    bin:1
+  }
+  TestWaitFiberNoTimeout:{
+    skip:false
+    src:{
+      f:fiber {
+        <-try {
+          <-500 wait fiber {
+            <-read #a
+          }
+        }
+      }
+      :#a write {
+        x:1
+      }
+      <-#status get wait $f
+    }
+    bin:0
+  }
+  TestWaitBotNoTimeout:{
+    skip:false
+    src:#status get try {
+      <-500 wait bot {
+        f:fiber {
+          <-read #a
+        }
+        :#a write {
+          x:1
+        }
+        <-wait $f
+      }
+    }
+    bin:0
+  }
+  TestWaitWithConflictingResult4:{
+    skip:false
+    src:{
+      f:fiber {
+        :#a read 0
+        :#m putm 1
+      }
+      :200 wait $f
+      :kill $f
+      :#a write {
+        x:1
+      }
+      :wait $f
+      :assert not hasm #m
+      <-0
+    }
+    bin:0
+  }
+  TestModule:{
+    skip:false
+    src:{
+      lib:{
+        f1:{
+          <-$R * $R
+        }
+        f2:{
+          <-f1 $R
+        }
+      }
+      <-lib.f2 3
+    }
+    bin:9
+  }
+  TestModule1:{
+    skip:false
+    src:{
+      lib:{
+        f1:{
+          <-$R * $R
+        }
+        f2:{
+          <-f1 $R
+        }
+        f3:{
+          <-f2 $R
+        }
+      }
+      <-lib.f3 3
+    }
+    bin:9
+  }
+  TestModule2:{
+    skip:false
+    src:{
+      lib:{
+        f1:{
+          <-1 + 2
+        }
+      }
+      <-lib.f1 {}
+    }
+    bin:3
+  }
+  TestParseDefault:{
+    skip:false
+    src:parse "{a:1 b:2.0 c:\"3\"}"
+    bin:{
+      a:1
+      b:2.0
+      c:"3"
+    }
+  }
+  TestParseDefault1:{
+    skip:false
+    src:#rcl parse "{a:1 b:2.0 c:\"3\"}"
+    bin:{
+      a:1
+      b:2.0
+      c:"3"
+    }
+  }
+  TestParseCSV:{
+    skip:false
+    src:#csv parse "Year,Make,Model,Description,Price\n1997,Ford,E350,\"ac, abs, moon\",3000.00\n1999,Chevy,\"Venture \"\"Extended Edition\"\"\",\"\",4900.00\n1999,Chevy,\"Venture \"\"Extended Edition, Very Large\"\"\",\"\",5000.00\n1996,Jeep,Grand Cherokee,\"MUST SELL!\nair, moon roof, loaded\",4799.00"
+    bin:{
+      Year:"1997" "1999" "1999" "1996"
+      Make:"Ford" "Chevy" "Chevy" "Jeep"
+      Model:"E350" "Venture \"\"Extended Edition\"\"" "Venture \"\"Extended Edition, Very Large\"\"" "Grand Cherokee"
+      Description:"ac, abs, moon" "" "" "MUST SELL!\nair, moon roof, loaded"
+      Price:"3000.00" "4900.00" "5000.00" "4799.00"
+    }
+  }
+  TestParseCSV1:{
+    skip:false
+    src:#csv parse "a,b,c\r\nA,B,\r\n"
+    bin:{
+      a:"A"
+      b:"B"
+      c:""
+    }
+  }
+  TestParseCSV2:{
+    skip:false
+    src:#csv parse "a,b,c\r\n,B,C\r\n"
+    bin:{
+      a:""
+      b:"B"
+      c:"C"
+    }
+  }
+  TestParseCSV3:{
+    skip:false
+    src:#csv parse ""
+    bin:{}
+  }
+  TestParseCSV4:{
+    skip:false
+    src:#csv parse "\n"
+    bin:{}
+  }
+  TestParseCSV5:{
+    skip:false
+    src:#csv parse "\n\n"
+    bin:{}
+  }
+  TestParseCSV6:{
+    skip:false
+    src:#csv parse "\n\n\n"
+    bin:{}
+  }
+  TestParseJSONEmptyArray:{
+    skip:false
+    src:#json parse "[]"
+    bin:{}
+  }
+  TestParseJSONStringArray:{
+    skip:false
+    src:#json parse "[\"a\",\"b\",\"c\"]"
+    bin:{
+      :"a"
+      :"b"
+      :"c"
+    }
+  }
+  TestParseJSONNumberArray:{
+    skip:false
+    src:#json parse "[1, 2, 3.4e5]"
+    bin:{
+      :1.0
+      :2.0
+      :340000.0
+    }
+  }
+  TestParseJSONArrayOfArrays:{
+    skip:false
+    src:#json parse "[[\"a\",\"b\",\"c\"]]"
+    bin:{
+      :{
+        :"a"
+        :"b"
+        :"c"
+      }
+    }
+  }
+  TestParseJSONArrayOfDicts:{
+    skip:false
+    src:#json parse "[{\"a\":\"b\"},{\"c\":\"d\"}]"
+    bin:{
+      :{
+        a:"b"
+      }
+      :{
+        c:"d"
+      }
+    }
+  }
+  TestParseJSONMixedArray:{
+    skip:false
+    src:#json parse "[1, true, {\"a\": \"b\"}, [\"c\"]]"
+    bin:{
+      :1.0
+      :true
+      :{
+        a:"b"
+      }
+      :{
+        :"c"
+      }
+    }
+  }
+  TestParseJSONEmptyDict:{
+    skip:false
+    src:#json parse "{}"
+    bin:{}
+  }
+  TestParseJSONStringDict:{
+    skip:false
+    src:#json parse "{\"a\":\"b\" \"c\":\"d\"}"
+    bin:{
+      a:"b"
+      c:"d"
+    }
+  }
+  TestParseJSONNumberDict:{
+    skip:false
+    src:#json parse "{\"a\":1.0 \"b\":2.3}"
+    bin:{
+      a:1.0
+      b:2.3
+    }
+  }
+  TestParseJSONArrayDict:{
+    skip:false
+    src:#json parse "{\"a\": [\"b\", \"c\"], \"d\":[1.0, 2.3]}"
+    bin:{
+      a:{
+        :"b"
+        :"c"
+      }
+      d:{
+        :1.0
+        :2.3
+      }
+    }
+  }
+  TestParseJSONDictDict:{
+    skip:false
+    src:#json parse "{\"a\": {\"b\":\"c\"} \"d\": {\"e\":\"f\"}}"
+    bin:{
+      a:{
+        b:"c"
+      }
+      d:{
+        e:"f"
+      }
+    }
+  }
+  TestParseJSONMixedDict:{
+    skip:false
+    src:#json parse "{\"a\": true, \"b\": [1.0, 2.3], \"c\": {\"d\":null}}"
+    bin:{
+      a:true
+      b:{
+        :1.0
+        :2.3
+      }
+      c:{
+        d:{}
+      }
+    }
+  }
+  TestParseXML1:{
+    skip:false
+    src:#xml parse "<a></a>"
+    bin:{
+      a:{
+        :""
+      }
+    }
+  }
+  TestParseXML2:{
+    skip:false
+    src:#xml parse "<a/>"
+    bin:{
+      a:{
+        :""
+      }
+    }
+  }
+  TestParseXML3:{
+    skip:false
+    src:#xml parse "<a>x</a>"
+    bin:{
+      a:{
+        :"x"
+      }
+    }
+  }
+  TestParseXML4:{
+    skip:false
+    src:#xml parse "<a b=\"x\"></a>"
+    bin:{
+      a:{
+        b:"x"
+        :""
+      }
+    }
+  }
+  TestParseXML5:{
+    skip:false
+    src:#xml parse "<a b=\"x\" c=\"y\" d=\"z\">w</a>"
+    bin:{
+      a:{
+        b:"x"
+        c:"y"
+        d:"z"
+        :"w"
+      }
+    }
+  }
+  TestParseXML6:{
+    skip:false
+    src:#xml parse "<a>x</a><b>y</b><c>z</c>"
+    bin:{
+      a:{
+        :"x"
+      }
+      b:{
+        :"y"
+      }
+      c:{
+        :"z"
+      }
+    }
+  }
+  TestParseXML7:{
+    skip:false
+    src:#xml parse "<a>x</a><b></b><c/>"
+    bin:{
+      a:{
+        :"x"
+      }
+      b:{
+        :""
+      }
+      c:{
+        :""
+      }
+    }
+  }
+  TestParseXML8:{
+    skip:false
+    src:#xml parse "<a><b>x</b><c>y</c><d>z</d></a>"
+    bin:{
+      a:{
+        :{
+          b:{
+            :"x"
+          }
+          c:{
+            :"y"
+          }
+          d:{
+            :"z"
+          }
+        }
+      }
+    }
+  }
+  TestParseXml9:{
+    skip:false
+    src:#xml parse "<a></a>"
+    bin:{
+      a:{
+        :""
+      }
+    }
+  }
+  TestParseXml10:{
+    skip:false
+    src:#xml parse "<a/>"
+    bin:{
+      a:{
+        :""
+      }
+    }
+  }
+  TestParseXml11:{
+    skip:false
+    src:#xml parse "<a>x</a>"
+    bin:{
+      a:{
+        :"x"
+      }
+    }
+  }
+  TestParseXml12:{
+    skip:false
+    src:#xml parse "<a>x</a><b>y</b><c>z</c>"
+    bin:{
+      a:{
+        :"x"
+      }
+      b:{
+        :"y"
+      }
+      c:{
+        :"z"
+      }
+    }
+  }
+  TestParseXml13:{
+    skip:false
+    src:#xml parse "<a>x</a><b></b><c/>"
+    bin:{
+      a:{
+        :"x"
+      }
+      b:{
+        :""
+      }
+      c:{
+        :""
+      }
+    }
+  }
+  TestParseXml14:{
+    skip:false
+    src:#xml parse "<a><b>x</b><c>y</c><d>z</d></a>"
+    bin:{
+      a:{
+        :{
+          b:{
+            :"x"
+          }
+          c:{
+            :"y"
+          }
+          d:{
+            :"z"
+          }
+        }
+      }
+    }
+  }
+  TestParseXml15:{
+    skip:false
+    src:#xml parse "<a><b><c>x</c></b></a>"
+    bin:{
+      a:{
+        :{
+          b:{
+            :{
+              c:{
+                :"x"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  TestParseXml16:{
+    skip:false
+    src:#xml parse "<a><b><c>x</c><d>y</d></b><e/></a>"
+    bin:{
+      a:{
+        :{
+          b:{
+            :{
+              c:{
+                :"x"
+              }
+              d:{
+                :"y"
+              }
+            }
+          }
+          e:{
+            :""
+          }
+        }
+      }
+    }
+  }
+  TestParseXml17:{
+    skip:false
+    src:#xml parse "<a f=\"i\"></a>"
+    bin:{
+      a:{
+        f:"i"
+        :""
+      }
+    }
+  }
+  TestParseXml18:{
+    skip:false
+    src:#xml parse "<a f=\"i\"/>"
+    bin:{
+      a:{
+        f:"i"
+        :""
+      }
+    }
+  }
+  TestParseXml19:{
+    skip:false
+    src:#xml parse "<a f=\"i\">x</a>"
+    bin:{
+      a:{
+        f:"i"
+        :"x"
+      }
+    }
+  }
+  TestParseXml20:{
+    skip:false
+    src:#xml parse "<a f=\"i\">x</a><b g=\"j\">y</b><c h=\"k\">z</c>"
+    bin:{
+      a:{
+        f:"i"
+        :"x"
+      }
+      b:{
+        g:"j"
+        :"y"
+      }
+      c:{
+        h:"k"
+        :"z"
+      }
+    }
+  }
+  TestParseXml21:{
+    skip:false
+    src:#xml parse "<a f=\"i\">x</a><b g=\"j\"></b><c h=\"k\"/>"
+    bin:{
+      a:{
+        f:"i"
+        :"x"
+      }
+      b:{
+        g:"j"
+        :""
+      }
+      c:{
+        h:"k"
+        :""
+      }
+    }
+  }
+  TestParseXml22:{
+    skip:false
+    src:#xml parse "<a f=\"i\"><b g=\"j\">x</b><c>y</c><d h=\"k\">z</d></a>"
+    bin:{
+      a:{
+        f:"i"
+        :{
+          b:{
+            g:"j"
+            :"x"
+          }
+          c:{
+            :"y"
+          }
+          d:{
+            h:"k"
+            :"z"
+          }
+        }
+      }
+    }
+  }
+  TestParseXml23:{
+    skip:false
+    src:#xml parse "<a f=\"i\"><b g=\"j\"><c h=\"k\">x</c></b></a>"
+    bin:{
+      a:{
+        f:"i"
+        :{
+          b:{
+            g:"j"
+            :{
+              c:{
+                h:"k"
+                :"x"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  TestParseXml24:{
+    skip:false
+    src:#xml parse "<a f=\"i\"><b><c g=\"j\">x</c><d>y</d></b><e h=\"k\"/></a>"
+    bin:{
+      a:{
+        f:"i"
+        :{
+          b:{
+            :{
+              c:{
+                g:"j"
+                :"x"
+              }
+              d:{
+                :"y"
+              }
+            }
+          }
+          e:{
+            h:"k"
+            :""
+          }
+        }
+      }
+    }
+  }
+  TestFormatPretty1:{
+    skip:false
+    src:#pretty format {}
+    bin:"{}"
+  }
+  TestFormatPretty2:{
+    skip:false
+    src:#pretty format {
+      a:1.0
+      b:2.0
+      c:3.0
+    }
+    bin:"{\n  a:1.0\n  b:2.0\n  c:3.0\n}"
+  }
+  TestFormatPretty3:{
+    skip:false
+    src:#pretty format {
+      :{
+        a:1.0
+        b:2.0
+        c:3.0
+      }
+    }
+    bin:"{\n  :{\n    a:1.0\n    b:2.0\n    c:3.0\n  }\n}"
+  }
+  TestFormatPretty4:{
+    skip:false
+    src:#pretty format {
+      :{
+        a:1.0 1.0 1.0
+        b:2.0 2.0 2.0
+        c:3.0 3.0 3.0
+      }
+    }
+    bin:"{\n  :{\n    a:1.0 1.0 1.0\n    b:2.0 2.0 2.0\n    c:3.0 3.0 3.0\n  }\n}"
+  }
+  TestFormatPretty5:{
+    skip:false
+    src:#pretty format [
+       E|S |  a b
+       0 #x   1 "2"
+       1 #x  10 "20"
+       2 #x 100 "200"
+    ]
+    bin:"[\n   E|S |  a b\n   0 #x   1 \"2\"\n   1 #x  10 \"20\"\n   2 #x 100 \"200\"\n]"
+  }
+  TestFormatPretty6:{
+    skip:false
+    src:#pretty format {
+      u:[
+        S | x
+        #a  0
+      ]
+    }
+    bin:"{\n  u:[\n    S | x\n    #a  0\n  ]\n}"
+  }
+  TestFormatText:{
+    skip:false
+    src:"\r" "" replace #text format "line one" "line two" "line three"
+    bin:"line one\nline two\nline three\n"
+  }
+  TestFormatTextCrlf:{
+    skip:false
+    src:#textcrlf format "line one" "line two" "line three"
+    bin:"line one\r\nline two\r\nline three\r\n"
+  }
+  TestFormatTextLf:{
+    skip:false
+    src:#textlf format "line one" "line two" "line three"
+    bin:"line one\nline two\nline three\n"
+  }
+  TestFormatLog:{
+    skip:false
+    src:#log format [
+       a b       c
+       0 "x y z" #foo
+       1 "u v w" #bar
+       2 "s t u" #baz
+    ]
+    bin:"0 \"x y z\" foo\n1 \"u v w\" bar\n2 \"s t u\" baz\n"
+  }
+  TestBinaryFixed1:{
+    skip:false
+    src:parse binary -1000000000 -2000000 -3000 -4 0 5 6000 7000000 8000000000
+    bin:-1000000000 -2000000 -3000 -4 0 5 6000 7000000 8000000000
+  }
+  TestBinaryFixed2:{
+    skip:false
+    src:parse binary -1000000000.0 -2000000.0 -3000.0 -4.0 0.0 5.0 6000.0 7000000.0 8000000000.0
+    bin:-1000000000.0 -2000000.0 -3000.0 -4.0 0.0 5.0 6000.0 7000000.0 8000000000.0
+  }
+  TestBinaryFixed3:{
+    skip:false
+    src:parse binary -1000000000 -2000000 -3000 -4 0 5 6000 7000000 8000000000m
+    bin:-1000000000 -2000000 -3000 -4 0 5 6000 7000000 8000000000m
+  }
+  TestBinaryFixed4:{
+    skip:false
+    src:parse binary -12345678.9 -234567.89 -3.456 -0.4 0 5 6.789 789.1234 8912.345678m
+    bin:-12345678.9 -234567.89 -3.456 -0.4 0 5 6.789 789.1234 8912.345678m
+  }
+  TestBinaryFixed5:{
+    skip:false
+    src:parse binary true false true
+    bin:true false true
+  }
+  TestBinaryFixed6:{
+    skip:false
+    src:parse binary \x00 \x01 \x02
+    bin:\x00 \x01 \x02
+  }
+  TestBinaryFixed7:{
+    skip:false
+    src:parse binary ++ ++ ++
+    bin:++ ++ ++
+  }
+  TestBinaryFixed8:{
+    skip:false
+    src:parse binary 2015.05.25 2015.05.26 2015.05.27
+    bin:2015.05.25 2015.05.26 2015.05.27
+  }
+  TestBinaryFixed9:{
+    skip:false
+    src:parse binary {
+      <-$R * $R
+    }
+    bin:{
+      <-$R * $R
+    }
+  }
+  TestBinaryFixed10:{
+    skip:false
+    src:parse binary {
+      <-$R.x * $R.y
+    }
+    bin:{
+      <-$R.x * $R.y
+    }
+  }
+  TestBinaryFixed11:{
+    skip:false
+    src:parse binary {
+      <-$L lib.f $R
+    }
+    bin:{
+      <-$L lib.f $R
+    }
+  }
+  TestBinaryString1:{
+    skip:false
+    src:parse binary "a" "ba" "cba" "dcba"
+    bin:"a" "ba" "cba" "dcba"
+  }
+  TestBinaryString2:{
+    skip:false
+    src:parse binary "x" "yy" "zzz" "yy" "x" "yy" "zzz"
+    bin:"x" "yy" "zzz" "yy" "x" "yy" "zzz"
+  }
+  TestBinarySymbol1:{
+    skip:false
+    src:parse binary #1,2.0,true
+    bin:#1,2.0,true
+  }
+  TestBinarySymbol2:{
+    skip:false
+    src:parse binary #1,2.0,3m,true
+    bin:#1,2.0,3m,true
+  }
+  TestBinarySymbol3:{
+    skip:false
+    src:parse binary #1,2.0,3m #4,5.0,6m #7,8.0,9m
+    bin:#1,2.0,3m #4,5.0,6m #7,8.0,9m
+  }
+  TestBinarySymbol4:{
+    skip:false
+    src:parse binary #1,2.0,3m #4,5.0,6m #1,2.0,3m
+    bin:#1,2.0,3m #4,5.0,6m #1,2.0,3m
+  }
+  TestBinarySymbol5:{
+    skip:false
+    src:parse binary #1,2.0,3m,true,abcdef
+    bin:#1,2.0,3m,true,abcdef
+  }
+  TestBinaryContainers1:{
+    skip:false
+    src:parse binary {
+      <-1 + 2.0
+    }
+    bin:{
+      <-1 + 2.0
+    }
+  }
+  TestBinaryContainer2:{
+    skip:false
+    src:parse binary {
+      a:1 2 3
+      b:4.0 5.0 6.0
+      c:7 8 9m
+      d:true false
+      e:"this" "a" "string"
+      f:#x,y,z #u,v,w #r,s,t
+    }
+    bin:{
+      a:1 2 3
+      b:4.0 5.0 6.0
+      c:7 8 9m
+      d:true false
+      e:"this" "a" "string"
+      f:#x,y,z #u,v,w #r,s,t
+    }
+  }
+  TestBinaryContainers3:{
+    skip:false
+    src:parse binary {
+      <-(1 - 2 * 4) - 3
+    }
+    bin:{
+      <-(1 - 2 * 4) - 3
+    }
+  }
+  TestBinaryContainers4:{
+    skip:false
+    src:parse binary {
+      l:{
+        a:0
+        b:1
+        c:2
+      }
+      d:{
+        d:3.0
+        e:4.0
+        f:5.0
+      }
+      m:{
+        g:6m
+        h:7m
+        i:8m
+      }
+    }
+    bin:{
+      l:{
+        a:0
+        b:1
+        c:2
+      }
+      d:{
+        d:3.0
+        e:4.0
+        f:5.0
+      }
+      m:{
+        g:6m
+        h:7m
+        i:8m
+      }
+    }
+  }
+  TestBinaryCube1:{
+    skip:false
+    src:parse binary [
+      S | l    d   m
+      #a 10   --  --
+      #a 11 21.0  --
+      #a 12 22.0 32m
+    ]
+    bin:[
+      S | l    d   m
+      #a 10   --  --
+      #a 11 21.0  --
+      #a 12 22.0 32m
+    ]
+  }
+  TestBinaryCube2:{
+    skip:false
+    src:parse binary [
+       E|S | l    d   m
+       0 #a 10   --  --
+       1 #a 11 21.0  --
+       2 #a 12 22.0 32m
+    ]
+    bin:[
+       E|S | l    d   m
+       0 #a 10   --  --
+       1 #a 11 21.0  --
+       2 #a 12 22.0 32m
+    ]
+  }
+  TestCompare0:{
+    skip:false
+    src:"aaa\n" compare "bbb\n"
+    bin:[
+      op       old   new
+      "DELETE" "aaa" --
+      "INSERT" --    "bbb"
+      "EQUAL"  "\n"  "\n"
+    ]
+  }
+  TestCompare1:{
+    skip:false
+    src:"aba" compare "abc"
+    bin:[
+      op       old  new
+      "EQUAL"  "ab" "ab"
+      "DELETE" "a"  --
+      "INSERT" --   "c"
+    ]
+  }
+  TestCompare2:{
+    skip:false
+    src:"a\nx\nb\n" compare "a\nb\nc\n"
+    bin:[
+      op       old   new
+      "EQUAL"  "a\n" "a\n"
+      "DELETE" "x\n" --
+      "EQUAL"  "b\n" "b\n"
+      "INSERT" --    "c\n"
+    ]
+  }
+  TestCompare3:{
+    skip:false
+    src:"aaa\nddd\n" compare "aaa\nbbb\nccc\nddd\n"
+    bin:[
+      op       old     new
+      "EQUAL"  "aaa\n" "aaa\n"
+      "INSERT" --      "bbb\n"
+      "INSERT" --      "ccc\n"
+      "EQUAL"  "ddd\n" "ddd\n"
+    ]
+  }
+  TestCompare4:{
+    skip:false
+    src:"aaa\nbbb\nccc\nddd\n" compare "aaa\nddd\n"
+    bin:[
+      op       old     new
+      "EQUAL"  "aaa\n" "aaa\n"
+      "DELETE" "bbb\n" --
+      "DELETE" "ccc\n" --
+      "EQUAL"  "ddd\n" "ddd\n"
+    ]
+  }
+  TestCompare5:{
+    skip:false
+    src:"aaaaaaaa0" compare "1aaaaaaaa2"
+    bin:[
+      op       new        old
+      "INSERT" "1"        --
+      "EQUAL"  "aaaaaaaa" "aaaaaaaa"
+      "DELETE" --         "0"
+      "INSERT" "2"        --
+    ]
+  }
+  TestCompare6:{
+    skip:false
+    src:"aaaaaaaa0" compare "aaaaaaaa2"
+    bin:[
+      op       old        new
+      "EQUAL"  "aaaaaaaa" "aaaaaaaa"
+      "DELETE" "0"        --
+      "INSERT" --         "2"
+    ]
+  }
+  TestCompare7:{
+    skip:false
+    src:"[?\n  first line\n  second line\n" compare "[?\n  first line \n  second line\n"
+    bin:[
+      op       old               new
+      "EQUAL"  "[?\n"            "[?\n"
+      "EQUAL"  "  first line"    "  first line"
+      "INSERT" --                " "
+      "EQUAL"  "\n"              "\n"
+      "EQUAL"  "  second line\n" "  second line\n"
+    ]
+  }
+  TestGetm1:{
+    skip:false
+    src:{
+      :#foo putm 1
+      <-getm #foo
+    }
+    bin:1
+  }
+  TestGetm2:{
+    skip:false
+    src:{
+      :#foo putm 1
+      :assert hasm #foo
+      :delm #foo
+      :assert not hasm #foo
+      <-0
+    }
+    bin:0
+  }
+  TestMonoTryWaitx:{
+    skip:false
+    src:0
+    bin:0
+  }
+  TestExec1:{
+    skip:true
+    src:{
+      :try {
+        <-exec "rm foo/bar"
+      }
+      :try {
+        <-exec "rmdir foo"
+      }
+      <-0
+    }
+    bin:0
+  }
+  TestExec2:{
+    skip:true
+    src:try {
+      <-exec "ls foo"
+    }
+    bin:{
+      status:1
+      data:"Non-zero exit status"
+    }
+  }
+  TestExec3:{
+    skip:true
+    src:{
+      :exec "mkdir foo"
+      <-count exec "ls foo"
+    }
+    bin:0
+  }
+  TestExec4:{
+    skip:true
+    src:{
+      :exec "touch foo/bar"
+      <-exec "ls foo"
+    }
+    bin:"bar"
+  }
+  TestExec5:{
+    skip:true
+    src:{
+      :exec "rm foo/bar"
+      :exec "rmdir foo"
+      <-0
+    }
+    bin:0
+  }
+  TestExecBash:{
+    skip:true
+    src:{
+      sh:startx "sh"
+      :$sh writex "set\\nmkdir foo"
+      <-try {
+        <-waitx $sh
+      }
+    }
+    bin:{
+      status:1
+      data:~s
+    }
+  }
+  TestGetm:{
+    skip:false
+    src:unwrap "status" from try {
+      <-getm #foo
+    }
+    bin:1
+  }
+  TestWaitWithConflictingResult1:{
+    src:{
+      :reset {}
+      :eval {
+        f1:fiber {
+          :read #a
+        }
+        f2:fiber {
+          :try {
+            <-200 wait $f1
+          }
+          :try {
+            <-kill $f1
+          }
+        }
+        :wait $f2
+        <-0
+      }
+      :assert 1 == excount {}
+    }
+  }
+  TestWaitWithConflictingResult2:{
+    src:{
+      :reset {}
+      :eval {
+        p:{
+          f1:fiber {
+            :read #a
+          }
+          f2:fiber {
+            :try {
+              <-200 wait $f1
+            }
+            :try {
+              <-kill $f1
+            }
+          }
+          :wait $f2
+        }
+        :p {}
+        :p {}
+        <-0
+      }
+      :assert 2 == excount {}
+    }
+  }
+  TestWaitWithConflictingResult3:{
+    src:{
+      :reset {}
+      :eval {
+        p:{
+          f1:fiber {
+            out:#a read 0
+            <-$out
+          }
+          f2:fiber {
+            :kill $f1
+            :wait $f1
+            :#a write {
+              x:0
+            }
+          }
+          :wait $f2
+          <-0
+        }
+        :p {}
+        :clear #a
+        :p {}
+        <-0
+      }
+      :assert 2 == excount {}
+    }
+  }
+}

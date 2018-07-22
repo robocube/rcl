@@ -2149,9 +2149,9 @@ namespace RCL.Test
 
 #if __MonoCS__
     [Test]
-    public void TestSelfExecWithExit ()
+    public void TestMonoSelfExecWithExit ()
     {
-      DoEvalTest ("unwrap #status from try {:\"exit.rcl\" save #pretty format {go:exit 21} exe:(codebase {}) + \"/rcl.exe\" <-exec \"mono --debug \" + $exe + \" rcl.exe --program=exit.rcl --action=go\"}", "21");
+      DoEvalTest ("{status:unwrap #status from try {:\"exit.rcl\" save #pretty format {go:exit 21} exe:(codebase {}) + \"/rcl.exe\" <-exec \"mono --debug \" + $exe + \" --program=exit.rcl --action=go\"} :$status assert 21 <-0}", "0");
     }
 #endif
 

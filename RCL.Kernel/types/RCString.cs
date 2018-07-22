@@ -55,7 +55,7 @@ namespace RCL.Kernel
 
     public static string FormatScalar (string format, string scalar)
     {
-      return "\"" + RCTokenType.EscapeControlChars (scalar.ToString(), '"') + "\"";
+      return "\"" + RCTokenType.EscapeControlChars (scalar.ToString (), '"') + "\"";
     }
 
     public override string Shorthand (object scalar)

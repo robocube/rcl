@@ -54,7 +54,15 @@ namespace RCL.Kernel
       }
       else if (which.Equals ("text"))
       {
-        result = DoTextFormat (right);
+        result = DoTextFormat (right, Environment.NewLine);
+      }
+      else if (which.Equals ("textcrlf"))
+      {
+        result = DoTextFormat (right, "\r\n");
+      }
+      else if (which.Equals ("textlf"))
+      {
+        result = DoTextFormat (right, "\n");
       }
       else throw new Exception ("Unknown format:" + which);
       if (canonical)
@@ -67,7 +75,7 @@ namespace RCL.Kernel
       }
     }
 
-    public static string DoTextFormat (object right)
+    public static string DoTextFormat (object right, string newline)
     {
       RCString text = right as RCString;
       if (text == null)
@@ -77,7 +85,8 @@ namespace RCL.Kernel
       StringBuilder builder = new StringBuilder ();
       for (int i = 0; i < text.Count; ++i)
       {
-        builder.AppendLine (text[i]);
+        builder.Append (text[i]);
+        builder.Append (newline);
       }
       return builder.ToString ();
     }

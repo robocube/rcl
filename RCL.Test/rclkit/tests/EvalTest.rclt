@@ -1,0 +1,4576 @@
+{
+  TestSimpleMonadicExpressionWithLiteral:{
+    skip:false
+    src:sum 1 2 3
+    bin:6
+  }
+  TestSimpleDyadicExpressionWithLiteral:{
+    skip:false
+    src:1 2 3 + 4 5 6
+    bin:5 7 9
+  }
+  TestNestedMonadicExpressions:{
+    skip:false
+    src:not not true
+    bin:true
+  }
+  TestMinusProblem:{
+    skip:false
+    src:1 - 2
+    bin:-1
+  }
+  TestMeaninglessParensWithMultipleLiterals:{
+    skip:false
+    src:1 - 2 - 3
+    bin:2
+  }
+  TestMeaninglessParensAroundVector:{
+    skip:false
+    src:1 2 3
+    bin:1 2 3
+  }
+  TestMixedNestingExpressions:{
+    skip:false
+    src:(1 - 2 - 3) - 4
+    bin:-2
+  }
+  TestMultipleNestedExpressions:{
+    skip:false
+    src:((1 - 2 - 3) - 4) - 5
+    bin:-7
+  }
+  TestMultipleMixedNestedExpressions:{
+    skip:false
+    src:((1 - 2) - 3 - 4) - 5
+    bin:-5
+  }
+  TestMeaninglessParensInComplexExpression:{
+    skip:false
+    src:((1 - 2) - 3 - 4) - 5
+    bin:-5
+  }
+  TestEmptyBlock:{
+    skip:false
+    src:{}
+    bin:{}
+  }
+  TestBlockWithOneVariable:{
+    skip:false
+    src:{
+      x:1
+    }
+    bin:{
+      x:1
+    }
+  }
+  TestBlockWithMultipleVariables:{
+    skip:false
+    src:{
+      x:1
+      y:2
+      z:3
+    }
+    bin:{
+      x:1
+      y:2
+      z:3
+    }
+  }
+  TestNestedEmptyBlock:{
+    skip:false
+    src:{
+      x:{}
+    }
+    bin:{
+      x:{}
+    }
+  }
+  TestNestedBlock:{
+    skip:false
+    src:{
+      x:{
+        a:1
+      }
+    }
+    bin:{
+      x:{
+        a:1
+      }
+    }
+  }
+  TestNestedBlockWithExpression:{
+    skip:false
+    src:{
+      x:eval {
+        a:1 - 2
+      }
+    }
+    bin:{
+      x:{
+        a:-1
+      }
+    }
+  }
+  TestNestedBlockWithMultipleVariables:{
+    skip:false
+    src:{
+      x:{
+        a:1
+        b:2
+      }
+    }
+    bin:{
+      x:{
+        a:1
+        b:2
+      }
+    }
+  }
+  TestNestedBlockWithMultipleVariablesBothLevels:{
+    skip:false
+    src:{
+      x:{
+        a:1
+        b:2
+      }
+      y:3
+    }
+    bin:{
+      x:{
+        a:1
+        b:2
+      }
+      y:3
+    }
+  }
+  TestImpliedBlock:{
+    skip:false
+    src:{
+      x:1
+    }
+    bin:{
+      x:1
+    }
+  }
+  TestUnnamedBlock:{
+    skip:false
+    src:{
+      :1
+    }
+    bin:{
+      :1
+    }
+  }
+  TestUnnamedBlockWithTwoVariables:{
+    skip:false
+    src:{
+      :1
+      :2
+    }
+    bin:{
+      :1
+      :2
+    }
+  }
+  TestUnnamedBlockWithTwoExpressions:{
+    skip:false
+    src:{
+      :1 + 2
+      :3 + 4
+    }
+    bin:{
+      :3
+      :7
+    }
+  }
+  TestUnnamedImpliedBlock:{
+    skip:false
+    src:{
+      :1
+    }
+    bin:{
+      :1
+    }
+  }
+  TestAssignAtEndOfBlock:{
+    skip:false
+    src:{
+      :1
+      :2
+    }
+    bin:{
+      :1
+      :2
+    }
+  }
+  TestExpressionInBlocks:{
+    skip:false
+    src:{
+      x:1 + 2
+    }
+    bin:{
+      x:3
+    }
+  }
+  TestTwiceNestedEmptyBlock:{
+    skip:false
+    src:{
+      x:1
+      y:{
+        a:{}
+      }
+    }
+    bin:{
+      x:1
+      y:{
+        a:{}
+      }
+    }
+  }
+  TestBlocksAsArguments:{
+    skip:false
+    src:{
+      a:1
+      b:2
+      c:3
+    } = {
+      a:1
+      b:2
+      c:4
+    }
+    bin:false
+  }
+  TestBlocksAsArgumentsNotEvaluated:{
+    skip:false
+    src:{
+      x:1.0 + 2.0
+    } & {
+      y:3.0
+    }
+    bin:{
+      x:1.0 + 2.0
+      y:3.0
+    }
+  }
+  TestBlocksAsArgumentsNested:{
+    skip:false
+    src:{
+      x:{} = {}
+    }
+    bin:{
+      x:true
+    }
+  }
+  TestReferenceToReference:{
+    skip:false
+    src:{
+      a:1
+      b:$a
+      c:$b
+    }
+    bin:{
+      a:1
+      b:1
+      c:1
+    }
+  }
+  TestThisContext:{
+    skip:false
+    src:{
+      go:{
+        <-"The " + $animal + " goes " + $sound
+      }
+      duck:eval {
+        animal:"duck"
+        sound:"quack"
+        go:$go
+      }
+      pig:eval {
+        animal:"pig"
+        sound:"oink"
+        go:$go
+      }
+      chicken:eval {
+        animal:"chicken"
+        sound:"cluck"
+        go:$go
+      }
+      <-eval {
+        :duck.go #
+        :pig.go #
+        :chicken.go #
+      }
+    }
+    bin:{
+      :"The duck goes quack"
+      :"The pig goes oink"
+      :"The chicken goes cluck"
+    }
+  }
+  TestThisContextDynamic:{
+    skip:false
+    src:{
+      go:{
+        <-"The " + $animal + " goes " + $sound
+      }
+      duck:{
+        animal:"duck"
+        sound:"quack"
+      }
+      pig:{
+        animal:"pig"
+        sound:"oink"
+      }
+      chicken:{
+        animal:"chicken"
+        sound:"cluck"
+      }
+      <-eval {
+        :$duck eval $go
+        :$pig eval $go
+        :$chicken eval $go
+      }
+    }
+    bin:{
+      :"The duck goes quack"
+      :"The pig goes oink"
+      :"The chicken goes cluck"
+    }
+  }
+  TestQuote:{
+    skip:false
+    src:{
+      x::1 + 1
+    }
+    bin:{
+      x:1 + 1
+    }
+  }
+  TestQuote1:{
+    skip:false
+    src:{
+      x::1 + 1
+      y:1 + 1
+    }
+    bin:{
+      x:1 + 1
+      y:2
+    }
+  }
+  TestYiote:{
+    skip:false
+    src:{
+      x::1 + 1
+      <-:$x
+    }
+    bin:{
+      x:1 + 1
+      <-$x
+    }
+  }
+  TestYiyi:{
+    skip:false
+    src:{
+      x:1 + 1
+      <--$x
+    }
+    bin:{
+      x:2
+      <-2
+    }
+  }
+  TestYiyi1:{
+    skip:false
+    src:{
+      <--1 + 1
+    }
+    bin:{
+      <-2
+    }
+  }
+  TestMonad:{
+    skip:false
+    src:{
+      x:"not" monad true false true
+    }
+    bin:{
+      x:not true false true
+    }
+  }
+  TestDyad:{
+    skip:false
+    src:{
+      x:"+" dyad {
+        l:1
+        r:2
+      }
+    }
+    bin:{
+      x:1 + 2
+    }
+  }
+  TestEvalX:{
+    skip:false
+    src:eval \x00 \x01 \x02
+    bin:\x00 \x01 \x02
+  }
+  TestEvalKX:{
+    skip:false
+    src:{} eval \x00 \x01 \x02
+    bin:\x00 \x01 \x02
+  }
+  TestEvalD:{
+    skip:false
+    src:eval 1.0 2.0 3.0
+    bin:1.0 2.0 3.0
+  }
+  TestEvalKD:{
+    skip:false
+    src:{} eval 1.0 2.0 3.0
+    bin:1.0 2.0 3.0
+  }
+  TestEvalL:{
+    skip:false
+    src:eval 1 2 3
+    bin:1 2 3
+  }
+  TestEvalKL:{
+    skip:false
+    src:{} eval 1 2 3
+    bin:1 2 3
+  }
+  TestEvalM:{
+    skip:false
+    src:eval 1 2 3m
+    bin:1 2 3m
+  }
+  TestEvalKM:{
+    skip:false
+    src:{} eval 1 2 3m
+    bin:1 2 3m
+  }
+  TestEvalB:{
+    skip:false
+    src:eval true false true
+    bin:true false true
+  }
+  TestEvalKB:{
+    skip:false
+    src:{} eval true false true
+    bin:true false true
+  }
+  TestEvalS:{
+    skip:false
+    src:eval "a" "b" "c"
+    bin:"a" "b" "c"
+  }
+  TestEvalKS:{
+    skip:false
+    src:{} eval "a" "b" "c"
+    bin:"a" "b" "c"
+  }
+  TestEvalY:{
+    skip:false
+    src:eval #a #b #c
+    bin:#a #b #c
+  }
+  TestEvalKY:{
+    skip:false
+    src:{} eval #a #b #c
+    bin:#a #b #c
+  }
+  TestEvalT:{
+    skip:false
+    src:eval 2016.09.23 09:48 2016.09.23 09:48 2016.09.23 09:48
+    bin:2016.09.23 09:48 2016.09.23 09:48 2016.09.23 09:48
+  }
+  TestEvalKT:{
+    skip:false
+    src:{} eval 2016.09.23 09:48 2016.09.23 09:48 2016.09.23 09:48
+    bin:2016.09.23 09:48 2016.09.23 09:48 2016.09.23 09:48
+  }
+  TextApplyKL:{
+    skip:false
+    src:{
+      <-$R where $R > 2
+    } apply 0 1 2 3 4 5
+    bin:3 4 5
+  }
+  TextApplyKD:{
+    skip:false
+    src:{
+      <-$R where $R > 2.0
+    } apply 0.0 1.0 2.0 3.0 4.0 5.0
+    bin:3.0 4.0 5.0
+  }
+  TextApplyKM:{
+    skip:false
+    src:{
+      <-$R where $R > 2m
+    } apply 0 1 2 3 4 5m
+    bin:3 4 5m
+  }
+  TextApplyKS:{
+    skip:false
+    src:{
+      <-$R where $R like "foo*"
+    } apply "foobar" "foobaz" "fazban" "farbat"
+    bin:"foobar" "foobaz"
+  }
+  TextApplyKY:{
+    skip:false
+    src:{
+      <-$R where 1 == long 1 part $R
+    } apply #x,1,foo #y,1,bar #z,2,baz
+    bin:#x,1,foo #y,1,bar
+  }
+  TextApplyKT:{
+    skip:false
+    src:{
+      <-$R where $R < 2017.08.26
+    } apply 2017.08.24 2017.08.25 2017.08.26
+    bin:2017.08.24 2017.08.25
+  }
+  TextApplyKX:{
+    skip:false
+    src:{
+      <-$R where $R < \x02
+    } apply \x00 \x01 \x02
+    bin:\x00 \x01
+  }
+  TextApplyKB:{
+    skip:false
+    src:{
+      <-not $R
+    } apply true false true false true false
+    bin:false true false true false true
+  }
+  TestApplyKK:{
+    skip:false
+    src:{
+      <-$R where (names $R) like "foo*"
+    } apply {
+      foobar:1
+      fazban:2
+      foobad:3
+    }
+    bin:{
+      foobar:1
+      foobad:3
+    }
+  }
+  TestApplyTV:{
+    skip:false
+    src:{
+      <-[? aaa [! format $R !] aaa ?] apply 111
+    }
+    bin:" aaa 111 aaa "
+  }
+  TestApplyOV:{
+    skip:false
+    src:("+" dyad {
+      l:10
+      r:$R
+    }) apply 1 2 3
+    bin:11 12 13
+  }
+  TestApplyRV:{
+    skip:false
+    src:(reference "R" "b") apply {
+      a:1
+      b:2
+      c:3
+    }
+    bin:2
+  }
+  TestReferenceToMissingColumn:{
+    skip:false
+    src:{
+      u:[
+        S | a
+        #x  0
+      ]
+      <-$u.x
+    }
+    bin:[]
+  }
+  TestReferenceToEmptyCube:{
+    skip:false
+    src:{
+      u:[]
+      <-$u.x
+    }
+    bin:[]
+  }
+  TestReferenceToTimelineColumn:{
+    skip:false
+    src:{
+      s:[
+        S | a
+        #x  0
+      ]
+      <-$s.S
+    }
+    bin:#x
+  }
+  TestEvalBlock:{
+    skip:false
+    src:{
+      a:2
+      b:$a + $a
+    }
+    bin:{
+      a:2
+      b:4
+    }
+  }
+  TestEvalBlockNested:{
+    skip:false
+    src:{
+      x:1
+      y:2
+      z:eval {
+        a:$x + $y
+      }
+    }
+    bin:{
+      x:1
+      y:2
+      z:{
+        a:3
+      }
+    }
+  }
+  TestEvalBlockNested1:{
+    skip:false
+    src:{
+      a:eval {
+        <-1 + 1
+      }
+    }
+    bin:{
+      a:2
+    }
+  }
+  TestEvalBlockNested2:{
+    skip:false
+    src:{
+      a:eval {
+        <-eval {
+          <-1 + 1
+        }
+      }
+    }
+    bin:{
+      a:2
+    }
+  }
+  TestEvalBlockYield:{
+    skip:false
+    src:{
+      x:1
+      y:2
+      <-{
+        a:$x + $y
+      }
+    }
+    bin:{
+      a:$x + $y
+    }
+  }
+  TestVariableOverriding:{
+    skip:false
+    src:{
+      x:1
+      y:eval {
+        x:2.0
+        z:eval {
+          a:$x + $x
+        }
+      }
+    }
+    bin:{
+      x:1
+      y:{
+        x:2.0
+        z:{
+          a:4.0
+        }
+      }
+    }
+  }
+  TestBlockTypeInference:{
+    skip:false
+    src:{
+      x:eval {
+        <-1.0
+      }
+      <-$x - $x
+    }
+    bin:0.0
+  }
+  TestDyadicOpInTakeBlock:{
+    skip:false
+    src:#lock take {
+      <-true switch {
+        :1 + 2
+        :3 + 4
+      }
+    }
+    bin:3
+  }
+  TestYieldFromTakeNoOp:{
+    skip:false
+    src:#lock take {
+      <-1
+    }
+    bin:1
+  }
+  TestUserOp:{
+    skip:false
+    src:{
+      f:{
+        <-(sum $R) / count $R
+      }
+      <-f 1.0 2.0 3.0
+    }
+    bin:2.0
+  }
+  TestUserOpVariableCapture:{
+    skip:false
+    src:{
+      x:1.0 2.0 3.0
+      y:4.0 5.0 6.0
+      f:{
+        <-$R - $L
+      }
+      <-$x f $y
+    }
+    bin:3.0 3.0 3.0
+  }
+  TestUserOpWithTake:{
+    skip:false
+    src:{
+      f:{
+        x:#a take {
+          <-1 + 2
+        }
+        <-0
+      }
+      <-f {}
+    }
+    bin:0
+  }
+  TestUserOpWithFiber:{
+    skip:false
+    src:{
+      f:{
+        x:fiber {
+          <-1 + 2
+        }
+        :wait $x
+        <-0
+      }
+      <-f {}
+    }
+    bin:0
+  }
+  TestUserOpWithEval:{
+    skip:false
+    src:{
+      f:{
+        x:eval {
+          <-1 + 2
+        }
+        <-0
+      }
+      <-f {}
+    }
+    bin:0
+  }
+  TestUserOpWithEval1:{
+    skip:false
+    src:{
+      o:{
+        x:1
+        f:{
+          <-eval {
+            y:$x + 2
+          }
+        }
+      }
+      <-o.f {}
+    }
+    bin:{
+      y:3
+    }
+  }
+  TestUserOpWithEvalModule1:{
+    skip:false
+    src:{
+      n:eval {
+        m:module {
+          x:1
+          f0:{
+            y:$R.y + 2
+          }
+          f1:{
+            :f0 eval {
+              y:$x
+            }
+          }
+        }
+        <-$m
+      }
+      <-n.f1 {}
+    }
+    bin:{
+      :{
+        y:3
+      }
+    }
+  }
+  TestUserOpWithEvalModule1WithoutModule:{
+    skip:false
+    src:{
+      n:{
+        x:1
+        f0:{
+          y:$R.y + 2
+        }
+        f1:{
+          :f0 eval {
+            y:$x
+          }
+        }
+      }
+      <-n.f1 {}
+    }
+    bin:{
+      :{
+        y:3
+      }
+    }
+  }
+  TestUserOpWithSwitch0:{
+    skip:false
+    src:{
+      f:{
+        x:true switch {
+          :1 + 2
+        }
+        <-0
+      }
+      <-f {}
+    }
+    bin:0
+  }
+  TestUserOpWithSwitch1:{
+    skip:false
+    src:{
+      f:{
+        g:{
+          <-$R
+        }
+        <-true switch {
+          :g $R
+        }
+      }
+      <-f 1 2 3
+    }
+    bin:1 2 3
+  }
+  TestUserOpWithSwitch2:{
+    skip:false
+    src:{
+      f:{
+        o:{
+          x:1
+          g:{
+            <-$R + $x
+          }
+        }
+        <-true switch {
+          :o.g $R
+        }
+      }
+      <-f 1 2 3
+    }
+    bin:2 3 4
+  }
+  TestUserOpNested:{
+    skip:false
+    src:{
+      lib:{
+        f:{
+          <-$L * $R
+        }
+      }
+      <-3 lib.f 2
+    }
+    bin:6
+  }
+  TestTakeWithSwitch:{
+    skip:false
+    src:#lock take {
+      x:true switch {
+        :1 + 2
+      }
+      <-0
+    }
+    bin:0
+  }
+  TestSwitchWithSwitch:{
+    skip:false
+    src:true switch {
+      :{
+        x:true switch {
+          :1 + 2
+        }
+        <-0
+      }
+    }
+    bin:0
+  }
+  TestSwitchAndEval:{
+    skip:false
+    src:true switch {
+      :{
+        x:1
+        <-eval {
+          <-$x + 1
+        }
+      }
+    }
+    bin:2
+  }
+  TestSwitchAndEval1:{
+    skip:false
+    src:{
+      f:{
+        x:1
+        k:eval {
+          x:$x + 1
+        }
+        <-$k
+      }
+      <-true switch {
+        :f #
+      }
+    }
+    bin:{
+      x:2
+    }
+  }
+  TestSwitchAndEval2:{
+    skip:false
+    src:{
+      f:{
+        x:1
+        <-eval {
+          x:$x + 1
+        }
+      }
+      <-true switch {
+        :f #
+      }
+    }
+    bin:{
+      x:2
+    }
+  }
+  TestNestedSwitch:{
+    skip:false
+    src:{
+      f:{
+        <-true switch {
+          :$L - $R
+        }
+      }
+      <-13 f 9
+    }
+    bin:4
+  }
+  TestNestedSwitch1:{
+    skip:false
+    src:{
+      f:{
+        <-true switch {
+          :true switch {
+            :$L - $R
+          }
+        }
+      }
+      <-13 f 9
+    }
+    bin:4
+  }
+  TestNestedSwitch2:{
+    skip:false
+    src:{
+      f:{
+        <-true switch {
+          :true switch {
+            :true switch {
+              :true switch {
+                :$L - $R
+              }
+            }
+          }
+        }
+      }
+      <-13 f 9
+    }
+    bin:4
+  }
+  TestNestedSwitch3:{
+    skip:false
+    src:eval "switch" dyad {
+      l:true
+      r:{
+        :true
+        :false
+      }
+    }
+    bin:true
+  }
+  TestNestedSwitch4:{
+    skip:false
+    src:{
+      x:13
+    } eval "switch" dyad {
+      l:true
+      r:{
+        :$x + 1
+        :$x
+      }
+    }
+    bin:14
+  }
+  TestSwitchInTake:{
+    skip:false
+    src:{
+      <-#lock take {
+        <-true switch {
+          :0
+          :1
+        }
+      }
+    }
+    bin:0
+  }
+  TestSwitchWithString1:{
+    skip:false
+    src:"a" switch {
+      a:1
+      b:2
+      c:3
+    }
+    bin:1
+  }
+  TestSwitchWithString2:{
+    skip:false
+    src:"b" switch {
+      a:1
+      b:2
+      c:3
+    }
+    bin:2
+  }
+  TestSwitchWithString3:{
+    skip:false
+    src:"c" switch {
+      a:1
+      b:2
+      c:3
+    }
+    bin:3
+  }
+  TestSwitchWithString4:{
+    skip:false
+    src:"d" switch {
+      a:1
+      b:2
+      c:3
+    }
+    bin:{}
+  }
+  TestEach:{
+    skip:false
+    src:{
+      <-$R + 0.5
+    } each 0 to 4
+    bin:{
+      :0.5
+      :1.5
+      :2.5
+      :3.5
+      :4.5
+    }
+  }
+  TestEachEmptyK:{
+    skip:false
+    src:{
+      <-$R
+    } each {}
+    bin:{}
+  }
+  TestEachEmptyL:{
+    skip:false
+    src:{
+      <-$R
+    } each ~l
+    bin:{}
+  }
+  TestEachWithParent:{
+    skip:false
+    src:{
+      x:{
+        <-1 + $R
+      } each 0 to 4
+      <-long $x
+    }
+    bin:1 2 3 4 5
+  }
+  TestEachWithParentOfLast:{
+    skip:false
+    src:{
+      loop:{
+        :#x write {
+          i:++
+        }
+        <-($L < $R) switch {
+          :($L + 1) loop $R
+          :$L
+        }
+      }
+      f:long {
+        <-fiber {
+          <-0 loop 9
+        }
+      } each 0 to 4
+      :#x dispatch 25
+      :#x dispatch 25
+      <-0
+    }
+    bin:0
+  }
+  TestEachWithMultipleStatementsVector:{
+    skip:false
+    src:long {
+      a:$R + 1
+      <-$a + 2
+    } each 0 to 2
+    bin:3 4 5
+  }
+  TestEachWithMultipleStatementsBlock:{
+    skip:false
+    src:long {
+      a:$R + 1
+      <-$a + 2
+    } each {
+      :0
+      :1
+      :2
+    }
+    bin:3 4 5
+  }
+  TestEachWithBlock:{
+    skip:false
+    src:{
+      <-$R + 1
+    } each {
+      a:1
+      b:2
+      c:3
+    }
+    bin:{
+      a:2
+      b:3
+      c:4
+    }
+  }
+  TestEachWithBlock1:{
+    skip:false
+    src:{
+      x:1
+    } each {
+      :{}
+      :{}
+    }
+    bin:{
+      :{
+        x:1
+      }
+      :{
+        x:1
+      }
+    }
+  }
+  TestEachEval:{
+    skip:false
+    src:eval "each" dyad {
+      l:{
+        <-$R + 1
+      }
+      r:1 2 3
+    }
+    bin:{
+      :2
+      :3
+      :4
+    }
+  }
+  TestEachEval1:{
+    skip:false
+    src:{
+      x:7
+    } eval "each" dyad {
+      l:{
+        <-$R + $x
+      }
+      r:1 2 3
+    }
+    bin:{
+      :8
+      :9
+      :10
+    }
+  }
+  TestEachWithTemplate:{
+    skip:false
+    src:[?foo [! $R !] baz?] each {
+      :"bar"
+      :"bat"
+    }
+    bin:{
+      :"foo bar baz"
+      :"foo bat baz"
+    }
+  }
+  TestTemplateInTailPositionSwitch:{
+    skip:false
+    src:{
+      f:{
+        x:"x"
+        t:[?[! $x !]?]
+        <-true switch {
+          :t $R
+          :""
+        }
+      }
+      <-f {}
+    }
+    bin:"x"
+  }
+  TestBlockInTailPositionSwitch:{
+    skip:false
+    src:{
+      f:{
+        x:"x"
+        t:{
+          <-$x
+        }
+        <-true switch {
+          :t $R
+          :""
+        }
+      }
+      <-f {}
+    }
+    bin:"x"
+  }
+  TestNameReuseInTailPositionTemplate:{
+    skip:false
+    src:{
+      f:{
+        t:[?[! $x !]?]
+        <-true switch {
+          :t {}
+          :"y"
+        }
+      }
+      x:"x"
+      t:[?[! f {} !]?]
+      <-t {}
+    }
+    bin:"x"
+  }
+  TestNameReuseInTailPositionBlock:{
+    skip:false
+    src:{
+      f:{
+        t:{
+          <-$x
+        }
+        <-true switch {
+          :t {}
+          :"y"
+        }
+      }
+      x:"x"
+      t:{
+        <-f {}
+      }
+      <-t {}
+    }
+    bin:"x"
+  }
+  TestNameReuseInTailPositionBlock1:{
+    skip:false
+    src:{
+      f:{
+        x:"x0"
+        t:{
+          <-$x
+        }
+        <-true switch {
+          :t {}
+          :"y"
+        }
+      }
+      t:{
+        <-f {}
+      }
+      <-t {}
+    }
+    bin:"x0"
+  }
+  TestNameReuseInTailPositionBlock2:{
+    skip:false
+    src:{
+      f:{
+        x:"x0"
+        t:{
+          <-$x
+        }
+        <-true switch {
+          :t {}
+          :"y"
+        }
+      }
+      x:"x1"
+      t:{
+        <-f {}
+      }
+      <-t {}
+    }
+    bin:"x0"
+  }
+  TestNameNotReusedInTailPositionBlock:{
+    skip:false
+    src:{
+      f:{
+        t1:{
+          <-$x
+        }
+        <-true switch {
+          :t1 {}
+          :2
+        }
+      }
+      x:1
+      t:{
+        <-f {}
+      }
+      <-t {}
+    }
+    bin:1
+  }
+  TestInnerOperatorInTailPosition:{
+    skip:false
+    src:{
+      f:{
+        g:{
+          <-$R
+        }
+        <-g 1
+      }
+      <-f {}
+    }
+    bin:1
+  }
+  TestRInEval:{
+    skip:false
+    src:{
+      <-eval {
+        x:$R
+      }
+    } 0
+    bin:{
+      x:0
+    }
+  }
+  TestEachNames:{
+    skip:false
+    src:{
+      <-$L
+    } each {
+      a:1
+      b:2
+      c:3
+    }
+    bin:{
+      a:"a"
+      b:"b"
+      c:"c"
+    }
+  }
+  TestEachNamesEmpty:{
+    skip:false
+    src:{
+      <-$L
+    } each {
+      a:1
+      :2
+      c:3
+    }
+    bin:{
+      a:"a"
+      :""
+      c:"c"
+    }
+  }
+  TestEachIndices:{
+    skip:false
+    src:{
+      <-$I
+    } each {
+      :1
+      :2
+      :3
+    }
+    bin:{
+      :0
+      :1
+      :2
+    }
+  }
+  TestEachArrays:{
+    skip:false
+    src:{
+      <-$I
+    } each 3 4 5
+    bin:{
+      :0
+      :1
+      :2
+    }
+  }
+  TestEmptyEval:{
+    skip:false
+    src:count eval {}
+    bin:0
+  }
+  TestEvalReference:{
+    skip:false
+    src:{
+      k:{
+        a:1
+        b:2
+        c:3
+      }
+      <-eval reference "k" "b"
+    }
+    bin:2
+  }
+  TestEvalReference1:{
+    skip:false
+    src:{
+      k:{
+        a:1
+        b:2
+        c:3
+      }
+      r:reference "k" "b"
+      <-eval $r
+    }
+    bin:2
+  }
+  TestEvalOperatorReference:{
+    skip:false
+    src:{
+      k:{
+        f:1 + 2
+      }
+      <-eval $k.f
+    }
+    bin:3
+  }
+  TestEvalOperatorReference1:{
+    skip:false
+    src:{
+      k:{
+        a:1
+        b:2
+        f:$a + $b
+      }
+      <-$k eval $k.f
+    }
+    bin:3
+  }
+  TestEvalOperatorReference2:{
+    skip:false
+    src:{
+      k:{
+        a:1
+        b:2
+        f:$a + $b
+      }
+      <-k.f {}
+    }
+    bin:3
+  }
+  TestEvalWithStateAndReference:{
+    skip:false
+    src:{
+      k:{
+        a:{
+          x:1
+        }
+        b:{
+          x:2
+        }
+        c:{
+          x:3
+        }
+      }
+      <-$k eval reference "b" "x"
+    }
+    bin:2
+  }
+  TestEvalWithUserOperator:{
+    skip:false
+    src:{
+      k:{
+        v:{
+          a:1
+        }
+        m1:{
+          f:$v.a + $R
+        }
+        m2:{
+          f:m1.f 10
+        }
+      }
+      <-$k eval $k.m2.f
+    }
+    bin:11
+  }
+  TestUserOpConflictsWithBuiltin:{
+    skip:false
+    src:{
+      file:{
+        <-$R + 7
+      }
+      <-file 12
+    }
+    bin:19
+  }
+  TestRecursionTailCall:{
+    skip:false
+    src:{
+      f:{
+        s:stack {}
+        :assert 20 > $s.depth
+        :assert 0 == $s.fiber
+        <-($L < $R) switch {
+          :($L + 1) f $R
+          :$L
+        }
+      }
+      <-0 f 100
+    }
+    bin:100
+  }
+  TestRecursionTailCallFinite:{
+    skip:false
+    src:{
+      loop:{
+        s:stack {}
+        :assert $s.depth < 20
+        :assert $s.fiber > 0
+        <-($L < $R) switch {
+          :($L + 1) loop $R
+          :$L
+        }
+      }
+      s0:stack {}
+      :assert $s0.fiber == 0
+      f:eval {
+        <-fiber {
+          <-0 loop 100
+        }
+      }
+      s1:stack {}
+      :assert $s1.fiber == 0
+      :assert ($f at 1) = 1
+      <-wait $f
+    }
+    bin:100
+  }
+  TestRecursionTailCallInfinite:{
+    skip:false
+    src:{
+      loop:{
+        s:stack {}
+        :1 assert $s.fiber
+        :#x write {
+          i:++
+        }
+        <-loop $R + 1
+      }
+      f:fiber {
+        <-loop 0
+      }
+      :#x dispatch 100
+      :kill $f
+      :wait $f
+      <-0
+    }
+    bin:0
+  }
+  TestRecursionFibonacci:{
+    skip:false
+    src:{
+      f:{
+        <-($R in 0.0 1.0) switch {
+          :$R
+          :(f $R - 1.0) + f $R - 2.0
+        }
+      }
+      <-f 10.0
+    }
+    bin:55.0
+  }
+  TestRecursionFactorial:{
+    skip:false
+    src:{
+      factorial:{
+        <-($R > 1) switch {
+          :$R * factorial $R - 1
+          :1
+        }
+      }
+      <-factorial 5
+    }
+    bin:120
+  }
+  TestRecursionWithSideEffect:{
+    skip:false
+    src:{
+      r:{
+        line:#x write {
+          i:++
+        }
+        <-($L < $R - 1) switch {
+          :($L + 1) r $R
+          :$line
+        }
+      }
+      f:fiber {
+        <-0 r 10
+      }
+      <-wait $f
+    }
+    bin:10
+  }
+  TestRecursionMutual:{
+    skip:false
+    src:{
+      f:{
+        <-($R == 0) switch {
+          :1
+          :$R - m f $R - 1
+        }
+      }
+      m:{
+        <-($R == 0) switch {
+          :0
+          :$R - f m $R - 1
+        }
+      }
+      :(long $f each 0 to 10) assert 1 1 2 2 3 3 4 5 5 6 6
+      :(long $m each 0 to 10) assert 0 0 1 2 2 3 4 4 5 6 6
+      <-0
+    }
+    bin:0
+  }
+  TestFiberUnparented0:{
+    skip:false
+    src:1 from fiber {
+      <-1 + 2
+    }
+    bin:1
+  }
+  TestFiberUnparented1:{
+    skip:false
+    src:{
+      <-1 from fiber {
+        <-1 + 2
+      }
+    }
+    bin:1
+  }
+  TestDyadicInlineOperator:{
+    skip:false
+    src:1.0 2.0 3.0 {
+      <-$R - $L
+    } 4.0 5.0 6.0
+    bin:3.0 3.0 3.0
+  }
+  TestMonadicInlineOperator:{
+    skip:false
+    src:{
+      <-$R + 1.0
+    } 1.0 2.0 3.0
+    bin:2.0 3.0 4.0
+  }
+  TestMonadicInlineWithBlockRight:{
+    skip:true
+    src:{
+      x:1.0
+      y:2.0
+      z:3.0
+    }
+    bin:{
+      z:1.0
+      y:2.0
+      x:3.0
+    }
+  }
+  TestRDotWithoutBlock:{
+    skip:false
+    src:{
+      f:{
+        <-$R.x
+      }
+      <-unwrap #status from try {
+        <-f 11
+      }
+    }
+    bin:1
+  }
+  TestRGetMissingName:{
+    skip:false
+    src:{
+      f:{
+        <-$R get "x"
+      }
+      <-unwrap #status from try {
+        <-f {}
+      }
+    }
+    bin:1
+  }
+  TestLGetMissingName:{
+    skip:false
+    src:{
+      f:{
+        <-"x" get $R
+      }
+      <-unwrap #status from try {
+        <-f {}
+      }
+    }
+    bin:1
+  }
+  TestRGetMissingIndex:{
+    skip:false
+    src:{
+      f:{
+        <-1 get $R
+      }
+      <-unwrap #status from try {
+        <-f {}
+      }
+    }
+    bin:1
+  }
+  TestLGetMissingIndex:{
+    skip:false
+    src:{
+      f:{
+        <-$R get 1
+      }
+      <-unwrap #status from try {
+        <-f {}
+      }
+    }
+    bin:1
+  }
+  TestMonadicInlineOpWithLiteralNoYield:{
+    skip:false
+    src:{
+      x:$R + 1.0
+      y:$R + 2.0
+      z:$R + 3.0
+    } 0.0
+    bin:{
+      x:1.0
+      y:2.0
+      z:3.0
+    }
+  }
+  TestMonadicUserOpWithLiteralNoYield:{
+    skip:false
+    src:{
+      f:{
+        x:$R + 1.0
+        y:$R + 2.0
+        z:$R + 3.0
+      }
+      <-f 0.0
+    }
+    bin:{
+      x:1.0
+      y:2.0
+      z:3.0
+    }
+  }
+  TestWriteRead:{
+    skip:false
+    src:{
+      :#x write {
+        a:1
+        b:2
+        c:3
+      }
+      :(#x read 0) assert [
+        S | a  b  c
+        #x  1  2  3
+      ]
+      <-0
+    }
+    bin:0
+  }
+  TestWriteReadX1:{
+    skip:false
+    src:{
+      :#x write {
+        a:\x00
+        b:\x01
+        c:\x02
+      }
+      :(#x read 0) assert [
+        S |   a    b    c
+        #x \x00 \x01 \x02
+      ]
+      <-0
+    }
+    bin:0
+  }
+  TestWriteReadX2:{
+    skip:false
+    src:{
+      :write [
+        S |   a    b    c
+        #x \x00 \x01 \x02
+      ]
+      :(#x read 0) assert [
+        S |   a    b    c
+        #x \x00 \x01 \x02
+      ]
+      <-0
+    }
+    bin:0
+  }
+  TestWriteEmptyCube:{
+    skip:false
+    src:{
+      z:write []
+      <-$z
+    }
+    bin:0
+  }
+  TestWriteReadDupSymbol:{
+    skip:false
+    src:{
+      :#x write {
+        i:++
+      }
+      :(#x #x read 0) assert [
+        S | i
+        #x  0
+      ]
+      <-0
+    }
+    bin:0
+  }
+  TestWriteNoDupsInTimeline:{
+    skip:false
+    src:{
+      :#x write {
+        a:1
+      }
+      :#x write {
+        a:1
+      }
+      <-lines #x read 0
+    }
+    bin:1
+  }
+  TestWriteReadSparse:{
+    skip:false
+    src:{
+      :write [
+        S | x  y
+        #a  0 10
+        #a  1 10
+      ]
+      <-#a read 1
+    }
+    bin:[
+      S | x  y
+      #a  1 10
+    ]
+  }
+  TestWriteReadSuspends:{
+    skip:false
+    src:{
+      :write [
+        S | x
+        #a  0
+      ]
+      f:fiber {
+        <-#a read 1
+      }
+      :sleep 100
+      :assert not done $f
+      <-0
+    }
+    bin:0
+  }
+  TestWriteReadSparseMultipleSymbol:{
+    skip:false
+    src:{
+      :write [
+        S   | x  y
+        #a,0  0 10
+        #a,1  1 11
+        #a,0  1 --
+        #a,1  2 --
+      ]
+      <-#a,'*' read 2
+    }
+    bin:[
+      S   | x  y
+      #a,0  1 10
+      #a,1  2 11
+    ]
+  }
+  TestWriteLastSparse:{
+    skip:false
+    src:{
+      :write [
+        S | x  y
+        #a  0 10
+        #a  1 10
+      ]
+      <-#a last 0
+    }
+    bin:[
+      S | x  y
+      #a  1 10
+    ]
+  }
+  TestWriteLastSparser:{
+    skip:false
+    src:{
+      :write [
+        S   |  x  y
+        #s,1 100  1
+        #s,2 200  2
+        #s,3  -- --
+        #s,3 300 --
+      ]
+      <-#s,'*' snap 0 -1
+    }
+    bin:[
+      S   |  x  y
+      #s,1 100  1
+      #s,2 200  2
+      #s,3 300 --
+    ]
+  }
+  TestWriteTReadTAndG:{
+    skip:false
+    src:{
+      :write [
+         E|S   |    x
+        25 #s,a 456.7
+      ]
+      <-#s,'*' read 0 0
+    }
+    bin:[
+       G| E|S   |    x
+       0 25 #s,a 456.7
+    ]
+  }
+  TestWriteGTSWithBlock:{
+    skip:true
+    src:{
+      :write {
+        E:25
+        S:#s,a
+        x:456.7
+      }
+      <-#s read 0 0
+    }
+    bin:[
+       G| E|S   |    x
+       0 25 #s,a 456.7
+    ]
+  }
+  TestWriteReadMultipleTimes:{
+    skip:false
+    src:{
+      :#x write {
+        a:1
+        b:2
+        c:3
+      }
+      :(#x read 0) assert [
+        S | a  b  c
+        #x  1  2  3
+      ]
+      :#x write {
+        a:10
+        b:20
+        c:30
+      }
+      :(#x read 1) assert [
+        S | a  b  c
+        #x 10 20 30
+      ]
+      <-0
+    }
+    bin:0
+  }
+  TestWriteReadMultipleSymbols:{
+    skip:false
+    src:{
+      :#s,0 #s,1 write {
+        x:1 10
+      }
+      :#s,0 #s,1 write {
+        x:2 20
+      }
+      :(#s,0 read 0) assert [
+        S   | x
+        #s,0  1
+        #s,0  2
+      ]
+      :(#s,1 read 0) assert [
+        S   | x
+        #s,1 10
+        #s,1 20
+      ]
+      <-0
+    }
+    bin:0
+  }
+  TestWriteReadDuplicates:{
+    skip:false
+    src:{
+      :#s,1 #s,2 #s,3 write {
+        x:10 20 30
+      }
+      :#s,2 #s,3 #s,1 write {
+        x:20 35 10
+      }
+      :(#s,1 #s,2 #s,3 read 0) assert [
+        S   | x
+        #s,1 10
+        #s,2 20
+        #s,3 30
+        #s,3 35
+      ]
+      <-0
+    }
+    bin:0
+  }
+  TestWriteReadCube:{
+    skip:false
+    src:{
+      :write [
+        S   | x
+        #s,1 10
+        #s,2 20
+        #s,3 30
+      ]
+      :write [
+        S   | x
+        #s,2 20
+        #s,3 35
+        #s,1 10
+      ]
+      :(#s,1 #s,2 #s,3 read 0) assert [
+        S   | x
+        #s,1 10
+        #s,2 20
+        #s,3 30
+        #s,3 35
+      ]
+      <-0
+    }
+    bin:0
+  }
+  TestWriteReadLimit:{
+    skip:false
+    src:{
+      :write [
+        S | x
+        #1 10
+        #1 20
+      ]
+      :(#1 read 0 1) assert [
+        S | x
+        #1 10
+      ]
+      <-0
+    }
+    bin:0
+  }
+  TestWriteReadNegLimit:{
+    skip:false
+    src:{
+      :write [
+        S | x
+        #1 10
+        #1 20
+      ]
+      :(#1 read 0 -1) assert [
+        S | x
+        #1 20
+      ]
+      <-0
+    }
+    bin:0
+  }
+  TestWriteReadSeesDispatchedRows:{
+    skip:false
+    src:{
+      :write [
+        S | x
+        #1 10
+      ]
+      :#1 dispatch 1
+      :(#1 read 0) assert [
+        S | x
+        #1 10
+      ]
+      <-0
+    }
+    bin:0
+  }
+  TestWriteWithMonadicTrace:{
+    skip:false
+    src:{
+      :#a write {
+        x:1
+        y:2
+      }
+      :#a write {
+        y:2
+        z:3
+      }
+      :(trace #a) assert [
+        S | x  y  z
+        #a  1  2 --
+        #a -- --  3
+      ]
+      <-0
+    }
+    bin:0
+  }
+  TestForceWithMonadicTrace:{
+    skip:false
+    src:{
+      :#a force {
+        x:1
+        y:2
+      }
+      :#a force {
+        y:2
+        z:3
+      }
+      :(trace #a) assert [
+        S | x  y  z
+        #a  1  2 --
+        #a --  2  3
+      ]
+      <-0
+    }
+    bin:0
+  }
+  TestForceWithDyadicTrace:{
+    skip:false
+    src:{
+      :#a force {
+        x:1
+        y:2
+      }
+      :#a force {
+        y:2
+        z:3
+      }
+      :(1 0 trace #a) assert [
+        S | y  z
+        #a  2  3
+      ]
+      <-0
+    }
+    bin:0
+  }
+  TestForceCubeDyadicTrace:{
+    skip:false
+    src:{
+      :force [
+        S | x  y
+        #a  1  2
+      ]
+      :force [
+        S | y  z
+        #a  2  3
+      ]
+      :(1 0 trace #a) assert [
+        S | y  z
+        #a  2  3
+      ]
+      <-0
+    }
+    bin:0
+  }
+  TestForceCubeMonadicTrace:{
+    skip:false
+    src:{
+      :force [
+        S | x  y
+        #a  1  2
+      ]
+      :force [
+        S | y  z
+        #a  2  3
+      ]
+      :(trace #a) assert [
+        S | x  y  z
+        #a  1  2 --
+        #a --  2  3
+      ]
+      <-0
+    }
+    bin:0
+  }
+  TestWriteReadSuspended:{
+    skip:false
+    src:{
+      reader:fiber {
+        <-#x read 0
+      }
+      :#x #x write {
+        a:1 10
+        b:2 20
+        c:3 30
+      }
+      :(wait $reader) assert [
+        S | a  b  c
+        #x  1  2  3
+        #x 10 20 30
+      ]
+      <-0
+    }
+    bin:0
+  }
+  TestWriteReadSuspendedWildcard:{
+    skip:false
+    src:{
+      reader:fiber {
+        <-#x,'*' read 0
+      }
+      :#x,0 #x,1 write {
+        a:1 10
+        b:2 20
+        c:3 30
+      }
+      :(wait $reader) assert [
+        S   | a  b  c
+        #x,0  1  2  3
+        #x,1 10 20 30
+      ]
+      <-0
+    }
+    bin:0
+  }
+  TestWriteReadSuspendedLimit:{
+    skip:false
+    src:{
+      reader:fiber {
+        <-#x read 0 3
+      }
+      :#x #x write {
+        a:1 10
+        b:2 20
+        c:3 30
+      }
+      :#x write {
+        a:100
+        b:200
+        c:300
+      }
+      :(wait $reader) assert [
+        S |  a   b   c
+        #x   1   2   3
+        #x  10  20  30
+        #x 100 200 300
+      ]
+      <-0
+    }
+    bin:0
+  }
+  TestWriteDispatchSingleSymbol:{
+    skip:false
+    src:{
+      :write [
+         E|S | x
+         0 #a  1
+         1 #a  2
+         2 #a  3
+      ]
+      :(#a dispatch 1) assert [
+         G| E|S | x
+         0  0 #a  1
+      ]
+      :(#a dispatch 2) assert [
+         G| E|S | x
+         1  1 #a  2
+         2  2 #a  3
+      ]
+      <-0
+    }
+    bin:0
+  }
+  TestWriteDispatchSingleSymbolSuspended:{
+    skip:false
+    src:{
+      reader:fiber {
+        <-#x dispatch 1
+      }
+      :#x #x write {
+        a:1 10
+        b:2 20
+        c:3 30
+      }
+      :(wait $reader) assert [
+        S | a  b  c
+        #x  1  2  3
+      ]
+      <-0
+    }
+    bin:0
+  }
+  TestWriteDispatchWindowUnder:{
+    skip:false
+    src:{
+      :#x write {
+        a:1
+        b:2
+        c:3
+      }
+      r0:#x dispatch 1
+      r1:fiber {
+        <-#x dispatch 1
+      }
+      :#x write {
+        a:10
+        b:20
+        c:30
+      }
+      :(wait $r1) assert [
+        S | a  b  c
+        #x 10 20 30
+      ]
+      <-0
+    }
+    bin:0
+  }
+  TestWriteDispatchMultiSymbolSuspended:{
+    skip:false
+    src:{
+      :#s,x write {
+        a:0
+        b:1
+        c:2
+      }
+      reader:fiber {
+        <-#s,x #s,y dispatch 1
+      }
+      :sleep 50
+      :#s,y write {
+        a:10
+        b:20
+        c:30
+      }
+      :(wait $reader) assert [
+        S   | a  b  c
+        #s,x  0  1  2
+        #s,y 10 20 30
+      ]
+      :#s,x write {
+        a:1
+        b:2
+        c:3
+      }
+      reader:fiber {
+        <-#s,x #s,y dispatch 1
+      }
+      :sleep 50
+      :#s,y write {
+        a:11
+        b:21
+        c:31
+      }
+      :(wait $reader) assert [
+        S   | a  b  c
+        #s,x  1  2  3
+        #s,y 11 21 31
+      ]
+      <-0
+    }
+    bin:0
+  }
+  TestWriteDispatchWildcard:{
+    skip:false
+    src:{
+      reader:fiber {
+        <-#x,'*' dispatch 1
+      }
+      :#x,0 #x,1 write {
+        a:1 10
+        b:2 20
+        c:3 30
+      }
+      :(wait $reader) assert [
+        S   | a  b  c
+        #x,0  1  2  3
+      ]
+      <-0
+    }
+    bin:0
+  }
+  TestWriteDispatchWildcard1:{
+    skip:false
+    src:{
+      reader:fiber {
+        <-#x dispatch 1
+      }
+      :#x,0 #x,1 #x write {
+        a:1 10 100
+        b:2 20 200
+        c:3 30 300
+      }
+      :(wait $reader) assert [
+        S |  a   b   c
+        #x 100 200 300
+      ]
+      <-0
+    }
+    bin:0
+  }
+  TestWriteDispatchWildcard2:{
+    skip:false
+    src:{
+      reader:fiber {
+        <-#x dispatch 1
+      }
+      :#x,0 #x,1 write {
+        a:1 10
+        b:2 20
+        c:3 30
+      }
+      :#x write {
+        d:4
+      }
+      :(wait $reader) assert [
+        S | d
+        #x  4
+      ]
+      <-0
+    }
+    bin:0
+  }
+  TestWriteDispatchAggregateSymbols:{
+    skip:false
+    src:{
+      reader:fiber {
+        <-#p,'*' dispatch 3
+      }
+      :#p,s,a #p,s,b #p,s write {
+        x:2 3 5
+        y:4 5 9
+      }
+      :(wait $reader) assert [
+        S     | x  y
+        #p,s,a  2  4
+        #p,s,b  3  5
+        #p,s    5  9
+      ]
+      <-0
+    }
+    bin:0
+  }
+  TestWriteDispatchWildcardMultipleTimes:{
+    skip:false
+    src:{
+      :#x,0 #x,1 write {
+        a:1 10
+      }
+      :(#x,'*' dispatch 1) assert [
+        S   | a
+        #x,0  1
+      ]
+      :(#x,'*' dispatch 1) assert [
+        S   | a
+        #x,1 10
+      ]
+      <-0
+    }
+    bin:0
+  }
+  TestWriteDispatchWildcardMultipleMultipleTimes:{
+    skip:false
+    src:{
+      :write [
+        S   | a
+        #x,0  1
+      ]
+      r0:fiber {
+        <-eval {
+          c0:#x,'*' dispatch 2
+          c1:#x,'*' dispatch 2
+        }
+      }
+      :sleep 20
+      :write [
+        S   | a
+        #x,1  2
+        #x,0 10
+        #x,1 20
+      ]
+      out:wait $r0
+      :assert $out.c0 = [
+        S   | a
+        #x,0  1
+        #x,1  2
+      ]
+      :assert $out.c1 = [
+        S   | a
+        #x,0 10
+        #x,1 20
+      ]
+      <-0
+    }
+    bin:0
+  }
+  TestWriteDispatchFutureNullsNotAccepted:{
+    skip:false
+    src:{
+      :write [
+        S   | a b
+        #x,0  0 #const
+        #x,1  0 #const
+        #x,0  1 #const1
+        #x,1  1 --
+        #x,0  2 --
+      ]
+      c:#x,'*' dispatch 2
+      <-count $c.b
+    }
+    bin:2
+  }
+  TestWriteDispatchNoCandidates:{
+    skip:false
+    src:{
+      reader:fiber {
+        <-#x dispatch 1
+      }
+      :#y write {
+        a:1
+      }
+      <-0
+    }
+    bin:0
+  }
+  TestWriteDispatchZero:{
+    skip:false
+    src:{
+      f:fiber {
+        <-#x dispatch 0
+      }
+      :sleep 20
+      :assert not done $f
+      :#x #x #x write {
+        i:++ ++ ++
+      }
+      :(wait $f) assert [
+        S | i
+        #x  0
+        #x  1
+        #x  2
+      ]
+      f1:fiber {
+        <-#x #y dispatch 0
+      }
+      :assert not done $f1
+      :#x write {
+        i:++
+      }
+      :(wait $f1) assert [
+        S | i
+        #x  3
+      ]
+      <-0
+    }
+    bin:0
+  }
+  TestWriteDispatchZeroWithDups0:{
+    skip:false
+    src:{
+      :write [
+        S | a
+        #x 10
+        #x 10
+      ]
+      :(#x dispatch 0) assert [
+        S | a
+        #x 10
+      ]
+      <-0
+    }
+    bin:0
+  }
+  TestWriteDispatchZeroWithDups1:{
+    skip:false
+    src:{
+      :write cube {
+        S:#x #x
+        a:10 10
+      }
+      :(#x dispatch 0) assert [
+        S | a
+        #x 10
+      ]
+      :(#x peek 0) assert false
+      <-0
+    }
+    bin:0
+  }
+  TestWritePeekZero:{
+    skip:false
+    src:{
+      :assert not #x peek 0
+      :#x #x #x write {
+        i:++ ++ ++
+      }
+      :assert #x #y peek 0
+      <-0
+    }
+    bin:0
+  }
+  TestWriteThrottleZero:{
+    skip:false
+    src:{
+      f0:fiber {
+        <-#x throttle 0
+      }
+      :wait $f0
+      :#x write {
+        i:++
+      }
+      f1:fiber {
+        <-#x #y throttle 0
+      }
+      :sleep 20
+      :assert not done $f1
+      :#x dispatch 1
+      :wait $f1
+      <-0
+    }
+    bin:0
+  }
+  TestWriteGawkZero:{
+    skip:false
+    src:{
+      f:fiber {
+        <-#x #y gawk 0
+      }
+      :assert not done $f
+      :#x write {
+        i:++
+      }
+      :(wait $f) assert [
+        S | i
+        #x  0
+      ]
+      <-0
+    }
+    bin:0
+  }
+  TestWriteGawkConcrete:{
+    skip:false
+    src:{
+      f:fiber {
+        <-#x gawk 0
+      }
+      :#x,y write {
+        i:++
+      }
+      :#x write {
+        i:++
+      }
+      :(wait $f) assert [
+        S | i
+        #x  0
+      ]
+      <-0
+    }
+    bin:0
+  }
+  TestWriteReadFirstNull:{
+    skip:false
+    src:{
+      :write [
+        S | a  b
+        #x  1 --
+        #y 10  2
+      ]
+      :(#x dispatch 1) assert [
+        S | a
+        #x  1
+      ]
+      <-0
+    }
+    bin:0
+  }
+  TestWriteReadIncr:{
+    skip:false
+    src:{
+      :#x write {
+        i:++
+      }
+      :(#x dispatch 1) assert [
+        S | i
+        #x  0
+      ]
+      :#x write {
+        i:++
+      }
+      :(#x dispatch 1) assert [
+        S | i
+        #x  1
+      ]
+      <-0
+    }
+    bin:0
+  }
+  TestWriteReadAll:{
+    skip:false
+    src:{
+      :write [
+        S   | x
+        #s,a  0
+        #s,b  1
+        #s,c  2
+      ]
+      :(#s,'*' read 0) assert [
+        S   | x
+        #s,a  0
+        #s,b  1
+        #s,c  2
+      ]
+      :(#s,'*' read 1) assert [
+        S   | x
+        #s,b  1
+        #s,c  2
+      ]
+      :(#s,'*' read 2) assert [
+        S   | x
+        #s,c  2
+      ]
+      <-0
+    }
+    bin:0
+  }
+  TestWriteReadAllMissingSymbol:{
+    skip:false
+    src:{
+      :#x,a write {
+        i:++
+      }
+      :(#x,a #x,b read 0 0) assert [
+        S   | i
+        #x,a  0
+      ]
+      <-0
+    }
+    bin:0
+  }
+  TestWriteLast:{
+    skip:false
+    src:{
+      :write [
+        S | x
+        #a 10
+        #c 30
+        #b 20
+        #a 11
+        #a 12
+        #b 21
+      ]
+      <-#a #b last 0
+    }
+    bin:[
+      S | x
+      #a 12
+      #b 21
+    ]
+  }
+  TestWriteLastReadFirstWithLast:{
+    skip:false
+    src:{
+      :write [
+        S | x
+        #a 10
+      ]
+      <-#a last 0
+    }
+    bin:[
+      S | x
+      #a 10
+    ]
+  }
+  TestWriteReadFirstWithLastWithMore:{
+    skip:false
+    src:{
+      :write [
+        S | x  y
+        #a  0 --
+        #b --  1
+      ]
+      <-#a last 0
+    }
+    bin:[
+      S | x
+      #a  0
+    ]
+  }
+  TestWriteLastSuspended:{
+    skip:false
+    src:{
+      f:fiber {
+        <-#x last 0
+      }
+      :sleep 20
+      :assert not done $f
+      <-0
+    }
+    bin:0
+  }
+  TestWriteReadLinesIsThreadSafe:{
+    skip:false
+    src:{
+      :write [
+        S | x
+        #a  0
+      ]
+      data:#a read 0
+      :write [
+        S | x
+        #a  1
+      ]
+      <-lines $data
+    }
+    bin:1
+  }
+  TestWriteThrottle:{
+    skip:false
+    src:{
+      :write [
+        S | x
+        #a  0
+        #a  1
+        #a  2
+      ]
+      :fiber {
+        :#a throttle 3
+        :#check write {
+          order:#second
+        }
+      }
+      :#check write {
+        order:#first
+      }
+      :#a dispatch 1
+      <-#check read 0 2
+    }
+    bin:[
+      S     |order
+      #check #first
+      #check #second
+    ]
+  }
+  TestWriteThrottleWithDispatchWild:{
+    skip:false
+    src:{
+      :write [
+        S   | x
+        #a,0  0
+      ]
+      f:fiber {
+        <-#a,0 throttle 1
+      }
+      :#a,'*' dispatch 1
+      :(wait $f) assert 1
+      <-0
+    }
+    bin:0
+  }
+  TestWriteThrottleWithDispatchWild1:{
+    skip:false
+    src:{
+      :write [
+        S     | x
+        #a,b,0  0
+      ]
+      f:fiber {
+        <-#a,'*' throttle 1
+      }
+      :#a,b,'*' dispatch 1
+      :(wait $f) assert 1
+      <-0
+    }
+    bin:0
+  }
+  TestWritePeek:{
+    skip:false
+    src:{
+      :write [
+        S | x
+        #a  0
+      ]
+      :(#a peek 2) assert false
+      :write [
+        S | x
+        #a  1
+      ]
+      :(#a peek 2) assert true
+      <-0
+    }
+    bin:0
+  }
+  TestWritePeekDispatchCounter:{
+    skip:false
+    src:{
+      :#a,0 write {
+        i:++
+      }
+      :#a,1 write {
+        i:++
+      }
+      :#a,1 dispatch 1
+      <-#a,'*' peek 1
+    }
+    bin:true
+  }
+  TestWriteReadAndDispatchSameRows:{
+    skip:false
+    src:{
+      :#x write {
+        i:++
+      }
+      :#x dispatch 1
+      <-count #x read 0 1
+    }
+    bin:1
+  }
+  TestWriteLastStartPoint:{
+    skip:false
+    src:{
+      :#x write {
+        i:++
+      }
+      f:fiber {
+        <-#x last 1
+      }
+      :sleep 20
+      :assert not done $f
+      :#x write {
+        i:++
+      }
+      :sleep 20
+      :assert done $f
+      <-0
+    }
+    bin:0
+  }
+  TestWriteGawkDoesNotDispatch:{
+    skip:false
+    src:{
+      :#x write {
+        i:++
+      }
+      :(#x gawk 1) assert [
+        S | i
+        #x  0
+      ]
+      :(#x dispatch 1) assert [
+        S | i
+        #x  0
+      ]
+      <-0
+    }
+    bin:0
+  }
+  TestWritePoll:{
+    skip:false
+    src:{
+      :(#x poll 0) assert []
+      :#x #x #x write {
+        i:++ ++ ++
+      }
+      :(#x poll 0) assert [
+        S | i
+        #x  0
+        #x  1
+        #x  2
+      ]
+      :(#x poll 1) assert [
+        S | i
+        #x  1
+        #x  2
+      ]
+      :(#x poll 2) assert [
+        S | i
+        #x  2
+      ]
+      :(#x poll 3) assert []
+      <-0
+    }
+    bin:0
+  }
+  TestWriteSnapColumnRemoval:{
+    skip:false
+    src:{
+      :#x,y write {
+        a:1
+        b:2
+      }
+      :#x,z write {
+        c:3
+      }
+      :(#x,'*' snap 1) assert [
+        S   | c
+        #x,z  3
+      ]
+      <-0
+    }
+    bin:0
+  }
+  TestWriteSnapConcrete:{
+    skip:false
+    src:{
+      :#x,y write {
+        i:++
+      }
+      :(#x,y snap -1) assert [
+        S   | i
+        #x,y  0
+      ]
+      <-0
+    }
+    bin:0
+  }
+  TestWriteGContinuesAfterClear:{
+    skip:false
+    src:{
+      :#a write {
+        i:++
+      }
+      :clear #a
+      :#a write {
+        i:++
+      }
+      u:#a read 1
+      <-$u.G
+    }
+    bin:1
+  }
+  TestCannotWriteGOutOfOrder:{
+    skip:false
+    src:first #status from try {
+      <-write [
+         G| E|S |  x
+         1  1 #a 101
+         0  0 #a 100
+      ]
+    }
+    bin:1
+  }
+  TestWriteCubeIncrementsG:{
+    skip:false
+    src:{
+      :write [
+        S | x
+        #a  1
+      ]
+      :write [
+        S | x
+        #a  2
+      ]
+      :write [
+        S | x
+        #a  3
+      ]
+      u:#a read 0
+      <-$u.G
+    }
+    bin:0 1 2
+  }
+  TestWriteReadFromCubeAfterClear:{
+    skip:false
+    src:{
+      :write [
+        S | x
+        #a  0
+      ]
+      :clear #a
+      :write [
+        S | x
+        #a  0
+      ]
+      u:#a read 0 1
+      <-$u.G
+    }
+    bin:1
+  }
+  TestWriteReadFromCubeAfterClear1:{
+    skip:false
+    src:{
+      :write [
+        S | x
+        #a  0
+      ]
+      :clear #a
+      :write [
+        S | x
+        #a  0
+      ]
+      u:#a read 0 1
+      <-lines $u
+    }
+    bin:2
+  }
+  TestWriteReadFromCubeAfterClear2:{
+    skip:false
+    src:{
+      :write [
+        S | x
+        #a  0
+        #a  1
+      ]
+      :clear #a
+      :write [
+        S | x
+        #a  2
+      ]
+      u:#a read 0 1
+      <-lines $u
+    }
+    bin:3
+  }
+  TestPage:{
+    skip:false
+    src:{
+      :(#x page 0 2) assert []
+      :#x #x #x #x #x write {
+        i:++ ++ ++ ++ ++
+      }
+      :(#x page 0 2) assert [
+        S | i
+        #x  0
+        #x  1
+      ]
+      :(#x page 1 2) assert [
+        S | i
+        #x  2
+        #x  3
+      ]
+      :(#x page 2 2) assert [
+        S | i
+        #x  4
+      ]
+      <-0
+    }
+    bin:0
+  }
+  TestPageBackwards:{
+    skip:false
+    src:{
+      :(#x page 0 -2) assert []
+      :#x #x #x #x #x write {
+        i:++ ++ ++ ++ ++
+      }
+      :(#x page 0 -2) assert [
+        S | i
+        #x  3
+        #x  4
+      ]
+      :(#x page 1 -2) assert [
+        S | i
+        #x  1
+        #x  2
+      ]
+      :(#x page 2 -2) assert [
+        S | i
+        #x  0
+      ]
+      <-0
+    }
+    bin:0
+  }
+  TestSnap:{
+    skip:false
+    src:{
+      :(#s,'*' snap 0 -1) assert []
+      :#s,a write {
+        i:++
+      }
+      :(#s,'*' snap 0 -1) assert [
+        S   | i
+        #s,a  0
+      ]
+      :#s,a #s,b write {
+        i:++ ++
+      }
+      :(#s,'*' snap 0 -1) assert [
+        S   | i
+        #s,a  1
+        #s,b  0
+      ]
+      <-0
+    }
+    bin:0
+  }
+  TestSnapDups:{
+    skip:false
+    src:{
+      :#s,a write {
+        x:1
+      }
+      :#s,b write {
+        x:10
+      }
+      :#s,c write {
+        x:100
+      }
+      :#s,c write {
+        x:100
+      }
+      :#s,d write {
+        x:1000
+      }
+      :(#s,'*' snap 0 -1) assert [
+        S   |   x
+        #s,a    1
+        #s,b   10
+        #s,c  100
+        #s,d 1000
+      ]
+      <-0
+    }
+    bin:0
+  }
+  TestSnapChanges1Level:{
+    skip:false
+    src:{
+      :#s,a write {
+        x:1
+      }
+      :#s,b write {
+        x:10
+      }
+      :#s,a write {
+        x:2
+      }
+      :(#s,'*' snap 0 -1) assert [
+        S   | x
+        #s,b 10
+        #s,a  2
+      ]
+      <-0
+    }
+    bin:0
+  }
+  TestSnapChanges2Level:{
+    skip:false
+    src:{
+      :#s,a,0 write {
+        x:1
+      }
+      :#s,b,0 write {
+        x:10
+      }
+      :#s,a,0 write {
+        x:2
+      }
+      :(#s,'*' snap 0 -1) assert [
+        S     | x
+        #s,b,0 10
+        #s,a,0  2
+      ]
+      <-0
+    }
+    bin:0
+  }
+  TestSnapSparseFirstRow:{
+    skip:false
+    src:{
+      :write [
+        S   | x  y
+        #s,a  1 --
+        #s,b --  2
+      ]
+      <-#s,'*' snap 0
+    }
+    bin:[
+      S   | x  y
+      #s,a  1 --
+      #s,b --  2
+    ]
+  }
+  TestSnapSparseFirstRow1:{
+    skip:false
+    src:{
+      :write [
+        S   | x  y
+        #s,a  1 --
+        #s,b  2 --
+        #s,c --  3
+      ]
+      <-#s,'*' snap 0
+    }
+    bin:[
+      S   | x  y
+      #s,a  1 --
+      #s,b  2 --
+      #s,c --  3
+    ]
+  }
+  TestSnapSparseFirstRow2:{
+    skip:false
+    src:{
+      :write [
+        S   | x
+        #s,a  0
+        #s,b  1
+      ]
+      :write [
+        S   | y
+        #s,c  2
+        #s,d  3
+      ]
+      <-#s,'*' snap 0
+    }
+    bin:[
+      S   | x  y
+      #s,a  0 --
+      #s,b  1 --
+      #s,c --  2
+      #s,d --  3
+    ]
+  }
+  TestWriteClearWriteK:{
+    skip:false
+    src:{
+      f:fiber {
+        <-#a read 1
+      }
+      :#a write {
+        x:0
+      }
+      :clear #a
+      :#a write {
+        x:1
+      }
+      :(wait $f) assert [
+        S | x
+        #a  1
+      ]
+      <-0
+    }
+    bin:0
+  }
+  TestWriteClearWriteU:{
+    skip:false
+    src:{
+      f:fiber {
+        <-#a read 1
+      }
+      :write [
+        S | x
+        #a  0
+      ]
+      :clear #a
+      :write [
+        S | x
+        #a  1
+      ]
+      :(wait $f) assert [
+        S | x
+        #a  1
+      ]
+      <-0
+    }
+    bin:0
+  }
+  TestWriteClearWriteSyncK:{
+    skip:false
+    src:{
+      :#a write {
+        x:0
+      }
+      :clear #a
+      :#a write {
+        x:1
+      }
+      :(#a read 1) assert [
+        S | x
+        #a  1
+      ]
+      <-0
+    }
+    bin:0
+  }
+  TestWriteClearWriteSyncU:{
+    skip:false
+    src:{
+      :write [
+        S | x
+        #a  0
+      ]
+      :clear #a
+      :write [
+        S | x
+        #a  1
+      ]
+      :(#a read 1) assert [
+        S | x
+        #a  1
+      ]
+      <-0
+    }
+    bin:0
+  }
+  TestWriteIncrementE:{
+    skip:false
+    src:{
+      :write [
+        S | x
+        #a  0
+        #a  1
+      ]
+      <-#a read 0
+    }
+    bin:[
+       G| E|S | x
+       0  0 #a  0
+       1  1 #a  1
+    ]
+  }
+  TestLeadingStars1:{
+    skip:false
+    src:#1,'*',0 select [
+      S     | x  y   z
+      #1,a,0  1 10 100
+      #1,b,0  2 20 200
+      #2,b,0  3 30 300
+    ]
+    bin:[
+       G|S     | x  y   z
+       0 #1,a,0  1 10 100
+       1 #1,b,0  2 20 200
+    ]
+  }
+  TestLeadingStars2:{
+    skip:false
+    src:#'*','*',0 select [
+      S     | x  y   z
+      #1,a,0  1 10 100
+      #1,b,0  2 20 200
+      #2,b,0  3 30 300
+    ]
+    bin:[
+       G|S     | x  y   z
+       0 #1,a,0  1 10 100
+       1 #1,b,0  2 20 200
+       2 #2,b,0  3 30 300
+    ]
+  }
+  TestLeadingStars3:{
+    skip:false
+    src:#'*',b,'*' select [
+      S     | x  y   z
+      #1,a,0  1 10 100
+      #1,b,0  2 20 200
+      #2,b,0  3 30 300
+    ]
+    bin:[
+       G|S     | x  y   z
+       1 #1,b,0  2 20 200
+       2 #2,b,0  3 30 300
+    ]
+  }
+  TestBot:{
+    skip:false
+    src:{
+      b0:bot {
+        :#x write {
+          i:++
+        }
+        <-wait 0
+      }
+      b1:bot {
+        :#y write {
+          i:++
+        }
+        <-wait 0
+      }
+      :(first #x from dump $b0) assert [
+        S | i
+        #x  0
+      ]
+      :(first #y from dump $b1) assert [
+        S | i
+        #y  0
+      ]
+      <-0
+    }
+    bin:0
+  }
+  TestKillBot:{
+    skip:false
+    src:{
+      f1:{
+        <-f1 $R + 1
+      }
+      f2:{
+        <-f2 $R & 1
+      }
+      b:bot {
+        :fiber {
+          <-f1 0
+        }
+        :fiber {
+          <-f2 0
+        }
+        <-wait 0
+      }
+      :kill $b
+      <-unwrap #status from try {
+        <-wait $b
+      }
+    }
+    bin:1
+  }
+  TestReferenceToACube:{
+    skip:false
+    src:{
+      u:[
+        S | a  b
+        #x  0 10
+        #x  1 11
+        #x  2 12
+      ]
+      <-$u.b
+    }
+    bin:[
+      S | b
+      #x 10
+      #x 11
+      #x 12
+    ]
+  }
+  TestCubeArgumentsUL1:{
+    skip:false
+    src:[
+      S | a
+      #x 10
+      #x 11
+      #x 12
+    ] - 1
+    bin:[
+      S | x
+      #x  9
+      #x 10
+      #x 11
+    ]
+  }
+  TestCubeArgumentsUL2:{
+    skip:false
+    src:[
+      S | a
+      #x 10
+      #x 11
+      #x 12
+    ] + 1
+    bin:[
+      S | x
+      #x 11
+      #x 12
+      #x 13
+    ]
+  }
+  TestCubeArgumentsUL3:{
+    skip:false
+    src:[
+      S | a
+      #x 10
+      #x 20
+      #x 30
+    ] / 2
+    bin:[
+      S | x
+      #x  5
+      #x 10
+      #x 15
+    ]
+  }
+  TestCubeArgumentsUL4:{
+    skip:false
+    src:[
+      S | a
+      #x  5
+      #x 10
+      #x 15
+    ] * 2
+    bin:[
+      S | x
+      #x 10
+      #x 20
+      #x 30
+    ]
+  }
+  TestCubeArgumentsLU1:{
+    skip:false
+    src:1 - [
+      S | a
+      #x 10
+      #x 11
+      #x 12
+    ]
+    bin:[
+      S |  x
+      #x  -9
+      #x -10
+      #x -11
+    ]
+  }
+  TestCubeArgumentsLU2:{
+    skip:false
+    src:1 + [
+      S | a
+      #x 10
+      #x 11
+      #x 12
+    ]
+    bin:[
+      S | x
+      #x 11
+      #x 12
+      #x 13
+    ]
+  }
+  TestCubeArgumentsLU3:{
+    skip:false
+    src:12 / [
+      S | a
+      #x  1
+      #x  2
+      #x  3
+    ]
+    bin:[
+      S | x
+      #x 12
+      #x  6
+      #x  4
+    ]
+  }
+  TestCubeArgumentsLU4:{
+    skip:false
+    src:2 * [
+      S | a
+      #x  5
+      #x 10
+      #x 15
+    ]
+    bin:[
+      S | x
+      #x 10
+      #x 20
+      #x 30
+    ]
+  }
+  TestCubeOpWithNoResult1:{
+    skip:false
+    src:{
+      u:[
+         E|S | a  b
+         0 #x  1 --
+         1 #y --  2
+      ]
+      <-$u.a + $u.b
+    }
+    bin:[]
+  }
+  TestCubeOpWithNoResult2:{
+    skip:false
+    src:{
+      u:[
+        S | a  b
+        #x  1 --
+        #y --  2
+      ]
+      <-$u.a + $u.b
+    }
+    bin:[
+      S | x
+      #x  1
+      #y  2
+    ]
+  }
+  TestCubeEmptyArguments1:{
+    skip:false
+    src:[
+      S | a
+      #x  1
+    ] * []
+    bin:[
+      S | a
+      #x  1
+    ]
+  }
+  TestCubeEmptyArguments2:{
+    skip:false
+    src:[] * [
+      S | a
+      #x  1
+    ]
+    bin:[
+      S | a
+      #x  1
+    ]
+  }
+  TestCubeEmptyArguments3:{
+    skip:false
+    src:[
+       E|S | a
+       0 #x  1
+    ] * []
+    bin:[]
+  }
+  TestCubeEmptyArguments4:{
+    skip:false
+    src:[] * [
+       E|S | a
+       0 #x  1
+    ]
+    bin:[]
+  }
+  TestCubeEmptyArguments5:{
+    skip:false
+    src:[] * []
+    bin:[]
+  }
+  TestEvalTemplateMinimal:{
+    skip:false
+    src:[? between [! $R !] words ?] "the"
+    bin:" between the words "
+  }
+  TestEvalTemplateMultiSection:{
+    skip:false
+    src:{
+      html:[?<html><head>[! $R.head !]</head><body>[! $R.body !]</body></html>?]
+      <-html {
+        head:"a head"
+        body:"a body"
+      }
+    }
+    bin:"<html><head>a head</head><body>a body</body></html>"
+  }
+  TestEvalTemplateMultiSection1:{
+    skip:false
+    src:{
+      html:[?
+        <html><head>[! $R.head !]</head><body>[! $R.body !]</body></html>
+      ?]
+      <-html {
+        head:"head 0\nhead 1\nhead 2\n"
+        body:"body 0\nbody 1\nbody 2\n"
+      }
+    }
+    bin:"<html><head>head 0\nhead 1\nhead 2\n</head><body>body 0\nbody 1\nbody 2\n</body></html>\n"
+  }
+  TestEvalTemplateMultiSection2:{
+    skip:false
+    src:{
+      html:[?
+        <html>
+          <head>[! $R.head !]
+          </head>
+          <body>[! $R.body !]
+          </body>
+        </html>
+      ?]
+      <-html {
+        head:"head 0\nhead 1\nhead 2\n"
+        body:"body 0\nbody 1\nbody 2\n"
+      }
+    }
+    bin:"<html>\n  <head>head 0\n  head 1\n  head 2\n  </head>\n  <body>body 0\n  body 1\n  body 2\n  </body>\n</html>\n"
+  }
+  TestEvalTemplateMultiSection3:{
+    skip:false
+    src:{
+      html:[?
+        <html>
+          <head>[! $R.head !]</head>
+          <body>[! $R.body !]</body>
+        </html>
+      ?]
+      <-html {
+        head:"head 0\nhead 1\nhead 2\n"
+        body:"body 0\nbody 1\nbody 2\n"
+      }
+    }
+    bin:"<html>\n  <head>head 0\n  head 1\n  head 2\n  </head>\n  <body>body 0\n  body 1\n  body 2\n  </body>\n</html>\n"
+  }
+  TestEvalTemplateIndent:{
+    skip:false
+    src:{
+      t:[?
+        x
+          y[! "b\n" !]z
+      ?]
+      <-t {}
+    }
+    bin:"x\n  yb\n  z\n"
+  }
+  TestEvalTemplateTailCall:{
+    skip:false
+    src:{
+      t:[?
+        x[! "a\n" !]y
+      ?]
+      f:{
+        <-eval {
+          i:0
+        }
+      }
+      <-t f {}
+    }
+    bin:"xa\ny\n"
+  }
+  TestEvalTemplateNested:{
+    skip:false
+    src:{
+      head:[?<head>a head</head>?]
+      body:[?<body>a body</body>?]
+      html:[?<html>[! head {} !][! body {} !]</html>?]
+      <-html {}
+    }
+    bin:"<html><head>a head</head><body>a body</body></html>"
+  }
+  TestEvalTemplateNestedFormatted:{
+    skip:false
+    src:{
+      head:[?
+        <head>
+          a head
+        </head>
+      ?]
+      body:[?
+        <body>
+          a body
+        </body>
+      ?]
+      html:[?
+        <html>
+          [! head {} !]
+          [! body {} !]
+        </html>
+      ?]
+      <-html {}
+    }
+    bin:"<html>\n  <head>\n    a head\n  </head>\n  <body>\n    a body\n  </body>\n</html>\n"
+  }
+  TestEvalTemplateNestedFormattedCRLF:{
+    skip:false
+    src:{
+      head:[?
+        <head>
+          a head
+        </head>
+      ?]
+      body:[?
+        <body>
+          a body
+        </body>
+      ?]
+      html:[?
+        <html>
+          [! head {} !]
+          [! body {} !]
+        </html>
+      ?]
+      <-html {}
+    }
+    bin:"<html>\n  <head>\n    a head\n  </head>\n  <body>\n    a body\n  </body>\n</html>\n"
+  }
+  TestEvalTemplateIndent0:{
+    skip:false
+    src:{
+      t:[?
+        a
+                  [! $R.array !]
+      ?]
+      <-t {
+        array:"w" "x" "y" "z"
+      }
+    }
+    bin:"a\n          wxyz\n"
+  }
+  TestEvalTemplateIndent1:{
+    skip:false
+    src:{
+      t:[?
+        a
+                  [! "w" "x" "y" "z" !]
+      ?]
+      <-t {}
+    }
+    bin:"a\n          wxyz\n"
+  }
+  TestEvalTemplateIndent2:{
+    skip:false
+    src:{
+      t:[?
+        a
+                  [! "w\n" "x\n" "y\n" "z\n" !]
+      ?]
+      <-t {}
+    }
+    bin:"a\n          w\n          x\n          y\n          z\n"
+  }
+  TestEvalTemplateIndent3:{
+    skip:false
+    src:{
+      t:[?
+        a
+                  [! $R.array + "\n" !]
+      ?]
+      <-t {
+        array:"w" "x" "y" "z"
+      }
+    }
+    bin:"a\n          w\n          x\n          y\n          z\n"
+  }
+  TestEvalTemplateIndent4:{
+    skip:false
+    src:{
+      t:[?
+        a
+          [! "w\n" "x\n" "y\n" "z\n" !]
+        b
+      ?]
+      <-t {}
+    }
+    bin:"a\n  w\n  x\n  y\n  z\nb\n"
+  }
+  TestEvalTemplateIndent5:{
+    skip:false
+    src:{
+      t:[?
+        a
+          [! "w\r\n" "x\r\n" "y\r\n" "z\r\n" !]
+        b
+      ?]
+      <-t {}
+    }
+    bin:"a\n  w\n  x\n  y\n  z\nb\n"
+  }
+  TestEvalTemplateIndent6:{
+    skip:false
+    src:{
+      t:[?
+        a
+          x:[! "T" !]
+          y
+      ?]
+      <-t {}
+    }
+    bin:"a\n  x:T\n  y\n"
+  }
+  TestEvalTemplateIndent7:{
+    skip:false
+    src:{
+      t:[?
+        a
+          x:[! "T" !];
+          y
+      ?]
+      <-t {}
+    }
+    bin:"a\n  x:T;\n  y\n"
+  }
+  TestEvalTemplateIndent8:{
+    skip:false
+    src:{
+      t:[?
+        [! "a" "b" "c" !]
+        [! "x" "y" "z" !]
+      ?]
+      <-t {}
+    }
+    bin:"abc\nxyz\n"
+  }
+  TestEvalTemplateIndent9:{
+    skip:false
+    src:{
+      t:[?
+        x
+          [! eval {u:[?
+            [! $R.a !]
+            [! $R.b !]
+          ?] <-{<-u $R} each $R.k} !]
+        y
+      ?]
+      <-t {
+        k:{
+          :{
+            a:"0_a"
+            b:"0_b"
+          }
+          :{
+            a:"1_a"
+            b:"1_b"
+          }
+        }
+      }
+    }
+    bin:"x\n  0_a\n  0_b\n  1_a\n  1_b\ny\n"
+  }
+  TestEvalTemplateLeadingNewline:{
+    skip:false
+    src:{
+      t:[?
+        a
+        b[! $R.x !]c
+        d
+      ?]
+      c:{
+        x:"\nx"
+      }
+      <-t $c
+    }
+    bin:"a\nb\nxc\nd\n"
+  }
+  TestEvalTemplateEmptyLines0:{
+    skip:false
+    src:{
+      t:[?
+        
+      ?]
+      <-t #
+    }
+    bin:"\n"
+  }
+  TestEvalTemplateEmptyLines1:{
+    skip:false
+    src:{
+      t:[?
+        
+        
+      ?]
+      <-t #
+    }
+    bin:"\n\n"
+  }
+  TestEvalTemplateEmptyLines2:{
+    skip:false
+    src:{
+      t:[?
+        
+        [! "foo" + ~s !]
+        
+      ?]
+      <-t #
+    }
+    bin:"\n\n"
+  }
+  TestEvalTemplateEmptyLines3:{
+    skip:false
+    src:{
+      t:[?
+        
+        [! ~s !]
+        
+      ?]
+      <-t #
+    }
+    bin:"\n\n"
+  }
+  TestEvalTemplateEmptyLines4:{
+    skip:false
+    src:{
+      t:[?
+          
+          [! ~s !]
+        a 
+      ?]
+      <-t #
+    }
+    bin:"  \n  \na \n"
+  }
+  TestEvalTemplateEmptyLines5:{
+    skip:false
+    src:{
+      u:~s
+      t:[?
+        line0
+        [! "foo" + $u !]
+        line1
+      ?]
+      <-t #
+    }
+    bin:"line0\nline1\n"
+  }
+  TestEvalTemplateEmptyLines6:{
+    skip:false
+    src:{
+      t:[?
+        
+        [! ~s !]
+        
+      ?]
+      <-t #
+    }
+    bin:"\n\n"
+  }
+  TestEvalTemplateEmptyLines7:{
+    skip:false
+    src:{
+      t:[?
+        
+        [! ~s !]
+        
+        
+      ?]
+      <-t #
+    }
+    bin:"\n\n\n"
+  }
+  TestEvalTemplateEmptyLines8:{
+    skip:false
+    src:{
+      t:[?
+        
+        [! ~s !]
+        
+        
+      ?]
+      <-t #
+    }
+    bin:"\n\n\n"
+  }
+  TestEvalTemplateEmptyLines9:{
+    skip:false
+    src:{
+      u:~s
+      t:[?
+        
+        
+      ?]
+      <-t #
+    }
+    bin:"\n\n"
+  }
+  TestEvalTemplateEmptyLines10:{
+    skip:false
+    src:{
+      u:~s
+      t:[?
+         
+        
+      ?]
+      <-t #
+    }
+    bin:" \n\n"
+  }
+  TestEvalTemplateEmptyLines11:{
+    skip:false
+    src:{
+      t:[?
+        
+        [! "foo" + ~s !]
+        a
+      ?]
+      <-t #
+    }
+    bin:"\na\n"
+  }
+  TestTemplateToBlockCoercion:{
+    skip:false
+    src:{
+      t:[?
+        a
+        b
+        c
+      ?]
+      <-block $t
+    }
+    bin:{
+      :"a\nb\nc\n"
+    }
+  }
+  TestStringTemplateCoercion:{
+    skip:false
+    src:template "foo bar baz"
+    bin:[?foo bar baz?]
+  }
+  TestLex:{
+    skip:false
+    src:lex "{x:1 y:2}"
+    bin:"{" "x" ":" "1" " " "y" ":" "2" "}"
+  }
+  TestStringTemplateCoercionMulti:{
+    skip:false
+    src:template "foo\nbar\nbaz\n"
+    bin:[?
+      foo
+      bar
+      baz
+    ?]
+  }
+  TestStringTemplateEscaped:{
+    skip:false
+    src:2 template "foo\nbar\nbaz\n"
+    bin:[??
+      foo
+      bar
+      baz
+    ??]
+  }
+  TestFormatTemplate:{
+    skip:false
+    src:format [?
+      foo
+      bar
+      baz
+    ?]
+    bin:"[?\n  foo\n  bar\n  baz\n?]"
+  }
+  TestFormatTemplate1:{
+    skip:false
+    src:#pretty format parse "[?\n  before\n    [! eval {host:#foo port:#bar} !]\n  after\n?]"
+    bin:"[?\n  before\n    [! eval {host:#foo port:#bar} !]\n  after\n?]"
+  }
+  TestFormatTemplate2:{
+    skip:false
+    src:#pretty format parse "[?\n  before\n    [! eval {host:$R <-{<-user_entry $R} each $R.users} !]\n  after\n?]"
+    bin:"[?\n  before\n    [! eval {host:$R <-{<-user_entry $R} each $R.users} !]\n  after\n?]"
+  }
+  TestCanonicalCubeFormat:{
+    skip:false
+    src:#testcanonical format parse "[S|x #a 10.0 #a -- #a 30.0]"
+    bin:"[S|x #a 10.0 #a -- #a 30.0]"
+  }
+  TestCanonicalCubeFormat1:{
+    skip:false
+    src:#testcanonical format parse "[S|bp ap #x 1001 1003 #y 2002 -- #x 1002 -- #x 1001 1002]"
+    bin:"[S|bp ap #x 1001 1003 #y 2002 -- #x 1002 -- #x 1001 1002]"
+  }
+  TestTemplateEval:{
+    skip:false
+    src:eval [?
+      aaa bbb ccc ddd eee
+    ?]
+    bin:"aaa bbb ccc ddd eee\n"
+  }
+  TestTemplateEval1:{
+    skip:false
+    src:{
+      a:"aaa"
+      b:"bbb"
+      c:"ccc"
+    } eval [?
+      [! $a !] [! $b !] [! $c !]
+    ?]
+    bin:"aaa bbb ccc\n"
+  }
+  TestServer:{
+    skip:true
+    src:{
+      http:httpstart "http://*:8000/"
+      server:fiber {
+        context:httprecv $http
+        qs:httpqs $context
+        <-$context httpsend eval {
+          i:$qs.i + 1
+        }
+      }
+      request:{
+        <-($R.i < 100) switch {
+          :request "http://localhost:8000/" httpget $R
+          :$R
+        }
+      }
+      output:request {
+        i:0
+      }
+      :httpstop $http
+      <-$output
+    }
+    bin:{
+      i:100
+    }
+  }
+  TestHttpSendMulti:{
+    skip:true
+    src:{
+      serve:{
+        r1:httprecv $h
+        r2:httprecv $h
+        :($r1 & $r2) httpsend "{}"
+        <-0
+      }
+      h:httpstart "http://*:8001/test/"
+      s:fiber {
+        <-serve $h
+      }
+      c1:fiber {
+        <-"http://localhost:8001/test" httpget {}
+      }
+      c2:fiber {
+        <-"http://localhost:8001/test" httpget {}
+      }
+      :wait $c1
+      :wait $c2
+      :wait $s
+      :httpstop $h
+      <-0
+    }
+    bin:0
+  }
+  TestCalcSpread:{
+    skip:false
+    src:{
+      bbo:{
+        bp:10.0 10.01 10.02 10.01 10.0
+        ap:10.02 10.03 10.03 10.02 10.01
+      }
+      sprd:$bbo.ap - $bbo.bp
+      <-$sprd / $bbo.bp
+    }
+    bin:0.00199999999999996 0.00199800199800196 0.000998003992015947 0.000999000999000978 0.000999999999999979
+  }
+  TestLastValueInRootPosition:{
+    skip:false
+    src:{
+      a:1
+      b:2
+      c:$a + $b
+      f:{
+        <-$c
+      }
+    }
+    bin:{
+      a:1
+      b:2
+      c:3
+      f:{
+        <-$c
+      }
+    }
+  }
+  TestMonoSelfExecWithExit:{
+    skip:false
+    src:0
+    bin:0
+  }
+  TestWriteChecksCount:{
+    skip:false
+    src:unwrap "status" from try {
+      <-#x write {
+        a:1 10
+        b:2 20
+        c:3 30
+      }
+    }
+    bin:1
+  }
+  TestSelect1:{
+    src:{
+      u:[
+        S | x  y   z
+        #a  1 10 100
+        #b  2 20 200
+        #c  3 30 300
+      ]
+      :(#a select $u) assert [
+         G|S | x  y   z
+         0 #a  1 10 100
+      ]
+      :(#b select $u) assert [
+         G|S | x  y   z
+         1 #b  2 20 200
+      ]
+      :(#c select $u) assert [
+         G|S | x  y   z
+         2 #c  3 30 300
+      ]
+      :(#'*' select $u) assert [
+         G|S | x  y   z
+         0 #a  1 10 100
+         1 #b  2 20 200
+         2 #c  3 30 300
+      ]
+      :(#a #b select $u) assert [
+         G|S | x  y   z
+         0 #a  1 10 100
+         1 #b  2 20 200
+      ]
+      :(#c #b select $u) assert [
+         G|S | x  y   z
+         1 #b  2 20 200
+         2 #c  3 30 300
+      ]
+      <-0
+    }
+    bin:0
+  }
+  TestSelect2:{
+    src:{
+      u:[
+        S   | x  y   z
+        #a,x  1 10 100
+        #a,y  2 20 200
+        #b,z  3 30 300
+      ]
+      :(#a select $u) assert []
+      :(#a,'*' select $u) assert [
+         G|S   | x  y   z
+         0 #a,x  1 10 100
+         1 #a,y  2 20 200
+      ]
+      :(#b,'*' select $u) assert [
+         G|S   | x  y   z
+         2 #b,z  3 30 300
+      ]
+      :(#b,z select $u) assert [
+         G|S   | x  y   z
+         2 #b,z  3 30 300
+      ]
+      :(#a,x select $u) assert [
+         G|S   | x  y   z
+         0 #a,x  1 10 100
+      ]
+      :(#a,x #b,z select $u) assert [
+         G|S   | x  y   z
+         0 #a,x  1 10 100
+         2 #b,z  3 30 300
+      ]
+      :(#a,'*' #b,z select $u) assert [
+         G|S   | x  y   z
+         0 #a,x  1 10 100
+         1 #a,y  2 20 200
+         2 #b,z  3 30 300
+      ]
+      :(#b,z select $u) assert [
+         G|S   | x  y   z
+         2 #b,z  3 30 300
+      ]
+      :(#b,'*' select $u) assert [
+         G|S   | x  y   z
+         2 #b,z  3 30 300
+      ]
+      :(#b select $u) assert []
+      :(#b,'*' select $u) assert [
+         G|S   | x  y   z
+         2 #b,z  3 30 300
+      ]
+      <-0
+    }
+    bin:0
+  }
+  TestSelect3:{
+    src:{
+      u:[
+        S   | x  y   z
+        #1,a  1 10 100
+        #1,b  2 20 200
+        #2,c  3 30 300
+      ]
+      :(#1,a select $u) assert [
+         G|S   | x  y   z
+         0 #1,a  1 10 100
+      ]
+      :(#1,b select $u) assert [
+         G|S   | x  y   z
+         1 #1,b  2 20 200
+      ]
+      :(#2,c select $u) assert [
+         G|S   | x  y   z
+         2 #2,c  3 30 300
+      ]
+      :(#1,c select $u) assert []
+      :(#2,'*' select $u) assert [
+         G|S   | x  y   z
+         2 #2,c  3 30 300
+      ]
+      :(#3,'*' select $u) assert []
+      <-0
+    }
+    bin:0
+  }
+  TestSelect4:{
+    src:{
+      u:[
+        S     | x  y   z
+        #1,a,0  1 10 100
+        #1,b,0  2 20 200
+        #2,c,0  3 30 300
+      ]
+      :(#3,'*' select $u) assert []
+      :(#2,'*' select $u) assert [
+         G|S     | x  y   z
+         2 #2,c,0  3 30 300
+      ]
+      :(#1,'*' select $u) assert [
+         G|S     | x  y   z
+         0 #1,a,0  1 10 100
+         1 #1,b,0  2 20 200
+      ]
+      :(#1,a,'*' select $u) assert [
+         G|S     | x  y   z
+         0 #1,a,0  1 10 100
+      ]
+      :(#2,b,'*' select $u) assert []
+      :(#1,b,'*' select $u) assert [
+         G|S     | x  y   z
+         1 #1,b,0  2 20 200
+      ]
+      <-0
+    }
+    bin:0
+  }
+}

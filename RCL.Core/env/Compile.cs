@@ -20,19 +20,35 @@ namespace RCL.Core
       parameters.ReferencedAssemblies.Add (dir.FullName + "/RCL.Kernel.dll");
       parameters.GenerateInMemory = true;
       parameters.GenerateExecutable = false;
-      CompilerResults results = provider.CompileAssemblyFromSource (parameters, code);
-      for (int i = 0; i < results.Errors.Count; ++i)
+      CompilerResults results = null;
+      try
       {
-        CompilerError error = results.Errors[i];
-        RCSystem.Log.Record (closure, "compile", 0, "error", error.ToString ());
-        /*
-        error.Column;
-        error.ErrorNumber;
-        error.ErrorText;
-        error.FileName;
-        error.IsWarning;
-        error.Line;
-        */
+        RCSystem.Log.Record (closure, "compile", 0, "code", code);
+        results = provider.CompileAssemblyFromSource (parameters, code);
+      }
+      catch (Exception)
+      {
+        throw;
+      }
+      finally
+      {
+        if (results != null)
+        {
+          for (int i = 0; i < results.Errors.Count; ++i)
+          {
+            CompilerError error = results.Errors[i];
+            Console.Out.WriteLine (error.ToString ());
+            RCSystem.Log.Record (closure, "compile", 0, "error", error.ToString ());
+            /*
+            error.Column;
+            error.ErrorNumber;
+            error.ErrorText;
+            error.FileName;
+            error.IsWarning;
+            error.Line;
+            */
+          }
+        }
       }
       if (results.Errors.Count > 0)
       {

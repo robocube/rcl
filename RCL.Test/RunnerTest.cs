@@ -164,7 +164,14 @@ namespace RCL.Test
       RCRunner runner = new RCRunner ();
       for (int i = 0; i < 5; ++i)
       {
-        runner.Rep ("p:startx \"mono rcl.exe --output=clean --nokeys\"");
+        if (!RCSystem.IsMono ())
+        {
+          runner.Rep ("p:startx \"rcl.exe --output=clean --nokeys\"");
+        }
+        else
+        {
+          runner.Rep ("p:startx \"mono rcl.exe --output=clean --nokeys\"");
+        }
         runner.Rep ("$p writex \"exit 0\"");
         runner.Rep ("waitx $p");
       }
@@ -176,7 +183,14 @@ namespace RCL.Test
       RCRunner runner = new RCRunner ();
       for (int i = 0; i < 5; ++i)
       {
-        runner.Rep ("eval {p:startx \"mono rcl.exe --output=clean --nokeys\" :$p writex \"exit 0\" :waitx $p}");
+        if (RCSystem.IsMono ())
+        {
+          runner.Rep ("eval {p:startx \"mono rcl.exe --output=clean --nokeys\" :$p writex \"exit 0\" :waitx $p}");
+        }
+        else
+        {
+          runner.Rep ("eval {p:startx \"rcl.exe --output=clean --nokeys\" :$p writex \"exit 0\" :waitx $p}");
+        }
       }
     }
 
@@ -187,7 +201,14 @@ namespace RCL.Test
       for (int i = 0; i < 5; ++i)
       {
         runner.Rep ("\"exit.o2\" save #pretty format {:exit 0}");
-        runner.Rep ("p:startx \"mono rcl.exe --output=clean --nokeys --program=exit.o2\"");
+        if (RCSystem.IsMono ())
+        {
+          runner.Rep ("p:startx \"mono rcl.exe --output=clean --nokeys --program=exit.o2\"");
+        }
+        else
+        {
+          runner.Rep ("p:startx \"rcl.exe --output=clean --nokeys --program=exit.o2\"");
+        }
         runner.Rep ("waitx $p");
         runner.Rep ("exec \"rm exit.o2\"");
       }
@@ -198,7 +219,14 @@ namespace RCL.Test
     {
       RCRunner runner = new RCRunner ();
       runner.Rep ("\"exit.o2\" save #pretty format {:exit 1}");
-      runner.Rep ("p:startx \"mono rcl.exe --output=clean --show=print --nokeys --program=exit.o2\"");
+      if (RCSystem.IsMono ())
+      {
+        runner.Rep ("p:startx \"mono rcl.exe --output=clean --show=print --nokeys --program=exit.o2\"");
+      }
+      else
+      {
+        runner.Rep ("p:startx \"rcl.exe --output=clean --show=print --nokeys --program=exit.o2\"");
+      }
       RCL.Kernel.Assert.AreEqual ("{status:1 data:\"<<Exec,exit status 1>>\"}", runner.Rep ("try {<-waitx $p}").ToString ());
     }
 
@@ -206,7 +234,14 @@ namespace RCL.Test
     public void TestMultipleCustomOptions ()
     {
       RCRunner runner = new RCRunner ();
-      runner.Rep ("p:startx \"mono rcl.exe --output=clean --nokeys --custom1=one --custom2\"");
+      if (RCSystem.IsMono ())
+      {
+        runner.Rep ("p:startx \"mono rcl.exe --output=clean --nokeys --custom1=one --custom2\"");
+      }
+      else
+      {
+        runner.Rep ("p:startx \"rcl.exe --output=clean --nokeys --custom1=one --custom2\"");
+      }
       runner.Rep ("$p writex \"option \\\"custom1\\\"\"");
       RCString custom1 = (RCString) runner.Rep ("\"\\n\" readx $p");
       runner.Rep ("$p writex \"option \\\"custom2\\\"\"");
@@ -221,7 +256,14 @@ namespace RCL.Test
     public void TestMultipleCustomArguments ()
     {
       RCRunner runner = new RCRunner ();
-      runner.Rep ("p:startx \"mono rcl.exe --output=clean first_argument --nokeys --custom1=one second_argument --custom2\"");
+      if (RCSystem.IsMono ())
+      {
+        runner.Rep ("p:startx \"mono rcl.exe --output=clean first_argument --nokeys --custom1=one second_argument --custom2\"");
+      }
+      else
+      {
+        runner.Rep ("p:startx \"rcl.exe --output=clean first_argument --nokeys --custom1=one second_argument --custom2\"");
+      }
       runner.Rep ("$p writex \"info #arguments\"");
       RCString result = (RCString) runner.Rep ("\"\\n\" readx $p");
       runner.Rep ("$p writex \"exit\"");
@@ -233,7 +275,14 @@ namespace RCL.Test
     public void TestCdWithQuotes ()
     {
       RCRunner runner = new RCRunner ();
-      runner.Rep ("p:startx \"mono rcl.exe --output=clean --nokeys\"");
+      if (RCSystem.IsMono ())
+      {
+        runner.Rep ("p:startx \"mono rcl.exe --output=clean --nokeys\"");
+      }
+      else
+      {
+        runner.Rep ("p:startx \"rcl.exe --output=clean --nokeys\"");
+      }
       runner.Rep ("$p writex \"pwd\"");
       RCString pwdBefore = (RCString) runner.Rep ("\"\\n\" readx $p");
       runner.Rep ("$p writex \"cd \\\"..\\\"\"");

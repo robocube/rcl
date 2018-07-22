@@ -1,0 +1,139 @@
+
+_rclt_setup:{
+  :#setup putm true
+}
+
+_rclt_teardown:{
+  :(hasm #testing_teardown) then {
+    :getm #teardown
+  }
+}
+
+pass:{
+  src:1 + 1
+  bin:2
+  doc:[? Ordinary pass. ?]
+}
+
+fail:{
+  src:1 + 1
+  bin:0
+  doc:[? Ordinary failure. ?]
+}
+
+native:{
+  src:1 / 0
+  bin:{
+    error:#Native
+    message:"Attempted to divide by zero."
+  }
+  doc:[? Error originating in the 'Native' (CLR) layer. ?]
+}
+
+internal:{
+  src:1 + 1 2
+  bin:{
+    error:#internal
+    message:"Both arguments must have equal counts."
+  }
+  doc:[? Error originating in the RCL implementation (RCLException). ?]
+}
+
+assert:{
+  src:assert 1 = 2
+  bin:{
+    error:#Assert
+    message:"Assert failed."
+  }
+  doc:[? Error originating in RCL code (assert operator). ?]
+}
+
+skip:{
+  skip:true
+  src:assert 1 = 2
+  bin:"<<Assert,Failed: assert 1 = 2>>"
+  doc:[? Test for the ability to skip a test. ?]
+}
+
+repeat:{
+  repeat:3
+  src:1 + 1
+  bin:2
+  doc:[? Test for repeated tests. ?]
+}
+
+nobin:{
+  src:1 + 2
+}
+
+setup:{
+  src:{
+    :assert getm #setup
+    :#testing_teardown putm true
+    :#teardown putm true
+  }
+}
+
+test_setup_teardown:{
+  setup:print "in the test setup"
+  src:1 + 1
+  teardown:print "in the test teardown"
+}
+
+suite_pass:{
+  pass_0:{
+    src:1 + 1
+    bin:2
+  }
+  pass_1:{
+    src:1 - 1
+    bin:0
+  }
+  pass_2:{
+    src:1 - 2
+    bin:-1
+  }  
+}
+
+suite_fail:{
+  pass_0:{
+    src:1 + 1
+    bin:2
+  }
+  fail_1:{
+    src:1 - 1
+    bin:3
+  }
+  pass_2:{
+    src:1 - 2
+    bin:-1
+  }
+}
+
+suite_skip:{
+  pass0:{
+    src:1 + 1
+    bin:2
+  }
+  pass1:{
+    skip:true
+    src:assert false
+    bin:#error
+  }
+  pass2:{
+    src:1 - 2
+    bin:-1
+  }  
+}
+
+template_as_bin:{
+  src:{
+    <-[?
+      this is the expected.
+    ?]
+  }
+  bin:[?
+    this is the expected.
+  ?]
+}
+

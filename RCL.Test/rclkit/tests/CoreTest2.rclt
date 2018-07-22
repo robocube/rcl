@@ -1,0 +1,3382 @@
+{
+  TestAppendXX:{
+    skip:false
+    src:\x01 & \x02
+    bin:\x01 \x02
+  }
+  TestAppendLL:{
+    skip:false
+    src:1 & 2
+    bin:1 2
+  }
+  TestAppendDD:{
+    skip:false
+    src:1.0 & 2.0
+    bin:1.0 2.0
+  }
+  TestAppendMM:{
+    skip:false
+    src:1m & 2m
+    bin:1 2m
+  }
+  TestAppendBB:{
+    skip:false
+    src:true & false
+    bin:true false
+  }
+  TestAppendSS:{
+    skip:false
+    src:"x" & "y"
+    bin:"x" "y"
+  }
+  TestAppendYY:{
+    skip:false
+    src:#x & #y
+    bin:#x #y
+  }
+  TestAppendKK:{
+    skip:false
+    src:{
+      x:1.0
+    } & {
+      y:2.0
+    }
+    bin:{
+      x:1.0
+      y:2.0
+    }
+  }
+  TestAppendK0:{
+    skip:false
+    src:& {
+      x:1.0
+      y:2.0
+      z:3.0
+    }
+    bin:1.0 2.0 3.0
+  }
+  TestAppendK1:{
+    skip:false
+    src:& {
+      x:{
+        a:1
+        b:2
+        c:3
+      }
+      y:{
+        d:4
+        e:5
+        g:6
+      }
+    }
+    bin:{
+      a:1
+      b:2
+      c:3
+      d:4
+      e:5
+      g:6
+    }
+  }
+  TestAppendK2:{
+    skip:false
+    src:& {
+      :[
+         x
+         1
+      ]
+      :[
+         x
+         2
+      ]
+      :[
+         x
+         3
+      ]
+    }
+    bin:[
+       x
+       1
+       2
+       3
+    ]
+  }
+  TestAppendK3:{
+    skip:false
+    src:& {
+      x:2015.05.22
+      y:2015.05.23
+      z:2015.05.24
+    }
+    bin:2015.05.22 2015.05.23 2015.05.24
+  }
+  TestAppendS:{
+    skip:false
+    src:& "a" "b" "c"
+    bin:"abc"
+  }
+  TestAppendT:{
+    skip:false
+    src:2015.05.22 & 2015.05.23
+    bin:2015.05.22 2015.05.23
+  }
+  TestPartY0:{
+    skip:false
+    src:0 part #a,b,c #d,e,f #g,h,i
+    bin:#a #d #g
+  }
+  TestPartY1:{
+    skip:false
+    src:2 1 part #a,b,c #d,e,f #g,h,i
+    bin:#c,b #f,e #i,h
+  }
+  TestPartY2:{
+    skip:false
+    src:0 -1 part #a,b,c #d,e,f #g,h,i
+    bin:#a,c #d,f #g,i
+  }
+  TestPartY3:{
+    skip:false
+    src:-2 part #a,b,c #d,e,f #g,h,i
+    bin:#b #e #h
+  }
+  TestToX:{
+    skip:false
+    src:\x00 to \x02
+    bin:\x00 \x01 \x02
+  }
+  TestToL:{
+    skip:false
+    src:0 to 2
+    bin:0 1 2
+  }
+  TestToD:{
+    skip:false
+    src:0.0 to 2.0
+    bin:0.0 1.0 2.0
+  }
+  TestToM:{
+    skip:false
+    src:0m to 2m
+    bin:0 1 2m
+  }
+  TestAtXX:{
+    skip:false
+    src:\x00 \x01 \x02 at \x01
+    bin:\x01
+  }
+  TestAtXL:{
+    skip:false
+    src:\x00 \x01 \x02 at 1
+    bin:\x01
+  }
+  TestAtXD:{
+    skip:false
+    src:\x00 \x01 \x02 at 1.0
+    bin:\x01
+  }
+  TestAtXM:{
+    skip:false
+    src:\x00 \x01 \x02 at 1m
+    bin:\x01
+  }
+  TestAtLL:{
+    skip:false
+    src:0 1 2 at 1
+    bin:1
+  }
+  TestAtLD:{
+    skip:false
+    src:0 1 2 at 1.5
+    bin:1
+  }
+  TestAtLM:{
+    skip:false
+    src:0 1 2 at 1.5m
+    bin:1
+  }
+  TestAtLX:{
+    skip:false
+    src:0 1 2 at \x01
+    bin:1
+  }
+  TestAtLNeg:{
+    skip:false
+    src:0 1 2 at 0 -1
+    bin:0 2
+  }
+  TestAtDNeg:{
+    skip:false
+    src:0.0 1.0 2.0 at 0.0 -1.0
+    bin:0.0 2.0
+  }
+  TestAtMNeg:{
+    skip:false
+    src:0 1 2m at 0 -1m
+    bin:0 2m
+  }
+  TestAtDL:{
+    skip:false
+    src:0.0 1.0 2.0 at 1
+    bin:1.0
+  }
+  TestAtDD:{
+    skip:false
+    src:0.0 1.0 2.0 at 1.5
+    bin:1.0
+  }
+  TestAtDM:{
+    skip:false
+    src:0.0 1.0 2.0 at 1.5m
+    bin:1.0
+  }
+  TestAtDX:{
+    skip:false
+    src:0.0 1.0 2.0 at \x01
+    bin:1.0
+  }
+  TestAtML:{
+    skip:false
+    src:0 1 2m at 1
+    bin:1m
+  }
+  TestAtMD:{
+    skip:false
+    src:0 1 2m at 1.5
+    bin:1m
+  }
+  TestAtMM:{
+    skip:false
+    src:0 1 2m at 1.5m
+    bin:1m
+  }
+  TestAtMX:{
+    skip:false
+    src:0 1 2m at \x01
+    bin:1m
+  }
+  TestAtBL:{
+    skip:false
+    src:true false true at 1
+    bin:false
+  }
+  TestAtBD:{
+    skip:false
+    src:true false true at 1.0
+    bin:false
+  }
+  TestAtBM:{
+    skip:false
+    src:true false true at 1m
+    bin:false
+  }
+  TestAtBX:{
+    skip:false
+    src:true false true at \x01
+    bin:false
+  }
+  TestAtSL:{
+    skip:false
+    src:"x" "y" "z" at 1
+    bin:"y"
+  }
+  TestAtSD:{
+    skip:false
+    src:"x" "y" "z" at 1.0
+    bin:"y"
+  }
+  TestAtSM:{
+    skip:false
+    src:"x" "y" "z" at 1m
+    bin:"y"
+  }
+  TestAtSX:{
+    skip:false
+    src:"x" "y" "z" at \x01
+    bin:"y"
+  }
+  TestAtYL:{
+    skip:false
+    src:#x #y #z at 1
+    bin:#y
+  }
+  TestAtYD:{
+    skip:false
+    src:#x #y #z at 1.0
+    bin:#y
+  }
+  TestAtYM:{
+    skip:false
+    src:#x #y #z at 1m
+    bin:#y
+  }
+  TestAtYX:{
+    skip:false
+    src:#x #y #z at \x01
+    bin:#y
+  }
+  TestAtTL:{
+    skip:false
+    src:01:00 02:00 03:00 at 1
+    bin:02:00
+  }
+  TestAtTD:{
+    skip:false
+    src:01:00 02:00 03:00 at 1.0
+    bin:02:00
+  }
+  TestAtTM:{
+    skip:false
+    src:01:00 02:00 03:00 at 1m
+    bin:02:00
+  }
+  TestAtTX:{
+    skip:false
+    src:01:00 02:00 03:00 at \x01
+    bin:02:00
+  }
+  TestAtKL:{
+    skip:false
+    src:{
+      x:0
+      y:1
+      z:2
+    } at 1
+    bin:{
+      y:1
+    }
+  }
+  TestAtKD:{
+    skip:false
+    src:{
+      x:0
+      y:1
+      z:2
+    } at 1.0
+    bin:{
+      y:1
+    }
+  }
+  TestAtKM:{
+    skip:false
+    src:{
+      x:0
+      y:1
+      z:2
+    } at 1m
+    bin:{
+      y:1
+    }
+  }
+  TestAtKLNeg:{
+    skip:false
+    src:{
+      x:0
+      y:1
+      z:2
+    } at -2
+    bin:{
+      y:1
+    }
+  }
+  TestAtKDNeg:{
+    skip:false
+    src:{
+      x:0
+      y:1
+      z:2
+    } at -2.0
+    bin:{
+      y:1
+    }
+  }
+  TestAtKMNeg:{
+    skip:false
+    src:{
+      x:0
+      y:1
+      z:2
+    } at -2m
+    bin:{
+      y:1
+    }
+  }
+  TestAtKX:{
+    skip:false
+    src:{
+      x:0
+      y:1
+      z:2
+    } at \x01
+    bin:{
+      y:1
+    }
+  }
+  TestAtKS:{
+    skip:false
+    src:{
+      x:0
+      y:1
+      z:2
+    } at "y"
+    bin:{
+      y:1
+    }
+  }
+  TestAtKY:{
+    skip:false
+    src:{
+      x:0
+      y:1
+      z:2
+    } at #y
+    bin:{
+      y:1
+    }
+  }
+  TestAtUL:{
+    skip:true
+    src:[
+      S | x  y   z
+      #a  0 10 100
+    ] at 1
+    bin:10
+  }
+  TestAtUD:{
+    skip:true
+    src:[
+      S | x  y   z
+      #a  0 10 100
+    ] at 1.0
+    bin:10
+  }
+  TestAtUM:{
+    skip:true
+    src:[
+      S | x  y   z
+      #a  0 10 100
+    ] at 1m
+    bin:10
+  }
+  TestAtUX:{
+    skip:true
+    src:[
+      S | x  y   z
+      #a  0 10 100
+    ] at \x01
+    bin:10
+  }
+  TestAtUS:{
+    skip:true
+    src:[
+      S | x  y   z
+      #a  0 10 100
+    ] at "y"
+    bin:10
+  }
+  TestAtUY:{
+    skip:true
+    src:[
+      S | x  y   z
+      #a  0 10 100
+    ] at #y
+    bin:10
+  }
+  TestFromXX:{
+    skip:false
+    src:\x01 from \x00 \x01 \x02
+    bin:\x01
+  }
+  TestFromXL:{
+    skip:false
+    src:\x01 from 0 1 2
+    bin:1
+  }
+  TestFromXD:{
+    skip:false
+    src:\x01 from 0.0 1.0 2.0
+    bin:1.0
+  }
+  TestFromXM:{
+    skip:false
+    src:\x01 from 0 1 2m
+    bin:1m
+  }
+  TestFromLL:{
+    skip:false
+    src:1 from 0 1 2
+    bin:1
+  }
+  TestFromLD:{
+    skip:false
+    src:1 from 0.0 1.0 2.0
+    bin:1.0
+  }
+  TestFromLM:{
+    skip:false
+    src:1 from 0 1 2m
+    bin:1m
+  }
+  TestFromLX:{
+    skip:false
+    src:1 from \x00 \x01 \x02
+    bin:\x01
+  }
+  TestFromLNeg:{
+    skip:false
+    src:0 -1 from 0 1 2
+    bin:0 2
+  }
+  TestFromDNeg:{
+    skip:false
+    src:0.0 -1.0 from 0.0 1.0 2.0
+    bin:0.0 2.0
+  }
+  TestFromMNeg:{
+    skip:false
+    src:0 -1m from 0.0 1.0 2.0
+    bin:0.0 2.0
+  }
+  TestFromDL:{
+    skip:false
+    src:1.5 from 0 1 2
+    bin:1
+  }
+  TestFromDD:{
+    skip:false
+    src:1.5 from 0.0 1.0 2.0
+    bin:1.0
+  }
+  TestFromDM:{
+    skip:false
+    src:1.5 from 0 1 2m
+    bin:1m
+  }
+  TestFromDX:{
+    skip:false
+    src:1.5 from \x00 \x01 \x02
+    bin:\x01
+  }
+  TestFromML:{
+    skip:false
+    src:1.5m from 0 1 2
+    bin:1
+  }
+  TestFromMD:{
+    skip:false
+    src:1.5m from 0.0 1.0 2.0
+    bin:1.0
+  }
+  TestFromMM:{
+    skip:false
+    src:1.5m from 0 1 2m
+    bin:1m
+  }
+  TestFromMX:{
+    skip:false
+    src:1.5m from \x00 \x01 \x02
+    bin:\x01
+  }
+  TestFromLB:{
+    skip:false
+    src:1 from true false true
+    bin:false
+  }
+  TestFromDB:{
+    skip:false
+    src:1.0 from true false true
+    bin:false
+  }
+  TestFromMB:{
+    skip:false
+    src:1m from true false true
+    bin:false
+  }
+  TestFromXB:{
+    skip:false
+    src:\x01 from true false true
+    bin:false
+  }
+  TestFromLS:{
+    skip:false
+    src:1 from "x" "y" "z"
+    bin:"y"
+  }
+  TestFromDS:{
+    skip:false
+    src:1.5 from "x" "y" "z"
+    bin:"y"
+  }
+  TestFromMS:{
+    skip:false
+    src:1.5m from "x" "y" "z"
+    bin:"y"
+  }
+  TestFromXS:{
+    skip:false
+    src:\x01 from "x" "y" "z"
+    bin:"y"
+  }
+  TestFromLY:{
+    skip:false
+    src:1 from #x #y #z
+    bin:#y
+  }
+  TestFromDY:{
+    skip:false
+    src:1.0 from #x #y #z
+    bin:#y
+  }
+  TestFromMY:{
+    skip:false
+    src:1m from #x #y #z
+    bin:#y
+  }
+  TestFromXY:{
+    skip:false
+    src:\x01 from #x #y #z
+    bin:#y
+  }
+  TestFromTL:{
+    skip:false
+    src:1 from 01:00 02:00 03:00
+    bin:02:00
+  }
+  TestFromTD:{
+    skip:false
+    src:1.0 from 01:00 02:00 03:00
+    bin:02:00
+  }
+  TestFromTM:{
+    skip:false
+    src:1m from 01:00 02:00 03:00
+    bin:02:00
+  }
+  TestFromTX:{
+    skip:false
+    src:\x01 from 01:00 02:00 03:00
+    bin:02:00
+  }
+  TestFromLK:{
+    skip:false
+    src:1 from {
+      x:0
+      y:1
+      z:2
+    }
+    bin:{
+      y:1
+    }
+  }
+  TestFromDK:{
+    skip:false
+    src:1.0 from {
+      x:0
+      y:1
+      z:2
+    }
+    bin:{
+      y:1
+    }
+  }
+  TestFromMK:{
+    skip:false
+    src:1m from {
+      x:0
+      y:1
+      z:2
+    }
+    bin:{
+      y:1
+    }
+  }
+  TestFromLKNeg:{
+    skip:false
+    src:-2 from {
+      x:0
+      y:1
+      z:2
+    }
+    bin:{
+      y:1
+    }
+  }
+  TestFromDKNeg:{
+    skip:false
+    src:-2.0 from {
+      x:0
+      y:1
+      z:2
+    }
+    bin:{
+      y:1
+    }
+  }
+  TestFromMKNeg:{
+    skip:false
+    src:-2m from {
+      x:0
+      y:1
+      z:2
+    }
+    bin:{
+      y:1
+    }
+  }
+  TestFromXK:{
+    skip:false
+    src:\x01 from {
+      x:0
+      y:1
+      z:2
+    }
+    bin:{
+      y:1
+    }
+  }
+  TestFromYK:{
+    skip:false
+    src:#y from {
+      x:0
+      y:1
+      z:2
+    }
+    bin:{
+      y:1
+    }
+  }
+  TestFromYK1:{
+    skip:false
+    src:#'a b c' from {
+      'a b c':1
+    }
+    bin:{
+      'a b c':1
+    }
+  }
+  TestFromYK2:{
+    skip:false
+    src:#a,c #e,f from {
+      a:{
+        b:1
+        c:2
+        d:3
+      }
+      e:{
+        f:4
+        g:5
+      }
+    }
+    bin:{
+      c:2
+      f:4
+    }
+  }
+  TestFromSK:{
+    skip:false
+    src:"y" from {
+      x:0
+      y:1
+      z:2
+    }
+    bin:{
+      y:1
+    }
+  }
+  TestFromSK1:{
+    skip:false
+    src:"a b c" from {
+      'a b c':1
+    }
+    bin:{
+      'a b c':1
+    }
+  }
+  TestFromSK2:{
+    skip:false
+    src:"'a b c'" from {
+      'a b c':1
+    }
+    bin:{
+      'a b c':1
+    }
+  }
+  TestFirst:{
+    skip:false
+    src:first {
+      :0
+      :1
+      :2
+    }
+    bin:0
+  }
+  TestLast:{
+    skip:false
+    src:last {
+      :0
+      :1
+      :2
+    }
+    bin:2
+  }
+  TestUnwrap:{
+    skip:false
+    src:unwrap {
+      :0
+    }
+    bin:0
+  }
+  TestFindB:{
+    skip:false
+    src:find true false true
+    bin:0 2
+  }
+  TestFindBB:{
+    skip:false
+    src:false find true false true
+    bin:1
+  }
+  TestFindLL:{
+    skip:false
+    src:0 find 0 1 2
+    bin:0
+  }
+  TestFindDD:{
+    skip:false
+    src:0.0 find 0.0 1.0 2.0
+    bin:0
+  }
+  TestFindMM:{
+    skip:false
+    src:0m find 0 1 2m
+    bin:0
+  }
+  TestFindXX:{
+    skip:false
+    src:\x00 find \x00 \x01 \x02
+    bin:0
+  }
+  TestFindSS:{
+    skip:false
+    src:"y" find "x" "y" "z"
+    bin:1
+  }
+  TestFindYY:{
+    skip:false
+    src:#y find #x #y #z
+    bin:1
+  }
+  TestFindTT:{
+    skip:false
+    src:2015.05.27 find 2015.05.26 2015.05.27 2015.05.28
+    bin:1
+  }
+  TestFindBEmpty:{
+    skip:false
+    src:find false false false
+    bin:~l
+  }
+  TestFindBBEmpty:{
+    skip:false
+    src:false find true true true
+    bin:~l
+  }
+  TestFindLLEmpty:{
+    skip:false
+    src:3 find 0 1 2
+    bin:~l
+  }
+  TestFindDDEmpty:{
+    skip:false
+    src:3.0 find 0.0 1.0 2.0
+    bin:~l
+  }
+  TestFindMMEmpty:{
+    skip:false
+    src:3m find 0 1 2m
+    bin:~l
+  }
+  TestFindXXEmpty:{
+    skip:false
+    src:\x03 find \x00 \x01 \x02
+    bin:~l
+  }
+  TestFindSSEmpty:{
+    skip:false
+    src:"a" find "x" "y" "z"
+    bin:~l
+  }
+  TestFindYYEmpty:{
+    skip:false
+    src:#a find #x #y #z
+    bin:~l
+  }
+  TestFindTTEmpty:{
+    skip:false
+    src:2015.05.27 find 2015.05.26 2015.05.28 2015.05.29
+    bin:~l
+  }
+  TestWhereLB:{
+    skip:false
+    src:1 2 3 where true false true
+    bin:1 3
+  }
+  TestWhereDB:{
+    skip:false
+    src:1.0 2.0 3.0 where true false true
+    bin:1.0 3.0
+  }
+  TestWhereMB:{
+    skip:false
+    src:1 2 3m where true false true
+    bin:1 3m
+  }
+  TestWhereXB:{
+    skip:false
+    src:\x01 \x02 \x03 where true false true
+    bin:\x01 \x03
+  }
+  TestWhereYB:{
+    skip:false
+    src:#x #y #z where true false true
+    bin:#x #z
+  }
+  TestWhereNB:{
+    skip:false
+    src:++ ++ ++ where true false true
+    bin:++ ++
+  }
+  TestWhereSB:{
+    skip:false
+    src:"x" "y" "z" where true false true
+    bin:"x" "z"
+  }
+  TestWhereTB:{
+    skip:false
+    src:2015.05.27 2015.05.28 2015.05.29 where true false true
+    bin:2015.05.27 2015.05.29
+  }
+  TestWhereKB:{
+    skip:false
+    src:{
+      a:{
+        x:1
+      }
+      b:{
+        y:1
+      }
+      c:{
+        z:1
+      }
+    } where true false true
+    bin:{
+      a:{
+        x:1
+      }
+      c:{
+        z:1
+      }
+    }
+  }
+  TestWhereKK:{
+    skip:false
+    src:{
+      a:{
+        x:1
+      }
+      b:{
+        x:2
+      }
+      c:{
+        x:3
+      }
+      d:{
+        x:4
+      }
+    } where {
+      a:{
+        x:true
+      }
+      b:{
+        x:true
+      }
+      c:{
+        x:false
+      }
+      d:{
+        x:false
+      }
+    }
+    bin:{
+      a:{
+        x:1
+      }
+      b:{
+        x:2
+      }
+    }
+  }
+  TestWhereKK1:{
+    skip:false
+    src:{
+      a:{
+        x:1
+        y:2
+        z:3
+      }
+    } where {
+      a:false true false
+    }
+    bin:{
+      a:{
+        y:2
+      }
+    }
+  }
+  TestWhereKK2:{
+    skip:false
+    src:{
+      k:{
+        a:{
+          x:1
+          y:2
+          z:3
+        }
+      }
+      <-$k where {
+        <-"y" == names $R
+      } each $k
+    }
+    bin:{
+      a:{
+        y:2
+      }
+    }
+  }
+  TestWhereKK3:{
+    skip:false
+    src:{
+      a:{
+        x:1
+        y:2
+        z:3
+      }
+    } where {
+      a:{
+        x:false
+        y:true
+        z:false
+      }
+    }
+    bin:{
+      a:{
+        y:2
+      }
+    }
+  }
+  TestWhereKK4:{
+    skip:false
+    src:{
+      k:{
+        a:{
+          x:1
+          y:2
+          z:3
+        }
+      }
+      <-$k where {
+        <-{
+          <-$L == "y"
+        } each $R
+      } each $k
+    }
+    bin:{
+      a:{
+        y:2
+      }
+    }
+  }
+  TestSortAscL:{
+    skip:false
+    src:#asc sort 2 0 1
+    bin:0 1 2
+  }
+  TestSortAscD:{
+    skip:false
+    src:#asc sort 2.0 0.0 1.0
+    bin:0.0 1.0 2.0
+  }
+  TestSortAscM:{
+    skip:false
+    src:#asc sort 2 0 1m
+    bin:0 1 2m
+  }
+  TestSortAscX:{
+    skip:false
+    src:#asc sort \x02 \x00 \x01
+    bin:\x00 \x01 \x02
+  }
+  TestSortAscB:{
+    skip:false
+    src:#asc sort true false true
+    bin:false true true
+  }
+  TestSortAscS:{
+    skip:false
+    src:#asc sort "c" "b" "a"
+    bin:"a" "b" "c"
+  }
+  TestSortAscY:{
+    skip:true
+    src:#asc sort #b #c #a
+    bin:#a #b #c
+  }
+  TestSortAscT:{
+    skip:false
+    src:#asc sort 2015.05.25 2015.05.24 2015.05.26
+    bin:2015.05.24 2015.05.25 2015.05.26
+  }
+  TestSortAscKX:{
+    skip:false
+    src:#asc,x sort {
+      x:\x01 \x02 \x00
+      y:#a #b #c
+    }
+    bin:{
+      x:\x00 \x01 \x02
+      y:#c #a #b
+    }
+  }
+  TestSortAscKL:{
+    skip:false
+    src:#asc,x sort {
+      x:1 2 0
+      y:#a #b #c
+    }
+    bin:{
+      x:0 1 2
+      y:#c #a #b
+    }
+  }
+  TestSortAbsAscL:{
+    skip:false
+    src:#absasc sort 1 -2 0
+    bin:0 1 -2
+  }
+  TestSortAbsAscD:{
+    skip:false
+    src:#absasc sort 1.0 -2.0 0.0
+    bin:0.0 1.0 -2.0
+  }
+  TestSortAbsAscM:{
+    skip:false
+    src:#absasc sort 1 -2 0m
+    bin:0 1 -2m
+  }
+  TestSortAbsAscX:{
+    skip:false
+    src:#absasc sort \x01 \x02 \x00
+    bin:\x00 \x01 \x02
+  }
+  TestSortAbsAscB:{
+    skip:false
+    src:#absasc sort true false true
+    bin:false true true
+  }
+  TestSortAbsAscS:{
+    skip:false
+    src:#absasc sort "c" "b" "a"
+    bin:"a" "b" "c"
+  }
+  TestSortAbsAscY:{
+    skip:true
+    src:#absasc sort #b #c #a
+    bin:#a #b #c
+  }
+  TestSortAbsAscT:{
+    skip:false
+    src:#absasc sort 2015.05.25 2015.05.24 2015.05.26
+    bin:2015.05.24 2015.05.25 2015.05.26
+  }
+  TestSortAbsAscKX:{
+    skip:false
+    src:#absasc,x sort {
+      x:\x01 \x02 \x00
+      y:#a #b #c
+    }
+    bin:{
+      x:\x00 \x01 \x02
+      y:#c #a #b
+    }
+  }
+  TestSortAbsAscKL:{
+    skip:false
+    src:#absasc,x sort {
+      x:1 -2 0
+      y:#a #b #c
+    }
+    bin:{
+      x:0 1 -2
+      y:#c #a #b
+    }
+  }
+  TestSortDescL:{
+    skip:false
+    src:#desc sort 2 0 1
+    bin:2 1 0
+  }
+  TestSortDescD:{
+    skip:false
+    src:#desc sort 2.0 0.0 1.0
+    bin:2.0 1.0 0.0
+  }
+  TestSortDescM:{
+    skip:false
+    src:#desc sort 2 0 1m
+    bin:2 1 0m
+  }
+  TestSortDescX:{
+    skip:false
+    src:#desc sort \x02 \x00 \x01
+    bin:\x02 \x01 \x00
+  }
+  TestSortDescB:{
+    skip:false
+    src:#desc sort true false true
+    bin:true true false
+  }
+  TestSortDescS:{
+    skip:false
+    src:#desc sort "c" "b" "a"
+    bin:"c" "b" "a"
+  }
+  TestSortDescY:{
+    skip:true
+    src:#desc sort #b #c #a
+    bin:#c #b #a
+  }
+  TestSortDescT:{
+    skip:false
+    src:#desc sort 2015.05.25 2015.05.24 2015.05.26
+    bin:2015.05.26 2015.05.25 2015.05.24
+  }
+  TestSortDescKX:{
+    skip:false
+    src:#desc,x sort {
+      x:\x01 \x02 \x00
+      y:#a #b #c
+    }
+    bin:{
+      x:\x02 \x01 \x00
+      y:#b #a #c
+    }
+  }
+  TestSortDescKL:{
+    skip:false
+    src:#desc,x sort {
+      x:2 0 1
+      y:#a #b #c
+    }
+    bin:{
+      x:2 1 0
+      y:#a #c #b
+    }
+  }
+  TestSortDescKT:{
+    skip:false
+    src:#desc,x sort {
+      x:2 0 1
+      y:2015.05.25 2015.05.26 2015.05.27
+    }
+    bin:{
+      x:2 1 0
+      y:2015.05.25 2015.05.27 2015.05.26
+    }
+  }
+  TestSortAbsDescL:{
+    skip:false
+    src:#absdesc sort 1 -2 0
+    bin:-2 1 0
+  }
+  TestSortAbsDescD:{
+    skip:false
+    src:#absdesc sort 1.0 -2.0 0.0
+    bin:-2.0 1.0 0.0
+  }
+  TestSortAbsDescM:{
+    skip:false
+    src:#absdesc sort 1 -2 0m
+    bin:-2 1 0m
+  }
+  TestSortAbsDescX:{
+    skip:false
+    src:#absdesc sort \x01 \x02 \x00
+    bin:\x02 \x01 \x00
+  }
+  TestSortAbsDescB:{
+    skip:false
+    src:#absdesc sort true false true
+    bin:true true false
+  }
+  TestSortAbsDescS:{
+    skip:false
+    src:#absdesc sort "c" "b" "a"
+    bin:"c" "b" "a"
+  }
+  TestSortAbsDescY:{
+    skip:true
+    src:#absdesc sort #b #c #a
+    bin:#a #b #c
+  }
+  TestSortAbsDescT:{
+    skip:false
+    src:#absdesc sort 2015.05.25 2015.05.24 2015.05.26
+    bin:2015.05.26 2015.05.25 2015.05.24
+  }
+  TestSortAbsDescKX:{
+    skip:false
+    src:#absdesc,x sort {
+      x:\x01 \x02 \x00
+      y:#a #b #c
+    }
+    bin:{
+      x:\x02 \x01 \x00
+      y:#b #a #c
+    }
+  }
+  TestSortAbsDescKL:{
+    skip:false
+    src:#absdesc,x sort {
+      x:1 -2 0
+      y:#a #b #c
+    }
+    bin:{
+      x:-2 1 0
+      y:#b #a #c
+    }
+  }
+  TestRankAscL:{
+    skip:false
+    src:#asc rank 2 0 1
+    bin:1 2 0
+  }
+  TestRankAscD:{
+    skip:false
+    src:#asc rank 2.0 0.0 1.0
+    bin:1 2 0
+  }
+  TestRankAscM:{
+    skip:false
+    src:#asc rank 2 0 1m
+    bin:1 2 0
+  }
+  TestRankAscX:{
+    skip:false
+    src:#asc rank \x02 \x00 \x01
+    bin:1 2 0
+  }
+  TestRankAscB:{
+    skip:false
+    src:#asc rank true false true
+    bin:1 0 2
+  }
+  TestRankAscS:{
+    skip:false
+    src:#asc rank "c" "b" "a"
+    bin:2 1 0
+  }
+  TestRankAscY:{
+    skip:true
+    src:#asc rank #b #c #a
+    bin:2 0 1
+  }
+  TestRankAscT:{
+    skip:false
+    src:#asc rank 2015.05.25 2015.05.26 2015.05.24
+    bin:2 0 1
+  }
+  TestRankAbsAscL:{
+    skip:false
+    src:#absasc rank 1 -2 0
+    bin:2 0 1
+  }
+  TestRankAbsAscD:{
+    skip:false
+    src:#absasc rank 1.0 -2.0 0.0
+    bin:2 0 1
+  }
+  TestRankAbsAscM:{
+    skip:false
+    src:#absasc rank 1 -2 0m
+    bin:2 0 1
+  }
+  TestRankAbsAscX:{
+    skip:false
+    src:#absasc rank \x01 \x02 \x00
+    bin:2 0 1
+  }
+  TestRankAbsAscB:{
+    skip:false
+    src:#absasc rank true false true
+    bin:1 0 2
+  }
+  TestRankAbsAscS:{
+    skip:false
+    src:#absasc rank "c" "b" "a"
+    bin:2 1 0
+  }
+  TestRankAbsAscY:{
+    skip:true
+    src:#absasc rank #b #c #a
+    bin:2 0 1
+  }
+  TestRankAbsAscT:{
+    skip:false
+    src:#absasc rank 2015.05.25 2015.05.26 2015.05.24
+    bin:2 0 1
+  }
+  TestRankDescL:{
+    skip:false
+    src:#desc rank 2 0 1
+    bin:0 2 1
+  }
+  TestRankDescD:{
+    skip:false
+    src:#desc rank 2.0 0.0 1.0
+    bin:0 2 1
+  }
+  TestRankDescM:{
+    skip:false
+    src:#desc rank 2 0 1m
+    bin:0 2 1
+  }
+  TestRankDescX:{
+    skip:false
+    src:#desc rank \x02 \x00 \x01
+    bin:0 2 1
+  }
+  TestRankDescB:{
+    skip:false
+    src:#desc rank true false true
+    bin:0 2 1
+  }
+  TestRankDescS:{
+    skip:false
+    src:#desc rank "c" "b" "a"
+    bin:0 1 2
+  }
+  TestRankDescY:{
+    skip:true
+    src:#desc rank #b #c #a
+    bin:1 0 2
+  }
+  TestRankDescT:{
+    skip:false
+    src:#desc rank 2015.05.25 2015.05.26 2015.05.24
+    bin:1 0 2
+  }
+  TestRankAbsDescL:{
+    skip:false
+    src:#absdesc rank 1 -2 0
+    bin:1 0 2
+  }
+  TestRankAbsDescD:{
+    skip:false
+    src:#absdesc rank 1.0 -2.0 0.0
+    bin:1 0 2
+  }
+  TestRankAbsDescM:{
+    skip:false
+    src:#absdesc rank 1 -2 0m
+    bin:1 0 2
+  }
+  TestRankAbsDescX:{
+    skip:false
+    src:#absdesc rank \x01 \x02 \x00
+    bin:1 0 2
+  }
+  TestRankAbsDescB:{
+    skip:false
+    src:#absdesc rank true false true
+    bin:0 2 1
+  }
+  TestRankAbsDescS:{
+    skip:false
+    src:#absdesc rank "c" "b" "a"
+    bin:0 1 2
+  }
+  TestRankAbsDescY:{
+    skip:true
+    src:#absdesc rank #b #c #a
+    bin:1 0 2
+  }
+  TestRankAbsDescT:{
+    skip:false
+    src:#absdesc rank 2015.05.25 2015.05.26 2015.05.24
+    bin:1 0 2
+  }
+  TestRandomD:{
+    skip:false
+    src:3 == count randomd 3
+    bin:true
+  }
+  TestRandomL:{
+    skip:false
+    src:{
+      v:randoml 3 0 10
+      <-(3 == count $v) and (0 <= low $v) and 10 >= high $v
+    }
+    bin:true
+  }
+  TestShuffleL:{
+    skip:false
+    src:count shuffle 0 1 2
+    bin:3
+  }
+  TestShuffleLL:{
+    skip:false
+    src:count 0 shuffle 0 1 2
+    bin:3
+  }
+  TestShuffleD:{
+    skip:false
+    src:count shuffle 0.0 1.0 2.0
+    bin:3
+  }
+  TestShuffleLD:{
+    skip:false
+    src:count 0 shuffle 0.0 1.0 2.0
+    bin:3
+  }
+  TestShuffleM:{
+    skip:false
+    src:count shuffle 0 1 2m
+    bin:3
+  }
+  TestShuffleLM:{
+    skip:false
+    src:count 0 shuffle 0 1 2m
+    bin:3
+  }
+  TestShuffleX:{
+    skip:false
+    src:count shuffle \x00 \x01 \x02
+    bin:3
+  }
+  TestShuffleLX:{
+    skip:false
+    src:count 0 shuffle \x00 \x01 \x02
+    bin:3
+  }
+  TestShuffleS:{
+    skip:false
+    src:count shuffle "x" "y" "z"
+    bin:3
+  }
+  TestShuffleLS:{
+    skip:false
+    src:count 0 shuffle "x" "y" "z"
+    bin:3
+  }
+  TestShuffleB:{
+    skip:false
+    src:count shuffle true false true
+    bin:3
+  }
+  TestShuffleLB:{
+    skip:false
+    src:count 0 shuffle true false true
+    bin:3
+  }
+  TestShuffleY:{
+    skip:false
+    src:count shuffle #x #y #z
+    bin:3
+  }
+  TestShuffleT:{
+    skip:false
+    src:count shuffle 2015.05.25 2015.05.26 2015.05.27
+    bin:3
+  }
+  TestShuffleLT:{
+    skip:false
+    src:count 0 shuffle 2015.05.25 2015.05.26 2015.05.27
+    bin:3
+  }
+  TestShuffleK:{
+    skip:false
+    src:count shuffle {
+      x:0
+      y:1
+      z:2
+    }
+    bin:3
+  }
+  TestShuffleLK:{
+    skip:false
+    src:count 0 shuffle {
+      x:0
+      y:1
+      z:2
+    }
+    bin:3
+  }
+  TestAbsL:{
+    skip:false
+    src:abs -1 0 1
+    bin:1 0 1
+  }
+  TestAbsD:{
+    skip:false
+    src:abs -1.0 0.0 1.0
+    bin:1.0 0.0 1.0
+  }
+  TestAbsM:{
+    skip:false
+    src:abs -1 0 1m
+    bin:1 0 1m
+  }
+  TestUniqueL:{
+    skip:false
+    src:unique 3 2 1 3 2 4
+    bin:3 2 1 4
+  }
+  TestUniqueD:{
+    skip:false
+    src:unique 3.0 2.0 1.0 3.0 2.0 4.0
+    bin:3.0 2.0 1.0 4.0
+  }
+  TestUniqueM:{
+    skip:false
+    src:unique 3 2 1 3 2 4m
+    bin:3 2 1 4m
+  }
+  TestUniqueX:{
+    skip:false
+    src:unique \x03 \x02 \x01 \x03 \x02 \x04
+    bin:\x03 \x02 \x01 \x04
+  }
+  TestUniqueS:{
+    skip:false
+    src:unique "3" "2" "1" "4"
+    bin:"3" "2" "1" "4"
+  }
+  TestUniqueB:{
+    skip:false
+    src:unique true false true true
+    bin:true false
+  }
+  TestUniqueY:{
+    skip:false
+    src:unique #x #y #z #y
+    bin:#x #y #z
+  }
+  TestUniqueT:{
+    skip:false
+    src:unique 2015.05.25 2015.05.26 2015.05.27 2015.05.26
+    bin:2015.05.25 2015.05.26 2015.05.27
+  }
+  TestMapL:{
+    skip:false
+    src:1 10 2 20 map 1 1 2 2 1 3
+    bin:10 10 20 20 10 3
+  }
+  TestMapD:{
+    skip:false
+    src:1.0 10.0 2.0 20.0 map 1.0 1.0 2.0 2.0 1.0 3.0
+    bin:10.0 10.0 20.0 20.0 10.0 3.0
+  }
+  TestMapM:{
+    skip:false
+    src:1 10 2 20m map 1 1 2 2 1 3m
+    bin:10 10 20 20 10 3m
+  }
+  TestMapX:{
+    skip:false
+    src:\x01 \x10 \x02 \x20 map \x01 \x01 \x02 \x02 \x01 \x03
+    bin:\x10 \x10 \x20 \x20 \x10 \x03
+  }
+  TestMapS:{
+    skip:false
+    src:"1" "10" "2" "20" map "1" "1" "2" "2" "1" "3"
+    bin:"10" "10" "20" "20" "10" "3"
+  }
+  TestMapB:{
+    skip:false
+    src:true false false true map true true false false true
+    bin:false false true true false
+  }
+  TestMapY:{
+    skip:false
+    src:#x #y #1 #10 map #x #x #y #10 #1 #1
+    bin:#y #y #y #10 #10 #10
+  }
+  TestMapT:{
+    skip:false
+    src:2015.05.25 2015.06.25 2015.05.26 2015.06.26 map 2015.05.25 2015.05.25 2015.06.25 2015.06.26 2015.05.26 2015.05.26
+    bin:2015.06.25 2015.06.25 2015.06.25 2015.06.26 2015.06.26 2015.06.26
+  }
+  TestSleepL:{
+    skip:false
+    src:{
+      t0:now {}
+      :sleep 100
+      t1:now {}
+      <-0.00:00:00.1000000 < $t1 - $t0
+    }
+    bin:true
+  }
+  TestSleepD:{
+    skip:false
+    src:{
+      t0:now {}
+      :sleep 100.0
+      t1:now {}
+      <-0.00:00:00.1000000 < $t1 - $t0
+    }
+    bin:true
+  }
+  TestSleepM:{
+    skip:false
+    src:{
+      t0:now {}
+      :sleep 100m
+      t1:now {}
+      <-0.00:00:00.1000000 < $t1 - $t0
+    }
+    bin:true
+  }
+  TestSleepX:{
+    skip:false
+    src:{
+      t0:now {}
+      :sleep \x64
+      t1:now {}
+      <-0.00:00:00.1000000 < $t1 - $t0
+    }
+    bin:true
+  }
+  TestSwitchBK0:{
+    skip:false
+    src:false switch {
+      :1 + 2
+      :1 + 3
+    }
+    bin:4
+  }
+  TestSwitchBK1:{
+    skip:false
+    src:false switch {
+      :1 + 2
+    }
+    bin:{}
+  }
+  TestSwitchLK0:{
+    skip:false
+    src:-1 switch {
+      :1 + 2
+      :1 + 3
+    }
+    bin:4
+  }
+  TestSwitchLK1:{
+    skip:false
+    src:0 switch {
+      :1 + 2
+    }
+    bin:3
+  }
+  TestSwitchLK2:{
+    skip:false
+    src:-1 switch {
+      :1 + 2
+    }
+    bin:3
+  }
+  TestSwitchLK3:{
+    skip:false
+    src:2 switch {
+      :0
+      :1
+      :2
+      :3
+    }
+    bin:2
+  }
+  TestSwitchXK:{
+    skip:false
+    src:\x00 switch {
+      :1 + 2
+    }
+    bin:3
+  }
+  TestSwitchYK0:{
+    skip:false
+    src:#b switch {
+      c:#x
+      b:#y
+      a:#z
+    }
+    bin:#y
+  }
+  TestSwitchYK1:{
+    skip:false
+    src:#c switch {
+      b:#y
+      a:#z
+    }
+    bin:{}
+  }
+  TestEachL:{
+    skip:false
+    src:{
+      <-$R
+    } each 0 to 4
+    bin:{
+      :0
+      :1
+      :2
+      :3
+      :4
+    }
+  }
+  TestEachD:{
+    skip:false
+    src:{
+      <-$R
+    } each 0.0 to 4.0
+    bin:{
+      :0.0
+      :1.0
+      :2.0
+      :3.0
+      :4.0
+    }
+  }
+  TestEachM:{
+    skip:false
+    src:{
+      <-$R
+    } each 0m to 4m
+    bin:{
+      :0m
+      :1m
+      :2m
+      :3m
+      :4m
+    }
+  }
+  TestEachX:{
+    skip:false
+    src:{
+      <-$R
+    } each \x00 to \x04
+    bin:{
+      :\x00
+      :\x01
+      :\x02
+      :\x03
+      :\x04
+    }
+  }
+  TestEachS:{
+    skip:false
+    src:{
+      <-$R
+    } each string 0 to 4
+    bin:{
+      :"0"
+      :"1"
+      :"2"
+      :"3"
+      :"4"
+    }
+  }
+  TestEachB:{
+    skip:false
+    src:{
+      <-$R
+    } each boolean 0 to 4
+    bin:{
+      :false
+      :true
+      :true
+      :true
+      :true
+    }
+  }
+  TestEachY:{
+    skip:false
+    src:{
+      <-$R
+    } each #x #y #z
+    bin:{
+      :#x
+      :#y
+      :#z
+    }
+  }
+  TestEachT:{
+    skip:false
+    src:{
+      <-$R
+    } each 2015.05.27 2015.05.28 2015.05.29
+    bin:{
+      :2015.05.27
+      :2015.05.28
+      :2015.05.29
+    }
+  }
+  TestEachK:{
+    skip:false
+    src:{
+      <-eval {
+        x:$R.x - 1.0
+      }
+    } each {
+      :{
+        x:1.0
+      }
+      :{
+        x:2.0
+      }
+      :{
+        x:3.0
+      }
+    }
+    bin:{
+      :{
+        x:0.0
+      }
+      :{
+        x:1.0
+      }
+      :{
+        x:2.0
+      }
+    }
+  }
+  TestEachKeY:{
+    skip:true
+    src:{
+      <-$R
+    } each #a #b #c #d
+    bin:"<a>#a</a>" "<a>#b</a>" "<a>#c</a>" "<a>#d</a>"
+  }
+  TestEachEY:{
+    skip:true
+    src:[?<a>[! $R !]</a>?] each #a #b #c #d
+    bin:"<a>#a</a>" "<a>#b</a>" "<a>#c</a>" "<a>#d</a>"
+  }
+  TestUnionL:{
+    skip:false
+    src:1 2 3 union 2 3 4
+    bin:1 2 3 4
+  }
+  TestUnionD:{
+    skip:false
+    src:1.0 2.0 3.0 union 2.0 3.0 4.0
+    bin:1.0 2.0 3.0 4.0
+  }
+  TestUnionM:{
+    skip:false
+    src:1 2 3m union 2 3 4m
+    bin:1 2 3 4m
+  }
+  TestUnionX:{
+    skip:false
+    src:\x01 \x02 \x03 union \x02 \x03 \x04
+    bin:\x01 \x02 \x03 \x04
+  }
+  TestUnionB:{
+    skip:false
+    src:true union false
+    bin:true false
+  }
+  TestUnionS:{
+    skip:false
+    src:"a" "b" "c" union "b" "c" "d"
+    bin:"a" "b" "c" "d"
+  }
+  TestUnionY:{
+    skip:false
+    src:#a #b #c union #b #c #d
+    bin:#a #b #c #d
+  }
+  TestUnionT:{
+    skip:false
+    src:2015.05.27 2015.05.28 2015.05.29 union 2015.05.28 2015.05.29 2015.05.30
+    bin:2015.05.27 2015.05.28 2015.05.29 2015.05.30
+  }
+  TestExceptL:{
+    skip:false
+    src:1 2 3 except 2 3 4
+    bin:1
+  }
+  TestExceptD:{
+    skip:false
+    src:1.0 2.0 3.0 except 2.0 3.0 4.0
+    bin:1.0
+  }
+  TestExceptM:{
+    skip:false
+    src:1 2 3m except 2 3 4m
+    bin:1m
+  }
+  TestExceptX:{
+    skip:false
+    src:\x01 \x02 \x03 except \x02 \x03 \x04
+    bin:\x01
+  }
+  TestExceptB:{
+    skip:false
+    src:true except false
+    bin:true
+  }
+  TestExceptS:{
+    skip:false
+    src:"a" "b" "c" except "b" "c" "d"
+    bin:"a"
+  }
+  TestExceptY:{
+    skip:false
+    src:#a #b #c except #b #c #d
+    bin:#a
+  }
+  TestExceptT:{
+    skip:false
+    src:2015.05.27 2015.05.28 2015.05.29 except 2015.05.28 2015.05.29
+    bin:2015.05.27
+  }
+  TestExceptK:{
+    skip:false
+    src:{
+      a:1
+      b:2
+      c:3
+      d:4
+    } except "b" "c"
+    bin:{
+      a:1
+      d:4
+    }
+  }
+  TestExceptKY:{
+    skip:true
+    src:{
+      a:1
+      b:2
+      c:3
+      d:4
+    } except #b #c
+    bin:{
+      a:1
+      d:4
+    }
+  }
+  TestInterL:{
+    skip:false
+    src:1 2 3 inter 2 3 4
+    bin:2 3
+  }
+  TestInterD:{
+    skip:false
+    src:1.0 2.0 3.0 inter 2.0 3.0 4.0
+    bin:2.0 3.0
+  }
+  TestInterM:{
+    skip:false
+    src:1 2 3m inter 2 3 4m
+    bin:2 3m
+  }
+  TestInterX:{
+    skip:false
+    src:\x01 \x02 \x03 inter \x02 \x03 \x04
+    bin:\x02 \x03
+  }
+  TestInterB:{
+    skip:false
+    src:true inter false
+    bin:~b
+  }
+  TestInterS:{
+    skip:false
+    src:"a" "b" "c" inter "b" "c" "d"
+    bin:"b" "c"
+  }
+  TestInterY:{
+    skip:false
+    src:#a #b #c inter #b #c #d
+    bin:#b #c
+  }
+  TestInterT:{
+    skip:false
+    src:2015.05.27 2015.05.28 2015.05.29 inter 2015.05.28 2015.05.29 2015.05.30
+    bin:2015.05.28 2015.05.29
+  }
+  TestInterK:{
+    skip:false
+    src:{
+      a:1
+      b:2
+      c:3
+      d:4
+    } inter "b" "c"
+    bin:{
+      b:2
+      c:3
+    }
+  }
+  TestInterKY:{
+    skip:true
+    src:{
+      a:1
+      b:2
+      c:3
+      d:4
+    } inter #b #c
+    bin:{
+      b:2
+      c:3
+    }
+  }
+  TestInL:{
+    skip:false
+    src:0 1 2 3 4 in 1 3
+    bin:false true false true false
+  }
+  TestInD:{
+    skip:false
+    src:0.0 1.0 2.0 3.0 4.0 in 1.0 3.0
+    bin:false true false true false
+  }
+  TestInM:{
+    skip:false
+    src:0 1 2 3 4m in 1 3m
+    bin:false true false true false
+  }
+  TestInX:{
+    skip:false
+    src:\x00 \x01 \x02 \x03 \x04 in \x01 \x03
+    bin:false true false true false
+  }
+  TestInB:{
+    skip:false
+    src:false true false true false in true
+    bin:false true false true false
+  }
+  TestInY:{
+    skip:false
+    src:#0 #1 #2 #3 #4 in #1 #3
+    bin:false true false true false
+  }
+  TestInT:{
+    skip:false
+    src:2015.05.26 2015.05.27 2015.05.28 2015.05.29 2015.05.30 in 2015.05.28 2015.05.30
+    bin:false false true false true
+  }
+  TestReverseL:{
+    skip:false
+    src:reverse 1 2 3
+    bin:3 2 1
+  }
+  TestReverseD:{
+    skip:false
+    src:reverse 1.0 2.0 3.0
+    bin:3.0 2.0 1.0
+  }
+  TestReverseM:{
+    skip:false
+    src:reverse 1 2 3m
+    bin:3 2 1m
+  }
+  TestReverseX:{
+    skip:false
+    src:reverse \x00 \x01 \x02
+    bin:\x02 \x01 \x00
+  }
+  TestReverseB:{
+    skip:false
+    src:reverse true false true false
+    bin:false true false true
+  }
+  TestReverseY:{
+    skip:false
+    src:reverse #a #b #c
+    bin:#c #b #a
+  }
+  TestReverseS:{
+    skip:false
+    src:reverse "a" "b" "c"
+    bin:"c" "b" "a"
+  }
+  TestReverseT:{
+    skip:false
+    src:reverse 2017.08.24 2017.08.25 2017.08.26
+    bin:2017.08.26 2017.08.25 2017.08.24
+  }
+  TestReverseK:{
+    skip:false
+    src:reverse {
+      a:1
+      b:2
+      c:3
+    }
+    bin:{
+      c:3
+      b:2
+      a:1
+    }
+  }
+  TestPrint:{
+    skip:false
+    src:print "this" "is" "some" "output"
+    bin:"this" "is" "some" "output"
+  }
+  TestSubX:{
+    skip:false
+    src:\x00 \x01 \x01 \x02 \x02 \x03 sub \x00 \x01 \x02
+    bin:\x01 \x02 \x03
+  }
+  TestSubD:{
+    skip:false
+    src:0.0 1.0 1.0 2.0 2.0 3.0 sub 0.0 1.0 2.0
+    bin:1.0 2.0 3.0
+  }
+  TestSubD0:{
+    skip:false
+    src:0.0 -1.0 sub 0.0 NaN 1.0
+    bin:-1.0 NaN 1.0
+  }
+  TestSubD1:{
+    skip:false
+    src:NaN 0.0 sub NaN 1.0 2.0
+    bin:0.0 1.0 2.0
+  }
+  TestSubL:{
+    skip:false
+    src:0 1 1 2 2 3 sub 0 1 2
+    bin:1 2 3
+  }
+  TestSubM:{
+    skip:false
+    src:0 1 1 2 2 3m sub 0 1 2m
+    bin:1 2 3m
+  }
+  TestSubS:{
+    skip:false
+    src:"0" "1" "1" "2" "2" "3" sub "0" "1" "2"
+    bin:"1" "2" "3"
+  }
+  TestSubY:{
+    skip:false
+    src:#0 #1 #1 #2 #2 #3 sub #0 #1 #2
+    bin:#1 #2 #3
+  }
+  TestSubB:{
+    skip:false
+    src:true false false true sub true false
+    bin:false true
+  }
+  TestSubT:{
+    skip:false
+    src:08:00 08:10 08:10 08:20 08:20 08:30 sub 08:00 08:10 08:20
+    bin:08:10 08:20 08:30
+  }
+  TestFillL:{
+    skip:false
+    src:0 fill 1 0 2 0 0 3 0 0 0
+    bin:1 1 2 2 2 3 3 3 3
+  }
+  TestFillD:{
+    skip:false
+    src:0.0 fill 1.0 0.0 2.0 0.0 0.0 3.0 0.0 0.0 0.0
+    bin:1.0 1.0 2.0 2.0 2.0 3.0 3.0 3.0 3.0
+  }
+  TestFillM:{
+    skip:false
+    src:0m fill 1 0 2 0 0 3 0 0 0m
+    bin:1 1 2 2 2 3 3 3 3m
+  }
+  TestFillY:{
+    skip:false
+    src:#0 fill #1 #0 #2 #0 #0 #3 #0 #0 #0
+    bin:#1 #1 #2 #2 #2 #3 #3 #3 #3
+  }
+  TestFillS:{
+    skip:false
+    src:"0" fill "1" "0" "2" "0" "0" "3" "0" "0" "0"
+    bin:"1" "1" "2" "2" "2" "3" "3" "3" "3"
+  }
+  TestFillX:{
+    skip:false
+    src:\x00 fill \x01 \x00 \x02 \x00 \x00 \x03 \x00 \x00 \x00
+    bin:\x01 \x01 \x02 \x02 \x02 \x03 \x03 \x03 \x03
+  }
+  TestFillB:{
+    skip:false
+    src:false fill false false true false false
+    bin:false false true true true
+  }
+  TestFillT:{
+    skip:false
+    src:00:00 fill 08:00 00:00 00:00 09:00 00:00 00:00 10:00 00:00 00:00
+    bin:08:00 08:00 08:00 09:00 09:00 09:00 10:00 10:00 10:00
+  }
+  TestRangeL:{
+    skip:false
+    src:3 range 1 2 3 4 5 6
+    bin:4 5 6
+  }
+  TestRangeL1:{
+    skip:false
+    src:1 4 range 1 2 3 4 5 6
+    bin:2 3 4 5
+  }
+  TestRangeL2:{
+    skip:false
+    src:0 1 3 5 range 1 2 3 4 5 6
+    bin:1 2 4 5 6
+  }
+  TestRangeL3:{
+    skip:false
+    src:0 1 2 5 range 1 2 3 4 5 6
+    bin:1 2 3 4 5 6
+  }
+  TestRangeD:{
+    skip:false
+    src:3 range 1.0 2.0 3.0 4.0 5.0 6.0
+    bin:4.0 5.0 6.0
+  }
+  TestRangeD1:{
+    skip:false
+    src:1 4 range 1.0 2.0 3.0 4.0 5.0 6.0
+    bin:2.0 3.0 4.0 5.0
+  }
+  TestRangeD2:{
+    skip:false
+    src:0 1 3 5 range 1.0 2.0 3.0 4.0 5.0 6.0
+    bin:1.0 2.0 4.0 5.0 6.0
+  }
+  TestRangeD3:{
+    skip:false
+    src:0 1 2 5 range 1.0 2.0 3.0 4.0 5.0 6.0
+    bin:1.0 2.0 3.0 4.0 5.0 6.0
+  }
+  TestRangeM:{
+    skip:false
+    src:3 range 1 2 3 4 5 6m
+    bin:4 5 6m
+  }
+  TestRangeM1:{
+    skip:false
+    src:1 4 range 1 2 3 4 5 6m
+    bin:2 3 4 5m
+  }
+  TestRangeM2:{
+    skip:false
+    src:0 1 3 5 range 1 2 3 4 5 6m
+    bin:1 2 4 5 6m
+  }
+  TestRangeM3:{
+    skip:false
+    src:0 1 2 5 range 1 2 3 4 5 6m
+    bin:1 2 3 4 5 6m
+  }
+  TestRangeY:{
+    skip:false
+    src:3 range #1 #2 #3 #4 #5 #6
+    bin:#4 #5 #6
+  }
+  TestRangeY1:{
+    skip:false
+    src:1 4 range #1 #2 #3 #4 #5 #6
+    bin:#2 #3 #4 #5
+  }
+  TestRangeY2:{
+    skip:false
+    src:0 1 3 5 range #1 #2 #3 #4 #5 #6
+    bin:#1 #2 #4 #5 #6
+  }
+  TestRangeY3:{
+    skip:false
+    src:0 1 2 5 range #1 #2 #3 #4 #5 #6
+    bin:#1 #2 #3 #4 #5 #6
+  }
+  TestRangeS:{
+    skip:false
+    src:3 range "1" "2" "3" "4" "5" "6"
+    bin:"4" "5" "6"
+  }
+  TestRangeS1:{
+    skip:false
+    src:1 4 range "1" "2" "3" "4" "5" "6"
+    bin:"2" "3" "4" "5"
+  }
+  TestRangeS2:{
+    skip:false
+    src:0 1 3 5 range "1" "2" "3" "4" "5" "6"
+    bin:"1" "2" "4" "5" "6"
+  }
+  TestRangeS3:{
+    skip:false
+    src:0 1 2 5 range "1" "2" "3" "4" "5" "6"
+    bin:"1" "2" "3" "4" "5" "6"
+  }
+  TestRangeX:{
+    skip:false
+    src:3 range \x01 \x02 \x03 \x04 \x05 \x06
+    bin:\x04 \x05 \x06
+  }
+  TestRangeX1:{
+    skip:false
+    src:1 4 range \x01 \x02 \x03 \x04 \x05 \x06
+    bin:\x02 \x03 \x04 \x05
+  }
+  TestRangeX2:{
+    skip:false
+    src:0 1 3 5 range \x01 \x02 \x03 \x04 \x05 \x06
+    bin:\x01 \x02 \x04 \x05 \x06
+  }
+  TestRangeX3:{
+    skip:false
+    src:0 1 2 5 range \x01 \x02 \x03 \x04 \x05 \x06
+    bin:\x01 \x02 \x03 \x04 \x05 \x06
+  }
+  TestRangeT:{
+    skip:false
+    src:3 range 00:01 00:02 00:03 00:04 00:05 00:06
+    bin:00:04 00:05 00:06
+  }
+  TestRangeT1:{
+    skip:false
+    src:1 4 range 00:01 00:02 00:03 00:04 00:05 00:06
+    bin:00:02 00:03 00:04 00:05
+  }
+  TestRangeT2:{
+    skip:false
+    src:0 1 3 5 range 00:01 00:02 00:03 00:04 00:05 00:06
+    bin:00:01 00:02 00:04 00:05 00:06
+  }
+  TestRangeT3:{
+    skip:false
+    src:0 1 2 5 range 00:01 00:02 00:03 00:04 00:05 00:06
+    bin:00:01 00:02 00:03 00:04 00:05 00:06
+  }
+  TestDelimit:{
+    skip:false
+    src:"," delimit "x" "y" "z"
+    bin:"x,y,z"
+  }
+  TestSplit:{
+    skip:false
+    src:",:" split "x,y,z" "a:b:c"
+    bin:"x" "y" "z" "a" "b" "c"
+  }
+  TestSplitw0:{
+    skip:false
+    src:"  " splitw "x  y z"
+    bin:"x" "y z"
+  }
+  TestSplitw1:{
+    skip:false
+    src:"  " splitw "  x  y z"
+    bin:"" "x" "y z"
+  }
+  TestTuple:{
+    skip:false
+    src:":" tuple "a" "b:c" "d:e:f"
+    bin:#a #b,c #d,e,f
+  }
+  TestSlice0:{
+    skip:false
+    src:":" slice "a:b" "c:d" "e:f"
+    bin:{
+      :"a" "c" "e"
+      :"b" "d" "f"
+    }
+  }
+  TestSlice1:{
+    skip:false
+    src:"," slice "a" "b,c" "d,e,f"
+    bin:{
+      :"a" "b" "d"
+      :"" "c" "e"
+      :"" "" "f"
+    }
+  }
+  TestReplace:{
+    skip:false
+    src:"\"" "" replace "\"a\"" "b"
+    bin:"a" "b"
+  }
+  TestUpperS:{
+    skip:false
+    src:upper "aAa" "AAA" "aaa"
+    bin:"AAA" "AAA" "AAA"
+  }
+  TestLowerS:{
+    skip:false
+    src:lower "aAa" "AAA" "aaa"
+    bin:"aaa" "aaa" "aaa"
+  }
+  TestSubstring0:{
+    skip:false
+    src:1 substring "/foo" "/bar"
+    bin:"foo" "bar"
+  }
+  TestSubstring1:{
+    skip:false
+    src:1 2 substring "/foo" "/bar"
+    bin:"fo" "ba"
+  }
+  TestTrim:{
+    skip:false
+    src:trim "a" " b" "c " " d "
+    bin:"a" "b" "c" "d"
+  }
+  TestTrim1:{
+    skip:false
+    src:trim "a" "\nb" "c\n" "\nd\n"
+    bin:"a" "b" "c" "d"
+  }
+  TestTrim2:{
+    skip:false
+    src:trim "a" "\r\nb" "c\r\n" "\r\nd\r\n"
+    bin:"a" "b" "c" "d"
+  }
+  TestTrim3:{
+    skip:false
+    src:"/" trim "a" "/b" "c/" "/d/"
+    bin:"a" "b" "c" "d"
+  }
+  TestIndexOf:{
+    skip:false
+    src:"foo" indexof "abcfoodef" "abcdef" "foo" "fooabcdef" "abcdeffoo"
+    bin:3 15 18 33
+  }
+  TestPad:{
+    skip:false
+    src:"-" pad 1 2 3
+    bin:"-" "--" "---"
+  }
+  TestStartsWith:{
+    skip:false
+    src:"aaa" "foobar" "fozbaz" "foo" "fo" startswith "foo"
+    bin:false true false true false
+  }
+  TestCut:{
+    skip:false
+    src:0 1 2 cut "abcdef" "ghijkl" "mnopqr"
+    bin:"abcdef" "hijkl" "opqr"
+  }
+  TestCut1:{
+    skip:false
+    src:0 -1 -2 cut "abcdef" "ghijkl" "mnopqr"
+    bin:"abcdef" "l" "qr"
+  }
+  TestCutleft:{
+    skip:false
+    src:0 1 2 cutleft "abcdef" "ghijkl" "mnopqr"
+    bin:"" "g" "mn"
+  }
+  TestCutleft1:{
+    skip:false
+    src:0 -1 -2 cutleft "abcdef" "ghijkl" "mnopqr"
+    bin:"" "ghijk" "mnop"
+  }
+  TestLike1:{
+    skip:false
+    src:"foobar" "foobaz" "foo" "fazbar" like "foo*"
+    bin:true true true false
+  }
+  TestLike2:{
+    skip:false
+    src:"foobar" "fazbar" "bar" "foobaz" like "*bar"
+    bin:true true true false
+  }
+  TestLike3:{
+    skip:false
+    src:"foozbar" "foolsbar" "foobar" "foobaz" like "foo*bar"
+    bin:true true true false
+  }
+  TestLike4:{
+    skip:false
+    src:"" like "xyz*"
+    bin:false
+  }
+  TestLike5:{
+    skip:false
+    src:"" like "*"
+    bin:true
+  }
+  TestLike1U:{
+    skip:false
+    src:[
+      x
+      "foobar"
+      "foobaz"
+      "foo"
+      "fazbar"
+    ] like "foo*"
+    bin:[
+          x
+       true
+       true
+       true
+      false
+    ]
+  }
+  TestLike2U:{
+    skip:false
+    src:[
+      S |x
+      #a "foobar"
+      #b "fazbar"
+      #c "bar"
+      #d "foobaz"
+    ] like "*bar"
+    bin:[
+      S |    x
+      #a  true
+      #b  true
+      #c  true
+      #d false
+    ]
+  }
+  TestLike3U:{
+    skip:false
+    src:[
+      x
+      "foozbar"
+      "foolsbar"
+      "foobar"
+      "foobaz"
+    ] like "foo*bar"
+    bin:[
+          x
+       true
+       true
+       true
+      false
+    ]
+  }
+  TestIsName:{
+    skip:false
+    src:isname "aaa" "a a" "'foo'" "1foo" "foo1" "foo_bar"
+    bin:true false false false true true
+  }
+  TestNamesK:{
+    skip:false
+    src:names {
+      a:1
+      b:2
+      c:3
+    }
+    bin:"a" "b" "c"
+  }
+  TestRenameS:{
+    skip:false
+    src:"x" "y" "z" rename {
+      a:1
+      b:2
+      c:3
+    }
+    bin:{
+      x:1
+      y:2
+      z:3
+    }
+  }
+  TestRenameY:{
+    skip:false
+    src:#x #y #z rename {
+      a:1
+      b:2
+      c:3
+    }
+    bin:{
+      x:1
+      y:2
+      z:3
+    }
+  }
+  TestRenameS1:{
+    skip:false
+    src:"x" rename {
+      a:1
+      b:2
+      c:3
+    }
+    bin:{
+      x:1
+      x:2
+      x:3
+    }
+  }
+  TestRenameY1:{
+    skip:false
+    src:#x rename {
+      a:1
+      b:2
+      c:3
+    }
+    bin:{
+      x:1
+      x:2
+      x:3
+    }
+  }
+  TestNameKSS:{
+    skip:false
+    src:"name" name {
+      :{
+        name:"a"
+        value:1
+      }
+      :{
+        name:"b"
+        value:2
+      }
+      :{
+        name:"c"
+        value:3
+      }
+    }
+    bin:{
+      a:{
+        name:"a"
+        value:1
+      }
+      b:{
+        name:"b"
+        value:2
+      }
+      c:{
+        name:"c"
+        value:3
+      }
+    }
+  }
+  TestNameKSY:{
+    skip:false
+    src:"name" name {
+      :{
+        name:#a
+        value:1
+      }
+      :{
+        name:#b
+        value:2
+      }
+      :{
+        name:#c
+        value:3
+      }
+    }
+    bin:{
+      a:{
+        name:#a
+        value:1
+      }
+      b:{
+        name:#b
+        value:2
+      }
+      c:{
+        name:#c
+        value:3
+      }
+    }
+  }
+  TestNameKYS:{
+    skip:false
+    src:#name name {
+      :{
+        name:"a"
+        value:1
+      }
+      :{
+        name:"b"
+        value:2
+      }
+      :{
+        name:"c"
+        value:3
+      }
+    }
+    bin:{
+      a:{
+        name:"a"
+        value:1
+      }
+      b:{
+        name:"b"
+        value:2
+      }
+      c:{
+        name:"c"
+        value:3
+      }
+    }
+  }
+  TestNameKYY:{
+    skip:false
+    src:#name name {
+      :{
+        name:#a
+        value:1
+      }
+      :{
+        name:#b
+        value:2
+      }
+      :{
+        name:#c
+        value:3
+      }
+    }
+    bin:{
+      a:{
+        name:#a
+        value:1
+      }
+      b:{
+        name:#b
+        value:2
+      }
+      c:{
+        name:#c
+        value:3
+      }
+    }
+  }
+  TestSetK0:{
+    skip:false
+    src:{
+      x:1
+      y:2
+    } set {
+      y:3
+      z:4
+    }
+    bin:{
+      x:1
+      y:3
+      z:4
+    }
+  }
+  TestSetK1:{
+    skip:false
+    src:{
+      :~s
+      :~s
+      :~s
+    } set {
+      :"a0" "a1"
+      :"b0" "b1"
+      :"c0" "c1"
+    }
+    bin:{
+      :"a0" "a1"
+      :"b0" "b1"
+      :"c0" "c1"
+    }
+  }
+  TestSetK2:{
+    skip:false
+    src:{
+      :~s
+      :~s
+      :~s
+    } set {}
+    bin:{
+      :~s
+      :~s
+      :~s
+    }
+  }
+  TestGetLK:{
+    skip:false
+    src:1 get {
+      :#x
+      :#y
+      :#z
+    }
+    bin:#y
+  }
+  TestGetKL:{
+    skip:false
+    src:{
+      :#x
+      :#y
+      :#z
+    } get 1
+    bin:#y
+  }
+  TestGetSK:{
+    skip:false
+    src:"b" get {
+      a:#x
+      b:#y
+      c:#z
+    }
+    bin:#y
+  }
+  TestGetKS:{
+    skip:false
+    src:{
+      a:#x
+      b:#y
+      c:#z
+    } get "b"
+    bin:#y
+  }
+  TestGetYK:{
+    skip:false
+    src:#b get {
+      a:#x
+      b:#y
+      c:#z
+    }
+    bin:#y
+  }
+  TestGetKY:{
+    skip:false
+    src:{
+      a:#x
+      b:#y
+      c:#z
+    } get #b
+    bin:#y
+  }
+  TestGetYK1:{
+    skip:false
+    src:#1 get {
+      a:#x
+      b:#y
+      c:#z
+    }
+    bin:#y
+  }
+  TestGetKY1:{
+    skip:false
+    src:{
+      a:#x
+      b:#y
+      c:#z
+    } get #1
+    bin:#y
+  }
+  TestMergeK0:{
+    skip:false
+    src:{
+      a:3
+      b:4
+    } merge {
+      a:2
+    }
+    bin:{
+      a:2
+      b:4
+    }
+  }
+  TestMergeK1:{
+    skip:false
+    src:{
+      x:1
+      y:2
+      z:{
+        a:3
+        b:4
+      }
+    } merge {
+      z:{
+        a:2
+      }
+    }
+    bin:{
+      x:1
+      y:2
+      z:{
+        a:2
+        b:4
+      }
+    }
+  }
+  TestMergeK2:{
+    skip:false
+    src:{
+      x:1
+      y:2
+      z:{
+        a:3
+        b:4
+      }
+    } merge {
+      z:{}
+    }
+    bin:{
+      x:1
+      y:2
+      z:{
+        a:3
+        b:4
+      }
+    }
+  }
+  TestMergeK3:{
+    skip:false
+    src:{
+      x:1
+      y:{
+        a:3
+        b:4
+      }
+      z:2
+    } merge {
+      y:{
+        b:5
+      }
+    }
+    bin:{
+      x:1
+      y:{
+        a:3
+        b:5
+      }
+      z:2
+    }
+  }
+  TestMergeK4:{
+    skip:false
+    src:{
+      x:1
+      y:{
+        a:3
+        b:5 + 1
+      }
+      z:2
+    } merge {
+      y:{
+        b:{
+          <-5 + 1
+        }
+      }
+    }
+    bin:{
+      x:1
+      y:{
+        a:3
+        b:{
+          <-5 + 1
+        }
+      }
+      z:2
+    }
+  }
+  TestMergeK5:{
+    skip:false
+    src:{
+      x:1
+      y:{
+        a:3
+        b:{
+          <-5 + 1
+        }
+      }
+      z:2
+    } merge {
+      y:{
+        b:5 + 1
+      }
+    }
+    bin:{
+      x:1
+      y:{
+        a:3
+        b:5 + 1
+      }
+      z:2
+    }
+  }
+  TestHasY:{
+    skip:false
+    src:{
+      x:1
+      y:2
+      z:3
+    } has #a #y #z
+    bin:false true true
+  }
+  TestHasS:{
+    skip:false
+    src:{
+      x:1
+      y:2
+      z:3
+    } has "a" "y" "z"
+    bin:false true true
+  }
+  TestHasL:{
+    skip:true
+    src:{
+      x:1
+      y:2
+      z:3
+    } has 0 1 4
+    bin:true true false
+  }
+  TestHasUS:{
+    skip:false
+    src:[
+      S | x  y
+      #a  1 10
+      #b  2 20
+    ] has "S" "x" "z"
+    bin:true true false
+  }
+  TestHasUY:{
+    skip:false
+    src:[
+      S | x  y
+      #a  1 10
+      #b  2 20
+    ] has #S #x #z
+    bin:true true false
+  }
+  TestUnflipK:{
+    skip:false
+    src:unflip {
+      x:1 2 3 4
+      y:5 6 7 8
+      z:9 10 11 12
+    }
+    bin:{
+      :{
+        x:1
+        y:5
+        z:9
+      }
+      :{
+        x:2
+        y:6
+        z:10
+      }
+      :{
+        x:3
+        y:7
+        z:11
+      }
+      :{
+        x:4
+        y:8
+        z:12
+      }
+    }
+  }
+  TestFlipK0:{
+    skip:false
+    src:flip {
+      :{
+        x:1
+        y:4
+        z:7
+      }
+      :{
+        x:2
+        y:5
+        z:8
+      }
+      :{
+        x:3
+        y:6
+        z:9
+      }
+    }
+    bin:{
+      x:1 2 3
+      y:4 5 6
+      z:7 8 9
+    }
+  }
+  TestFlipK1:{
+    skip:false
+    src:flip {
+      :{
+        x:1
+        y:5
+        z:9
+      }
+      :{
+        x:2
+        y:6
+        z:10
+      }
+      :{
+        x:3
+        y:7
+        z:11
+      }
+      :{
+        x:4
+        y:8
+        z:12
+      }
+    }
+    bin:{
+      x:1 2 3 4
+      y:5 6 7 8
+      z:9 10 11 12
+    }
+  }
+  TestTypecodeL:{
+    skip:false
+    src:typecode 1 2 3
+    bin:"l"
+  }
+  TestTypecodeD:{
+    skip:false
+    src:typecode 1.0 2.0 3.0
+    bin:"d"
+  }
+  TestTypecodeM:{
+    skip:false
+    src:typecode 1 2 3m
+    bin:"m"
+  }
+  TestTypecodeY:{
+    skip:false
+    src:typecode #a #b #c
+    bin:"y"
+  }
+  TestTypecodeB:{
+    skip:false
+    src:typecode true false true
+    bin:"b"
+  }
+  TestTypecodeX:{
+    skip:false
+    src:typecode \x00 \x01 \x02
+    bin:"x"
+  }
+  TestTypecodeS:{
+    skip:false
+    src:typecode "a" "b" "c"
+    bin:"s"
+  }
+  TestTypecodeT:{
+    skip:false
+    src:typecode 2016.05.16 2016.05.17 2016.05.18
+    bin:"t"
+  }
+  TestTypecodeU:{
+    skip:false
+    src:typecode [
+       x
+       0
+       1
+       2
+    ]
+    bin:"u"
+  }
+  TestTypecodeK:{
+    skip:false
+    src:typecode {
+      a:1
+      b:2
+      c:3
+    }
+    bin:"k"
+  }
+  TestTypenameL:{
+    skip:false
+    src:typename 1 2 3
+    bin:"long"
+  }
+  TestTypenameD:{
+    skip:false
+    src:typename 1.0 2.0 3.0
+    bin:"double"
+  }
+  TestTypenameM:{
+    skip:false
+    src:typename 1 2 3m
+    bin:"decimal"
+  }
+  TestTypenameY:{
+    skip:false
+    src:typename #a #b #c
+    bin:"symbol"
+  }
+  TestTypenameB:{
+    skip:false
+    src:typename true false true
+    bin:"boolean"
+  }
+  TestTypenameX:{
+    skip:false
+    src:typename \x00 \x01 \x02
+    bin:"byte"
+  }
+  TestTypenameS:{
+    skip:false
+    src:typename "a" "b" "c"
+    bin:"string"
+  }
+  TestTypenameT:{
+    skip:false
+    src:typename 2016.05.16 2016.05.17 2016.05.18
+    bin:"time"
+  }
+  TestTypenameU:{
+    skip:false
+    src:typename [
+       x
+       0
+       1
+       2
+    ]
+    bin:"cube"
+  }
+  TestTypenameK:{
+    skip:false
+    src:typename {
+      a:1
+      b:2
+      c:3
+    }
+    bin:"block"
+  }
+  TestFromSKNameError:{
+    skip:false
+    src:unwrap "status" from try {
+      <-"a" "b" "c" from {
+        a:1
+        b:2
+      }
+    }
+    bin:1
+  }
+  TestFromYKNameError:{
+    skip:false
+    src:unwrap "status" from try {
+      <-#a #b #c from {
+        a:1
+        b:2
+      }
+    }
+    bin:1
+  }
+  TestUnwrapEx:{
+    skip:false
+    src:unwrap "status" from try {
+      <-unwrap {
+        :0
+        :1
+        :2
+      }
+    }
+    bin:1
+  }
+}

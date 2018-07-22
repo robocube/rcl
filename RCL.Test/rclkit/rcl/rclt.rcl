@@ -1,0 +1,194 @@
+
+RCL_HOME:getenv "RCL_HOME"
+
+rclt:{
+  sh:{
+    sh:startx "bash"
+    :$sh writex R {}
+    <-waitx $sh
+  }
+  ssh:{
+    :"RCLA_SSH_FLAGS" setenv "-T"
+    ssh:startx "rcla " + "@" " " replace $L
+    :$ssh writex R {}
+    <-waitx $ssh
+  }
+}
+
+run_test:{
+  test:$R
+  report_sym:#rclt + (symbol $SUITE_NAME) + symbol $test.name
+  <-$test.skip switch {
+    :{
+      report:eval {
+        name:$test.name
+        src:$R.src
+        expected:($R has "bin") switch {:$R.bin :#nobin}
+        actual:{}
+        completed:false
+        status:"K"
+        time:0.00:00:00.0000000
+      }
+      :$report_sym write $report except "src" "expected" "actual" "completed"
+      <-eval {:$report}
+    }
+    :{
+      results:{
+        result:($VARS & eval {rclt:$rclt test:$test FILE:$FILE RCL_HOME:$RCL_HOME}) eval {
+          <-try {
+            b:bot {
+              setup_result:try {
+                :($test has "setup") switch {
+                  :test.setup {}
+                  :{}
+                }
+                :($FILE has "_rclt_setup") switch {
+                  :FILE._rclt_setup {}
+                  :{}
+                }
+              }
+              start_time:now {}
+              result:try {
+                :"Do not use eval directly, as in test.src {}, because vars in the test (like repeat) would be visible"
+                test_code:$test.src
+                op_result:test_code {}
+                eval_result:"eval $test_code"
+                :"\"debug\" print $op_result"
+                :"\"debug\" print $eval_result"
+                :"assert $op_result = $eval_result"
+                <-$op_result
+              }
+              end_time:now {}
+              teardown_result:try {
+                :($test has "teardown") switch {
+                  :test.teardown {}
+                  :{}
+                }
+                :($FILE has "_rclt_teardown") switch {
+                  :FILE._rclt_teardown {}
+                  :{}
+                }
+              }
+              test_output:eval {
+                status:$result.status
+                result_data:$result.data
+                start_time:$start_time
+                end_time:$end_time
+                setup_result:$setup_result
+                teardown_result:$teardown_result
+                test_completed:$result.status == 0
+                setup_completed:$setup_result.status == 0
+                teardown_completed:$teardown_result.status == 0
+                completed:all $test_completed & $setup_completed & $teardown_completed
+              }
+              <-$test_output
+            }
+            <-wait $b & 0
+          }
+        }
+        passed:(($test has "bin") and $result.data.completed) switch {
+          :$test.bin = $result.data.result_data
+          :$result.data.completed
+        }
+        report:eval {
+          name:$test.name
+          src:$test.src
+          expected:($test has "bin") switch {:$test.bin :#nobin}
+          actual:((1 == count $result.data.result_data) and "string" == typename $result.data.result_data) switch {
+            :template $result.data.result_data
+            :$result.data.result_data
+          }
+          completed:$result.data.completed
+          status:$passed switch {:"P" :"F"}
+          time:$result.data.end_time - $result.data.start_time
+        }
+        :"test" print #pretty format $report except "time"
+        :$report_sym write $report except "src" "expected" "actual" "completed"
+        <-$report
+      } each 0 to $test.repeat - 1
+      <-$results
+    }
+  }
+}
+
+run_suite:{
+  SUITE_NAME:-1 from "/" split $R.name
+  test_cube:assert (names $R.tests) = unique names $R.tests
+  results_block:$run_either each $R.tests
+  results_cube:cubify $results_block
+  status:#*,*,status,* select -4 -3 -2 -1 key $results_cube
+  report:eval {
+    name:$R.name
+    try:count $status
+    pass:count $status where $status.s == "P"
+    skip:count $status where $status.s == "K"
+    fail:count $status where $status.s == "F"
+    status:($fail == 0) switch {:"P" :"F"}
+  }
+  :"suite" print $report
+  <-$report
+}
+
+run_either:{
+  <-("k" == typecode $R) switch {
+    :($R has "src") switch {
+      :run_test (eval {name:$L skip:false repeat:1}) set $R
+      :run_suite (eval {name:$L}) set eval {tests:$R}
+    }
+  }
+}
+
+run_file:{
+  path_tests:":" split $R
+  path:0 from $path_tests
+  tests:(1 < count $path_tests) switch {
+    :"," split 1 from $path_tests
+    :~y
+  }
+  test_syms:symbol {<-symbol "#" + "," delimit "." split $R} each $tests
+  name:($path like "*.rclt") switch {:$path :$path + ".rclt"}
+  FILE:eval #canonical parse load $name
+  variable_names:names $FILE
+  non_tests:$variable_names where $variable_names startswith "_"
+  VARS:$non_tests from $FILE
+  test_code:$FILE except $non_tests
+  result:(0 < count $test_syms) switch {
+    :$name run_either {<-$R set {skip:false}} each $test_syms from $test_code
+    :$name run_either $test_code
+  }
+  <-$result
+}
+
+main:{
+  files:info #arguments 
+  :"RCL_FLAGS" setenv "--output=test --show=print:test,print:suite,print:debug,runner,compile --nokeys" getenv "RCL_FLAGS"
+  :"RCL_PREFIX" setenv getenv "RCLT_TEST_PREFIX"
+  :"RCL_BIN" setenv (getenv "RCLT_TEST_PREFIX") + "/bin"
+  results:& {<-$R.data} each {
+    output:"try $run_file"
+    test_op:eval {
+      RCL_HOME:$RCL_HOME
+      run_either:$run_either
+      run_file:$run_file
+      run_suite:$run_suite
+      run_test:$run_test
+      rclt:$rclt
+      :"run_file" monad $R
+      result::(#rclt,* snap -1) except #G
+      <--$result
+    }
+    output:try {<-isolate $test_op}
+    <-($output.status == 0) switch {:$output :exit $output.status}
+  } each $files
+  report:eval {
+    failed_tests:$results where $results.status == "F"
+    try:count $results.status
+    pass:count $results.status where $results.status == "P"
+    skip:count $results.status where $results.status == "K"
+    fail:count $results.status where $results.status == "F"
+    status:($fail == 0) switch {:"P" :"F"}
+  }
+  :"report" print $report
+  :exit (count $results where $results.status == "F") min 1
+}
+

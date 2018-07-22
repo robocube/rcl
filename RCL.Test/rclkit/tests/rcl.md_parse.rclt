@@ -1,0 +1,1309 @@
+
+single_line_p:{
+  src:#md parse eval [?
+    a single paragraph on one line
+  ?]
+  bin:{
+    p:{
+      :"a single paragraph on one line"
+    }
+  }
+}
+
+multi_line_p_br:{
+  src:#md parse eval [?
+    multiple lines  
+    with forced line  
+    breaks at  
+    the end
+  ?]
+  bin:{
+    p:{
+      :"multiple lines\nwith forced line\nbreaks at\nthe end"
+    }
+  }
+}
+
+multi_p:{
+  src:#md parse eval [?
+    the first paragraph
+    
+    the second paragraph
+    
+    the third paragraph
+  ?]
+  :bin:{
+    p:{:"the first paragraph"}
+    p:{:"the second paragraph"}
+    p:{:"the third paragraph"}
+  }
+}
+
+multi_p_mixed_breaks:{
+  src:#md parse eval [?
+    the first p
+    this is part of the first line
+    
+    the second p  
+    this should be on its own line
+    
+    the third paragraph
+    contains text on
+    three separate lines
+  ?]
+  :bin:{
+    p:{:"the first p this is part of the first line"}
+    p:{:"the second p\nthis should be on its own line"}
+    p:{:"the third paragraph contains text on three separate lines"}
+  }
+}
+
+single_line_p_em_and_strong:{
+  src:#md parse eval [?
+    a single _paragraph on one line with a **strong** nested_ within an em
+  ?]
+  bin:{
+    p:{
+      :"a single "
+      em:{
+        :"paragraph on one line with a "
+        strong:{
+          :"strong"
+        }
+        :" nested"
+      }
+      :" within an em"
+    }
+  }
+}
+
+single_line_p_strong_and_em:{
+  src:#md parse eval [?
+    a single **paragraph on one line with an _em text_ nested** within a strong
+  ?]
+  bin:{
+    p:{
+      :"a single "
+      strong:{
+        :"paragraph on one line with an "
+        em:{
+          :"em text"
+        }
+        :" nested"
+      }
+      :" within a strong"
+    }
+  }
+}
+
+single_line_p_strong:{
+  src:#md parse eval [?
+    a single **paragraph** on one line
+  ?]
+  bin:{
+    p:{
+      :"a single "
+      strong:{
+        :"paragraph"
+      }
+      :" on one line"
+    }
+  }
+}
+
+single_line_p_em:{
+  src:#md parse eval [?
+    a single _paragraph_ on one line
+  ?]
+  bin:{
+    p:{
+      :"a single "
+      em:{
+        :"paragraph"
+      }
+      :" on one line"
+    }
+  }
+}
+
+single_line_multi_word_p_strong:{
+  src:#md parse eval [?
+    a **single paragraph** on one line
+  ?]
+  bin:{
+    p:{
+      :"a "
+      strong:{
+        :"single paragraph"
+      }
+      :" on one line"
+    }
+  }
+}
+
+single_line_multi_word_p_em:{
+  src:#md parse eval [?
+    a single _paragraph on_ one line
+  ?]
+  bin:{
+    p:{
+      :"a single "
+      em:{
+        :"paragraph on"
+      }
+      :" one line"
+    }
+  }
+}
+
+multi_line_p:{
+  src:#md parse eval [?
+    a single paragraph on
+    multiple lines
+  ?]
+  bin:{
+    p:{
+      :"a single paragraph on multiple lines"
+    }
+  }
+}
+
+multi_line_p_strong:{
+  src:#md parse eval [?
+    a single **paragraph on
+    multiple** lines
+  ?]
+  bin:{
+    p:{
+      :"a single "
+      strong:{
+        :"paragraph on multiple"
+      }
+      :" lines"
+    }
+  }
+}
+
+multi_line_p_em:{
+  src:#md parse eval [?
+    a single _paragraph
+    on multiple_ lines
+  ?]
+  bin:{
+    p:{
+      :"a single "
+      em:{
+        :"paragraph on multiple"
+      }
+      :" lines"
+    }
+  }
+}
+
+multi_line_multi_word_p_strong:{
+  src:#md parse eval [?
+    a **single paragraph
+    on** multiple lines
+  ?]
+  bin:{
+    p:{
+      :"a "
+      strong:{
+        :"single paragraph on"
+      }
+      :" multiple lines"
+    }
+  }
+}
+
+link:{
+  src:#md parse eval [?
+    [this is a link](https://somedomain.com/somecontent)
+  ?]
+  bin:{
+    p:{
+      a:{
+        text:{
+          :"this is a link"
+        }
+        href:"https://somedomain.com/somecontent"
+      }
+    }
+  }
+}
+
+link_with_em:{
+  src:#md parse eval [?
+    [this _is a_ link](https://somedomain.com/somecontent)
+  ?]
+  bin:{
+    p:{
+      a:{
+        text:{
+          :"this "
+          em:{
+            :"is a"
+          }
+          :" link"
+        }
+        href:"https://somedomain.com/somecontent"
+      }
+    }
+  }
+}
+
+link_with_strong:{
+  src:#md parse eval [?
+    [this **is a** link](https://somedomain.com/somecontent)
+  ?]
+  bin:{
+    p:{
+      a:{
+        text:{
+          :"this "
+          strong:{
+            :"is a"
+          }
+          :" link"
+        }
+        href:"https://somedomain.com/somecontent"
+      }
+    }
+  }
+}
+
+link_with_em_and_strong:{
+  src:#md parse eval [?
+    [**this _is a_ link**](https://somedomain.com/somecontent)
+  ?]
+  bin:{
+    p:{
+      a:{
+        text:{
+          strong:{
+            :"this "
+            em:{
+              :"is a"
+            }
+            :" link"
+          }
+        }
+        href:"https://somedomain.com/somecontent"
+      }
+    }
+  }
+}
+
+link_with_strong_and_em:{
+  src:#md parse eval [?
+    [_this **is a** link_](https://somedomain.com/somecontent)
+  ?]
+  bin:{
+    p:{
+      a:{
+        text:{
+          em:{
+            :"this "
+            strong:{
+              :"is a"
+            }
+            :" link"
+          }
+        }
+        href:"https://somedomain.com/somecontent"
+      }
+    }
+  }
+}
+
+single_line_link_in_p:{
+  src:#md parse eval [?
+    This is a p on a line with a [link](https://somedomain.com/somecontent) in it.
+  ?]
+  bin:{
+    p:{
+      :"This is a p on a line with a "
+      a:{
+        text:{
+          :"link"
+        }
+        href:"https://somedomain.com/somecontent"
+      }
+      :" in it."
+    }
+  }
+}
+
+multi_line_link_in_p:{
+  src:#md parse eval [?
+    This is a paragraph on a multiple lines featuring a
+    [link](https://somedomain.com/somecontent)
+    in the midst of it.
+  ?]
+  bin:{
+    p:{
+      :"This is a paragraph on a multiple lines featuring a "
+      a:{
+        text:{
+          :"link"
+        }
+        href:"https://somedomain.com/somecontent"
+      }
+      :" in the midst of it."
+    }
+  }
+}
+
+empty_link:{
+  src:#md parse eval [?
+    []()
+  ?]
+  bin:{
+    p:{
+      a:{
+        text:{
+          :""
+        }
+        href:""
+      }
+    }
+  }
+}
+
+text_only_link:{
+  src:#md parse eval [?
+    [link text]()
+  ?]
+  bin:{
+    p:{
+      a:{
+        text:{
+          :"link text"
+        }
+        href:""
+      }
+    }
+  }
+}
+
+literal_link:{
+  src:#md parse eval [?
+    <https://www.foo.com>
+    <https://www.zoo.com>
+    <https://www.boo.com>
+  ?]
+  bin:{
+    p:{
+      a:{
+        text:{
+          :"https://www.foo.com"
+        }
+        href:"https://www.foo.com"
+      }
+      a:{
+        text:{
+          :"https://www.zoo.com"
+        }
+        href:"https://www.zoo.com"
+      }
+      a:{
+        text:{
+          :"https://www.boo.com"
+        }
+        href:"https://www.boo.com"
+      }
+    }
+  }
+}
+
+literal_link_ps:{
+  src:#md parse eval [?
+    <https://www.foo.com>
+    
+    <https://www.zoo.com>
+    
+    <https://www.boo.com>
+  ?]
+  bin:{
+    p:{
+      a:{
+        text:{
+          :"https://www.foo.com"
+        }
+        href:"https://www.foo.com"
+      }
+    }
+    p:{
+      a:{
+        text:{
+          :"https://www.zoo.com"
+        }
+        href:"https://www.zoo.com"
+      }
+    }
+    p:{
+      a:{
+        text:{
+          :"https://www.boo.com"
+        }
+        href:"https://www.boo.com"
+      }
+    }
+  }
+}
+
+img:{
+  src:#md parse eval [?
+    ![this is a link](https://somedomain.com/somecontent)
+  ?]
+  bin:{
+    p:{
+      img:{
+        src:"https://somedomain.com/somecontent"
+        alt:{
+          :"this is a link"
+        }
+      }
+    }
+  }
+}
+
+empty_img:{
+  src:#md parse eval [?
+    ![]()
+  ?]
+  bin:{
+    p:{
+      img:{
+        src:""
+        alt:{
+          :""
+        }
+      }
+    }
+  }
+}
+
+headers:{
+  src:#md parse eval [?
+    # H1 Header
+    ## H2 Header
+    ### H3 Header
+    #### H4 Header
+    ##### H5 Header
+    ###### H6 Header
+  ?]
+  bin:{
+    h1:{:"H1 Header"}
+    h2:{:"H2 Header"}
+    h3:{:"H3 Header"}
+    h4:{:"H4 Header"}
+    h5:{:"H5 Header"}
+    h6:{:"H6 Header"}
+  }
+}
+
+headers_with_em:{
+  src:#md parse eval [?
+    # H1 _Header_
+    ## _H2 Header_
+    ### _H3_ Header
+  ?]
+  bin:{
+    h1:{:"H1 " em:{:"Header"}}
+    h2:{em:{:"H2 Header"}}
+    h3:{em:{:"H3"} :" Header"}
+  }
+}
+
+headers_with_strong:{
+  src:#md parse eval [?
+    # H1 **Header**
+    ## **H2 Header**
+    ### **H3** Header
+  ?]
+  bin:{
+    h1:{:"H1 " strong:{:"Header"}}
+    h2:{strong:{:"H2 Header"}}
+    h3:{strong:{:"H3"} :" Header"}
+  }
+}
+
+headers_with_em_and_strong:{
+  src:#md parse eval [?
+    # _An **H1** Header_
+    ## **An _H2_ Header**
+  ?]
+  bin:{
+    h1:{em:{:"An " strong:{:"H1"} :" Header"}}
+    h2:{strong:{:"An " em:{:"H2"} :" Header"}}
+  }
+}
+
+blockquote:{
+  src:#md parse eval [?
+    > This is a blockquote
+  ?]
+  bin:{
+    blockquote:{
+      p:{
+        :"This is a blockquote"
+      }
+    }
+  }
+}
+
+blockquote_no_space:{
+  src:#md parse eval [?
+    >This is a blockquote
+  ?]
+  bin:{
+    blockquote:{
+      p:{
+        :"This is a blockquote"
+      }
+    }
+  }
+}
+
+blockquote_multi_line:{
+  src:#md parse eval [?
+    > This is a blockquote
+    > and this is more of it
+    > in the same p tag.
+  ?]
+  bin:{
+    blockquote:{
+      p:{
+        :"This is a blockquote and this is more of it in the same p tag."
+      }
+    }
+  }
+}
+
+blockquote_multi_line_br:{
+  src:#md parse eval [?
+    > This is a blockquote  
+    > and this is more of it  
+    > in the same p tag.
+  ?]
+  bin:{
+    blockquote:{
+      p:{
+        :"This is a blockquote\nand this is more of it\nin the same p tag."
+      }
+    }
+  }
+}
+
+blockquote_nested:{
+  src:#md parse eval [?
+    >> This is a blockquote
+  ?]
+  bin:{
+    blockquote:{
+      blockquote:{
+        p:{
+          :"This is a blockquote"
+        }
+      }
+    }
+  }
+}
+
+blockquote_nested_space_between:{
+  src:#md parse eval [?
+    > > This is a blockquote
+  ?]
+  bin:{
+    blockquote:{
+      blockquote:{
+        p:{
+          :"This is a blockquote"
+        }
+      }
+    }
+  }
+}
+
+blockquote_with_h:{
+  src:#md parse eval [?
+    > # This is an h1
+    > ## This is an h2
+    > ### This is an h3
+  ?]
+  bin:{
+    blockquote:{
+      h1:{:"This is an h1"}
+      h2:{:"This is an h2"}
+      h3:{:"This is an h3"}
+    }
+  }
+}
+
+blockquote_nested_multi_line_2:{
+  src:#md parse eval [?
+    > This is a blockquote
+    > and this is more of it
+    >> This is a nested blockquote
+    >> and this is more of IT
+    > This is another blockquote
+    > at the same level as the first
+  ?]
+  bin:{
+    blockquote:{
+      p:{
+        :"This is a blockquote and this is more of it"
+      }
+      blockquote:{
+        p:{
+          :"This is a nested blockquote and this is more of IT"
+        }
+      }
+      p:{
+        :"This is another blockquote at the same level as the first"
+      }
+    }
+  }
+}
+
+blockquote_nested_multi_line_3:{
+  src:#md parse eval [?
+    > This is a blockquote
+    > and this is more of it
+    >> This is a nested blockquote
+    >>> And here is a third level of nested quotes
+    >>> just for fun!
+    >> and this is more of IT
+    > This is another blockquote
+    > at the same level as the first
+  ?]
+  bin:{
+    blockquote:{
+      p:{
+        :"This is a blockquote and this is more of it"
+      }
+      blockquote:{
+        p:{
+          :"This is a nested blockquote"
+        }
+        blockquote:{
+          p:{
+            :"And here is a third level of nested quotes just for fun!"
+          }
+        }
+        p:{
+          :"and this is more of IT"
+        }
+      }
+      p:{
+        :"This is another blockquote at the same level as the first"
+      }
+    }
+  }
+}
+
+multiple_blockquotes:{
+  src:#md parse eval [?
+    
+    > first line
+    > second line
+    > third line
+    
+    > fourth line
+    > fifth line
+    > sixth line
+  ?]
+  bin:{
+    blockquote:{p:{:"first line second line third line"}}
+    blockquote:{p:{:"fourth line fifth line sixth line"}}
+  }
+}
+
+multiple_p_multi_line:{
+  src:#md parse eval [?
+    
+    first line
+    second line
+    third line
+    
+    fourth line
+    fifth line
+    sixth line
+  ?]
+  bin:{
+    p:{:"first line second line third line"}
+    p:{:"fourth line fifth line sixth line"}
+  }
+}
+
+first_line_blank:{
+  src:#md parse eval [?
+    
+    first line
+  ?]
+  bin:{
+    p:{:"first line"}
+  }
+}
+
+single_h_and_p:{
+  src:#md parse eval [?
+    ### my first header
+    first line of p1
+    second line of p1
+    third line of p1
+  ?]
+  bin:{
+    h3:{:"my first header"}
+    p:{:"first line of p1 second line of p1 third line of p1"}
+  }
+}
+
+single_blockquote_with_h_and_p:{
+  src:#md parse eval [?
+    > ### my first header
+    > first line of p1
+    > second line of p1
+    > third line of p1
+  ?]
+  bin:{
+    blockquote:{
+      h3:{:"my first header"}
+      p:{:"first line of p1 second line of p1 third line of p1"}
+    }
+  }
+}
+
+multiple_blockquote_with_h_and_p:{
+  src:#md parse eval [?
+    > ### my first header
+    > first line of p1
+    > second line of p1
+    > third line of p1
+    
+    > ### my second header
+    > first line of p2
+    > second line of p2
+    > third line of p2
+  ?]
+  bin:{
+    blockquote:{
+      h3:{:"my first header"}
+      p:{:"first line of p1 second line of p1 third line of p1"}
+    }
+    blockquote:{
+      h3:{:"my second header"}
+      p:{:"first line of p2 second line of p2 third line of p2"}
+    }
+  }
+}
+
+blockquote_with_a:{
+  src:#md parse eval [?
+    > [link text](https://foo.com)
+  ?]
+  bin:{
+    blockquote:{
+      p:{
+        a:{
+          text:{:"link text"}
+          href:"https://foo.com"
+        }
+      }
+    }
+  }
+}
+
+blockquote_with_a_literal:{
+  src:#md parse eval [?
+    > <https://foo.com>
+  ?]
+  bin:{
+    blockquote:{
+      p:{
+        a:{
+          text:{:"https://foo.com"}
+          href:"https://foo.com"
+        }
+      }
+    }
+  }
+}
+
+blockquote_with_em_and_strong:{
+  src:#md parse eval [?
+    > first _line of **p1
+    > second line of p1
+    > third** line_ of p1
+  ?]
+  bin:{
+    blockquote:{
+      p:{
+        :"first "
+        em:{
+          :"line of "
+          strong:{:"p1 second line of p1 third"}
+          :" line"
+        }
+        :" of p1"
+      }
+    }
+  }
+}
+
+h_after_blockquote_no_blank:{
+  src:#md parse eval [?
+    > first line of p1
+    # my h1
+  ?]
+  bin:{
+    blockquote:{
+      p:{
+        :"first line of p1"
+      }
+    }
+    h1:{:"my h1"}
+  }
+}
+
+h_after_p_no_blank:{
+  src:#md parse eval [?
+    first line of p1
+    # my h1
+  ?]
+  bin:{
+    p:{
+      :"first line of p1"
+    }
+    h1:{:"my h1"}
+  }
+}
+
+a_literal_in_p_no_blank:{
+  src:#md parse eval [?
+    first line of p1
+    <https://foo.com>
+  ?]
+  bin:{
+    p:{
+      :"first line of p1 "
+      a:{text:{:"https://foo.com"} href:"https://foo.com"}
+    }
+  }
+}
+
+a_in_p_no_blank:{
+  src:#md parse eval [?
+    first line of p1
+    [link text](https://foo.com)
+  ?]
+  bin:{
+    p:{
+      :"first line of p1 "
+      a:{text:{:"link text"} href:"https://foo.com"}
+    }
+  }
+}
+
+unmatched_strong_and_em:{
+  skip:true
+  src:#md parse eval [?
+    > third** line_ of p2
+    
+    # my h1
+  ?]
+  bin:{
+    blockquote:{
+      p:{
+        :"third** line_ of p2"
+      }
+    }
+    h1:{:"my h1"}
+  }
+}
+
+ul:{
+  src:#md parse eval [?
+    * list item 1
+    * list item 2
+    * list item 3
+  ?]
+  bin:{
+    ul:{
+      li:{:"list item 1"}
+      li:{:"list item 2"}
+      li:{:"list item 3"}
+    }
+  }
+}
+
+ul_multi_line_li:{
+  src:#md parse eval [?
+    * line 1 item 1
+      line 2 item 1
+    * line 1 item 2
+      line 2 item 2
+  ?]
+  bin:{
+    ul:{
+      li:{:"line 1 item 1 line 2 item 1"}
+      li:{:"line 1 item 2 line 2 item 2"}
+    }
+  }
+}
+
+ul_multi_line_li_br:{
+  src:#md parse eval [?
+    * line 1 item 1  
+      line 2 item 1
+    * line 1 item 2  
+      line 2 item 2
+  ?]
+  bin:{
+    ul:{
+      li:{:"line 1 item 1\nline 2 item 1"}
+      li:{:"line 1 item 2\nline 2 item 2"}
+    }
+  }
+}
+
+ul_multi_line_h_and_p:{
+  src:#md parse eval [?
+    * # header 1
+    
+      item 1 p1 line 1
+      item 1 p1 line 2
+    
+    * # header 2
+    
+      item 2 p1 line 1  
+      item 2 p1 line 2
+  ?]
+  bin:{
+    ul:{
+      li:{h1:{:"header 1"} p:{:"item 1 p1 line 1 item 1 p1 line 2"}}
+      li:{h1:{:"header 2"} p:{:"item 2 p1 line 1\nitem 2 p1 line 2"}}
+    }
+  }
+}
+
+ul_multi_line_h_and_p_no_blank:{
+  src:#md parse eval [?
+    * # header 1
+    
+      item 1 p1 line 1
+      item 1 p1 line 2
+    * # header 2
+    
+      item 2 p1 line 1  
+      item 2 p1 line 2
+  ?]
+  bin:{
+    ul:{
+      li:{h1:{:"header 1"} p:{:"item 1 p1 line 1 item 1 p1 line 2"}}
+      li:{h1:{:"header 2"} p:{:"item 2 p1 line 1\nitem 2 p1 line 2"}}
+    }
+  }
+}
+
+ul_multi_line_h_no_p:{
+  src:#md parse eval [?
+    * # header 1
+      item 1 p1 line 1
+      item 1 p1 line 2
+    * # header 2
+      item 2 p1 line 1  
+      item 2 p1 line 2
+  ?]
+  bin:{
+    ul:{
+      li:{h1:{:"header 1"} :"item 1 p1 line 1 item 1 p1 line 2"}
+      li:{h1:{:"header 2"} :"item 2 p1 line 1\nitem 2 p1 line 2"}
+    }
+  }
+}
+
+p_ignore_indent:{
+  src:#md parse eval [?
+    this is the first p
+    
+      this is the second p
+      notice how the
+      indentation is ignored
+  ?]
+  bin:{
+    p:{:"this is the first p"}
+    p:{:"this is the second p notice how the indentation is ignored"}
+  }
+}
+
+ul_h:{
+  src:#md parse eval [?
+    * # list item h1
+    * ## list item h2
+    * ### list item h3
+  ?]
+  bin:{
+    ul:{
+      li:{h1:{:"list item h1"}}
+      li:{h2:{:"list item h2"}}
+      li:{h3:{:"list item h3"}}
+    }
+  }
+}
+
+ul_em_and_strong:{
+  src:#md parse eval [?
+    * **list item 1**
+    * _list item 2_
+    * _list **item** 3_
+  ?]
+  bin:{
+    ul:{
+      li:{strong:{:"list item 1"}}
+      li:{em:{:"list item 2"}}
+      li:{em:{:"list " strong:{:"item"} :" 3"}}
+    }
+  }
+}
+
+ul_p_minimal:{
+  src:#md parse eval [?
+    * li1 p1
+    
+    * 
+  ?]
+  bin:{
+    ul:{
+      li:{p:{:"li1 p1"}}
+      li:{}
+    }
+  }
+}
+
+ul_p_with_blank_between_li:{
+  src:#md parse eval [?
+    * li1 p1
+    
+    * li2 p1
+    
+    * li3 p1
+    
+  ?]
+  bin:{
+    ul:{
+      li:{p:{:"li1 p1"}}
+      li:{p:{:"li2 p1"}}
+      li:{p:{:"li3 p1"}}
+    }
+  }
+}
+
+ul_p_with_blank_between_li_but_none_at_end:{
+  src:#md parse eval [?
+    * li1 p1
+    
+    * li2 p1
+    
+    * li3 p1
+  ?]
+  bin:{
+    ul:{
+      li:{p:{:"li1 p1"}}
+      li:{p:{:"li2 p1"}}
+      li:{p:{:"li3 p1"}}
+    }
+  }
+}
+
+ul_p:{
+  src:#md parse eval [?
+    * li1 p1
+    
+      li1 p2
+    *  li2 p1
+    
+       li2 p2
+    
+    *   li3 p1
+    
+        li3 p2
+  ?]
+  bin:{
+    ul:{
+      li:{p:{:"li1 p1"} p:{:"li1 p2"}}
+      li:{p:{:"li2 p1"} p:{:"li2 p2"}}
+      li:{p:{:"li3 p1"} p:{:"li3 p2"}}
+    }
+  }
+}
+
+ol:{
+  src:#md parse eval [?
+    1. list item 1
+    2. list item 2
+    3. list item 3
+  ?]
+  bin:{
+    ol:{
+      li:{:"list item 1"}
+      li:{:"list item 2"}
+      li:{:"list item 3"}
+    }
+  }
+}
+
+ol_em_and_strong:{
+  src:#md parse eval [?
+    1. **list item 1**
+    2. _list item 2_
+    3. _list **item** 3_
+  ?]
+  bin:{
+    ol:{
+      li:{strong:{:"list item 1"}}
+      li:{em:{:"list item 2"}}
+      li:{em:{:"list " strong:{:"item"} :" 3"}}
+    }
+  }
+}
+
+ol_h:{
+  src:#md parse eval [?
+    1. # list item h1
+    2. ## list item h2
+    3. ### list item h3
+  ?]
+  bin:{
+    ol:{
+      li:{h1:{:"list item h1"}}
+      li:{h2:{:"list item h2"}}
+      li:{h3:{:"list item h3"}}
+    }
+  }
+}
+
+ol_p:{
+  src:#md parse eval [?
+    1. li1 p1
+    
+       li1 p2
+    2. li2 p1
+    
+       li2 p2
+    
+    3. li3 p1
+    
+       li3 p2
+  ?]
+  bin:{
+    ol:{
+      li:{p:{:"li1 p1"} p:{:"li1 p2"}}
+      li:{p:{:"li2 p1"} p:{:"li2 p2"}}
+      li:{p:{:"li3 p1"} p:{:"li3 p2"}}
+    }
+  }
+}
+
+ol_before_p:{
+  src:#md parse eval [?
+    1. li1
+    2. li2
+    3. li3
+    p outside of li
+  ?]
+  bin:{
+    ol:{
+      li:{:"li1"}
+      li:{:"li2"}
+      li:{:"li3"}
+    }
+    p:{:"p outside of li"}
+  }
+}
+
+ol_h_li_p:{
+  src:#md parse eval [?
+    1. li1 p1
+    2. li2 p1
+     
+       li2 p2
+    # h1
+    p3
+  ?]
+  bin:{
+    ol:{
+      li:{:"li1 p1"}
+      li:{p:{:"li2 p1"} p:{:"li2 p2"}}
+    }
+    h1:{:"h1"}
+    p:{:"p3"}
+  }
+}
+
+ol_h_in_li:{
+  src:#md parse eval [?
+    1. li1 p1
+    2. li2 p1
+     
+       li2 p2
+       # h1
+    p3
+  ?]
+  bin:{
+    ol:{
+      li:{:"li1 p1"}
+      li:{p:{:"li2 p1"} p:{:"li2 p2"} h1:{:"h1"}}
+    }
+    p:{:"p3"}
+  }
+}
+
+ol_h_in_li_blank:{
+  src:#md parse eval [?
+    1. li1 p1
+    2. li2 p1
+    
+       li2 p2
+    
+       # h1
+    p3
+  ?]
+  bin:{
+    ol:{
+      li:{:"li1 p1"}
+      li:{p:{:"li2 p1"} p:{:"li2 p2"} h1:{:"h1"}}
+    }
+    p:{:"p3"}
+  }
+}
+
+p_with_em_on_line_2:{
+  src:#md parse eval [?
+    This is a test to see what happens
+    _when the first_ word is emphasized.
+  ?]
+  bin:{
+    p:{
+      :"This is a test to see what happens "
+      em:{:"when the first"}
+      :" word is emphasized."
+    }
+  }
+}
+
+p_with_strong_on_line_2:{
+  src:#md parse eval [?
+    This is a test to see what happens
+    **when the first** word is strong.
+  ?]
+  bin:{
+    p:{
+      :"This is a test to see what happens "
+      strong:{:"when the first"}
+      :" word is strong."
+    }
+  }
+}
+

@@ -266,6 +266,7 @@ namespace RCL.Core
         catch (Exception ex)
         {
           m_state.Runner.Report (m_state.Closure, ex);
+          throw;
         }
       }
 

@@ -1,0 +1,271 @@
+
+_rclt_setup:{
+}
+
+___before_read1:[
+  G|S   |a
+  0 #s,x 1
+  1 #s,y 2
+  2 #s,z 3
+]
+
+___after_trace1:[
+   G|S   | a  b  c  i
+   0 #s,x  1  2  3 --
+   1 #s,y  2  1  2 --
+   2 #s,z  3  0  1 --
+  -3 #s,y -- -- --  0
+]
+
+___after_snap1:[
+  G|S   | a b c
+  0 #s,x  1 2 3
+  2 #s,z  3 0 1
+]
+
+___after_extend1:[
+  G|S   | a b c d e
+  0 #s,x  1 2 3 3 6
+  1 #s,y  2 3 2 5 7
+  2 #s,z  3 0 1 3 4
+]
+
+___delete_cube1:[
+  S   | i
+  #s,y +~
+]
+
+___delete_cube2:[
+  S    | i
+  #s,y0 +~
+  #s,y1 ++
+]
+
+_preload1:{
+  :clear #s
+  :#s,x write {a:1 b:2 c:3}
+  :#s,y write {a:2 b:1 c:2}
+  :#s,z write {a:3 b:0 c:1}
+}
+
+test_delete_with_block_snap:eval {
+  setup:$_preload1
+  src::{
+    :#s,y write {i:+~}
+    <-#s,* snap 0 -1
+  }
+  bin:$___after_snap1
+}
+
+test_delete_with_block_trace:eval {
+  setup:$_preload1
+  src:{
+    :#s,y write {i:+~}
+    <-0 0 trace #s,*
+  }
+  bin:$___after_trace1
+}
+
+test_read_with_negative_default_limit:eval {
+  setup:$_preload1
+  src:{
+    :write [
+      S   | x
+      #a,0  0
+      #a,0  1
+      #a,0  2
+    ]
+    <-#a,'*' read 0 -1
+  }
+  bin:[
+    S   | x
+    #a,0  2
+  ]
+}
+
+test_delete_with_cube_snap:eval {
+  setup:$_preload1
+  src:{
+    :write $___delete_cube1
+    <-#s,* snap 0 -1
+  }
+  bin:$___after_snap1
+}
+
+test_delete_with_cube_trace:eval {
+  setup:$_preload1
+  src:{
+    :write $___delete_cube1
+    <-0 0 trace #s,*
+  }
+  bin:$___after_trace1
+}
+
+delta_delete:eval {
+  src:{
+    before:[
+      S   |x
+      #s,a 1
+      #s,b 2
+      #s,c 3
+    ]
+    after:[
+      S   |x
+      #s,a 1
+      #s,c 3
+    ]
+    <-$before delta $after
+  }
+  bin:[
+    S   | i
+    #s,b +~
+  ]
+}
+
+delta_update:eval {
+  src:{
+    before:[
+      S   |x
+      #s,a 1
+      #s,b 2
+      #s,c 3
+    ]
+    after:[
+      S   |x
+      #s,a 4
+      #s,b 2
+      #s,c 6
+    ]
+    <-$before delta $after
+  }
+  bin:[
+    S   |x
+    #s,a 4
+    #s,c 6
+  ]
+}
+
+delta_delete_update:eval {
+  src:{
+    before:[
+      S   |x
+      #s,a 1
+      #s,b 2
+      #s,c 3
+    ]
+    after:[
+      S   |x
+      #s,a 4
+      #s,c 6
+    ]
+    <-$before delta $after
+  }
+  bin:[
+    S   |i   x
+    #s,b +~ --
+    #s,a --  4
+    #s,c --  6
+  ]
+}
+
+delta_insert:eval {
+  src:{
+    before:[
+      S   |x
+      #s,a 1
+      #s,b 2
+    ]
+    after:[
+      S   |x
+      #s,a 4
+      #s,c 6
+    ]
+    <-$before delta $after
+  }
+  bin:[
+    S   |i   x
+    #s,b +~ --
+    #s,a --  4
+    #s,c --  6
+  ]
+}
+
+delta_col_removed:{
+  src:{
+    before:[
+      S   |x
+      #s,a 1
+      #s,b 2
+    ]
+    after:[
+      S   |y
+      #s,a 4
+      #s,b 6
+    ]
+    <-$before delta $after
+  }
+  bin:[
+    S   |y
+    #s,a 4
+    #s,b 6
+  ]
+}
+
+delta_removed_col_not_removed:eval {
+  src:{
+    before:[
+      S   |x
+      #s,a 1
+      #s,b 2
+    ]
+    after:[
+      S   |y
+      #s,a 4
+      #s,c 6
+    ]
+    <-$before delta $after
+  }
+  bin:[
+    S   |i   y
+    #s,b +~ --
+    #s,a --  4
+    #s,c --  6
+  ]
+}
+
+test_extend:eval {
+  skip:true
+  setup:$_preload1
+  src:{
+    source:#s,* read 0 0
+    :extend eval {
+      d:$source.a + $source.b
+      e:$d + $source.c
+    }
+    <-#s,* snap 0 0
+  }
+  bin:$___after_extend1
+}
+
+work_credit_issue:eval {
+  src:{
+    :clear #b
+    :write [
+      S                | i quantity value           credit
+      #b,g,work_prod,1  ++        1     1               --
+      #b,i,work_cred,1  ++        1     1 #b,g,work_prod,1
+    ]
+    :write [
+      S                | i quantity value equity
+      #b,i,work_cred,1  +~       --    --     --
+      #b,i,govt_cash,1  ++        1     1   #b,g
+    ]
+    <-#b,* snap 0 -1
+  }
+  bin:[
+    S                | i quantity value equity
+    #b,g,work_prod,1   0        1     1     --
+    #b,i,govt_cash,1   0        1     1   #b,g
+  ]
+}
+

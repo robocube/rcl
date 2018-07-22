@@ -1,0 +1,515 @@
+
+pass:{
+  src:{
+    script:[?
+      set -e
+      rclt rclt.rclt.rclt:pass
+      exit
+    ?]
+    sh:startx "bash"
+    :$sh writex script {}
+    out:try {<-waitx $sh}
+    <-template & $out.data + "\n"
+  }
+  bin:[?
+    0 0 print 0 test
+      {
+        name:"pass"
+        src:1 + 1
+        expected:2
+        actual:2
+        completed:true
+        status:"P"
+      }
+    0 0 print 0 suite
+      {
+        name:"rclt.rclt.rclt"
+        try:1
+        pass:1
+        skip:0
+        fail:0
+        status:"P"
+      }
+    0 0 runner 0 exit 0
+  ?]
+}
+
+fail:{
+  src:{
+    script:[?
+      set -e
+      rclt rclt.rclt.rclt:fail
+      exit
+    ?]
+    sh:startx "bash"
+    :$sh writex script {}
+    out:try {<-waitx $sh}
+    <-template & $out.data + "\n"
+  }
+  bin:[?
+    0 0 print 0 test
+      {
+        name:"fail"
+        src:1 + 1
+        expected:0
+        actual:2
+        completed:true
+        status:"F"
+      }
+    0 0 print 0 suite
+      {
+        name:"rclt.rclt.rclt"
+        try:1
+        pass:0
+        skip:0
+        fail:1
+        status:"F"
+      }
+    0 0 runner 0 exit 1
+    <<Exec,exit status 1>>
+  ?]
+}
+
+skip:{
+  src:{
+    script:[?
+      set -e
+      rclt rclt.rclt.rclt:skip
+      exit
+    ?]
+    sh:startx "bash"
+    :$sh writex script {}
+    out:try {<-waitx $sh}
+    <-2 template & $out.data + "\n"
+  }
+  bin:[??
+    0 0 print 0 test
+      {
+        name:"skip"
+        src:assert 1 = 2
+        expected:"<<Assert,Failed: assert 1 = 2>>"
+        actual:[?<<Assert,Failed: assert 1 = 2>>?]
+        completed:false
+        status:"F"
+      }
+    0 0 print 0 suite
+      {
+        name:"rclt.rclt.rclt"
+        try:1
+        pass:0
+        skip:0
+        fail:1
+        status:"F"
+      }
+    0 0 runner 0 exit 1
+    <<Exec,exit status 1>>
+  ??]
+}
+
+repeat:{
+  src:{
+    script:[?
+      set -e
+      rclt rclt.rclt.rclt:repeat
+      exit
+    ?]
+    sh:startx "bash"
+    :$sh writex script {}
+    out:try {<-waitx $sh}
+    <-template & $out.data + "\n"
+  }
+  bin:[?
+    0 0 print 0 test
+      {
+        name:"repeat"
+        src:1 + 1
+        expected:2
+        actual:2
+        completed:true
+        status:"P"
+      }
+    0 0 print 0 test
+      {
+        name:"repeat"
+        src:1 + 1
+        expected:2
+        actual:2
+        completed:true
+        status:"P"
+      }
+    0 0 print 0 test
+      {
+        name:"repeat"
+        src:1 + 1
+        expected:2
+        actual:2
+        completed:true
+        status:"P"
+      }
+    0 0 print 0 suite
+      {
+        name:"rclt.rclt.rclt"
+        try:3
+        pass:3
+        skip:0
+        fail:0
+        status:"P"
+      }
+    0 0 runner 0 exit 0
+  ?]
+}
+
+nobin:{
+  src:{
+    script:[?
+      set -e
+      rclt rclt.rclt.rclt:nobin
+      exit
+    ?]
+    sh:startx "bash"
+    :$sh writex script {}
+    out:try {<-waitx $sh}
+    <-template & $out.data + "\n"
+  }
+  bin:[?
+    0 0 print 0 test
+      {
+        name:"nobin"
+        src:1 + 2
+        expected:#nobin
+        actual:3
+        completed:true
+        status:"P"
+      }
+    0 0 print 0 suite
+      {
+        name:"rclt.rclt.rclt"
+        try:1
+        pass:1
+        skip:0
+        fail:0
+        status:"P"
+      }
+    0 0 runner 0 exit 0
+  ?] 
+}
+
+setup_teardown:{
+  src:{
+    out:rclt.sh [?
+      set -e
+      rclt rclt.rclt.rclt:setup
+      exit
+    ?]
+    <-template & $out + "\n"
+  }
+  bin:[?
+    0 0 print 0 test
+      {
+        name:"setup"
+        src:{
+          :assert getm #setup
+          :#testing_teardown putm true
+          :#teardown putm true
+        }
+        expected:#nobin
+        actual:{
+          :true
+          :#testing_teardown
+          :#teardown
+        }
+        completed:true
+        status:"P"
+      }
+    0 0 print 0 suite
+      {
+        name:"rclt.rclt.rclt"
+        try:1
+        pass:1
+        skip:0
+        fail:0
+        status:"P"
+      }
+    0 0 runner 0 exit 0
+  ?]
+}
+
+test_setup_teardown:{
+  src:{
+    out:rclt.sh [?
+      set -e
+      export RCL_FLAGS="--output=test --show=print:out,runner --nokeys"
+      rclt rclt.rclt.rclt:test_setup_teardown
+      exit
+    ?]
+    :"bot numbers here are kind of brittle - cut them out of the output"
+    <-template & (4 cut $out) + "\n"
+  }
+  bin:[?
+    print 0 out in the test setup
+    print 0 out in the test teardown
+    runner 0 exit 0
+  ?]
+}
+
+setup_teardown_not_run_as_tests:{
+  src:{
+    :rclt.sh [?
+      set -e
+      # a bit of a hackjob but the output is not so easy
+      # to parse and examine.
+      test $(rclt rclt.rclt.rclt | grep 'name:"_rclt_' | wc -l) = 0 
+      exit
+    ?] 
+  }
+}
+
+suite_pass:{
+  src:{
+    script:[?
+      set -e
+      rclt rclt.rclt.rclt:suite_pass
+      exit
+    ?]
+    sh:startx "bash"
+    :$sh writex script {}
+    out:try {<-waitx $sh}
+    <-template & $out.data + "\n"
+  }
+  bin:[?
+    0 0 print 0 test
+      {
+        name:"pass_0"
+        src:1 + 1
+        expected:2
+        actual:2
+        completed:true
+        status:"P"
+      }
+    0 0 print 0 test
+      {
+        name:"pass_1"
+        src:1 - 1
+        expected:0
+        actual:0
+        completed:true
+        status:"P"
+      }
+    0 0 print 0 test
+      {
+        name:"pass_2"
+        src:1 - 2
+        expected:-1
+        actual:-1
+        completed:true
+        status:"P"
+      }
+    0 0 print 0 suite
+      {
+        name:"suite_pass"
+        try:3
+        pass:3
+        skip:0
+        fail:0
+        status:"P"
+      }
+    0 0 print 0 suite
+      {
+        name:"rclt.rclt.rclt"
+        try:1
+        pass:1
+        skip:0
+        fail:0
+        status:"P"
+      }
+    0 0 runner 0 exit 0
+  ?]
+}
+
+suite_fail:{
+  src:{
+    script:[?
+      set -e
+      rclt rclt.rclt.rclt:suite_fail
+      exit
+    ?]
+    sh:startx "bash"
+    :$sh writex script {}
+    out:try {<-waitx $sh}
+    <-template & $out.data + "\n"
+  }
+  bin:[?
+    0 0 print 0 test
+      {
+        name:"pass_0"
+        src:1 + 1
+        expected:2
+        actual:2
+        completed:true
+        status:"P"
+      }
+    0 0 print 0 test
+      {
+        name:"fail_1"
+        src:1 - 1
+        expected:3
+        actual:0
+        completed:true
+        status:"F"
+      }
+    0 0 print 0 test
+      {
+        name:"pass_2"
+        src:1 - 2
+        expected:-1
+        actual:-1
+        completed:true
+        status:"P"
+      }
+    0 0 print 0 suite
+      {
+        name:"suite_fail"
+        try:3
+        pass:2
+        skip:0
+        fail:1
+        status:"F"
+      }
+    0 0 print 0 suite
+      {
+        name:"rclt.rclt.rclt"
+        try:1
+        pass:0
+        skip:0
+        fail:1
+        status:"F"
+      }
+    0 0 runner 0 exit 1
+    <<Exec,exit status 1>>
+  ?]
+}
+
+suite_skip:{
+  src:{
+    script:[?
+      set -e
+      rclt rclt.rclt.rclt:suite_skip
+      exit
+    ?]
+    sh:startx "bash"
+    :$sh writex script {}
+    out:try {<-waitx $sh}
+    <-template & $out.data + "\n"
+  }
+  bin:[?
+    0 0 print 0 test
+      {
+        name:"pass0"
+        src:1 + 1
+        expected:2
+        actual:2
+        completed:true
+        status:"P"
+      }
+    0 0 print 0 test
+      {
+        name:"pass2"
+        src:1 - 2
+        expected:-1
+        actual:-1
+        completed:true
+        status:"P"
+      }
+    0 0 print 0 suite
+      {
+        name:"suite_skip"
+        try:3
+        pass:2
+        skip:1
+        fail:0
+        status:"P"
+      }
+    0 0 print 0 suite
+      {
+        name:"rclt.rclt.rclt"
+        try:1
+        pass:1
+        skip:0
+        fail:0
+        status:"P"
+      }
+    0 0 runner 0 exit 0
+  ?]
+}
+
+template_as_bin:{
+  src:{
+    script:[?
+      set -e
+      rclt rclt.rclt.rclt:template_as_bin
+      exit
+    ?]
+    sh:startx "bash"
+    :$sh writex script {}
+    out:try {<-waitx $sh}
+    <-2 template & $out.data + "\n"
+  }
+  bin:[??
+    0 0 print 0 test
+      {
+        name:"template_as_bin"
+        src:{
+          <-[?
+            this is the expected.
+          ?]
+        }
+        expected:[?
+          this is the expected.
+        ?]
+        actual:[?
+          this is the expected.
+        ?]
+        completed:true
+        status:"P"
+      }
+    0 0 print 0 suite
+      {
+        name:"rclt.rclt.rclt"
+        try:1
+        pass:1
+        skip:0
+        fail:0
+        status:"P"
+      }
+    0 0 runner 0 exit 0
+  ??]
+}
+
+all:{
+  skip:false
+  src:{
+    script:[?
+      set -e
+      rclt rclt.rclt.rclt
+      exit
+    ?]
+    sh:startx "bash"
+    :$sh writex script {}
+    <-unwrap #status from try {<-waitx $sh}
+  }
+  bin:1
+}
+
+missing_file:{
+  src:{
+    script:[?
+      set -e
+      rclt missing_rclt_file.rclt
+      exit
+    ?]
+    sh:startx "bash"
+    :$sh writex script {}
+    <-unwrap #status from try {<-waitx $sh}
+  }
+  bin:1
+}

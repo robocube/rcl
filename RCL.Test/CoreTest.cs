@@ -20,7 +20,6 @@ namespace RCL.Test
         RCValue result = runner.Run (program);
         NUnit.Framework.Assert.IsNotNull (result, "RCRunner.Run result was null");
         string actual = result.Format (args);
-        actual = actual.Replace ("\\r\\n", "\\n");
         NUnit.Framework.Assert.AreEqual (expected, actual);
         Console.Out.WriteLine ("P");
       }
@@ -2666,7 +2665,19 @@ namespace RCL.Test
     [Test]
     public void TestFormatText ()
     {
-      DoTest ("#text format \"line one\" \"line two\" \"line three\"", "\"line one\\nline two\\nline three\\n\"");
+      DoTest ("\"\\r\" \"\" replace #text format \"line one\" \"line two\" \"line three\"", "\"line one\\nline two\\nline three\\n\"");
+    }
+
+    [Test]
+    public void TestFormatTextCrlf ()
+    {
+      DoTest ("#textcrlf format \"line one\" \"line two\" \"line three\"", "\"line one\\r\\nline two\\r\\nline three\\r\\n\"");
+    }
+
+    [Test]
+    public void TestFormatTextLf ()
+    {
+      DoTest ("#textlf format \"line one\" \"line two\" \"line three\"", "\"line one\\nline two\\nline three\\n\"");
     }
 
     [Test]
@@ -2906,7 +2917,7 @@ namespace RCL.Test
 
 #if __MonoCS__
     [Test]
-    public void TestTryWaitx ()
+    public void TestMonoTryWaitx ()
     {
       //This was to expose a race condition in exec.
       //It would return zero if the process exited before waitx registered.

@@ -1,0 +1,2139 @@
+{
+  TestPlusXX:{
+    skip:false
+    src:\x01 + \x02
+    bin:\x03
+  }
+  TestPlusXL:{
+    skip:false
+    src:\x01 + 2
+    bin:3
+  }
+  TestPlusXD:{
+    skip:false
+    src:\x01 + 2.0
+    bin:3.0
+  }
+  TestPlusXM:{
+    skip:false
+    src:\x01 + 2m
+    bin:3m
+  }
+  TestPlusDD:{
+    skip:false
+    src:1.0 + 2.0
+    bin:3.0
+  }
+  TestPlusDL:{
+    skip:false
+    src:1.0 + 2.0
+    bin:3.0
+  }
+  TestPlusDX:{
+    skip:false
+    src:1.0 + \x02
+    bin:3.0
+  }
+  TestPlusLL:{
+    skip:false
+    src:1 + 2
+    bin:3
+  }
+  TestPlusLD:{
+    skip:false
+    src:1 + 2.0
+    bin:3.0
+  }
+  TestPlusLM:{
+    skip:false
+    src:1 + 2m
+    bin:3m
+  }
+  TestPlusLX:{
+    skip:false
+    src:1 + \x02
+    bin:3
+  }
+  TestPlusMM:{
+    skip:false
+    src:1m + 2m
+    bin:3m
+  }
+  TestPlusML:{
+    skip:false
+    src:1m + 2
+    bin:3m
+  }
+  TestPlusMX:{
+    skip:false
+    src:1m + \x02
+    bin:3m
+  }
+  TestPlusSS:{
+    skip:false
+    src:"x" + "y"
+    bin:"xy"
+  }
+  TestPlusYY:{
+    skip:false
+    src:#x + #y
+    bin:#x,y
+  }
+  TestPlusTT:{
+    skip:false
+    src:2015.05.31 + 1.00:00:00.0000000
+    bin:2015.06.01 00:00:00.0000000
+  }
+  TestPlusTT1:{
+    skip:false
+    src:1.00:00:00.0000000 + 2015.05.31
+    bin:2015.06.01 00:00:00.0000000
+  }
+  TestPlusTT2:{
+    skip:false
+    src:1.00:00:00.0000000 + 2.00:00:00.0000000
+    bin:3.00:00:00.0000000
+  }
+  TestPlusYY1:{
+    skip:false
+    src:# + #y
+    bin:#y
+  }
+  TestPlusD0:{
+    skip:false
+    src:+ ~d
+    bin:~d
+  }
+  TestPlusD1:{
+    skip:false
+    src:+ 1.0 2.0 3.0
+    bin:1.0 3.0 6.0
+  }
+  TestPlusL0:{
+    skip:false
+    src:+ ~l
+    bin:~l
+  }
+  TestPlusL1:{
+    skip:false
+    src:+ 1 2 3
+    bin:1 3 6
+  }
+  TestPlusM0:{
+    skip:false
+    src:+ ~m
+    bin:~m
+  }
+  TestPlusM1:{
+    skip:false
+    src:+ 1 2 3m
+    bin:1 3 6m
+  }
+  TestPlusX0:{
+    skip:false
+    src:+ ~x
+    bin:~x
+  }
+  TestPlusX1:{
+    skip:false
+    src:+ \x01 \x02 \x03
+    bin:\x01 \x03 \x06
+  }
+  TestMinusXX:{
+    skip:false
+    src:\x03 - \x02
+    bin:\x01
+  }
+  TestMinusXXWrap:{
+    skip:false
+    src:\x01 - \x02
+    bin:\xFF
+  }
+  TestMinusXL:{
+    skip:false
+    src:\x03 - 2
+    bin:1
+  }
+  TestMinusXD:{
+    skip:false
+    src:\x03 - 2.0
+    bin:1.0
+  }
+  TestMinusXM:{
+    skip:false
+    src:\x03 - 2m
+    bin:1m
+  }
+  TestMinusDD:{
+    skip:false
+    src:1.0 - 2.0
+    bin:-1.0
+  }
+  TestMinusDL:{
+    skip:false
+    src:1.0 - 2
+    bin:-1.0
+  }
+  TestMinusDX:{
+    skip:false
+    src:1.0 - \x02
+    bin:-1.0
+  }
+  TestMinusLL:{
+    skip:false
+    src:1 - 2
+    bin:-1
+  }
+  TestMinusLD:{
+    skip:false
+    src:1 - 2.0
+    bin:-1.0
+  }
+  TestMinusLM:{
+    skip:false
+    src:1 - 2m
+    bin:-1m
+  }
+  TestMinusLX:{
+    skip:false
+    src:1 - \x02
+    bin:-1
+  }
+  TestMinusMM:{
+    skip:false
+    src:1m - 2m
+    bin:-1m
+  }
+  TestMinusML:{
+    skip:false
+    src:1m - 2
+    bin:-1m
+  }
+  TestMinusMX:{
+    skip:false
+    src:1m - \x02
+    bin:-1m
+  }
+  TestMinusTT0:{
+    skip:false
+    src:2015.05.31 - 1.00:00:00.0000000
+    bin:2015.05.30 00:00:00.0000000
+  }
+  TestMinusTT1:{
+    skip:false
+    src:2015.05.31 - 2015.05.10
+    bin:21.00:00:00.0000000
+  }
+  TestMinusTT2:{
+    skip:false
+    src:1.00:00:00.0000000 - 2.00:00:00.0000000
+    bin:-1.00:00:00.0000000
+  }
+  TestMinusL:{
+    skip:false
+    src:- 1 3 5 8 12
+    bin:1 2 2 3 4
+  }
+  TestMinusD:{
+    skip:false
+    src:- 1.0 3.0 5.0 8.0 12.0
+    bin:1.0 2.0 2.0 3.0 4.0
+  }
+  TestMinusM:{
+    skip:false
+    src:- 1 3 5 8 12m
+    bin:1 2 2 3 4m
+  }
+  TestMinusX:{
+    skip:false
+    src:- \x01 \x03 \x05 \x08 \x0C
+    bin:\x01 \x02 \x02 \x03 \x04
+  }
+  TestMultiplyXX:{
+    skip:false
+    src:\x01 * \x02
+    bin:\x02
+  }
+  TestMultiplyXL:{
+    skip:false
+    src:\x01 * 2
+    bin:2
+  }
+  TestMultiplyXD:{
+    skip:false
+    src:\x01 * 2.0
+    bin:2.0
+  }
+  TestMultiplyXM:{
+    skip:false
+    src:\x01 * 2m
+    bin:2m
+  }
+  TestMultiplyDD:{
+    skip:false
+    src:1.0 * 2.0
+    bin:2.0
+  }
+  TestMultiplyDL:{
+    skip:false
+    src:1.0 * 2
+    bin:2.0
+  }
+  TestMultiplyDX:{
+    skip:false
+    src:1.0 * \x02
+    bin:2.0
+  }
+  TestMultiplyLL:{
+    skip:false
+    src:1 * 2
+    bin:2
+  }
+  TestMultiplyLD:{
+    skip:false
+    src:1 * 2.0
+    bin:2.0
+  }
+  TestMultiplyLM:{
+    skip:false
+    src:1 * 2m
+    bin:2m
+  }
+  TestMultiplyLX:{
+    skip:false
+    src:1 * \x02
+    bin:2
+  }
+  TestMultiplyMM:{
+    skip:false
+    src:1m * 2m
+    bin:2m
+  }
+  TestMultiplyML:{
+    skip:false
+    src:1m * 2
+    bin:2m
+  }
+  TestMultiplyMX:{
+    skip:false
+    src:1m * \x02
+    bin:2m
+  }
+  TestDivideXX:{
+    skip:false
+    src:\x04 / \x02
+    bin:\x02
+  }
+  TestDivideXL:{
+    skip:false
+    src:\x04 / 2
+    bin:2
+  }
+  TestDivideXD:{
+    skip:false
+    src:\x04 / 2.0
+    bin:2.0
+  }
+  TestDivideXM:{
+    skip:false
+    src:\x04 / 2m
+    bin:2m
+  }
+  TestDivideDD:{
+    skip:false
+    src:4.0 / 2.0
+    bin:2.0
+  }
+  TestDivideDL:{
+    skip:false
+    src:4.0 / 2
+    bin:2.0
+  }
+  TestDivideDX:{
+    skip:false
+    src:4.0 / \x02
+    bin:2.0
+  }
+  TestDivideLL:{
+    skip:false
+    src:4 / 2
+    bin:2
+  }
+  TestDivideLD:{
+    skip:false
+    src:4 / 2.0
+    bin:2.0
+  }
+  TestDivideLM:{
+    skip:false
+    src:4 / 2m
+    bin:2m
+  }
+  TestDivideLX:{
+    skip:false
+    src:4 / \x02
+    bin:2
+  }
+  TestDivideMM:{
+    skip:false
+    src:4m / 2m
+    bin:2m
+  }
+  TestDivideML:{
+    skip:false
+    src:4m / 2
+    bin:2m
+  }
+  TestDivideMX:{
+    skip:false
+    src:4m / \x02
+    bin:2m
+  }
+  TestModulo:{
+    skip:false
+    src:10 % 3
+    bin:1
+  }
+  TestAndXX:{
+    skip:false
+    src:\xF0 and \xAA
+    bin:\xA0
+  }
+  TestAndBB:{
+    skip:false
+    src:true true false false and true false true false
+    bin:true false false false
+  }
+  TestOrBB:{
+    skip:false
+    src:true true false false or true false true false
+    bin:true true true false
+  }
+  TestOrXX:{
+    skip:false
+    src:\xF0 or \xAA
+    bin:\xFA
+  }
+  TestNotBB:{
+    skip:false
+    src:not true false
+    bin:false true
+  }
+  TestNotX:{
+    skip:false
+    src:not \xF0
+    bin:\x0F
+  }
+  TestGtXX:{
+    skip:false
+    src:\x01 > \x02
+    bin:false
+  }
+  TestGtXL:{
+    skip:false
+    src:\x01 > 2
+    bin:false
+  }
+  TestGtXD:{
+    skip:false
+    src:\x01 > 2.0
+    bin:false
+  }
+  TestGtXM:{
+    skip:false
+    src:\x01 > 2m
+    bin:false
+  }
+  TestGtDD:{
+    skip:false
+    src:1.0 > 2.0
+    bin:false
+  }
+  TestGtDL:{
+    skip:false
+    src:1.0 > 2
+    bin:false
+  }
+  TestGtDX:{
+    skip:false
+    src:1.0 > \x02
+    bin:false
+  }
+  TestGtLL:{
+    skip:false
+    src:1 > 2
+    bin:false
+  }
+  TestGtLD:{
+    skip:false
+    src:1 > 2.0
+    bin:false
+  }
+  TestGtLM:{
+    skip:false
+    src:1 > 2m
+    bin:false
+  }
+  TestGtLX:{
+    skip:false
+    src:1 > \x02
+    bin:false
+  }
+  TestGtML:{
+    skip:false
+    src:1m > 2
+    bin:false
+  }
+  TestGtMM:{
+    skip:false
+    src:1m > 2m
+    bin:false
+  }
+  TestGtMX:{
+    skip:false
+    src:1m > \x02
+    bin:false
+  }
+  TestGtTT:{
+    skip:false
+    src:2015.05.31 > 2015.06.01
+    bin:false
+  }
+  TestGtTT1:{
+    skip:false
+    src:2015.05.31 08:00 > 2015.05.31 08:01
+    bin:false
+  }
+  TestGtTT2:{
+    skip:false
+    src:1.00:00:00.0000000 > 2.00:00:00.0000000
+    bin:false
+  }
+  TestGteXX:{
+    skip:false
+    src:\x01 >= \x02
+    bin:false
+  }
+  TestGteXL:{
+    skip:false
+    src:\x01 >= 2
+    bin:false
+  }
+  TestGteXD:{
+    skip:false
+    src:\x01 >= 2.0
+    bin:false
+  }
+  TestGteXM:{
+    skip:false
+    src:\x01 >= 2m
+    bin:false
+  }
+  TestGteDD:{
+    skip:false
+    src:1.0 >= 2.0
+    bin:false
+  }
+  TestGteDL:{
+    skip:false
+    src:1.0 >= 2
+    bin:false
+  }
+  TestGteDX:{
+    skip:false
+    src:1.0 >= \x02
+    bin:false
+  }
+  TestGteLL:{
+    skip:false
+    src:1 >= 2
+    bin:false
+  }
+  TestGteLD:{
+    skip:false
+    src:1 >= 2.0
+    bin:false
+  }
+  TestGteLM:{
+    skip:false
+    src:1 >= 2m
+    bin:false
+  }
+  TestGteLX:{
+    skip:false
+    src:1 >= \x02
+    bin:false
+  }
+  TestGteML:{
+    skip:false
+    src:1m >= 2
+    bin:false
+  }
+  TestGteMM:{
+    skip:false
+    src:1m >= 2m
+    bin:false
+  }
+  TestGteMX:{
+    skip:false
+    src:1m >= \x02
+    bin:false
+  }
+  TestGteTT:{
+    skip:false
+    src:2015.05.31 >= 2015.06.01
+    bin:false
+  }
+  TestGteTT1:{
+    skip:false
+    src:2015.05.31 08:00 >= 2015.05.31 08:00
+    bin:true
+  }
+  TestGteTT2:{
+    skip:false
+    src:1.00:00:00.0000000 >= 2.00:00:00.0000000
+    bin:false
+  }
+  TestLtXX:{
+    skip:false
+    src:\x01 < \x02
+    bin:true
+  }
+  TestLTXL:{
+    skip:false
+    src:\x01 < 2
+    bin:true
+  }
+  TestLtXD:{
+    skip:false
+    src:\x01 < 2.0
+    bin:true
+  }
+  TestLtXM:{
+    skip:false
+    src:\x01 < 2m
+    bin:true
+  }
+  TestLtDD:{
+    skip:false
+    src:1.0 < 2.0
+    bin:true
+  }
+  TestLtDL:{
+    skip:false
+    src:1.0 < 2
+    bin:true
+  }
+  TestLtDX:{
+    skip:false
+    src:1.0 < \x02
+    bin:true
+  }
+  TestLtLL:{
+    skip:false
+    src:1 < 2
+    bin:true
+  }
+  TestLtLD:{
+    skip:false
+    src:1 < 2.0
+    bin:true
+  }
+  TestLtLM:{
+    skip:false
+    src:1 < 2m
+    bin:true
+  }
+  TestLtLX:{
+    skip:false
+    src:1 < \x02
+    bin:true
+  }
+  TestLtML:{
+    skip:false
+    src:1m < 2
+    bin:true
+  }
+  TestLtMM:{
+    skip:false
+    src:1m < 2m
+    bin:true
+  }
+  TestLtMX:{
+    skip:false
+    src:1m < \x02
+    bin:true
+  }
+  TestLtTT:{
+    skip:false
+    src:2015.05.31 < 2015.06.01
+    bin:true
+  }
+  TestLtTT1:{
+    skip:false
+    src:2015.05.31 08:00 < 2015.05.31 08:01
+    bin:true
+  }
+  TestLtTT2:{
+    skip:false
+    src:1.00:00:00.0000000 < 2.00:00:00.0000000
+    bin:true
+  }
+  TestLteXX:{
+    skip:false
+    src:\x01 <= \x02
+    bin:true
+  }
+  TestLteXL:{
+    skip:false
+    src:\x01 <= 2
+    bin:true
+  }
+  TestLteXD:{
+    skip:false
+    src:\x01 <= 2.0
+    bin:true
+  }
+  TestLteXM:{
+    skip:false
+    src:\x01 <= 2m
+    bin:true
+  }
+  TestLteDD:{
+    skip:false
+    src:1.0 <= 2.0
+    bin:true
+  }
+  TestLteDL:{
+    skip:false
+    src:1.0 <= 1
+    bin:true
+  }
+  TestLteDX:{
+    skip:false
+    src:1.0 <= \x02
+    bin:true
+  }
+  TestLteLL:{
+    skip:false
+    src:1 <= 1
+    bin:true
+  }
+  TestLteLD:{
+    skip:false
+    src:1 <= 2.0
+    bin:true
+  }
+  TestLteLM:{
+    skip:false
+    src:1 <= 1m
+    bin:true
+  }
+  TestLteLX:{
+    skip:false
+    src:1 <= \x02
+    bin:true
+  }
+  TestLteML:{
+    skip:false
+    src:1m <= 1
+    bin:true
+  }
+  TestLteMM:{
+    skip:false
+    src:1m <= 2m
+    bin:true
+  }
+  TestLteMX:{
+    skip:false
+    src:1m <= \x02
+    bin:true
+  }
+  TestLteTT:{
+    skip:false
+    src:2015.05.31 <= 2015.06.01
+    bin:true
+  }
+  TestLteTT1:{
+    skip:false
+    src:2015.05.31 08:00 <= 2015.05.31 08:00
+    bin:true
+  }
+  TestLteTT2:{
+    skip:false
+    src:1.00:00:00.0000000 <= 2.00:00:00.0000000
+    bin:true
+  }
+  TestEqXX:{
+    skip:false
+    src:\x01 == \x02
+    bin:false
+  }
+  TestEqXL:{
+    skip:false
+    src:\x01 == 2
+    bin:false
+  }
+  TestEqXD:{
+    skip:false
+    src:\x01 == 2.0
+    bin:false
+  }
+  TestEqXM:{
+    skip:false
+    src:\x01 == 2m
+    bin:false
+  }
+  TestEqDD:{
+    skip:false
+    src:1.0 == 2.0
+    bin:false
+  }
+  TestEqDD1:{
+    skip:false
+    src:1.1 == 1.1
+    bin:true
+  }
+  TestEqDD2:{
+    skip:false
+    src:NaN == NaN
+    bin:true
+  }
+  TestEqDL:{
+    skip:false
+    src:1.0 == 2
+    bin:false
+  }
+  TestEqDX:{
+    skip:false
+    src:1.0 == \x02
+    bin:false
+  }
+  TestEqLL:{
+    skip:false
+    src:1 == 2
+    bin:false
+  }
+  TestEqLD:{
+    skip:false
+    src:1 == 2.0
+    bin:false
+  }
+  TestEqLM:{
+    skip:false
+    src:1 == 2m
+    bin:false
+  }
+  TestEqLX:{
+    skip:false
+    src:1 == \x02
+    bin:false
+  }
+  TestEqML:{
+    skip:false
+    src:1m == 2
+    bin:false
+  }
+  TestEqMM:{
+    skip:false
+    src:1m == 2m
+    bin:false
+  }
+  TestEqMX:{
+    skip:false
+    src:1m == \x02
+    bin:false
+  }
+  TestEqBB:{
+    skip:false
+    src:true == false
+    bin:false
+  }
+  TestEqYY:{
+    skip:false
+    src:#x == #y
+    bin:false
+  }
+  TestEqYY1:{
+    skip:false
+    src:#x == #x
+    bin:true
+  }
+  TestEqYY2:{
+    skip:false
+    src:# == symbol ""
+    bin:true
+  }
+  TestEqSS:{
+    skip:false
+    src:"x" == "x"
+    bin:true
+  }
+  TestEqTT:{
+    skip:false
+    src:2018.05.04 == 2018.05.04
+    bin:true
+  }
+  TestEqTTWithTime:{
+    skip:false
+    src:2018.05.04 11:21 == 2018.05.04
+    bin:false
+  }
+  TestNeqXX:{
+    skip:false
+    src:\x01 != \x02
+    bin:true
+  }
+  TestNeqXL:{
+    skip:false
+    src:\x01 != 2
+    bin:true
+  }
+  TestNeqXD:{
+    skip:false
+    src:\x01 != 2.0
+    bin:true
+  }
+  TestNeqXM:{
+    skip:false
+    src:\x01 != 2m
+    bin:true
+  }
+  TestNeqDD:{
+    skip:false
+    src:1.0 != 2.0
+    bin:true
+  }
+  TestNeqDL:{
+    skip:false
+    src:1.0 != 2
+    bin:true
+  }
+  TestNeqDX:{
+    skip:false
+    src:1.0 != \x02
+    bin:true
+  }
+  TestNeqLL:{
+    skip:false
+    src:1 != 2
+    bin:true
+  }
+  TestNeqLD:{
+    skip:false
+    src:1 != 2.0
+    bin:true
+  }
+  TestNeqLM:{
+    skip:false
+    src:1 != 2m
+    bin:true
+  }
+  TestNeqLX:{
+    skip:false
+    src:1 != \x02
+    bin:true
+  }
+  TestNeqML:{
+    skip:false
+    src:1m != 2
+    bin:true
+  }
+  TestNeqMM:{
+    skip:false
+    src:1m != 2m
+    bin:true
+  }
+  TestNeqMX:{
+    skip:false
+    src:1m != \x02
+    bin:true
+  }
+  TestNeqBB:{
+    skip:false
+    src:true != false
+    bin:true
+  }
+  TestNeqYY:{
+    skip:false
+    src:#x != #y
+    bin:true
+  }
+  TestNeqYY1:{
+    skip:false
+    src:#x != #x
+    bin:false
+  }
+  TestNeqSS:{
+    skip:false
+    src:"x" != "x"
+    bin:false
+  }
+  TestEqualsYY:{
+    skip:false
+    src:#x = #x
+    bin:true
+  }
+  TestEqualsYY1:{
+    skip:false
+    src:#x #x = #x
+    bin:false
+  }
+  TestEqualsDD:{
+    skip:false
+    src:NaN 1.0 2.34 = NaN 1.0 2.34
+    bin:true
+  }
+  TestStringX:{
+    skip:false
+    src:string \xF0 \xE1 \xD2 \xC3
+    bin:"F0" "E1" "D2" "C3"
+  }
+  TestStringD:{
+    skip:false
+    src:string 1.0
+    bin:"1"
+  }
+  TestStringL:{
+    skip:false
+    src:string 1
+    bin:"1"
+  }
+  TestStringM:{
+    skip:false
+    src:string 1m
+    bin:"1"
+  }
+  TestStringB:{
+    skip:false
+    src:string true
+    bin:"true"
+  }
+  TestStringS0:{
+    skip:false
+    src:string "string"
+    bin:"string"
+  }
+  TestStringS1:{
+    skip:false
+    src:{
+      u:[
+         E|S |x
+         0 #a "string"
+      ]
+      <-string $u.x
+    }
+    bin:[
+       E|S |x
+       0 #a "string"
+    ]
+  }
+  TestStringY:{
+    skip:false
+    src:string #this,is,a,sym
+    bin:"#this,is,a,sym"
+  }
+  TestStringK:{
+    skip:false
+    src:string {
+      x:"a"
+      y:"b"
+      z:"c"
+    }
+    bin:"a" "b" "c"
+  }
+  TestStringT0:{
+    skip:false
+    src:string 2015.05.26
+    bin:"2015.05.26"
+  }
+  TestStringT1:{
+    skip:false
+    src:string 08:26
+    bin:"08:26"
+  }
+  TestStringT2:{
+    skip:false
+    src:string 2015.05.26 08:26
+    bin:"2015.05.26 08:26"
+  }
+  TestStringT3:{
+    skip:false
+    src:string 2015.05.26 08:26:00.1234567
+    bin:"2015.05.26 08:26:00.1234567"
+  }
+  TestSymbolX:{
+    skip:false
+    src:symbol \xFF
+    bin:#\xFF
+  }
+  TestSymbolD:{
+    skip:false
+    src:symbol 1.0
+    bin:#1.0
+  }
+  TestSymbolL:{
+    skip:false
+    src:symbol 1
+    bin:#1
+  }
+  TestSymbolM:{
+    skip:false
+    src:symbol 1m
+    bin:#1m
+  }
+  TestSymbolB:{
+    skip:false
+    src:symbol true
+    bin:#true
+  }
+  TestSymbolS:{
+    skip:false
+    src:symbol "string"
+    bin:#string
+  }
+  TestSymbolS0:{
+    skip:false
+    src:symbol "#string"
+    bin:#string
+  }
+  TestSymbolS01:{
+    skip:false
+    src:(symbol "#string") switch {
+      string:11
+    }
+    bin:11
+  }
+  TestSymbolS1:{
+    skip:false
+    src:symbol "a"
+    bin:#a
+  }
+  TestSymbolS2:{
+    skip:false
+    src:symbol " a "
+    bin:#' a '
+  }
+  TestSymbolS3:{
+    skip:false
+    src:symbol "2a"
+    bin:#'2a'
+  }
+  TestSymbolS4:{
+    skip:false
+    src:symbol ""
+    bin:#
+  }
+  TestSymbolS5:{
+    skip:false
+    src:symbol "#a,0"
+    bin:#a,0
+  }
+  TestSymbolS6:{
+    skip:false
+    src:#a symbol ""
+    bin:#a
+  }
+  TestSymbolY0:{
+    skip:false
+    src:symbol #this,is,a,sym
+    bin:#this,is,a,sym
+  }
+  TestSymbolY1:{
+    skip:false
+    src:{
+      u:[
+         E|S |x
+         0 #a #symbol
+      ]
+      <-symbol $u.x
+    }
+    bin:[
+       E|S |x
+       0 #a #symbol
+    ]
+  }
+  TestSymbolK:{
+    skip:false
+    src:symbol {
+      x:#a
+      y:#b
+      z:#c
+    }
+    bin:#a #b #c
+  }
+  TestLongX:{
+    skip:false
+    src:long \xFF
+    bin:255
+  }
+  TestLongD:{
+    skip:false
+    src:long 1.0
+    bin:1
+  }
+  TestLongL0:{
+    skip:false
+    src:long 1
+    bin:1
+  }
+  TestLongL1:{
+    skip:false
+    src:{
+      u:[
+         E|S | x
+         0 #a  0
+      ]
+      <-long $u.x
+    }
+    bin:[
+       E|S | x
+       0 #a  0
+    ]
+  }
+  TestLongM:{
+    skip:false
+    src:long 1m
+    bin:1
+  }
+  TestLongB:{
+    skip:false
+    src:long true
+    bin:1
+  }
+  TestLongS:{
+    skip:false
+    src:long "1"
+    bin:1
+  }
+  TestLongS1:{
+    skip:false
+    src:100 long ""
+    bin:100
+  }
+  TestLongK:{
+    skip:false
+    src:long {
+      x:0
+      y:1
+      z:2
+    }
+    bin:0 1 2
+  }
+  TestLongY:{
+    skip:false
+    src:long #0 #1 #2
+    bin:0 1 2
+  }
+  TestLongT0:{
+    skip:false
+    src:long 0001.01.01
+    bin:0
+  }
+  TestLongT1:{
+    skip:false
+    src:long 00:00
+    bin:0
+  }
+  TestLongT2:{
+    skip:false
+    src:long 0001.01.01 00:00
+    bin:0
+  }
+  TestLongT3:{
+    skip:false
+    src:long 0001.01.01 00:00:00.0000000
+    bin:0
+  }
+  TestByteX:{
+    skip:false
+    src:byte \xFF
+    bin:\xFF
+  }
+  TestByteX1:{
+    skip:false
+    src:{
+      u:[
+         E|S |   x
+         0 #a \x00
+      ]
+      <-byte $u.x
+    }
+    bin:[
+       E|S |   x
+       0 #a \x00
+    ]
+  }
+  TestByteD:{
+    skip:false
+    src:byte 1.0
+    bin:\x01
+  }
+  TestByteL0:{
+    skip:false
+    src:byte 1
+    bin:\x01
+  }
+  TestByteM:{
+    skip:false
+    src:byte 1m
+    bin:\x01
+  }
+  TestByteB:{
+    skip:false
+    src:byte true
+    bin:\x01
+  }
+  TestByteS:{
+    skip:false
+    src:byte "255"
+    bin:\xFF
+  }
+  TestByteK:{
+    skip:false
+    src:byte {
+      x:\x00
+      y:\x01
+      z:\x02
+    }
+    bin:\x00 \x01 \x02
+  }
+  TestDoubleX:{
+    skip:false
+    src:double \xFF
+    bin:255.0
+  }
+  TestDoubleD0:{
+    skip:false
+    src:double 1.0
+    bin:1.0
+  }
+  TestDoubleD1:{
+    skip:false
+    src:{
+      u:[
+         E|S |  x
+         0 #a 0.0
+      ]
+      <-double $u.x
+    }
+    bin:[
+       E|S |  x
+       0 #a 0.0
+    ]
+  }
+  TestDoubleL:{
+    skip:false
+    src:double 1
+    bin:1.0
+  }
+  TestDoubleM:{
+    skip:false
+    src:double 1m
+    bin:1.0
+  }
+  TestDoubleB:{
+    skip:false
+    src:double true
+    bin:1.0
+  }
+  TestDoubleS:{
+    skip:false
+    src:double "1"
+    bin:1.0
+  }
+  TestDoubleS1:{
+    skip:false
+    src:double "foo" "1" "2.34"
+    bin:NaN 1.0 2.34
+  }
+  TestDoubleS2:{
+    skip:false
+    src:0.0 double "" "1" "2.34"
+    bin:0.0 1.0 2.34
+  }
+  TestDoubleK:{
+    skip:false
+    src:double {
+      x:0.0
+      y:1.0
+      z:2.0
+    }
+    bin:0.0 1.0 2.0
+  }
+  TestBooleanX:{
+    skip:false
+    src:boolean \x00 \x01 \x02
+    bin:false true true
+  }
+  TestBooleanD:{
+    skip:false
+    src:boolean 0.0
+    bin:false
+  }
+  TestBooleanL:{
+    skip:false
+    src:boolean 0
+    bin:false
+  }
+  TestBooleanM:{
+    skip:false
+    src:boolean 0m
+    bin:false
+  }
+  TestBooleanB0:{
+    skip:false
+    src:boolean false
+    bin:false
+  }
+  TestBooleanB1:{
+    skip:false
+    src:{
+      u:[
+         E|S |   x
+         0 #a true
+      ]
+      <-boolean $u.x
+    }
+    bin:[
+       E|S |   x
+       0 #a true
+    ]
+  }
+  TestBooleanS:{
+    skip:false
+    src:boolean "true"
+    bin:true
+  }
+  TestBooleanS1:{
+    skip:false
+    src:false boolean ""
+    bin:false
+  }
+  TestBooleanK:{
+    skip:false
+    src:boolean {
+      x:true
+      y:false
+      z:true
+    }
+    bin:true false true
+  }
+  TestDecimalX:{
+    skip:false
+    src:decimal \x00
+    bin:0m
+  }
+  TestDecimalD:{
+    skip:false
+    src:decimal 0.0
+    bin:0m
+  }
+  TestDecimalL:{
+    skip:false
+    src:decimal 0
+    bin:0m
+  }
+  TestDecimalM0:{
+    skip:false
+    src:decimal 0m
+    bin:0m
+  }
+  TestDecimalM1:{
+    skip:false
+    src:{
+      u:[
+         E|S | x
+         0 #a 0m
+      ]
+      <-decimal $u.x
+    }
+    bin:[
+       E|S | x
+       0 #a 0m
+    ]
+  }
+  TestDecimalB:{
+    skip:false
+    src:decimal true
+    bin:1m
+  }
+  TestDecimalS:{
+    skip:false
+    src:decimal "1"
+    bin:1m
+  }
+  TestDecimalS1:{
+    skip:false
+    src:1m decimal ""
+    bin:1m
+  }
+  TestDecimalK:{
+    skip:false
+    src:decimal {
+      x:0m
+      y:1m
+      z:2m
+    }
+    bin:0 1 2m
+  }
+  TestTimeL:{
+    skip:false
+    src:time 0
+    bin:0001.01.01 00:00:00.0000000
+  }
+  TestTimeT0:{
+    skip:false
+    src:time 0001.01.01 00:00:00.0000000
+    bin:0001.01.01 00:00:00.0000000
+  }
+  TestTimeS:{
+    skip:false
+    src:time "0001.01.01 00:00:00.0000000"
+    bin:0001.01.01 00:00:00.0000000
+  }
+  TestTimeTS:{
+    skip:false
+    src:0001.01.01 00:00:00.0000000 time ""
+    bin:0001.01.01 00:00:00.0000000
+  }
+  TestTimeYT1:{
+    skip:false
+    src:#date time 0001.01.01 00:00:00.0000000
+    bin:0001.01.01
+  }
+  TestTimeYT2:{
+    skip:false
+    src:#daytime time 0001.01.01 00:00:00.0000000
+    bin:00:00
+  }
+  TestTimeYT3:{
+    skip:false
+    src:#datetime time 0001.01.01 00:00:00.0000000
+    bin:0001.01.01 00:00
+  }
+  TestTimeYT4:{
+    skip:false
+    src:#timestamp time 0001.01.01 00:00:00.0000000
+    bin:0001.01.01 00:00:00.0000000
+  }
+  TestTimeYL0:{
+    skip:false
+    src:#date time 0
+    bin:0001.01.01
+  }
+  TestTimeYL1:{
+    skip:false
+    src:#daytime time 0
+    bin:00:00
+  }
+  TestTimeYL2:{
+    skip:false
+    src:#datetime time 0
+    bin:0001.01.01 00:00
+  }
+  TestTimeYL3:{
+    skip:false
+    src:#timestamp time 0
+    bin:0001.01.01 00:00:00.0000000
+  }
+  TestDayT:{
+    skip:false
+    src:day 0.12:34:56.7890123
+    bin:0
+  }
+  TestDayTU:{
+    skip:false
+    src:day [
+                       x
+      0.12:34:56.7890123
+    ]
+    bin:[
+       x
+       0
+    ]
+  }
+  TestHourT:{
+    skip:false
+    src:hour 0.12:34:56.7890123
+    bin:12
+  }
+  TestHourTU:{
+    skip:false
+    src:hour [
+                       x
+      0.12:34:56.7890123
+    ]
+    bin:[
+       x
+      12
+    ]
+  }
+  TestMinuteT:{
+    skip:false
+    src:minute 0.12:34:56.7890123
+    bin:34
+  }
+  TestMinuteTU:{
+    skip:false
+    src:minute [
+                       x
+      0.12:34:56.7890123
+    ]
+    bin:[
+       x
+      34
+    ]
+  }
+  TestSecondT:{
+    skip:false
+    src:second 0.12:34:56.7890123
+    bin:56
+  }
+  TestSecondTU:{
+    skip:false
+    src:second [
+                       x
+      0.12:34:56.7890123
+    ]
+    bin:[
+       x
+      56
+    ]
+  }
+  TestNanoT:{
+    skip:false
+    src:nano 0.12:34:56.7890123
+    bin:789012300
+  }
+  TestNanoTU:{
+    skip:false
+    src:nano [
+                       x
+      0.12:34:56.7890123
+    ]
+    bin:[
+              x
+      789012300
+    ]
+  }
+  TestDateT:{
+    skip:false
+    src:timestamp date 1979.09.04 12:34:56.7891011
+    bin:1979.09.04 00:00:00.0000000
+  }
+  TestDateTU:{
+    skip:false
+    src:timestamp date [
+                                x
+      1979.09.04 12:34:56.7891011
+    ]
+    bin:[
+                                x
+      1979.09.04 00:00:00.0000000
+    ]
+  }
+  TestDaytimeT:{
+    skip:false
+    src:timestamp daytime 1979.09.04 12:34:56.7891011
+    bin:0001.01.01 12:34:00.0000000
+  }
+  TestDaytimeTU:{
+    skip:false
+    src:timestamp daytime [
+                                x
+      1979.09.04 12:34:56.7891011
+    ]
+    bin:[
+                                x
+      0001.01.01 12:34:00.0000000
+    ]
+  }
+  TestDatetimeT:{
+    skip:false
+    src:timestamp datetime 1979.09.04 12:34:56.7891011
+    bin:1979.09.04 12:34:00.0000000
+  }
+  TestDatetimeTU:{
+    skip:false
+    src:timestamp datetime [
+                                x
+      1979.09.04 12:34:56.7891011
+    ]
+    bin:[
+                                x
+      1979.09.04 12:34:00.0000000
+    ]
+  }
+  TestTimestampT:{
+    skip:false
+    src:timestamp timestamp 1979.09.04 12:34:56.7891011
+    bin:1979.09.04 12:34:56.7891011
+  }
+  TestTimestampTU:{
+    skip:false
+    src:timestamp timestamp [
+                                x
+      1979.09.04 12:34:56.7891011
+    ]
+    bin:[
+                                x
+      1979.09.04 12:34:56.7891011
+    ]
+  }
+  TestTimespanT:{
+    skip:false
+    src:timespan 1979.09.04 12:34:56.7891011
+    bin:722695.12:34:56.7891011
+  }
+  TestTimespanTU:{
+    skip:false
+    src:timespan [
+                                x
+      1979.09.04 12:34:56.7891011
+    ]
+    bin:[
+                            x
+      722695.12:34:56.7891011
+    ]
+  }
+  TestReferenceS:{
+    skip:false
+    src:reference "x" "y" "z"
+    bin:$x.y.z
+  }
+  TestReferenceY:{
+    skip:false
+    src:reference #x,y,z
+    bin:$x.y.z
+  }
+  TestCountK0:{
+    skip:false
+    src:count {}
+    bin:0
+  }
+  TestCountK1:{
+    skip:false
+    src:count {
+      a:1
+      b:2
+    }
+    bin:2
+  }
+  TestCountX:{
+    skip:false
+    src:count \xFF
+    bin:1
+  }
+  TestCountD:{
+    skip:false
+    src:count 1.0
+    bin:1
+  }
+  TestCountL:{
+    skip:false
+    src:count 1
+    bin:1
+  }
+  TestCountM:{
+    skip:false
+    src:count 1m
+    bin:1
+  }
+  TestCountB:{
+    skip:false
+    src:count false
+    bin:1
+  }
+  TestCountS:{
+    skip:false
+    src:count "x"
+    bin:1
+  }
+  TestCountY:{
+    skip:false
+    src:count #x
+    bin:1
+  }
+  TestCountT:{
+    skip:false
+    src:count 2015.05.26
+    bin:1
+  }
+  TestCountN:{
+    skip:false
+    src:count ++
+    bin:1
+  }
+  TestCountU:{
+    skip:false
+    src:{
+      u:[
+        S | x
+        #a  0
+      ]
+      <-count #b cube $u
+    }
+    bin:0
+  }
+  TestCountR:{
+    skip:false
+    src:count reference "x.y.z"
+    bin:1
+  }
+  TestCountP:{
+    skip:false
+    src:count [? foo bar baz ?]
+    bin:2
+  }
+  TestLengthS:{
+    skip:false
+    src:length "aaa" "bb" "a" ""
+    bin:3 2 1 0
+  }
+  TestLengthY:{
+    skip:false
+    src:length # #a #aaa #a,b #a,b,c
+    bin:0 1 1 2 3
+  }
+  TestRepeatLX:{
+    skip:false
+    src:3 repeat \x01
+    bin:\x01 \x01 \x01
+  }
+  TestRepeatLD:{
+    skip:false
+    src:3 repeat 1.0
+    bin:1.0 1.0 1.0
+  }
+  TestRepeatLL:{
+    skip:false
+    src:3 repeat 1
+    bin:1 1 1
+  }
+  TestRepeatLM:{
+    skip:false
+    src:3 repeat 1m
+    bin:1 1 1m
+  }
+  TestRepeatLB:{
+    skip:false
+    src:3 repeat false
+    bin:false false false
+  }
+  TestRepeatLS:{
+    skip:false
+    src:3 repeat "x"
+    bin:"x" "x" "x"
+  }
+  TestRepeatLY:{
+    skip:false
+    src:3 repeat #x
+    bin:#x #x #x
+  }
+  TestRepeatLT:{
+    skip:false
+    src:3 repeat 2015.05.26
+    bin:2015.05.26 2015.05.26 2015.05.26
+  }
+  TestRepeatLN:{
+    skip:false
+    src:3 repeat ++
+    bin:++ ++ ++
+  }
+  TestRepeatMulti:{
+    skip:false
+    src:3 repeat #x #y #z
+    bin:#x #y #z #x #y #z #x #y #z
+  }
+  TestSumD:{
+    skip:false
+    src:sum 1.0 2.0 3.0
+    bin:6.0
+  }
+  TestSumL:{
+    skip:false
+    src:sum 1 2 3
+    bin:6
+  }
+  TestSumM:{
+    skip:false
+    src:sum 1 2 3m
+    bin:6m
+  }
+  TestSumX:{
+    skip:false
+    src:sum \x01 \x02 \x03
+    bin:\x06
+  }
+  TestAvgD:{
+    skip:false
+    src:avg 1.0 2.0 3.0
+    bin:2.0
+  }
+  TestAvgL:{
+    skip:false
+    src:avg 1 2 3
+    bin:2.0
+  }
+  TestAvgM:{
+    skip:false
+    src:avg 1 2 3m
+    bin:2m
+  }
+  TestAvgX:{
+    skip:false
+    src:avg \x01 \x02 \x03
+    bin:2.0
+  }
+  TestLowD:{
+    skip:false
+    src:low 1.0 2.0 3.0
+    bin:1.0
+  }
+  TestLowL:{
+    skip:false
+    src:low 1.0 2.0 3.0
+    bin:1.0
+  }
+  TestLowM:{
+    skip:false
+    src:low 1 2 3m
+    bin:1m
+  }
+  TestLowX:{
+    skip:false
+    src:low \x01 \x02 \x03
+    bin:\x01
+  }
+  TestHighD:{
+    skip:false
+    src:high -1.0 -2.0 -3.0
+    bin:-1.0
+  }
+  TestHighL:{
+    skip:false
+    src:high -1 -2 -3
+    bin:-1
+  }
+  TestHighM:{
+    skip:false
+    src:high -1 -2 -3m
+    bin:-1m
+  }
+  TestHighX:{
+    skip:false
+    src:high \x01 \x02 \x03
+    bin:\x03
+  }
+  TestAny1:{
+    skip:false
+    src:any false true false
+    bin:true
+  }
+  TestAny2:{
+    skip:false
+    src:any false false false
+    bin:false
+  }
+  TestAll1:{
+    skip:false
+    src:all true true true
+    bin:true
+  }
+  TestAll2:{
+    skip:false
+    src:all false false false
+    bin:false
+  }
+  TestNone1:{
+    skip:false
+    src:none false false false
+    bin:true
+  }
+  TestNone2:{
+    skip:false
+    src:none false false true
+    bin:false
+  }
+  TestMinDD:{
+    skip:false
+    src:3.0 2.0 1.0 min 1.0 2.0 3.0
+    bin:1.0 2.0 1.0
+  }
+  TestMinLL:{
+    skip:false
+    src:3 2 1 min 1 2 3
+    bin:1 2 1
+  }
+  TestMinMM:{
+    skip:false
+    src:3 2 1m min 1 2 3m
+    bin:1 2 1m
+  }
+  TestMinXX:{
+    skip:false
+    src:\x03 \x02 \x01 min \x01 \x02 \x03
+    bin:\x01 \x02 \x01
+  }
+  TestMaxDD:{
+    skip:false
+    src:-3.0 -2.0 -1.0 max -1.0 -2.0 -3.0
+    bin:-1.0 -2.0 -1.0
+  }
+  TestMaxLL:{
+    skip:false
+    src:-3 -2 -1 max -1 -2 -3
+    bin:-1 -2 -1
+  }
+  TestMaxMM:{
+    skip:false
+    src:-3 -2 -1m max -1 -2 -3m
+    bin:-1 -2 -1m
+  }
+  TestMaxXX:{
+    skip:false
+    src:\x03 \x02 \x01 max \x01 \x02 \x03
+    bin:\x03 \x02 \x03
+  }
+  TestPlusDM:{
+    skip:false
+    src:unwrap "status" from try {
+      <-1.0 + 2m
+    }
+    bin:1
+  }
+  TestPlusMD:{
+    skip:false
+    src:unwrap "status" from try {
+      <-1m + 2.0
+    }
+    bin:1
+  }
+  TestMinusDM:{
+    skip:false
+    src:unwrap "status" from try {
+      <-1.0 - 2m
+    }
+    bin:1
+  }
+  TestMinusMD:{
+    skip:false
+    src:unwrap "status" from try {
+      <-1m - 2.0
+    }
+    bin:1
+  }
+  TestMultiplyDM:{
+    skip:false
+    src:unwrap "status" from try {
+      <-1.0 * 2m
+    }
+    bin:1
+  }
+  TestMultiplyMD:{
+    skip:false
+    src:unwrap "status" from try {
+      <-1m * 2.0
+    }
+    bin:1
+  }
+  TestDivideDM:{
+    skip:false
+    src:unwrap "status" from try {
+      <-4.0 / 2m
+    }
+    bin:1
+  }
+  TestDivideMD:{
+    skip:false
+    src:unwrap "status" from try {
+      <-4m / 2.0
+    }
+    bin:1
+  }
+  TestGtDM:{
+    skip:false
+    src:unwrap "status" from try {
+      <-1.0 > 2m
+    }
+    bin:1
+  }
+  TestGtMD:{
+    skip:false
+    src:unwrap "status" from try {
+      <-1m > 2.0
+    }
+    bin:1
+  }
+  TestGteDM:{
+    skip:false
+    src:unwrap "status" from try {
+      <-1.0 >= 2m
+    }
+    bin:1
+  }
+  TestGteMD:{
+    skip:false
+    src:unwrap "status" from try {
+      <-1m >= 2.0
+    }
+    bin:1
+  }
+  TestLtDM:{
+    skip:false
+    src:unwrap "status" from try {
+      <-1.0 < 2m
+    }
+    bin:1
+  }
+  TestLtMD:{
+    skip:false
+    src:unwrap "status" from try {
+      <-1m < 2.0
+    }
+    bin:1
+  }
+  TestLteDM:{
+    skip:false
+    src:unwrap "status" from try {
+      <-1.0 <= 2m
+    }
+    bin:1
+  }
+  TestLteMD:{
+    skip:false
+    src:unwrap "status" from try {
+      <-1m <= 2.0
+    }
+    bin:1
+  }
+  TestEqDM:{
+    skip:false
+    src:unwrap "status" from try {
+      <-1.0 == 2m
+    }
+    bin:1
+  }
+  TestEqMD:{
+    skip:false
+    src:unwrap "status" from try {
+      <-1m == 2.0
+    }
+    bin:1
+  }
+  TestNeqDM:{
+    skip:false
+    src:unwrap "status" from try {
+      <-1.0 != 2m
+    }
+    bin:1
+  }
+  TestNeqMD:{
+    skip:false
+    src:unwrap "status" from try {
+      <-1m != 2.0
+    }
+    bin:1
+  }
+}

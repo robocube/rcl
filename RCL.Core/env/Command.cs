@@ -5,6 +5,7 @@ using System.Text;
 using System.IO;
 using System.Threading;
 using System.Diagnostics;
+using System.Configuration;
 using System.Collections.ObjectModel;
 using RCL.Kernel;
 
@@ -139,11 +140,17 @@ namespace RCL.Core
       runner.Yield (closure, new RCString (result));
     }
 
+    [RCVerb ("ismono")]
+    public void IsMono (RCRunner runner, RCClosure closure, RCBlock right)
+    {
+      runner.Yield (closure, new RCBoolean (RCSystem.IsMono ()));
+    }
+
     [RCVerb ("load")]
-    public void EvalLoad (
-      RCRunner runner, RCClosure closure, RCString right)
+    public void EvalLoad (RCRunner runner, RCClosure closure, RCString right)
     {
       string code = File.ReadAllText (right[0], Encoding.UTF8);
+      code = code.Replace ("\r", "");
       //I want to change this to split lines.
       runner.Yield (closure, new RCString (code));
     }
@@ -154,7 +161,19 @@ namespace RCL.Core
       //Need check for windows drive letter
       string path = PathSymbolToString (right[0]);
       string code = File.ReadAllText (path, Encoding.UTF8);
+      code = code.Replace ("\r", "");
       runner.Yield (closure, new RCString (code));
+    }
+
+    [RCVerb ("rm")]
+    public void EvalRm (RCRunner runner, RCClosure closure, RCString right)
+    {
+      //All of this stuff HASTA HASTA HASTA be ASYNC!
+      for (int i = 0; i < right.Count; ++i)
+      {
+        File.Delete (right[i]);
+      }
+      runner.Yield (closure, right);
     }
 
     protected long m_handle = -1;
@@ -414,7 +433,8 @@ namespace RCL.Core
     {
       Uri codebase = new Uri (Assembly.GetExecutingAssembly ().CodeBase);
       DirectoryInfo dir = new FileInfo (codebase.LocalPath).Directory;
-      runner.Yield (closure, new RCString (dir.FullName));
+      string unixFullName = dir.FullName.Replace ("\\", "/");
+      runner.Yield (closure, new RCString (unixFullName));
     }
 
     [RCVerb ("getenv")]
@@ -424,6 +444,10 @@ namespace RCL.Core
       for (int i = 0; i < right.Count; ++i)
       {
         string variable = Environment.GetEnvironmentVariable (right[i]);
+        if (variable == null)
+        {
+          variable = ConfigurationManager.AppSettings[right[i]];
+        }
         if (variable == null)
         {
           throw new Exception ("No environment variable set: " + right[i]);

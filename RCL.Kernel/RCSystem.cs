@@ -27,6 +27,16 @@ namespace RCL.Kernel
     public static RCLogger Log;
     public static RCActivator Activator;
 
+    public static bool IsMono ()
+    {
+      bool result = false;
+      if (Type.GetType ("Mono.Runtime") != null)
+      {
+        result = true;
+      }
+      return result;
+    }
+
     public static RCValue Parse (string code)
     {
       bool fragment;

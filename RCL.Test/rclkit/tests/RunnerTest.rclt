@@ -1,0 +1,582 @@
+{
+  TestEmptyStringIsNoop:{
+    src:{
+      Test:& compile eval [?
+        using System;
+        using RCL.Kernel;
+        public class TestClass
+        {
+          [RCVerb ("TestEmptyStringIsNoop")]
+          public void EvalTest (RCRunner runner, RCClosure closure, RCBlock right)
+          {
+            RCRunner testRunner = new RCRunner ();
+            RCValue result = testRunner.Rep ("");
+            Assert.IsNull (result);
+            runner.Yield (closure, RCBlock.Empty);
+          }
+        }
+      ?]
+      :Test.TestEmptyStringIsNoop {}
+    }
+  }
+  TestLiteral:{
+    src:{
+      Test:& compile eval [?
+        using System;
+        using RCL.Kernel;
+        public class TestClass
+        {
+          [RCVerb ("TestLiteral")]
+          public void EvalTest (RCRunner runner, RCClosure closure, RCBlock right)
+          {
+            RCRunner testRunner = new RCRunner ();
+            RCValue result = testRunner.Rep ("1 2 3d");
+            Assert.IsNotNull (result);
+            Assert.AreEqual ("1.0 2.0 3.0", result.ToString ());
+            runner.Yield (closure, RCBlock.Empty);
+          }
+        }
+      ?]
+      :Test.TestLiteral {}
+    }
+  }
+  TestEmptyStringAfterStatement:{
+    src:{
+      Test:& compile eval [?
+        using System;
+        using RCL.Kernel;
+        public class TestClass
+        {
+          [RCVerb ("TestEmptyStringAfterStatement")]
+          public void EvalTest (RCRunner runner, RCClosure closure, RCBlock right)
+          {
+            RCRunner testRunner = new RCRunner ();
+            Assert.AreEqual ("", testRunner.RepString ("a:1 2 3"));
+            Assert.AreEqual ("", testRunner.RepString (""));
+            runner.Yield (closure, RCBlock.Empty);
+          }
+        }
+      ?]
+      :Test.TestEmptyStringAfterStatement {}
+    }
+  }
+  TestInteractive:{
+    src:{
+      Test:& compile eval [?
+        using System;
+        using RCL.Kernel;
+        public class TestClass
+        {
+          [RCVerb ("TestInteractive")]
+          public void EvalTest (RCRunner runner, RCClosure closure, RCBlock right)
+          {
+            RCRunner testRunner = new RCRunner ();
+            Assert.AreEqual ("", testRunner.RepString ("x:1 2 3"));
+            Assert.AreEqual ("", testRunner.RepString ("y:4 5 6"));
+            Assert.AreEqual ("5 7 9", testRunner.RepString ("$x+$y"));
+            runner.Yield (closure, RCBlock.Empty);
+          }
+        }
+      ?]
+      :Test.TestInteractive {}
+    }
+  }
+  TestNestedBlock:{
+    src:{
+      Test:& compile eval [?
+        using System;
+        using RCL.Kernel;
+        public class TestClass
+        {
+          [RCVerb ("TestNestedBlock")]
+          public void EvalTest (RCRunner runner, RCClosure closure, RCBlock right)
+          {
+            RCRunner testRunner = new RCRunner ();
+            Assert.AreEqual ("", testRunner.RepString ("x:{a:1 2 3d}"));
+            Assert.AreEqual ("{a:1.0 2.0 3.0}", testRunner.RepString ("$x"));
+            runner.Yield (closure, RCBlock.Empty);
+          }
+        }
+      ?]
+      :Test.TestNestedBlock {}
+    }
+  }
+  TestNestedBlockWithPriorVariables:{
+    src:{
+      Test:& compile eval [?
+        using System;
+        using RCL.Kernel;
+        public class TestClass
+        {
+          [RCVerb ("TestNestedBlockWithPriorVariables")]
+          public void EvalTest (RCRunner runner, RCClosure closure, RCBlock right)
+          {
+            RCRunner testRunner = new RCRunner ();
+            Assert.AreEqual ("", testRunner.RepString ("x:1 2 3"));
+            Assert.AreEqual ("", testRunner.RepString ("y:4 5 6"));
+            Assert.AreEqual ("", testRunner.RepString ("a:{x:10 y:20}"));
+            Assert.AreEqual ("{x:10 y:20}", testRunner.RepString ("$a"));
+            runner.Yield (closure, RCBlock.Empty);
+          }
+        }
+      ?]
+      :Test.TestNestedBlockWithPriorVariables {}
+    }
+  }
+  TestBlockAfterReadingVariable:{
+    src:{
+      Test:& compile eval [?
+        using System;
+        using RCL.Kernel;
+        public class TestClass
+        {
+          [RCVerb ("TestBlockAfterReadingVariable")]
+          public void EvalTest (RCRunner runner, RCClosure closure, RCBlock right)
+          {
+            RCRunner testRunner = new RCRunner ();
+            Assert.AreEqual ("", testRunner.RepString ("a:1.0"));
+            Assert.AreEqual ("1.0", testRunner.RepString ("$a"));
+            Assert.AreEqual ("", testRunner.RepString ("b:{x:10.0}"));
+            Assert.AreEqual ("{x:10.0}", testRunner.RepString ("$b"));
+            runner.Yield (closure, RCBlock.Empty);
+          }
+        }
+      ?]
+      :Test.TestBlockAfterReadingVariable {}
+    }
+  }
+  TestInvokeNestedOperatorDefinition:{
+    src:{
+      Test:& compile eval [?
+        using System;
+        using RCL.Kernel;
+        public class TestClass
+        {
+          [RCVerb ("TestInvokeNestedOperatorDefinition")]
+          public void EvalTest (RCRunner runner, RCClosure closure, RCBlock right)
+          {
+            RCRunner testRunner = new RCRunner ();
+            Assert.AreEqual ("", testRunner.RepString ("lib:{f:{<-$R * $R}}"));
+            Assert.AreEqual ("4", testRunner.RepString ("lib.f 2"));
+            runner.Yield (closure, RCBlock.Empty);
+          }
+        }
+      ?]
+      :Test.TestInvokeNestedOperatorDefinition {}
+    }
+  }
+  TestInvokeNestedOperatorAndSave:{
+    src:{
+      Test:& compile eval [?
+        using System;
+        using RCL.Kernel;
+        public class TestClass
+        {
+          [RCVerb ("TestInvokeNestedOperatorAndSave")]
+          public void EvalTest (RCRunner runner, RCClosure closure, RCBlock right)
+          {
+            RCRunner testRunner = new RCRunner ();
+            Assert.AreEqual ("", testRunner.RepString ("lib:{f:{<-$R * $R}}"));
+            Assert.AreEqual ("", testRunner.RepString ("square:lib.f 2"));
+            Assert.AreEqual ("4", testRunner.RepString ("$square"));
+            runner.Yield (closure, RCBlock.Empty);
+          }
+        }
+      ?]
+      :Test.TestInvokeNestedOperatorAndSave {}
+    }
+  }
+  TestYieldingABlock:{
+    src:{
+      Test:& compile eval [?
+        using System;
+        using RCL.Kernel;
+        public class TestClass
+        {
+          [RCVerb ("TestYieldingABlock")]
+          public void EvalTest (RCRunner runner, RCClosure closure, RCBlock right)
+          {
+            RCRunner testRunner = new RCRunner ();
+            Assert.AreEqual ("", testRunner.RepString ("f:{<-eval {x:$R * $R}}"));
+            Assert.AreEqual ("", testRunner.RepString ("r:f 10"));
+            Assert.AreEqual ("{x:100}", testRunner.RepString ("$r"));
+            runner.Yield (closure, RCBlock.Empty);
+          }
+        }
+      ?]
+      :Test.TestYieldingABlock {}
+    }
+  }
+  TestReplBotWorks:{
+    src:{
+      Test:& compile eval [?
+        using System;
+        using RCL.Kernel;
+        public class TestClass
+        {
+          [RCVerb ("TestReplBotWorks")]
+          public void EvalTest (RCRunner runner, RCClosure closure, RCBlock right)
+          {
+            RCRunner testRunner = new RCRunner ();
+            Assert.AreEqual ("1", testRunner.RepString ("write [S|a #x 1]"));
+            Assert.AreEqual ("[S|a #x 1]",  testRunner.RepString ("#x read 0"));
+            runner.Yield (closure, RCBlock.Empty);
+          }
+        }
+      ?]
+      :Test.TestReplBotWorks {}
+    }
+  }
+  TestEvalBlock:{
+    src:{
+      Test:& compile eval [?
+        using System;
+        using RCL.Kernel;
+        public class TestClass
+        {
+          [RCVerb ("TestEvalBlock")]
+          public void EvalTest (RCRunner runner, RCClosure closure, RCBlock right)
+          {
+            RCRunner testRunner = new RCRunner ();
+            Assert.AreEqual ("{a:1 b:2 c:3}", testRunner.RepString ("{a:1 b:2 c:3}"));
+            runner.Yield (closure, RCBlock.Empty);
+          }
+        }
+      ?]
+      :Test.TestEvalBlock {}
+    }
+  }
+  TestForConflictingResults:{
+    src:{
+      Test:& compile eval [?
+        using System;
+        using RCL.Kernel;
+        public class TestClass
+        {
+          [RCVerb ("TestForConflictingResults")]
+          public void EvalTest (RCRunner runner, RCClosure closure, RCBlock right)
+          {
+            RCRunner testRunner = new RCRunner ();
+            Assert.AreEqual ("{status:0 data:5}",
+                             testRunner.RepString ("first #r from eval {serve:{b:bot {<-try {<-eval {<-2 + 3}}} f1:fiber {r:wait $b <-$r} <-wait $f1} r:wait fiber {<-serve #}}"));
+            runner.Yield (closure, RCBlock.Empty);
+          }
+        }
+      ?]
+      :Test.TestForConflictingResults {}
+    }
+  }
+  TestExceptionsDoNotGetStuck:{
+    src:{
+      Test:& compile eval [?
+        using System;
+        using RCL.Kernel;
+        public class TestClass
+        {
+          [RCVerb ("TestExceptionsDoNotGetStuck")]
+          public void EvalTest (RCRunner runner, RCClosure closure, RCBlock right)
+          {
+            RCRunner testRunner = new RCRunner ();
+            try
+            {
+              testRunner.RepString ("$a+$b");
+            }
+            catch (Exception) {}
+            Assert.AreEqual ("3.0", testRunner.RepString ("1.0+2.0"));
+            runner.Yield (closure, RCBlock.Empty);
+          }
+        }
+      ?]
+      :Test.TestExceptionsDoNotGetStuck {}
+    }
+  }
+  TestExitFromShell:{
+    src:{
+      Test:& compile eval [?
+        using System;
+        using System.Threading;
+        using RCL.Kernel;
+        public class TestClass
+        {
+          [RCVerb ("TestExitFromShell")]
+          public void EvalTest (RCRunner runner, RCClosure closure, RCBlock right)
+          {
+            RCRunner testRunner = new RCRunner ();
+            for (int i = 0; i < 5; ++i)
+            {
+              bool caught = false;
+              try
+              {
+                testRunner.RepString ("exit 1");
+              }
+              catch (ThreadAbortException)
+              {
+                Thread.ResetAbort ();
+                caught = true;
+              }
+              Assert.IsTrue (caught);
+              testRunner.Reset ();
+            }
+            runner.Yield (closure, RCBlock.Empty);
+          }
+        }
+      ?]
+      :Test.TestExitFromShell {}
+    }
+  }
+  TestTryError:{
+    src:{
+      Test:& compile eval [?
+        using System;
+        using System.Threading;
+        using RCL.Kernel;
+        public class TestClass
+        {
+          [RCVerb ("TestTryError")]
+          public void EvalTest (RCRunner runner, RCClosure closure, RCBlock right)
+          {
+            RCRunner testRunner = RCRunner.TestRunner ();
+            Assert.AreEqual ("{status:1 data:\"<<Assert,Failed: assert false>>\"}",
+                             testRunner.Rep ("try {<-assert false}").ToString ());
+            runner.Yield (closure, RCBlock.Empty);
+          }
+        }
+      ?]
+      :Test.TestTryError {}
+    }
+  }
+  TestExitFromShellRemote:{
+    src:{
+      rcldir:codebase {}
+      Test:& compile eval [?
+        using System;
+        using System.Threading;
+        using RCL.Kernel;
+        public class TestClass
+        {
+          [RCVerb ("TestExitFromShellRemote")]
+          public void EvalTest (RCRunner runner, RCClosure closure, RCBlock right)
+          {
+            RCRunner testRunner = new RCRunner ();
+            for (int i = 0; i < 5; ++i)
+            {
+              if (RCSystem.IsMono ())
+              {
+                testRunner.Rep ("p:startx \"mono [! $rcldir !]/rcl.exe --output=clean --nokeys\"");
+              }
+              else
+              {
+                testRunner.Rep ("p:startx \"[! $rcldir !]/rcl.exe --output=clean --nokeys\"");
+              }
+              testRunner.Rep ("$p writex \"exit 0\"");
+              testRunner.Rep ("waitx $p");
+            }
+            runner.Yield (closure, RCBlock.Empty);
+          }
+        }
+      ?]
+      :Test.TestExitFromShellRemote {}
+    }
+  }
+  TestExitFromShellRemoteEval:{
+    src:{
+      rcldir:codebase {}
+      Test:& compile eval [?
+        using System;
+        using System.Threading;
+        using RCL.Kernel;
+        public class TestClass
+        {
+          [RCVerb ("TestExitFromShellRemoteEval")]
+          public void EvalTest (RCRunner runner, RCClosure closure, RCBlock right)
+          {
+            RCRunner testRunner = new RCRunner ();
+            for (int i = 0; i < 5; ++i)
+            {
+              if (RCSystem.IsMono ())
+              {
+                testRunner.Rep ("eval {p:startx \"mono [! $rcldir !]/rcl.exe --output=clean --nokeys\" :$p writex \"exit 0\" :waitx $p}");
+              }
+              else
+              {
+                testRunner.Rep ("eval {p:startx \"[! $rcldir !]/rcl.exe --output=clean --nokeys\" :$p writex \"exit 0\" :waitx $p}");
+              }
+            }
+            runner.Yield (closure, RCBlock.Empty);
+          }
+        }
+      ?]
+      :Test.TestExitFromShellRemoteEval {}
+    }
+  }
+  TestExitFromScript:{
+    src:{
+      rcldir:codebase {}
+      tmpdir:(getenv "RCL_HOME") + "/tmp"
+      Test:& compile eval [?
+        using System;
+        using System.Threading;
+        using RCL.Kernel;
+        public class TestClass
+        {
+          [RCVerb ("TestExitFromScript")]
+          public void EvalTest (RCRunner runner, RCClosure closure, RCBlock right)
+          {
+            RCRunner testRunner = new RCRunner ();
+            for (int i = 0; i < 5; ++i)
+            {
+              testRunner.Rep ("\"[! $tmpdir !]/exit.o2\" save #pretty format {:exit 0}");
+              if (RCSystem.IsMono ())
+              {
+                testRunner.Rep ("p:startx \"mono [! $rcldir !]/rcl.exe --output=clean --nokeys --program=[! $tmpdir !]/exit.o2\"");
+              }
+              else
+              {
+                testRunner.Rep ("p:startx \"[! $rcldir !]/rcl.exe --output=clean --nokeys --program=[! $tmpdir !]/exit.o2\"");
+              }
+              testRunner.Rep ("waitx $p");
+              testRunner.Rep ("rm \"[! $tmpdir !]/exit.o2\"");
+            }
+            runner.Yield (closure, RCBlock.Empty);
+          }
+        }
+      ?]
+      :Test.TestExitFromScript {}
+    }
+  }
+  TestExecError:{
+    src:{
+      rcldir:codebase {}
+      tmpdir:(getenv "RCL_HOME") + "/tmp"
+      Test:& compile eval [?
+        using System;
+        using System.Threading;
+        using RCL.Kernel;
+        public class TestClass
+        {
+          [RCVerb ("TestExecError")]
+          public void EvalTest (RCRunner runner, RCClosure closure, RCBlock right)
+          {
+            RCRunner testRunner = new RCRunner ();
+            testRunner.Rep ("\"[! $tmpdir !]/exit.o2\" save #pretty format {:exit 1}");
+            if (RCSystem.IsMono ())
+            {
+              testRunner.Rep ("p:startx \"mono [! $rcldir !]/rcl.exe --output=clean --show=print --nokeys --program=[! $tmpdir !]/exit.o2\"");
+            }
+            else
+            {
+              testRunner.Rep ("p:startx \"[! $rcldir !]/rcl.exe --output=clean --show=print --nokeys --program=[! $tmpdir !]/exit.o2\"");
+            }
+            Assert.AreEqual ("{status:1 data:\"<<Exec,exit status 1>>\"}", testRunner.Rep ("try {<-waitx $p}").ToString ());
+            runner.Yield (closure, RCBlock.Empty);
+          }
+        }
+      ?]
+      :Test.TestExecError {}
+    }
+  }
+  TestMultipleCustomOptions:{
+    src:{
+      rcldir:codebase {}
+      Test:& compile eval [?
+        using System;
+        using RCL.Kernel;
+        public class TestClass
+        {
+          [RCVerb ("TestMultipleCustomOptions")]
+          public void EvalTest (RCRunner runner, RCClosure closure, RCBlock right)
+          {
+            RCRunner testRunner = new RCRunner ();
+            if (RCSystem.IsMono ())
+            {
+              testRunner.Rep ("p:startx \"mono [! $rcldir !]/rcl.exe --output=clean --nokeys --custom1=one --custom2\"");
+            }
+            else
+            {
+              testRunner.Rep ("p:startx \"[! $rcldir !]/rcl.exe --output=clean --nokeys --custom1=one --custom2\"");
+            }
+            testRunner.Rep ("$p writex \"option \\\"custom1\\\"\"");
+            RCString custom1 = (RCString) testRunner.Rep ("\"\\n\" readx $p");
+            testRunner.Rep ("$p writex \"option \\\"custom2\\\"\"");
+            RCString custom2 = (RCString) testRunner.Rep ("\"\\n\" readx $p");
+            testRunner.Rep ("$p writex \"exit\"");
+            testRunner.Rep ("waitx $p");
+            Assert.AreEqual ("\"one\"", custom1[0]);
+            Assert.AreEqual ("true", custom2[0]);
+            runner.Yield (closure, RCBlock.Empty);
+          }
+        }
+      ?]
+      :Test.TestMultipleCustomOptions {}
+    }
+  }
+  TestMultipleCustomArguments:{
+    src:{
+      rcldir:codebase {}
+      Test:& compile eval [?
+        using System;
+        using RCL.Kernel;
+        public class TestClass
+        {
+          [RCVerb ("TestMultipleCustomArguments")]
+          public void EvalTest (RCRunner runner, RCClosure closure, RCBlock right)
+          {
+            RCRunner testRunner = new RCRunner ();
+            if (RCSystem.IsMono ())
+            {
+              testRunner.Rep ("p:startx \"mono [! $rcldir !]/rcl.exe --output=clean first_argument --nokeys --custom1=one second_argument --custom2\"");
+            }
+            else
+            {
+              testRunner.Rep ("p:startx \"[! $rcldir !]/rcl.exe --output=clean first_argument --nokeys --custom1=one second_argument --custom2\"");
+            }
+            testRunner.Rep ("$p writex \"info #arguments\"");
+            RCString result = (RCString) testRunner.Rep ("\"\\n\" readx $p");
+            testRunner.Rep ("$p writex \"exit\"");
+            testRunner.Rep ("waitx $p");
+            Assert.AreEqual ("\"first_argument\" \"second_argument\"", result[0]);
+            runner.Yield (closure, RCBlock.Empty);
+          }
+        }
+      ?]
+      :Test.TestMultipleCustomArguments {}
+    }
+  }
+  TestCdWithQuotes:{
+    src:{
+      rcldir:codebase {}
+      Test:& compile eval [?
+        using System;
+        using RCL.Kernel;
+        public class TestClass
+        {
+          [RCVerb ("TestCdWithQuotes")]
+          public void EvalTest (RCRunner runner, RCClosure closure, RCBlock right)
+          {
+            RCRunner testRunner = new RCRunner ();
+            if (RCSystem.IsMono ())
+            {
+              testRunner.Rep ("p:startx \"mono [! $rcldir !]/rcl.exe --output=clean --nokeys\"");
+            }
+            else
+            {
+              testRunner.Rep ("p:startx \"[! $rcldir !]/rcl.exe --output=clean --nokeys\"");
+            }
+            testRunner.Rep ("$p writex \"pwd\"");
+            RCString pwdBefore = (RCString) testRunner.Rep ("\"\\n\" readx $p");
+            testRunner.Rep ("$p writex \"cd \\\"..\\\"\"");
+            testRunner.Rep ("$p writex \"pwd\"");
+            RCString pwdAfter = (RCString) testRunner.Rep ("\"\\n\" readx $p");
+            testRunner.Rep ("$p writex \"exit\"");
+            testRunner.Rep ("waitx $p");
+            string before = pwdBefore [0].TrimEnd ('"');
+            string after = pwdAfter [0].TrimEnd ('"');
+            Assert.IsTrue (before.StartsWith (after));
+            runner.Yield (closure, RCBlock.Empty);
+          }
+        }
+      ?]
+      :Test.TestCdWithQuotes {}
+    }
+  }
+}
