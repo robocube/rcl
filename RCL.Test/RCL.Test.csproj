@@ -74,9 +74,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="nunit.runsettings">
-      <SubType>Designer</SubType>
-    </None>
     <None Include="nunit\.DS_Store" />
     <None Include="nunit\CHANGES.md" />
     <None Include="nunit\LICENSE.txt" />
@@ -148,9 +145,6 @@
     <None Include="nunit\netstandard16\System.IO.dll" />
     <None Include="nunit\netstandard16\System.Runtime.dll" />
     <None Include="nunit\netstandard16\System.Threading.Tasks.dll" />
-    <None Include="packages.config">
-      <SubType>Designer</SubType>
-    </None>
     <None Include="rclkit\bin\rcl" />
     <None Include="rclkit\bin\rclt" />
     <None Include="rclkit\rclt.rclt.rclt" />
