@@ -1,8 +1,15 @@
 
 RCL_HOME:getenv "RCL_HOME"
 
-rclt:{
+rclt:eval {
+  bash_path:((info #platform) like "Win*") switch {
+    :"wsl"
+    :"bash"
+  }
   sh:{
+    :"In Windows, when you try to look in System32 you do not really see what is in there unless you access sysnative"
+    :"This is criminal."
+    :"https://superuser.com/questions/330941/some-files-in-system32-not-accessible-outside-explorer-on-windows-7"
     sh:startx "bash"
     :$sh writex R {}
     <-waitx $sh
@@ -18,7 +25,7 @@ rclt:{
 run_test:{
   test:$R
   report_sym:#rclt + (symbol $SUITE_NAME) + symbol $test.name
-  <-$test.skip switch {
+  <-(test.skip {}) switch {
     :{
       report:eval {
         name:$test.name
@@ -52,10 +59,6 @@ run_test:{
                 :"Do not use eval directly, as in test.src {}, because vars in the test (like repeat) would be visible"
                 test_code:$test.src
                 op_result:test_code {}
-                eval_result:"eval $test_code"
-                :"\"debug\" print $op_result"
-                :"\"debug\" print $eval_result"
-                :"assert $op_result = $eval_result"
                 <-$op_result
               }
               end_time:now {}
@@ -72,6 +75,7 @@ run_test:{
               test_output:eval {
                 status:$result.status
                 result_data:$result.data
+                result_error:($result has "error") switch {:$result.error :"<<None>>"}
                 start_time:$start_time
                 end_time:$end_time
                 setup_result:$setup_result
@@ -90,13 +94,17 @@ run_test:{
           :$test.bin = $result.data.result_data
           :$result.data.completed
         }
+        actual:($result.data.status == 0) switch {
+          :$result.data.result_data
+          :$result.data.result_error
+        }
         report:eval {
           name:$test.name
           src:$test.src
           expected:($test has "bin") switch {:$test.bin :#nobin}
-          actual:((1 == count $result.data.result_data) and "string" == typename $result.data.result_data) switch {
-            :template $result.data.result_data
-            :$result.data.result_data
+          actual:((1 == count $actual) and "string" == typename $actual) switch {
+            :template $actual
+            :$actual
           }
           completed:$result.data.completed
           status:$passed switch {:"P" :"F"}
@@ -164,6 +172,10 @@ main:{
   :"RCL_FLAGS" setenv "--output=test --show=print:test,print:suite,print:debug,runner,compile --nokeys" getenv "RCL_FLAGS"
   :"RCL_PREFIX" setenv getenv "RCLT_TEST_PREFIX"
   :"RCL_BIN" setenv (getenv "RCLT_TEST_PREFIX") + "/bin"
+  :"This variable will cause wsl to pass RCL_FLAGS through"
+  :"https://blogs.msdn.microsoft.com/commandline/2017/12/22/share-environment-vars-between-wsl-and-windows/"
+  :"PATH and RCL_PREFIX are still controlled by the wsl env ~/.profile"
+  :"WSLENV" setenv "RCL_FLAGS/u"
   results:& {<-$R.data} each {
     output:"try $run_file"
     test_op:eval {

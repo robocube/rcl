@@ -294,6 +294,7 @@ namespace RCL.Core
     public void EvalDyadic (
       RCRunner runner, RCClosure closure, object left, object right)
     {
+      //Brian! come back here to prevent the native exception
       RCOperator op = (RCOperator) closure.Code;
       runner.Yield (closure, VectorMath.InvokeDyadic (
         closure, op.Name, (RCVectorBase) left, (RCVectorBase) right));

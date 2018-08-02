@@ -292,6 +292,33 @@ namespace RCL.Kernel
       m_multiline = multiline;
     }
 
+    /// <summary>
+    /// Determine the correct escape level for the exception report template by scanning for embedded template syntax.
+    /// </summary>
+    public static int CalculateReportTemplateEscapeLevel (string report)
+    {
+      int nextBracket = report.IndexOf ("?]");
+      int questionMarks = 0;
+      int maxQuestionMarks = 0;
+      while (nextBracket > -1)
+      {
+        int possibleQuestionMark;
+        ++questionMarks;
+        maxQuestionMarks = Math.Max (maxQuestionMarks, questionMarks);
+        possibleQuestionMark = nextBracket - 1;
+        while (possibleQuestionMark >= 0 && report[possibleQuestionMark] == '?')
+        {
+          --possibleQuestionMark;
+          ++questionMarks;
+          maxQuestionMarks = Math.Max (maxQuestionMarks, questionMarks);
+        }
+        nextBracket = report.IndexOf ("?]", nextBracket + 2);
+        questionMarks = 0;
+      }
+      int result = maxQuestionMarks + 1;
+      return result;
+    }
+
     public override void Format (StringBuilder builder, RCFormat args, int level)
     {
       RCFormat format = new RCFormat (args.Syntax, "  ", args.Newline, args.Delimeter,

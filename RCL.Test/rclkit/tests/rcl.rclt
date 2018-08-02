@@ -1,0 +1,988 @@
+
+_rclt_setup:{
+  hello_file:((info #platform) like "Win*") switch {
+    :"/mnt/c/Users/brian/dev/tmp/rcl.hello.rcl"
+    :$RCL_HOME + "/tmp/rcl.hello.rcl"
+  }
+  script:[?
+    cat << 'EOF' > [! $hello_file !]
+    :print "hello world"
+    EOF
+    exit
+  ?]
+  bash:startx "bash"
+  :$bash writex script {}
+  out:waitx $bash
+  :#hello_file putm $hello_file
+}
+
+_rclt_teardown:{
+}
+
+:"As operators are added, starting rcl processes becomes more cpu intensive"
+___WAIT_FOR_INIT:1000
+
+batch_long:{
+  src:{
+    script:[?
+      rcl --batch --exit << 'EOF'
+      a:1 + 2
+      b:$a + 3
+      <-$b
+      EOF
+      exit 0
+    ?]
+    bash:startx "bash"
+    :$bash writex script $R
+    out:try {<-waitx $bash}
+    <-$out.data
+  }
+  bin:"6"
+}
+
+batch_short:{
+  src:{
+    script:[?
+      rcl -bx << 'EOF'
+      {
+        a:1 + 2
+        b:$a + 3
+        <-$b
+      }
+      EOF
+      exit
+    ?]
+    bash:startx "bash"
+    :$bash writex script $R
+    out:try {<-waitx $bash}
+    <-$out.data
+  }
+  bin:"6"
+}
+
+batch_redirection:{
+  src:{
+    script:[?
+      mkdir -p $RCL_HOME/tmp
+      cat << 'EOF' > $RCL_HOME/tmp/code.rcl
+      {
+        a:1 + 2
+        b:$a + 3
+        <-$b
+      }
+      EOF
+      rcl --batch --exit < $RCL_HOME/tmp/code.rcl
+      exit
+    ?]
+    bash:startx "bash"
+    :$bash writex script $R
+    out:try {<-waitx $bash}
+    <-$out.data
+  }
+  bin:"6"
+}
+
+program_action:{
+  src:{
+    script:[?
+      mkdir -p $RCL_HOME/tmp
+      cat << 'EOF' > $RCL_HOME/tmp/code.rcl
+      {
+        a:3
+        b:5
+        c:$a + $b
+        f:{<-$c}
+      }
+      EOF
+      rcl -bx --program=$RCL_HOME/tmp/code.rcl --action=f
+      exit
+    ?]
+    bash:startx "bash"
+    :$bash writex script $R
+    out:try {<-waitx $bash}
+    <-$out.data
+  }
+  bin:"8"
+}
+
+program_action_interactive_exit:{
+  src:{
+    file:[?
+      a:"foo"
+      b:"bar"
+      c:$a + $b
+      f:{<-$c}
+    ?]
+    :"code.rcl" save file #
+    rcl:startx "rcl --program=code.rcl --action=f --exit"
+    out:try {<-waitx $rcl}
+    :rm "code.rcl"
+    <-template & $out.data + "\n"
+  }
+  bin:[?
+    "foobar"
+  ?]
+}
+
+exit_interactive:{
+  src:{
+    p:startx "rcl"
+    :$p writex "exit 0"
+    out:try {<-waitx $p}
+    <-template & $out.data + "\n"
+  }
+  bin:[?
+    0 0 runner 0 exit 0
+  ?]
+}
+
+flags_var:{
+  src:{
+    script:[?
+      export RCL_FLAGS="--output=test --exit"
+      rcl --program=[! getm #hello_file !]
+      exit
+    ?]
+    sh:startx "bash"
+    :$sh writex script {}
+    out:try {<-waitx $sh}
+    <-template & $out.data + "\n"
+  }
+  bin:[?
+    0 0 print 0 out hello world
+  ?]
+}
+
+exit_status:{
+  src:{
+    script:[?
+      rcl --batch << 'EOF'
+        :exit 2
+      EOF
+      exit 0
+    ?]
+    sh:startx "bash"
+    :$sh writex script {}
+    out:try {<-waitx $sh}
+    <-template & $out.data + "\n"
+  }
+  bin:[?
+    0 0 runner 0 exit 2
+  ?]
+}
+
+exit_dev:{
+  skip:not ismono {}
+  src:{
+    script:[?
+      export RCL_BUILD="dev"
+      export RCL_FLAGS="--nokeys --show=print"
+      rcl --exit --output=test --version
+      rcl dev --exit --output=test --version
+      rcl 25 --exit --output=test --version
+      rcl --program=[! getm #hello_file !] --exit --output=test --version
+      rcl --exit --program=[! getm #hello_file !] --output=test
+      rcl --program=[! getm #hello_file !] -x --output=test --version
+      rcl -x --program=[! getm #hello_file !] --output=test --version
+      exit 0
+    ?]
+    sh:startx "bash"
+    :$sh writex script {}
+    out:try {<-waitx $sh}
+    :$out.status assert 0
+    <-template & $out.data + "\n"
+  }
+  bin:[?
+    Robocube Language 0.0.0.0
+    Robocube Language 0.0.0.0
+    Robocube Language 1.0.25.0
+    Robocube Language 0.0.0.0
+    0 0 print 0 out hello world
+    0 0 print 0 out hello world
+    Robocube Language 0.0.0.0
+    0 0 print 0 out hello world
+    Robocube Language 0.0.0.0
+    0 0 print 0 out hello world
+  ?]
+}
+
+exit_number:{
+  skip:not ismono {}
+  src:{
+    script:[?
+      export RCL_BUILD=25
+      export RCL_FLAGS="--output=test"
+      rcl --exit --output=test --version
+      rcl 25 --exit --output=test --version
+      rcl dev --exit --output=test --version
+      rcl [! getm #hello_file !] --exit --output=test --version
+      rcl --exit [! getm #hello_file !] --output=test
+      rcl [! getm #hello_file !] -x --output=test --version
+      rcl -x [! getm #hello_file !] --output=test --version
+      exit 0
+    ?]
+    sh:startx "bash"
+    :$sh writex script {}
+    out:try {<-waitx $sh}
+    :$out.status assert 0
+    <-template & $out.data + "\n"
+  }
+  bin:[?
+    Robocube Language 1.0.25.0
+    Robocube Language 1.0.25.0
+    Robocube Language 0.0.0.0
+    Robocube Language 1.0.25.0
+    0 0 print 0 out hello world
+    0 0 print 0 out hello world
+    Robocube Language 1.0.25.0
+    0 0 print 0 out hello world
+    Robocube Language 1.0.25.0
+    0 0 print 0 out hello world
+  ?]
+}
+
+batch_exit_stdin:{
+  src:{
+    script:[?
+      rcl --output=test --batch << EOF
+      exit 0
+      EOF
+      exit 0
+    ?]
+    sh:startx "bash"
+    :$sh writex script {}
+    <-template & (waitx $sh) + "\n"
+  }
+  bin:[?
+    0 0 runner 0 exit 0
+  ?]
+}
+
+tcp_listen_accept_send_reply:{
+  src:{
+    server_script:[?
+      rcl --batch --output=test --nokeys --show=print,runner << 'EOF'
+      socket:listen #tcp,11000
+      message:$socket accept 1
+      :print #pretty format $message
+      :$message.id reply $message
+      :exit 0
+      EOF
+      echo "server finished"
+      exit
+    ?]
+    client_script:[?
+      rcl --batch --output=test --show=print,runner << 'EOF'
+      :sleep 1000
+      socket:open #tcp,localhost,11000
+      request:$socket send {x:1}
+      :print #pretty format receive $request
+      :exit 0
+      EOF
+      echo "client finished"
+      exit
+    ?]
+    server:startx "bash"
+    :$server writex server_script {}
+    client:startx "bash"
+    :$client writex client_script {}
+    server_out:try {<-waitx $server}
+    client_out:try {<-waitx $client}
+    <-eval {
+      server_out:template & $server_out.data + "\n"
+      client_out:template & $client_out.data + "\n"
+    }
+  }
+  bin:{
+    server_out:[?
+      0 0 print 0 out
+        {
+          id:#1,0,1
+          body:{
+            x:1
+          }
+        }
+      0 0 runner 0 exit 0
+      server finished
+    ?]
+    client_out:[?
+      0 0 print 0 out
+        {
+          :{
+            id:#1,1
+            body:{
+              id:#1,0,1
+              body:{
+                x:1
+              }
+            }
+          }
+        }
+      0 0 runner 0 exit 0
+      client finished
+    ?]
+  }
+}
+
+multiple_custom_options:{
+  src:{
+    p:startx "rcl --output=clean --nokeys --custom1=one --custom2"
+    :$p writex "option \"custom1\""
+    custom1:parse "\n" readx $p
+    :$p writex "option \"custom2\""
+    custom2:parse "\n" readx $p
+    :$p writex "exit"
+    :waitx $p
+    <-eval {custom1:$custom1 custom2:$custom2}
+  }
+  bin:{
+    custom1:"one"
+    custom2:true
+  }
+}
+
+cd_quotes:{
+  src:{
+    p:startx "rcl --output=clean --nokeys"
+    :$p writex "pwd"
+    before:parse "\n" readx $p
+    :$p writex "cd \"..\""
+    after:parse "\n" readx $p
+    :$p writex "exit"
+    :waitx $p
+    :assert $before startswith $after
+  }
+}
+
+nokeys_exit_version:{
+  skip:not ismono {}
+  src:{
+    script:[?
+      export RCL_BUILD=51
+      rcl --nokeys --exit --version --output=clean
+      exit 0
+    ?]
+    sh:startx "bash"
+    :$sh writex script {}
+    <-template & (waitx $sh) + "\n"
+  }
+  bin:[?
+    Robocube Language 1.0.51.0
+  ?]
+}
+
+nokeys_exit_clean:{
+  src:{
+    script:[?
+      rcl --nokeys --exit --output=clean
+      exit 0
+    ?]
+    sh:startx "bash"
+    :$sh writex script {}
+    <-template & (waitx $sh) + "\n"
+  }
+  bin:[??]
+}
+
+batch_output:{
+  src:{
+    script:[?
+      export RCL_FLAGS="--output=clean --nokeys"
+      rcl << EOF > batch_output.txt
+      :print "all I want to see"
+      :print "is this"
+      EOF
+      cat batch_output.txt
+      rm batch_output.txt
+      exit 0
+    ?]
+    sh:startx "bash"
+    :$sh writex script {}
+    <-template & (waitx $sh) + "\n"
+  }
+  bin:[?
+    all I want to see
+    is this
+  ?]
+}
+
+exec_exithang:{
+  skip:not ismono {}
+  repeat:5
+  src:{
+    sh:startx "rcl --show=runner,exec --nokeys"
+    :$sh writex "exec \"export\""
+    :sleep $___WAIT_FOR_INIT
+    :$sh killx 2
+    :sleep $___WAIT_FOR_INIT
+    :$sh writex "exit 0"
+    out:try {<-waitx $sh}
+    out_cube:#log parse $out.data + "\n"
+    <-$out_cube where not $out_cube.module in "fiber"
+  }
+  bin:[
+    bot fiber module   instance event       message
+      0     0 "runner"        0 "unhandled" "<<Native,An exception was thrown by the operator exec.>>"
+      0     0 "runner"        0 "signal"    "SIGINT"
+      0     0 "runner"        0 "exit"      "0"
+      0     0 "exec"          0 "closing"   "export (-1)"
+  ]
+}
+
+exec_missing_file:{
+  src:{
+    <-unwrap #status from try {<-exec "foo"}
+  }
+  bin:1
+}
+
+sigint:{
+  skip:not ismono {}
+  src:{
+    sh:startx "rcl --nokeys"
+    :$sh writex "f:{<-f $R + 1}"
+    :$sh writex "f 0"
+    :sleep $___WAIT_FOR_INIT
+    :$sh killx 2
+    :sleep $___WAIT_FOR_INIT
+    :$sh writex "exit 0"
+    out:try {<-waitx $sh}
+    out_cube:#log parse $out.data + "\n"
+    :"fiber entries in the log are non-deterministic in this case"
+    <-$out_cube where not $out_cube.module in "fiber"
+  }
+  bin:[
+    bot fiber module   instance event    message
+      0     0 "runner"        0 "signal" "SIGINT"
+      0     0 "runner"        0 "unhandled" "<<Reported>>"
+      0     0 "runner"        0 "exit"   "0"
+	]
+}
+
+sigint_twice:{
+  skip:not ismono {}
+  src:{
+    sh:startx "rcl --nokeys"
+    :$sh writex "f:{<-f $R + 1}"
+    :$sh writex "f 0"
+    :sleep $___WAIT_FOR_INIT
+    :$sh killx 2
+    :sleep $___WAIT_FOR_INIT
+    :$sh killx 2
+    :sleep $___WAIT_FOR_INIT
+    out:try {<-waitx $sh}
+    out_cube:#log parse out.error {}
+    :"fiber entries in the log are non-deterministic in this case"
+    <-$out_cube where not $out_cube.module in "fiber"
+  }
+  bin:[?
+    0 0 runner 0 signal SIGINT
+    0 0 fiber 0 failed <<Reported>>
+    0 0 fiber 0 dead
+    0 0 fiber 0 reported <<Reported>>
+    0 0 runner 0 signal SIGINT (exiting)
+    <<Exec,exit status 2>>
+  ?]
+  bin:[
+    bot fiber module   instance event    message
+      0     0 "runner"        0 "signal"    "SIGINT"
+      0     0 "runner"        0 "unhandled" "<<Reported>>"
+      0     0 "runner"        0 "signal"    "SIGINT (exiting)"
+     -1    -1 ""             -1 ""          "<<Exec,exit status 2>>"
+	]
+}
+
+sigterm:{
+  skip:not ismono {}
+  src:{
+    sh:startx "rcl --nokeys"
+    :$sh writex "f:{<-f $R + 1}"
+    :$sh writex "f 0"
+    :sleep $___WAIT_FOR_INIT
+    :$sh killx 15
+    out:try {<-waitx $sh}
+    <-$out.error
+  }
+  bin:[?
+    0 0 runner 0 signal SIGTERM
+    <<Exec,exit status 15>>
+  ?]
+}
+
+kill_with_closex:{
+  skip:not ismono {}
+  src:{
+    sh:startx "rcl --nokeys"
+    :sleep $___WAIT_FOR_INIT
+    :closex $sh
+    out:try {<-waitx $sh}
+    <-$out.error
+  }
+  bin:[?
+    0 0 runner 0 signal SIGTERM
+    <<Exec,exit status 15>>
+  ?]
+}
+
+kill_with_closex_windows:{
+  skip:ismono {}
+  src:{
+    sh:startx "rcl --nokeys"
+    :sleep $___WAIT_FOR_INIT
+    :closex $sh
+    out:try {<-waitx $sh}
+    <-$out.error
+  }
+  bin:[?
+    <<Exec,exit status -1>>
+  ?]
+}
+
+bot_disposal:{
+  :"Disabled due to transient inconsistency in the output. wtf"
+  skip:true
+  src:{
+    script:[?
+      rcl --batch --exit --nokeys << 'EOF'
+      b:bot {loop:{:(httprecv $R) httpsend "" <-loop $R} <-loop httpstart "http://localhost:6235/foo/"}
+      :sleep 500
+      :getw "http://localhost:6235/foo"
+      :kill $b
+      :exit 0
+      EOF
+      exit
+    ?]
+    bash:startx "bash"
+    :$bash writex script $R
+    out:try {<-waitx $bash}
+    out_cube:#log parse $out.data + "\n"
+    <-$out_cube where $out_cube.event in "killed" "cancel" "close" "exit"
+  }
+	bin:[
+    bot fiber module   instance event    message
+      1     0 "fiber"         0 "killed" "<<Reported>>"
+      1     0 "http"          1 "close"  "http://localhost:6235/foo/"
+      0     0 "runner"        0 "exit"   "0"
+  ]
+}
+
+http_session_id:{
+  src:{
+    script:[?
+      export RCL_FLAGS="--batch --exit"
+      rcl << 'EOF'
+      ID1:"id" & guid 1
+      ID2:"id" & guid 1
+      serve:{
+        loop:{
+          :($ID2 httpcheck httprecv $R) httpsend {
+            status:200
+            headers:{'my-header':"abcdefg"}
+            body:"super content"
+          }
+          <-loop $R
+        }
+        :try {<-loop $R}
+        <-serve $R
+      }
+      b:bot {<-serve httpstart "http://localhost:6236/foo/"}
+      response:(eval {Cookie:"=" delimit $ID1}) getw "http://localhost:6236/foo"
+      :$response.status assert 401
+      :$response.body assert ""
+      response:(eval {Cookie:"=" delimit $ID2}) getw "http://localhost:6236/foo"
+      :$response.status assert 200
+      :$response.body assert "super content"
+      :kill $b
+      :exit 0
+      EOF
+      exit
+    ?]
+    bash:startx "bash"
+    :$bash writex script $R
+    :try {<-waitx $bash}
+    <-0
+  }
+}
+
+httpcheck_cookie_missing:{
+  src:{
+    ID1:"id" & guid 1
+    ID2:"notid" & guid 1
+    serve:{
+      loop:{
+        :($ID2 httpcheck httprecv $R) httpsend {
+          status:200
+          body:"super content"
+        }
+        <-loop $R
+      }
+      :try {<-loop $R}
+      <-serve $R
+    }
+    b:bot {<-serve httpstart "http://localhost:6237/foo/"}
+    response:(eval {Cookie:"=" delimit $ID1}) getw "http://localhost:6237/foo"
+    :$response.status assert 401
+    :$response.body assert "Unauthorized"
+    response:(eval {Cookie:"=" delimit $ID2}) getw "http://localhost:6237/foo"
+    :$response.status assert 200
+    :$response.body assert "super content"
+    :kill $b
+  }
+}
+
+http_headers:{
+  src:{
+    serve:{
+      loop:{
+        :(httprecv $R) httpsend {
+          status:200
+          body:"super content"
+        }
+        <-loop $R
+      }
+      :try {<-loop $R}
+      <-serve $R
+    }
+    b:bot {<-serve httpstart "http://localhost:6238/foo/"}
+    headers:{
+      Origin:"https://inm.youcubeanalytics.com"
+      'User-Agent':"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"
+      'content-type':"application/x-www-form-urlencoded"
+      Accept:"*/*"
+      Referer:"https://inm.youcubeanalytics.com/"
+      'Accept-Encoding':"gzip, deflate, br"
+      'Accept-Language':"en-US,en;q=0.8"
+      Cookie:"id=8d962e72-c8bd-4de4-8416-0838a1b9e630"
+    }
+    response:$headers getw "http://localhost:6238/foo"
+    :$response.status assert 200
+    :$response.body assert "super content"
+    :kill $b
+  }
+}
+
+get_set_httpcookie:{
+  src:{
+    serve:{
+      loop:{
+        request:httprecv $R
+        :$request httpsend eval {
+          status:200
+          body:format httpcookie $request
+        }
+        <-loop $R
+      }
+      :try {<-loop $R}
+      <-serve $R
+    }
+    b:bot {<-serve httpstart "http://localhost:6239/foo/"}
+    response:{cookie:"a=1,b=2"} getw "http://localhost:6239/foo"
+    :$response.status assert 200
+    :$response.body assert "{a:\"1\" b:\"2\"}"
+    :kill $b
+  }
+}
+
+get_no_body:{
+  src:{
+    serve:{
+      loop:{
+        request:httprecv $R
+        :$request httpsend eval {
+          status:200
+        }
+        <-loop $R
+      }
+      <-loop $R
+    }
+    b:bot {<-serve httpstart "http://localhost:6240/foo/"}
+    response:getw "http://localhost:6240/foo"
+    :$response.status assert 200
+    :$response.body assert ""
+    :kill $b
+  }
+}
+
+not_too_many_files:{
+  src:{
+    :{<-fiber {<-exec "echo foo"}} each 0 to 2000
+    <-0
+  }
+}
+
+exec_forces_multiline_output:{
+  src:{
+    script:[??
+      rcl --batch --nokeys --show=exec --exit << 'OUTER'
+      script:[?
+        export RCL_FLAGS="--output=clean"
+        rcl --batch --nokeys --exit << 'INNER'
+        :print "better single line"
+        :sleep 300
+        <-0
+        INNER
+        exit
+      ?]
+      p:startx "bash"
+      :$p writex script {}
+      out:try {<-waitx $p}
+      <-0
+      OUTER
+      exit
+    ??]
+    bash:startx "bash"
+    :$bash writex script $R
+    out:try {<-waitx $bash}
+    log:#log parse $out.data
+    log:$log where $log.event == "line"
+    <-$log
+  }
+  bin:[
+    bot fiber module instance event  document
+      0     0 "exec"        0 "line" "better single line\n"
+      0     0 "exec"        0 "line" "0\n"
+  ]
+}
+
+writex_no_trailing_newline:{
+  src:{
+    script:[??
+      rcl --batch --nokeys --show=exec --exit << 'OUTER'
+      script:[?
+        echo "foo"
+        echo "bar"
+        echo "baz"
+        exit
+      ?]
+      p:startx "bash"
+      :$p writex script {}
+      out:try {<-waitx $p}
+      <-0
+      OUTER
+      exit
+    ??]
+    bash:startx "bash"
+    :$bash writex script $R
+    out:try {<-waitx $bash}
+    log:#log parse $out.data
+    log:$log where $log.event == "writex"
+    <-$log
+  }
+  bin:[
+    bot fiber module instance event    document
+      0     0 "exec"        0 "writex" "echo \"foo\"\necho \"bar\"\necho \"baz\"\nexit\n"
+  ]
+}
+
+http_dispose_message_hidden_by_show:{
+  src:{
+    script:[??
+      rcl --batch --nokeys --show=print --exit << 'OUTER'
+      :httpstart "http://localhost:6234/foo/"
+      :print "started httplistener"
+      <-0
+      OUTER
+      exit
+    ??]
+    bash:startx "bash"
+    :$bash writex script $R
+    out:try {<-waitx $bash}
+    <-template & $out.data + "\n"
+  }
+  bin:[?
+    0 0 print 0 out started httplistener
+    0
+  ?]
+}
+
+list_work:{
+  src:{
+    files:list #work
+    :assert #work == unique 0 part $files.S
+  }
+}
+
+list_home:{
+  src:{
+    files:list #home
+    :assert 2 == unique length $files.S
+  }
+}
+
+list_home_src:{
+  skip:not ismono {}
+  src:{
+    files:list #home,src
+    :assert 3 == unique length $files.S
+  }
+}
+
+list_home_missing:{
+  src:{
+    result:try {<-list #home,missing}
+    <-0 40 substring result.error {}
+  }
+  bin:"<<File,Could not find a part of the path"
+}
+
+template_nesting_something_added:{
+  src:{
+    <-template eval [?
+      this is the beginning
+        [! "" "checklist ctor\n" "document ctor\n" !]
+      this is the end
+    ?]
+  }
+  bin:[?
+    this is the beginning
+      checklist ctor
+      document ctor
+    this is the end
+  ?]
+}
+
+template_nesting_something_added1:{
+  src:{
+    parts:{
+      name:{
+        js_decl:""
+      }
+      checklist:{
+        js_decl:"checklist decl\n"
+      }
+    }
+    <-template eval [?
+      first line
+        second line
+        [! {<-$R.js_decl} each $parts !]
+        third line
+      fourth line
+      fifth line
+    ?]
+  }
+  bin:[?
+    first line
+      second line
+      checklist decl
+      third line
+    fourth line
+    fifth line
+  ?]
+}
+
+template_nesting_something_added2:{
+  src:{
+    panel_js:{
+      description:{
+        js_init:""
+      }
+      checklist:{
+        js_init:"checklist init\n"
+      }
+      document:{
+        js_init:"document init\n"
+      }
+      canvas:{
+        js_init:"canvas init\n"
+      }
+      splitter:{
+        js_init:"first line of splitter\nsecond line of splitter\nthird line of splitter\n"
+      }
+      splitter:{
+        js_init:"first line of second splitter\n"
+      }
+    }
+    screen_js:template eval [?
+      first line
+        second line
+          [! {<-$R.js_init} each $panel_js !]
+        fifth line
+      sixth line
+    ?]
+    <-$screen_js
+  }
+  bin:[?
+    first line
+      second line
+        checklist init
+        document init
+        canvas init
+        first line of splitter
+        second line of splitter
+        third line of splitter
+        first line of second splitter
+      fifth line
+    sixth line
+  ?]
+}
+
+TestEvalTemplateMultiSection2:{
+  src:{
+    html:[?
+      <html>
+        <head>[!$R.head!]
+        </head>
+        <body>[!$R.body!]
+        </body>
+      </html>
+    ?]
+    <-template html {head:"head 0\nhead 1\nhead 2\n" body:"body 0\nbody 1\nbody 2\n"}
+  }
+  bin:[?
+    <html>
+      <head>head 0
+      head 1
+      head 2
+      </head>
+      <body>body 0
+      body 1
+      body 2
+      </body>
+    </html>
+  ?]
+}
+
+systemd_fiber_killed_not_an_error:{
+  src:{
+    script:[?
+      rcl --batch --nokeys --show=fiber --output=systemd --exit << 'OUTER'
+      f:fiber {<-0 trace #foo}
+      :kill $f
+      <-0
+      OUTER
+      exit
+    ?]
+    bash:startx "bash"
+    :$bash writex script $R
+    out:try {<-waitx $bash}
+    <-template & $out.data + "\n"
+  }
+  bin:[?
+    <6>0 0 fiber 1 start {<-0 trace #foo}
+    <6>0 1 fiber 1 killed System.Exception: fiber killed
+    0
+  ?]
+}
+
+bot_killed_on_wait_timeout:{
+  src:{
+    script:[?
+      rcl --batch --nokeys --show=fiber --exit << 'EOF'
+      b:bot {<-0 trace #a}
+      :500 wait $b
+      <-0
+      EOF
+      exit
+    ?]
+    bash:startx "bash"
+    :$bash writex script $R
+    out:try {<-waitx $bash}
+    <-template & $out.data + "\n"
+  }
+  bin:[?
+    1 0 fiber 0 start {<-0 trace #a}
+    1 0 fiber 0 killed <<Reported>>
+    0
+  ?]
+}
+

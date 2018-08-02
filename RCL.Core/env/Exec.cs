@@ -217,7 +217,6 @@ namespace RCL.Core
 
         m_process = new Process ();
         m_process.StartInfo = new ProcessStartInfo (m_program, m_arguments);
-        //m_process.
         m_process.EnableRaisingEvents = true;
         m_process.StartInfo.CreateNoWindow = true;
         m_process.StartInfo.UseShellExecute = false;
@@ -385,7 +384,7 @@ namespace RCL.Core
             Mono.Unix.Native.Syscall.kill (
               (int) m_pid, (Mono.Unix.Native.Signum) signal[0]);
 #else
-            Console.Out.WriteLine ("Killing exec'd processes is not implemented on Windows");
+            KillById ((int) m_pid);
 #endif
           }
           state.Runner.Yield (state.Closure, signal);
@@ -394,6 +393,17 @@ namespace RCL.Core
         {
           state.Runner.Report (state.Closure, ex);
         }
+      }
+
+      protected static bool KillById (int pid)
+      {
+        Process process = Process.GetProcessById (pid);
+        if (process != null)
+        {
+            process.Kill ();
+            return true;
+        }
+        else return false;
       }
 
       public void Close (object other)
@@ -648,16 +658,13 @@ namespace RCL.Core
             {
               if (output)
               {
-                //Console.Out.WriteLine ("Output done");
                 m_outputDone = true;
               }
               else
               {
-                //Console.Out.WriteLine ("Error done");
                 m_errorDone = true;
               }
             }
-            //Console.Out.WriteLine ("EOF!");
             Finish (null);
           }
           else

@@ -22,18 +22,18 @@ namespace RCL.Core
       string target = (string) right[0].Part (0);
       if (target == "" || target == "work")
       {
-        BeginListFilesCube (runner, closure, right[0], options.Contains (all),
-                                                       options.Contains (deep));
+        BeginListFilesCube (runner, closure,
+                            new ListArgs (right[0], options.Contains (all), options.Contains (deep)));
       }
       else if (target == "home")
       {
-        BeginListFilesCube (runner, closure, right[0], options.Contains (all),
-                                                       options.Contains (deep));
+        BeginListFilesCube (runner, closure,
+                            new ListArgs (right[0], options.Contains (all), options.Contains (deep)));
       }
       else if (target == "root")
       {
-        BeginListFilesCube (runner, closure, right[0], options.Contains (all),
-                                                       options.Contains (deep));
+        BeginListFilesCube (runner, closure,
+                            new ListArgs (right[0], options.Contains (all), options.Contains (deep)));
       }
       else if (target == "fibers")
       {
@@ -62,6 +62,13 @@ namespace RCL.Core
       else throw new Exception ("Unknown target for list: " + target);
     }
 
+    [RCVerb ("list")]
+    public void EvalList (RCRunner runner, RCClosure closure, RCString right)
+    {
+      ListArgs args = new ListArgs (right[0], all: true, deep: false);
+      BeginListFilesCube (runner, closure, args);
+    }
+
     [RCVerb ("show_special_folders")]
     public void ShowSpecialFolders (RCRunner runner, RCClosure closure, RCSymbol right)
     {
@@ -78,26 +85,30 @@ namespace RCL.Core
       EvalList (runner, closure, DefaultLeft, right);
     }
 
-    protected void BeginListFilesCube (RCRunner runner,
-                                       RCClosure closure,
-                                       RCSymbolScalar spec,
-                                       bool all,
-                                       bool deep)
+    protected void BeginListFilesCube (RCRunner runner, RCClosure closure, ListArgs args)
     {
       ThreadPool.QueueUserWorkItem (ListFilesCube,
-                                    new RCAsyncState (runner, closure, new ListArgs (spec, all, deep)));
+                                    new RCAsyncState (runner, closure, args));
     }
 
     public class ListArgs
     {
       public readonly RCSymbolScalar Spec;
+      public readonly string Path;
       public readonly bool All;
       public readonly bool Deep;
-      public ListArgs (RCSymbolScalar spec,
-                       bool all,
-                       bool deep)
+
+      public ListArgs (string path, bool all, bool deep)
+      {
+        Path = path;
+        All = all;
+        Deep = deep;
+      }
+
+      public ListArgs (RCSymbolScalar spec, bool all, bool deep)
       {
         Spec = spec;
+        Path = Command.PathSymbolToString (spec);
         All = all;
         Deep = deep;
       }
@@ -111,11 +122,21 @@ namespace RCL.Core
       {
         RCCube result = new RCCube (new RCArray<string> ("S"));
         Queue<string> todo = new Queue<string> ();
-        string top = Command.PathSymbolToString (args.Spec);
+        string top = args.Path;
         string[] topParts = top.Split (Path.DirectorySeparatorChar);
-        int startPart = (int) (topParts.Length - args.Spec.Length) + 1;
+        int startPart;
+        RCSymbolScalar prefix;
+        if (args.Spec != null)
+        {
+          startPart = (int) (topParts.Length - args.Spec.Length) + 1;
+          prefix = RCSymbolScalar.From (args.Spec.Part (0));
+        }
+        else
+        {
+          startPart = 1;
+          prefix = RCSymbolScalar.From (topParts[0]);
+        }
         todo.Enqueue (top);
-        RCSymbolScalar prefix = RCSymbolScalar.From (args.Spec.Part (0));
         while (todo.Count > 0)
         {
           string path = todo.Dequeue ();
@@ -131,10 +152,8 @@ namespace RCL.Core
               result.WriteCell ("size", symbol, file.Length);
               result.WriteCell ("type", symbol, "f");
               result.WriteCell ("ext", symbol, file.Extension);
-              result.WriteCell ("access", symbol,
-                                new RCTimeScalar (file.LastAccessTime, RCTimeType.Datetime));
-              result.WriteCell ("write", symbol,
-                                new RCTimeScalar (file.LastWriteTime, RCTimeType.Datetime));
+              result.WriteCell ("access", symbol, new RCTimeScalar (file.LastAccessTime, RCTimeType.Datetime));
+              result.WriteCell ("write", symbol, new RCTimeScalar (file.LastWriteTime, RCTimeType.Datetime));
               result.Axis.Write (symbol);
             }
           }
@@ -148,10 +167,8 @@ namespace RCL.Core
               RCSymbolScalar symbol = RCSymbolScalar.From (startPart, prefix, parts);
               result.WriteCell ("name", symbol, dir.Name);
               result.WriteCell ("type", symbol, "d");
-              result.WriteCell ("access", symbol,
-                                new RCTimeScalar (dir.LastAccessTime, RCTimeType.Datetime));
-              result.WriteCell ("write", symbol,
-                                 new RCTimeScalar (dir.LastWriteTime, RCTimeType.Datetime));
+              result.WriteCell ("access", symbol, new RCTimeScalar (dir.LastAccessTime, RCTimeType.Datetime));
+              result.WriteCell ("write", symbol, new RCTimeScalar (dir.LastWriteTime, RCTimeType.Datetime));
               result.Axis.Write (symbol);
               if (args.Deep)
               {

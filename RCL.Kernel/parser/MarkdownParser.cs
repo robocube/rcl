@@ -225,7 +225,7 @@ namespace RCL.Kernel
         if (m_quoteRun.Length > 0)
         {
           //Console.Out.WriteLine ("Inserting a newline");
-          m_quoteRun.AppendLine ();
+          m_quoteRun.Append ("\n");
         }
         if (m_run.Length >= 2)
         {
@@ -233,7 +233,7 @@ namespace RCL.Kernel
           if (m_run[m_run.Length - 2] != ' ') return;
           //Console.Out.WriteLine ("Removing last two spaces");
           m_run.Remove (m_run.Length - 2, 2);
-          m_run.AppendLine ();
+          m_run.Append ("\n");
         }
       }
       else

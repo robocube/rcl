@@ -93,8 +93,7 @@ namespace RCL.Exe
             RCValue result = runner.Rep (string.Format ("{0} #", cmd.Action));
             if (cmd.OutputEnum != RCOutput.Clean)
             {
-              string text = result.Format (RCFormat.Pretty, RCSystem.Log.GetColmap ());
-              Console.Out.WriteLine (text);
+              Console.Out.WriteLine (result.Format (RCFormat.Pretty, RCSystem.Log.GetColmap ()));
             }
           }
           if (cmd.Batch && !cmd.Exit)
@@ -225,7 +224,9 @@ namespace RCL.Exe
         }
         catch (Exception ex)
         {
-          RCSystem.Log.Record (0, 0, "fiber", 0, "reported", ex);
+          //Brian! This is where the Console exception was getting hidden
+          Console.WriteLine ("Exception was caught: {0}", ex);
+          RCSystem.Log.Record (0, 0, "fiber", 0, "unhandled", ex);
         }
       }
       runner.Dispose ();

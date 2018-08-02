@@ -326,7 +326,7 @@
   }
   TestTryError:{
     src:{
-      Test:& compile eval [?
+      Test:& compile eval [??
         using System;
         using System.Threading;
         using RCL.Kernel;
@@ -336,12 +336,12 @@
           public void EvalTest (RCRunner runner, RCClosure closure, RCBlock right)
           {
             RCRunner testRunner = RCRunner.TestRunner ();
-            Assert.AreEqual ("{status:1 data:\"<<Assert,Failed: assert false>>\"}",
-                             testRunner.Rep ("try {<-assert false}").ToString ());
+            Assert.AreEqual ("{status:1 error:[?\n    <<Assert,Failed: assert false>>\n  ?]}",
+                             testRunner.Rep ("#status #error from try {<-assert false}").ToString ());
             runner.Yield (closure, RCBlock.Empty);
           }
         }
-      ?]
+      ??]
       :Test.TestTryError {}
     }
   }
@@ -448,7 +448,7 @@
     src:{
       rcldir:codebase {}
       tmpdir:(getenv "RCL_HOME") + "/tmp"
-      Test:& compile eval [?
+      Test:& compile eval [??
         using System;
         using System.Threading;
         using RCL.Kernel;
@@ -458,20 +458,20 @@
           public void EvalTest (RCRunner runner, RCClosure closure, RCBlock right)
           {
             RCRunner testRunner = new RCRunner ();
-            testRunner.Rep ("\"[! $tmpdir !]/exit.o2\" save #pretty format {:exit 1}");
+            testRunner.Rep ("\"[!! $tmpdir !!]/exit.o2\" save #pretty format {:exit 1}");
             if (RCSystem.IsMono ())
             {
-              testRunner.Rep ("p:startx \"mono [! $rcldir !]/rcl.exe --output=clean --show=print --nokeys --program=[! $tmpdir !]/exit.o2\"");
+              testRunner.Rep ("p:startx \"mono [!! $rcldir !!]/rcl.exe --output=clean --show=print --nokeys --program=[!! $tmpdir !!]/exit.o2\"");
             }
             else
             {
-              testRunner.Rep ("p:startx \"[! $rcldir !]/rcl.exe --output=clean --show=print --nokeys --program=[! $tmpdir !]/exit.o2\"");
+              testRunner.Rep ("p:startx \"[!! $rcldir !!]/rcl.exe --output=clean --show=print --nokeys --program=[!! $tmpdir !!]/exit.o2\"");
             }
-            Assert.AreEqual ("{status:1 data:\"<<Exec,exit status 1>>\"}", testRunner.Rep ("try {<-waitx $p}").ToString ());
+            Assert.AreEqual ("{status:1 error:[?\n    <<Exec,exit status 1>>\n  ?]}", testRunner.Rep ("#status #error from try {<-waitx $p}").ToString ());
             runner.Yield (closure, RCBlock.Empty);
           }
         }
-      ?]
+      ??]
       :Test.TestExecError {}
     }
   }

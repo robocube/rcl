@@ -135,7 +135,10 @@ namespace RCL.Kernel
 
     public override void AcceptLogEntryBody (RCToken token)
     {
-      m_builder.AppendLine (token.Text.Substring (2));
+      m_builder.Append (token.Text.Substring (2));
+      //Prevent inconsistent string content on Windows.
+      //Only write CRLFs when persisting text.
+      m_builder.Append ("\n");
     }
 
     protected readonly static char[] TRIM_CHARS = new char[] { '\r', '\n' };

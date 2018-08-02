@@ -176,6 +176,14 @@ namespace RCL.Core
       runner.Yield (closure, right);
     }
 
+    [RCVerb ("mkdir")]
+    public void EvalMkdir (RCRunner runner, RCClosure closure, RCString right)
+    {
+      //All of this stuff HASTA HASTA HASTA be ASYNC!
+      Directory.CreateDirectory (right[0]);
+      runner.Yield (closure, right);
+    }
+
     protected long m_handle = -1;
     [RCVerb ("save")]
     public void EvalSave (RCRunner runner, RCClosure closure, RCSymbol left, RCString right)
@@ -414,18 +422,26 @@ namespace RCL.Core
       {
         runner.Yield (closure, new RCString (Environment.MachineName));
       }
-      else if (value == "ending")
+      else if (value == "newline")
       {
         runner.Yield (closure, new RCString (Environment.NewLine));
       }
-      else if (value == "os")
+      else if (value == "osname")
       {
-        runner.Yield (closure, new RCString (Environment.OSVersion.VersionString));
+        OperatingSystem os = Environment.OSVersion;
+        runner.Yield (closure, new RCString (os.VersionString));
+      }
+      else if (value == "platform")
+      {
+        PlatformID platform = Environment.OSVersion.Platform;
+        string platformName = platform.ToString ();
+        runner.Yield (closure, new RCString (platformName));
       }
       else if (value == "help")
       {
-        runner.Yield (closure, new RCString ("arguments", "options", "directory", "drives", "host", "end", "os", "help"));
+        runner.Yield (closure, new RCString ("arguments", "options", "directory", "drives", "host", "newline", "osname", "platform", "help"));
       }
+      else throw new Exception (string.Format ("Unsupported argument for info: {0}", value));
     }
 
     [RCVerb ("codebase")]

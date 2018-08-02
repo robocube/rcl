@@ -148,7 +148,8 @@ namespace RCL.Kernel
         {
           for (int i = 0; i < Output.Count; ++i)
           {
-            builder.AppendLine (Output[i]);
+            builder.Append (Output[i]);
+            builder.Append ("\n");
           }
         }
         builder.AppendFormat ("<<{0},{1}>>", Error, Message);
@@ -157,20 +158,26 @@ namespace RCL.Kernel
       string br = new String ('-', 80);
       if (messageOnTop)
       {
-        builder.AppendLine (Message);
+        builder.Append (Message);
+        builder.Append ("\n");
       }
       if (Exception != null)
       {
-        builder.AppendLine (Exception.GetBaseException ().ToString ());
-        builder.AppendLine (br);
+        builder.Append (Exception.GetBaseException ().ToString ());
+        builder.Append ("\n");
+        builder.Append (br);
+        builder.Append ("\n");
       }
       //Most recent stack frames should appear on top, not on bottom
       Closure.ToString (builder:builder, indent:0, firstOnTop:firstOnTop);
-      builder.AppendLine (br);
+      builder.Append (br);
+      builder.Append ("\n");
       if (!messageOnTop)
       {
-        builder.AppendLine (Message);
-        builder.AppendLine (br);
+        builder.Append (Message);
+        builder.Append ("\n");
+        builder.Append (br);
+        builder.Append ("\n");
       }
       return builder.ToString ();
     }

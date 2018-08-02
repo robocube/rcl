@@ -118,22 +118,26 @@
   }
   TestTryFail:{
     skip:false
-    src:try {
+    src:#status #error from try {
       <-900 fail "fail with status 900"
     }
     bin:{
       status:900
-      data:"<<Custom,fail with status 900>>"
+      error:[?
+        <<Custom,fail with status 900>>
+      ?]
     }
   }
   TestTryFail1:{
     skip:false
-    src:try {
+    src:#status #error from try {
       <-fail "rando failure message"
     }
     bin:{
       status:8
-      data:"<<Custom,rando failure message>>"
+      error:[?
+        <<Custom,rando failure message>>
+      ?]
     }
   }
   TestWatchf:{
@@ -337,12 +341,14 @@
   }
   TestTryAssert:{
     skip:false
-    src:try {
+    src:#status #error from try {
       <-assert false
     }
     bin:{
       status:1
-      data:"<<Assert,Failed: assert false>>"
+      error:[?
+        <<Assert,Failed: assert false>>
+      ?]
     }
   }
   TestBotWithChildFibers:{
