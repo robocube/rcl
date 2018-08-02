@@ -225,7 +225,7 @@ namespace RCL.Exe
         catch (Exception ex)
         {
           //Brian! This is where the Console exception was getting hidden
-          Console.WriteLine ("Exception was caught: {0}", ex);
+          //Console.WriteLine ("Exception was caught: {0}", ex);
           RCSystem.Log.Record (0, 0, "fiber", 0, "unhandled", ex);
         }
       }
