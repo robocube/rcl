@@ -155,6 +155,7 @@ namespace RCL.Core
                            RCString left,
                            RCString right)
     {
+      //Would be nice to support muliple strings on the left, like "\" "/" split $blah
       RCArray<string> result = new RCArray<string> ();
       for (int i = 0; i < right.Count; ++i)
       {

@@ -126,7 +126,7 @@ run_suite:{
   results_cube:cubify $results_block
   status:#*,*,status,* select -4 -3 -2 -1 key $results_cube
   report:eval {
-    name:$R.name
+    name:$SUITE_NAME
     try:count $status
     pass:count $status where $status.s == "P"
     skip:count $status where $status.s == "K"
