@@ -55,6 +55,8 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>false</Prefer32Bit>
+    <PostBuildEvent>mkdir C:\Users\brian\rclkit\lib &amp; copy Y:\dev\src\rcl\RCL.Exe\bin\Debug\* C:\Users\brian\rclkit\lib\*</PostBuildEvent>
+    <PreBuildEvent>xcopy /i /e /y Y:\dev\src\rcl\RCL.Test\rclkit C:\Users\brian\rclkit</PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugTest|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -65,6 +67,8 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>false</Prefer32Bit>
+    <PostBuildEvent>mkdir C:\Users\brian\rclkit\lib &amp; copy Y:\dev\src\rcl\RCL.Exe\bin\Debug\* C:\Users\brian\rclkit\lib\*</PostBuildEvent>
+    <PreBuildEvent>xcopy /i /e /y Y:\dev\src\rcl\RCL.Test\rclkit C:\Users\brian\rclkit</PreBuildEvent>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Isolate.cs" />
@@ -181,11 +185,4 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
-  <PropertyGroup>
-    <PostBuildEvent>copy Y:\dev\src\rcl\RCL.Exe\bin\Debug\* C:\Users\brian\rclkit\lib\*
-</PostBuildEvent>
-  </PropertyGroup>
-  <PropertyGroup>
-    <PreBuildEvent>xcopy /e /y Y:\dev\src\rcl\RCL.Test\rclkit C:\Users\brian\rclkit</PreBuildEvent>
-  </PropertyGroup>
 </Project>
