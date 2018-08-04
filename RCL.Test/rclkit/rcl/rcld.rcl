@@ -1,0 +1,169 @@
+TOP  :"" option "top"
+DIR  :"" option "dir"
+PORT :"10000" option "port"
+
+start:{
+  running:try {<-250 open #tcp,localhost + symbol $PORT}
+  <-($running.status == 0) switch { 
+    :{
+      :print "already running"
+      :close $running.data
+      :exit 1
+    }
+    :commands.start {} 
+  }
+}
+
+stop:{
+  running:try {<-250 open #tcp,localhost + symbol $PORT}
+  <-($running.status == 0) switch { 
+    :{
+      q:$running.data send eval {
+        event:#stop 
+        object:#rcld + symbol $PORT
+      }
+      :print "stop requested"
+      a:receive $q
+      :print "stop completed"
+      :close $running.data
+      :exit 0
+    }
+    :{
+      :print "not running" 
+      :print #pretty format $running
+      :exit 1
+    }
+  }
+}
+
+ping:{
+  running:try {<-250 open #tcp,localhost + symbol $PORT}
+  <-($running.status == 0) switch {
+    :{
+      q:$running.data send eval {
+        event:#ping
+        object:#rcld + symbol $PORT
+      }
+      :print "ping sent " + #pretty format $q
+      a:receive $q
+      :print #pretty format $a
+      :exit 0
+    }
+    :{
+      :print "not running"
+      :print #pretty format $running
+      :exit 1
+    }
+  }
+}
+
+commands:{
+  start:{
+    :"bottom" print "starting on request"
+    :($TOP != "") switch {:#top_fiber putm fiber {<-start_top {}}}
+    :($PORT != "") switch {:#bottom_fiber putm fiber {<-start_bottom {}}}
+    files:"#deep #all list #home"
+    repos:"$files where $files.path like \"*/.rcl/\""
+    dirs:"colofs $repos.path"
+    :"#repo_bots putm long {<-bot {<-start_repo $R}} each $dirs"
+    <-0
+  }
+  stop:{
+    :"bottom" print "stopping on request"
+    bin:"{<-kill $R} each getm #repo_bots"
+    data:"cubify $bin"
+    statuses:"#*,status,* select $data"
+    :$REQUEST.id reply {}
+    :sleep 1000
+    :exit 0
+  }
+  ping:{
+    :"bottom" print "responding to ping"
+    :$REQUEST.id reply $REQUEST
+  }
+  :{
+    :"bottom" print #pretty format $message
+    :"(getm #top_socket) send $message"
+  }
+}
+
+start_bottom:{
+  bottom_socket:listen #tcp + symbol $PORT
+  loop:{
+    REQUEST:$R accept 1
+    :"bottom" print #pretty format $REQUEST
+    :$REQUEST.body.event switch $commands
+    <-loop $R
+  }
+  :try {<-loop $bottom_socket}
+  <-start_bottom $R
+}
+
+start_top:{
+  top_socket:open #tcp + symbol $TOP
+  :#top_socket putm $top_socket
+  loop:{
+    msg:receive $R
+    :"top" print #pretty format $msg
+    :(#remote + $msg.event + $msg.object) write eval {
+      i:++
+      event:symbol $msg.event
+      object:symbol $msg.object
+    }
+    <-loop $R
+  }
+  :try {<-loop $top_socket}
+  <-start_top $R
+}
+
+start_remote:{
+  record:block #events,* read $R & 1
+  :$record.event switch {
+    commit_repo:{}
+    push_repo:{}
+    pull_repo:{}
+  }
+  <-start_remote $R + 1
+}
+
+start_repo:{
+  :#watcher_fiber putm fiber {<-$start_watcher $R}
+  :#local_fiber putm fiber {<-$start_local $R}
+}
+
+start_watcher:{
+  file_watcher:watchf $R
+  repo_name:-2 from "/" split $R
+  loop:{
+    event:waitf $R
+    :"repo" print #pretty format $event
+    path_parts:0 - 1 + (count $event.fullpath) - count $repo_name
+    path:symbol "/" split $path_parts from $event.fullpath
+    :(#local + $repo_name + $event.event + $path) write {
+      i:++
+      event:symbol $event.event
+      object:$path
+    }
+    <-loop $R
+  }
+  :try {<-loop $file_watcher}
+  <-start_watcher $R
+}
+
+start_local:{
+  config:eval parse load $R + "/config.rcl"
+  rules:$config.rules
+  loop:{
+    record:#local,* read $R & 1
+    hooks:block $rules where $rules.event == $record.event
+    do_hook:{
+      hook:eval parse load $R.file
+      bin:hook.code $record.object
+      :print #pretty format $bin
+    }
+    :{<-try {<-do_hook $R}} each $hooks
+    <-loop $R + 1
+  }
+  :try {<-loop 0}
+  <-start_local $R
+}

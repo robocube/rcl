@@ -1,0 +1,120 @@
+stop:{
+  repeat:1
+  src:{
+    script:[?
+      export RCL_FLAGS="--output=test"
+      rcld stop --batch
+      exit 0
+    ?]
+    sh:startx "bash"
+    :$sh writex script {}
+    out:try {<-waitx $sh}
+    :$out.status assert 0
+    <-#asc,event sort #log parse $out.data
+  }
+  bin:[
+    bot fiber module   instance event      message                                 document
+      0     0 "fiber"         0 "caught"   "<<Timeout,Giving up after timeout.>>"  --
+      0     0 "runner"        0 "exit"     "1"                                     --
+      0     0 "print"         0 "out"      "not running"                           --
+      0     0 "print"         0 "out"      --                                      "{\n  status:1\n  error:[?\n    <<Timeout,Giving up after timeout.>>\n  ?]\n  data:\"<<Operation failed: see error for details>>\"\n}\n"
+      0     0 "fiber"         0 "reported" "<<Reported>>"                          --
+  ]
+}
+
+start:{
+  repeat:1
+  src:{
+    server_script:[?
+      rcld start --batch --output=test --show=print,runner,socket
+      sleep 2
+      exit 0
+    ?]
+    client_script:[?
+      sleep 1
+      rcld stop --batch --output=test --show=print,runner
+      exit 0
+    ?]
+    server:startx "bash"
+    :$server writex server_script {}
+    client:startx "bash"
+    :$client writex client_script {}
+    server_out:try {<-waitx $server}
+    client_out:try {<-waitx $client}
+    server_cube:#log parse ($server_out.data except "0") + "\n"
+    client_cube:#log parse $client_out.data + "\n"
+    <-eval {
+      server_out:"bot" "fiber" "module" "event" "message" "document" from $server_cube where not $server_cube.module in "fiber"
+      client_out:"bot" "fiber" "module" "event" "message" "document" from $client_cube where not $client_cube.module in "fiber"
+    }
+  }
+  bin:{
+    server_out:[
+      bot fiber module   event    message               document
+        0     0 "print"  "bottom" "starting on request" --
+        0     1 "print"  "bottom" --                    "{\n  id:#2,0,1\n  body:{\n    event:#stop\n    object:#rcld,10000\n  }\n}\n"
+        0     1 "print"  "bottom" "stopping on request" --
+        0     1 "socket" "closed" --                    --
+        0     1 "runner" "exit"   "0"                   --
+    ]
+    client_out:[
+      bot fiber module   event  message
+        0     0 "print"  "out"  "stop requested"
+        0     0 "print"  "out"  "stop completed"
+        0     0 "runner" "exit" "0"
+    ]
+  }
+}
+
+rcld_echo:{
+  skip:true
+  src:{
+    config:{
+      rules:{
+        event:#create_file #update_file
+        hook:"src/echo.rcl"
+      }
+    }
+    echo:{
+      :exec "mkdir -p bin"
+      repo:pwd {}
+      dat:load $R.fullpath
+      bin:"bin/" + (length pwd {}) cut $R.fullpath
+      :exec "mkdir -p " + $bin
+      :$bin save $dat
+      <-$dat
+    }
+    test:[
+      x y z
+      0 1 2
+      3 4 5
+      6 7 8
+    ]
+    script:[?
+      set -e
+      mkdir -p rcld.test/.rcl
+      rcld start --output=test
+      cat << EOF > rcld.test/.rcl/config.rcl
+      [! #pretty format $config !]
+      EOF
+      cat << EOF > rcld.test/.rcl/src/echo.rcl
+      [! #pretty format $echo !]
+      EOF
+      cat << EOF > rcld.test/test.rcl
+      [! #pretty format $test !]
+      EOF
+      rcld wait
+      rcld stop
+      exit
+    ?]
+    log:[?
+      
+    ?]
+    sh:startx "bash"
+    :$sh writex script {}
+    :try {<-waitx $sh}
+    :(load "rcld.test/.rcl/rcld.log") assert log {}
+    <-exit $sh
+  }
+  bin:0
+}

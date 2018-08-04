@@ -178,6 +178,7 @@
     <None Include="rclkit\tests\rcl.log_parse.rclt" />
     <None Include="rclkit\tests\rcl.md_parse.rclt" />
     <None Include="rclkit\tests\rcl.rclt" />
+    <None Include="rclkit\tests\rcld.rclt" />
     <None Include="rclkit\tests\rclt.rclt" />
     <None Include="rclkit\tests\RunnerTest.rclt" />
   </ItemGroup>
