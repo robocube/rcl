@@ -337,8 +337,7 @@ namespace RCL.Kernel
         }
         else
         {
-          throw new RCException (closure, tiex, RCErrors.Native, 
-                                 "An exception was thrown by the operator " + name + ".");
+          throw new RCException (closure, tiex, RCErrors.Native, ThrowMessage (name, ex));
         }
       }
     }
@@ -393,13 +392,24 @@ namespace RCL.Kernel
         }
         else
         {
-          throw new RCException (closure, tiex, RCErrors.Native, 
-                                 "An exception was thrown by the operator " + name + ".");
+          throw new RCException (closure, tiex, RCErrors.Native, ThrowMessage (name, ex));
         }
         //throw;
         //At least this way I can know which method the exception came from.
         //Maybe change this to RCRuntimeException.
         //throw new Exception ("An exception was thrown by the operator implementation:" + overload.ToString (), ex);
+      }
+    }
+
+    protected string ThrowMessage (string name, Exception ex)
+    {
+      if (RCSystem.Args.OutputEnum == RCOutput.Test)
+      {
+        return string.Format ("An exception was thrown by the operator {0}.", name);
+      }
+      else
+      {
+        return string.Format ("An exception was thrown by the operator {0}:\n-- {1}: {2}", name, ex.GetType ().Name, ex.Message);
       }
     }
 

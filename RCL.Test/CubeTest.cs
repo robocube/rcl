@@ -1234,6 +1234,60 @@ namespace RCL.Test
       DoTest ("#desc,z sort [x y z 1 10 100 2 20 200 3 30 --]", "[x y z 2 20 200 1 10 100 3 30 --]");
     }
 
+    [Test]
+    public void TestSortWithTimeline1 ()
+    {
+      DoTest ("#desc,x sort [S|x #a 1]", "[S|x #a 1]");
+    }
+
+    [Test]
+    public void TestSortWithTimeline2 ()
+    {
+      DoTest ("#desc,y sort [S|x y #a 1 10]", "[S|x y #a 1 10]");
+    }
+
+    [Test]
+    public void TestSortWithTimeline3 ()
+    {
+      DoTest ("#desc,z sort [S|x y z #a 1 10 100]", "[S|x y z #a 1 10 100]");
+    }
+
+    [Test]
+    public void TestSortWithTimeline4 ()
+    {
+      DoTest ("#desc,x sort [S|x #a 1 #b 2]", "[S|x #b 2 #a 1]");
+    }
+
+    [Test]
+    public void TestSortWithTimeline5 ()
+    {
+      DoTest ("#desc,x sort [S|x y #a 1 10 #b 2 20]", "[S|x y #b 2 20 #a 1 10]");
+    }
+
+    [Test]
+    public void TestSortWithTimeline6 ()
+    {
+      DoTest ("#desc,x sort [S|x y z #a 1 10 100 #b 2 20 200 #c 3 30 300]", "[S|x y z #c 3 30 300 #b 2 20 200 #a 1 10 100]");
+    }
+
+    [Test]
+    public void TestSortWithTimeline7 ()
+    {
+      DoTest ("#desc,x sort [S|x y z #a -- 10 100 #b 2 20 200 #c 3 30 300]", "[S|x y z #c 3 30 300 #b 2 20 200 #a -- 10 100]");
+    }
+
+    [Test]
+    public void TestSortWithTimeline8 ()
+    {
+      DoTest ("#desc,y sort [S|x y z #a 1 10 100 #b 2 -- 200 #c 3 30 300]", "[S|x y z #c 3 30 300 #a 1 10 100 #b 2 -- 200]");
+    }
+
+    [Test]
+    public void TestSortWithTimeline9 ()
+    {
+      DoTest ("#desc,z sort [S|x y z #a 1 10 100 #b 2 20 200 #c 3 30 --]", "[S|x y z #b 2 20 200 #a 1 10 100 #c 3 30 --]");
+    }
+
     /* Please come back to this soon
     [Test]
     public void TestSortWithTimeline ()
@@ -1374,6 +1428,12 @@ namespace RCL.Test
       DoTest (string.Format ("#desc,b sort {0}", t), tbyb);
       DoTest (string.Format ("#desc,x sort {0}", t), tReversed);
       DoTest (string.Format ("#desc,y sort {0}", t), tReversed);
+    }
+
+    [Test]
+    public void TestSortEmpty ()
+    {
+      DoTest ("#asc,x sort []", "[]");
     }
 
     [Test]

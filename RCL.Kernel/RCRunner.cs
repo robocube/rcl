@@ -66,6 +66,11 @@ namespace RCL.Kernel
     protected volatile Exception m_exception = null;
 
     /// <summary>
+    /// True if an unhandled exception was rethrown by the runner
+    /// </summary>
+    protected volatile bool m_runnerUnhandled = false;
+
+    /// <summary>
     /// The closure which threw m_exception
     /// </summary>
     protected volatile RCClosure m_exceptionClosure = null;
@@ -212,12 +217,18 @@ namespace RCL.Kernel
           }
           m_state = top.Result;
         }
+        m_runnerUnhandled = true;
         throw exception;
       }
       //The final result is assigned by the worker in Finish ().
       RCValue result = m_result;
       m_result = null;
       return result;
+    }
+
+    public bool RunnerUnhandled
+    {
+      get { return m_runnerUnhandled; }
     }
 
     void HandleConsoleCancelKeyPress (object sender, ConsoleCancelEventArgs e)

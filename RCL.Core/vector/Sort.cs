@@ -208,17 +208,13 @@ namespace RCL.Core
 
       runner.Yield (closure, result);
     }
-    
-    [RCVerb ("sort")]
-    public void EvalSort (RCRunner runner, RCClosure closure, RCSymbol left, RCCube right)
-    {
-      if (right.Axis.Global != null)
-        throw new Exception ("Cannot sort a cube with column G");
-      if (right.Axis.Event != null)
-        throw new Exception ("Cannot sort a cube with column T");
-      if (right.Axis.Symbol != null)
-        throw new Exception ("Cannot sort a cube with column S");
 
+    protected RCCube SortCubeByDirectionAndColumn (RCSymbol left, RCCube right)
+    {
+      if (right.Count == 0)
+      {
+        return right;
+      }
       SortDirection direction = Sort.ToDir (left);
       string name = (string) left[0].Part (1);
       ColumnBase sortCol = right.GetColumn (name);
@@ -227,7 +223,6 @@ namespace RCL.Core
       //It would be nice if there was an easy way to call one operator from another.
       //I tried to add one but found I would have to create a weird closure for this purpose.
       //So I decided to wait and see and live with the switch statement for now.
-
       long[] rank;
       switch (sortCol.TypeCode)
       {
@@ -247,14 +242,60 @@ namespace RCL.Core
       {
         rowRank[i] = sortCol.Index[(int)rank[i]];
       }
-
       Dictionary<long, int> map = new Dictionary<long, int> ();
       for (int i = 0; i < rowRank.Length; ++i)
       {
         map[rowRank[i]] = i;
       }
 
-      Timeline axis = new Timeline (right.Axis.Count);
+      Timeline axis;
+      RCArray<long> g = right.Axis.Global;
+      RCArray<long> gNew = null;
+      RCArray<long> e = right.Axis.Event;
+      RCArray<long> eNew = null;
+      RCArray<RCTimeScalar> t = right.Axis.Time;
+      RCArray<RCTimeScalar> tNew = null;
+      RCArray<RCSymbolScalar> s = right.Axis.Symbol;
+      RCArray<RCSymbolScalar> sNew = null;
+      if (right.Axis.Global != null)
+      {
+        RCArray<int> ignore;
+        DoArray (g, null, map, right.Axis.Count, out gNew, out ignore);
+      }
+      if (right.Axis.Event != null)
+      {
+        RCArray<int> ignore;
+        DoArray (e, null, map, right.Axis.Count, out eNew, out ignore);
+      }
+      if (right.Axis.Time != null)
+      {
+        RCArray<int> ignore;
+        DoArray (t, null, map, right.Axis.Count, out tNew, out ignore);
+      }
+      if (right.Axis.Symbol != null)
+      {
+        RCArray<int> ignore;
+        DoArray (s, null, map, right.Axis.Count, out sNew, out ignore);
+      }
+      if (gNew == null && eNew == null && tNew == null && sNew == null)
+      {
+        axis = new Timeline (right.Axis.Count);
+      }
+      else
+      {
+        axis = new Timeline (gNew, eNew, tNew, sNew);
+      }
+
+      int lastRow = map.Count;
+      for (int i = 0; i < axis.Count; ++i)
+      {
+        if (!map.ContainsKey (i))
+        {
+          map[i] = lastRow;
+          ++lastRow;
+        }
+      }
+
       for (int col = 0; col < right.Cols; ++col)
       {
         ColumnBase oldcol = right.GetColumn (col);
@@ -280,11 +321,16 @@ namespace RCL.Core
         names.Write (right.NameAt (i));
       }
       RCCube result = new RCCube (axis, names, columns);
-      runner.Yield (closure, result);
+      return result;
     }
 
-    protected RCValue ReorderColumn<T> (
-      RCLong rank, RCVector<T> column) where T : IComparable<T>
+    [RCVerb ("sort")]
+    public void EvalSort (RCRunner runner, RCClosure closure, RCSymbol left, RCCube right)
+    {
+      runner.Yield (closure, SortCubeByDirectionAndColumn (left, right));
+    }
+
+    protected RCValue ReorderColumn<T> (RCLong rank, RCVector<T> column) where T : IComparable<T>
     {
       return RCVectorBase.FromArray (
         VectorMath.MonadicOp<long, T> (
@@ -294,55 +340,76 @@ namespace RCL.Core
     public static SortDirection ToDir (RCSymbol left)
     {
       if (left.Count != 1)
+      {
         throw new Exception ("left argument must be exactly one of #asc #desc #absasc #absdesc");
-      SortDirection result = (SortDirection)Enum.Parse (
-        typeof(SortDirection), (string)left[0].Part (0));
+      }
+      SortDirection result = (SortDirection)Enum.Parse (typeof(SortDirection), (string)left[0].Part (0));
       return result;
     }
 
     protected virtual T[] DoSort<T> (SortDirection direction, RCVector<T> vector)
     {
-      Comparison<T> comparison = (Comparison<T>)
-        m_comparers[vector.TypeCode][direction];
+      Comparison<T> comparison = (Comparison<T>) m_comparers[vector.TypeCode][direction];
       T[] array = vector.ToArray ();
       Array.Sort (array, comparison);
       return array;
     }
 
-    protected ColumnBase DoColumn<T> (
-      ColumnBase oldcol, Dictionary<long,int> map, Timeline axis)
+    protected void DoArray<T> (RCArray<T> inputData,
+                               RCArray<int> inputIndex,
+                               Dictionary<long, int> map,
+                               int axisCount,
+                               out RCArray<T> data,
+                               out RCArray<int> index)
     {
-      RCArray<T> d = (RCArray<T>) oldcol.Array;
-      RCArray<int> i = oldcol.Index;
-      RCArray<long> im = new RCArray<long> (i.Count);
-      T[] fd = new T[i.Count];
-      int[] fi = new int[i.Count];
-
-      //Remap the old rows to new rows in im.
-      for (int j = 0; j < oldcol.Index.Count; ++j)
+      RCArray<long> im = new RCArray<long> (inputData.Count);
+      T[] fd = new T[inputData.Count];
+      int[] fi = new int[inputData.Count];
+      if (inputIndex != null)
       {
-        int newRow;
         //Any rows that are lacking values in the sort column will be missing from map.
         //Push these rows so that they come after all the rows with valid values in the sort column.
         //But importantly, they are kept in the original order.
-        if (!map.TryGetValue (oldcol.Index[j], out newRow))
+        for (int j = 0; j < inputIndex.Count; ++j)
         {
-          newRow = map.Count + oldcol.Index[j];
+          int newRow;
+          if (!map.TryGetValue (inputIndex[j], out newRow))
+          {
+            throw new Exception (string.Format ("inputIndex[j]: {0} was not represented in map!", inputIndex[j]));
+          }
+          im.Write (newRow);
         }
-        im.Write (newRow);
       }
-
+      else
+      {
+        for (int j = 0; j < inputData.Count; ++j)
+        {
+          int newRow;
+          if (!map.TryGetValue (j, out newRow))
+          {
+            newRow = map.Count + j;
+          }
+          im.Write (newRow);
+        }
+      }
       //Now rank the values in im ascending.
       long[] rim = Rank.DoRank<long> (SortDirection.asc, 'l', im);
       for (int j = 0; j < rim.Length; ++j)
       {
-        fd[j] = d[(int) rim[j]];
+        fd[j] = inputData[(int) rim[j]];
         fi[j] = (int) im[(int) rim[j]];
       }
+      index = new RCArray<int> (fi);
+      data = new RCArray<T> (fd);
+    }
 
-      ColumnBase newcol = ColumnBase.FromArray (
-        axis, new RCArray<int> (fi), new RCArray<T> (fd));
-      return newcol;
+    protected ColumnBase DoColumn<T> (ColumnBase oldcol, Dictionary<long, int> map, Timeline axis)
+    {
+      RCArray<int> index;
+      RCArray<T> data;
+      DoArray ((RCArray<T>) oldcol.Array, oldcol.Index, map, axis.Count, out data, out index);
+      ColumnBase result = ColumnBase.FromArray (axis, index, data);
+      return result;
     }
   }
 }

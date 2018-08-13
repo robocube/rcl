@@ -2537,6 +2537,125 @@
        3 30  --
     ]
   }
+  TestSortWithTimeline1:{
+    skip:false
+    src:#desc,x sort [
+      S | x
+      #a  1
+    ]
+    bin:[
+      S | x
+      #a  1
+    ]
+  }
+  TestSortWithTimeline2:{
+    skip:false
+    src:#desc,y sort [
+      S | x  y
+      #a  1 10
+    ]
+    bin:[
+      S | x  y
+      #a  1 10
+    ]
+  }
+  TestSortWithTimeline3:{
+    skip:false
+    src:#desc,z sort [
+      S | x  y   z
+      #a  1 10 100
+    ]
+    bin:[
+      S | x  y   z
+      #a  1 10 100
+    ]
+  }
+  TestSortWithTimeline4:{
+    skip:false
+    src:#desc,x sort [
+      S | x
+      #a  1
+      #b  2
+    ]
+    bin:[
+      S | x
+      #b  2
+      #a  1
+    ]
+  }
+  TestSortWithTimeline5:{
+    skip:false
+    src:#desc,x sort [
+      S | x  y
+      #a  1 10
+      #b  2 20
+    ]
+    bin:[
+      S | x  y
+      #b  2 20
+      #a  1 10
+    ]
+  }
+  TestSortWithTimeline6:{
+    skip:false
+    src:#desc,x sort [
+      S | x  y   z
+      #a  1 10 100
+      #b  2 20 200
+      #c  3 30 300
+    ]
+    bin:[
+      S | x  y   z
+      #c  3 30 300
+      #b  2 20 200
+      #a  1 10 100
+    ]
+  }
+  TestSortWithTimeline7:{
+    skip:false
+    src:#desc,x sort [
+      S | x  y   z
+      #a -- 10 100
+      #b  2 20 200
+      #c  3 30 300
+    ]
+    bin:[
+      S | x  y   z
+      #c  3 30 300
+      #b  2 20 200
+      #a -- 10 100
+    ]
+  }
+  TestSortWithTimeline8:{
+    skip:false
+    src:#desc,y sort [
+      S | x  y   z
+      #a  1 10 100
+      #b  2 -- 200
+      #c  3 30 300
+    ]
+    bin:[
+      S | x  y   z
+      #c  3 30 300
+      #a  1 10 100
+      #b  2 -- 200
+    ]
+  }
+  TestSortWithTimeline9:{
+    skip:false
+    src:#desc,z sort [
+      S | x  y   z
+      #a  1 10 100
+      #b  2 20 200
+      #c  3 30  --
+    ]
+    bin:[
+      S | x  y   z
+      #b  2 20 200
+      #a  1 10 100
+      #c  3 30  --
+    ]
+  }
   TestSortColumnsStayInOrder:{
     skip:false
     src:#desc,x sort [
@@ -2551,6 +2670,11 @@
        2 20 200
       -- 10 100
     ]
+  }
+  TestSortEmpty:{
+    skip:false
+    src:#asc,x sort []
+    bin:[]
   }
   TestSortByTime:{
     skip:false

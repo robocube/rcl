@@ -226,7 +226,11 @@ namespace RCL.Exe
         {
           //Brian! This is where the Console exception was getting hidden
           //Console.WriteLine ("Exception was caught: {0}", ex);
-          RCSystem.Log.Record (0, 0, "fiber", 0, "unhandled", ex);
+          //Prevent having duplicate output in the log for these - I find it disorienting and buggish
+          if (!runner.RunnerUnhandled)
+          {
+            RCSystem.Log.Record (0, 0, "fiber", 0, "unhandled", ex);
+          }
         }
       }
       runner.Dispose ();
