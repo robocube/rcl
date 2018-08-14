@@ -1288,37 +1288,29 @@ namespace RCL.Test
       DoTest ("#desc,z sort [S|x y z #a 1 10 100 #b 2 20 200 #c 3 30 --]", "[S|x y z #b 2 20 200 #a 1 10 100 #c 3 30 --]");
     }
 
-    /* Please come back to this soon
     [Test]
-    public void TestSortWithTimeline ()
+    public void TestSortByTimelineCol1 ()
     {
-      string col1row1 = "[S|x #a 1]";
-      string col2row1 = "[S|x y #a 1 10]";
-      string col3row1 = "[S|x y z #a 1 10 100]";
-      string col1row2 = "[S|x #a 1 #b 2]";
-      string col2row2 = "[S|x y #a 1 10 #b 2 20]";
-      string col3row2 = "[S|x y z #a 1 10 100 #b 2 20 200]";
-      string col3row3 = "[S|x y z #a 1 10 100 #b 2 20 200 #c 3 30 300]";
-      //string col1row3 = "[x 1l 2l 3l]";
-      string null00 = "[S|x y z -- #a 10 100 #b 2 20 200 #c 3 30 300]";
-      string null11 = "[S|x y z #a 1 10 100 #b 2 -- 200 #c 3 30 300]";
-      string null22 = "[S|x y z #a 1 10 100 #b 2 20 200 #c 3 30 --]";
-      
-      DoTest (string.Format ("#desc,x sort {0}", col1row1), "[S|x #a 1]");
-      DoTest (string.Format ("#desc,y sort {0}", col2row1), "[S|x y #a 1 10]");
-      DoTest (string.Format ("#desc,z sort {0}", col3row1), "[S|x y z #a 1 10 100]");
-      DoTest (string.Format ("#desc,x sort {0}", col1row2), "[S|x #b 2 #a 1]");
-      DoTest (string.Format ("#desc,y sort {0}", col2row2), "[S|x y #b 2 20 #a 1 10]");
-      DoTest (string.Format ("#desc,z sort {0}", col3row2), "[S|x y z #b 2 20 200 #a 1 10 100]");
-      DoTest (string.Format ("#desc,y sort {0}", col3row3), "[S|x y z #c 3 30 300 #b 2 20 200 #a 1 10 100]");
-      //DoTest (string.Format ("#desc,x sort {0}", null00), "[x y z 3l 30l 300l 2l 20l 200l -- 10l 100l]");
-      //It should really be the way commented above this line.
-      //Gotta fix that column ordering bug.
-      DoTest (string.Format ("#desc,x sort {0}", null00), "[S|x y z #c 3 30 300 #b 2 20 200 #a -- 10 100]");
-      DoTest (string.Format ("#desc,y sort {0}", null11), "[S|x y z #c 3 30 300 #a 1 10 100 #b 2 -- 200]");
-      DoTest (string.Format ("#desc,z sort {0}", null22), "[S|x y z #b 2 20 200 #a 1 10 100 #c 3 30 --]");
+      DoTest ("#desc,S sort [S|x y z #a 1 10 100 #b 2 20 200 #c 3 30 300]", "[S|x y z #c 3 30 300 #b 2 20 200 #a 1 10 100]");
     }
-    */
+
+    [Test]
+    public void TestSortByTimelineCol2 ()
+    {
+      DoTest ("#desc,T sort [T|S|x y z 2018.08.04 #a 1 10 100 2018.08.05 #b 2 20 200 2018.08.06 #c 3 30 300]", "[T|S|x y z 2018.08.06 #c 3 30 300 2018.08.05 #b 2 20 200 2018.08.04 #a 1 10 100]");
+    }
+
+    [Test]
+    public void TestSortByTimelineCol3 ()
+    {
+      DoTest ("#desc,E sort [E|S|x y z 0 #a 1 10 100 1 #b 2 20 200 2 #c 3 30 300]", "[E|S|x y z 2 #c 3 30 300 1 #b 2 20 200 0 #a 1 10 100]");
+    }
+
+    [Test]
+    public void TestSortByTimelineCol4 ()
+    {
+      DoTest ("#desc,G sort [G|E|S|x y z 123 0 #a 1 10 100 456 1 #b 2 20 200 789 2 #c 3 30 300]", "[G|E|S|x y z 789 2 #c 3 30 300 456 1 #b 2 20 200 123 0 #a 1 10 100]");
+    }
 
     [Test]
     public void TestSortColumnsStayInOrder ()

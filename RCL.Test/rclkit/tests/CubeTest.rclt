@@ -2656,6 +2656,66 @@
       #c  3 30  --
     ]
   }
+  TestSortByTimelineCol1:{
+    skip:false
+    src:#desc,S sort [
+      S | x  y   z
+      #a  1 10 100
+      #b  2 20 200
+      #c  3 30 300
+    ]
+    bin:[
+      S | x  y   z
+      #c  3 30 300
+      #b  2 20 200
+      #a  1 10 100
+    ]
+  }
+  TestSortByTimelineCol2:{
+    skip:false
+    src:#desc,T sort [
+               T|S | x  y   z
+      2018.08.04 #a  1 10 100
+      2018.08.05 #b  2 20 200
+      2018.08.06 #c  3 30 300
+    ]
+    bin:[
+               T|S | x  y   z
+      2018.08.06 #c  3 30 300
+      2018.08.05 #b  2 20 200
+      2018.08.04 #a  1 10 100
+    ]
+  }
+  TestSortByTimelineCol3:{
+    skip:false
+    src:#desc,E sort [
+       E|S | x  y   z
+       0 #a  1 10 100
+       1 #b  2 20 200
+       2 #c  3 30 300
+    ]
+    bin:[
+       E|S | x  y   z
+       2 #c  3 30 300
+       1 #b  2 20 200
+       0 #a  1 10 100
+    ]
+  }
+  TestSortByTimelineCol4:{
+    skip:false
+    src:#desc,G sort [
+        G| E|S | x  y   z
+      123  0 #a  1 10 100
+      456  1 #b  2 20 200
+      789  2 #c  3 30 300
+    ]
+    bin:[
+        G| E|S | x  y   z
+      789  2 #c  3 30 300
+      456  1 #b  2 20 200
+      123  0 #a  1 10 100
+    ]
+  }
   TestSortColumnsStayInOrder:{
     skip:false
     src:#desc,x sort [

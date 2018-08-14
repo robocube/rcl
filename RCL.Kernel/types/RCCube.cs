@@ -638,7 +638,10 @@ namespace RCL.Kernel
     public ColumnBase GetColumn (string name)
     {
       int column = m_names.IndexOf (name);
-      if (column < 0) return null;
+      if (column < 0)
+      {
+        return null;
+      }
       return m_columns[column];
     }
 
