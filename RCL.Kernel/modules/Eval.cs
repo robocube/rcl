@@ -462,6 +462,7 @@ namespace RCL.Kernel
               //There is no newline at the end.
               //If this is a text section, the lastPiece is a prefix for the next code section.
               string lastPiece = section.Substring (start, section.Length - start);
+              //Console.WriteLine("i={0}, section='{1}', start={2}, section.Length-start={3}", i, section, start, section.Length - start);
               if (i % 2 == 1)
               {
                 //Odd sections are always code sections.
@@ -477,12 +478,14 @@ namespace RCL.Kernel
                 else if (j == text.Count - 1)
                 {
                   indent = parentIndent;
+                  //Console.WriteLine("indent set to '{0}' (480)", indent);
                 }
                 builder.Append (lastPiece);
               }
               else
               {
                 int w;
+                //Console.WriteLine("lastPiece='{0}'", lastPiece);
                 for (w = 0; w < lastPiece.Length; ++w)
                 {
                   if (lastPiece [w] != ' ')
@@ -492,8 +495,24 @@ namespace RCL.Kernel
                 }
                 //indent only includes spaces before the first non-space character.
                 //The non-space part of the text is only inserted once. 
+                //An edge case involves spaces inserted between code sections on the same line.
                 //\t not spoken here.
-                indent = parentIndent + lastPiece.Substring (0, w);
+                string end;
+                //if (section.Length == 0 || (section[0] != '\n' && section[0] != '\r'))
+                //if (lastPiece.Length > 0 && lastPiece[lastPiece.Length - 1] == '\n')
+                if (builder.Length == 0 || builder[builder.Length - 1] == '\n')
+                //if (lastPiece != " ")
+                {
+                  indent = parentIndent + lastPiece.Substring (0, w);
+                  //Console.WriteLine("indent='{0}',w={1} (497)", indent, w);
+                  end = lastPiece.Substring (w, lastPiece.Length - w);
+                }
+                else
+                {
+                  //end = lastPiece.Substring (w, lastPiece.Length - w);
+                  end = lastPiece;
+                  //builder.Append (lastPiece);
+                }
                 if (i < right.Count - 1)
                 {
                   if (section.Length > 0)
@@ -501,7 +520,6 @@ namespace RCL.Kernel
                     builder.Append (indent);
                   }
                 }
-                string end = lastPiece.Substring (w, lastPiece.Length - w);
                 builder.Append (end);
               }
             }
@@ -990,7 +1008,6 @@ namespace RCL.Kernel
       UserOperator name = op as UserOperator;
       if (name != null)
       {
-        //Console.Out.WriteLine ("CHECKING FOR TAIL RECURSION");
         PreresolveUserOp (previous, op, ref userop, ref useropContext);
         RCClosure current = previous.Parent;
         while (current != null)
@@ -1000,14 +1017,14 @@ namespace RCL.Kernel
           {
             if (userop == current.UserOp)
             {
-              //Console.Out.WriteLine ("TAIL RECURSION DETECTED");
+              //Tail recursion detected
               return true;
             }
           }
           current = current.Parent;
         }
       }
-      //Console.Out.WriteLine ("NO TAIL RECURSION HERE BUB");
+      //No tail recursion here
       return false;
     }
 

@@ -4069,6 +4069,30 @@
     }
     bin:"x\n  0_a\n  0_b\n  1_a\n  1_b\ny\n"
   }
+  TestEvalTemplateIndent10:{
+    skip:false
+    src:{
+      VAR:"var"
+      <-eval [?
+        FIRST LINE [! $VAR !] [! $VAR !]
+        SHOULD BE ALIGNED
+        [! $VAR !]
+      ?]
+    }
+    bin:"FIRST LINE var var\nSHOULD BE ALIGNED\nvar\n"
+  }
+  TestEvalTemplateIndent11:{
+    skip:false
+    src:{
+      VAR:"$VAR"
+      <-eval [?
+        [! $VAR !] BETWEEN[! $VAR !]
+        SHOULD BE ALIGNED
+        [! $VAR !]
+      ?]
+    }
+    bin:"$VAR BETWEEN$VAR\nSHOULD BE ALIGNED\n$VAR\n"
+  }
   TestEvalTemplateLeadingNewline:{
     skip:false
     src:{

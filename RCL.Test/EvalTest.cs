@@ -1941,6 +1941,20 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestEvalTemplateIndent10 ()
+    {
+      DoEvalTest ("{VAR:\"var\" <-eval [?\n  FIRST LINE [! $VAR !] [! $VAR !]\n  SHOULD BE ALIGNED\n  [! $VAR !]\n?]}",
+                  "\"FIRST LINE var var\\nSHOULD BE ALIGNED\\nvar\\n\"");
+    }
+
+    [Test]
+    public void TestEvalTemplateIndent11 ()
+    {
+      DoEvalTest ("{VAR:\"$VAR\" <-eval [?\n  [! $VAR !] BETWEEN[! $VAR !]\n  SHOULD BE ALIGNED\n  [! $VAR !]\n?]}",
+                  "\"$VAR BETWEEN$VAR\\nSHOULD BE ALIGNED\\n$VAR\\n\"");
+    }
+
+    [Test]
     public void TestEvalTemplateLeadingNewline ()
     {
       //content:{

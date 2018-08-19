@@ -142,11 +142,13 @@ namespace RCL.Kernel
       {
         //In interactive mode, suppress reported stack frames from Program.Main
         //The only error you should see is the "unhandled" one
+        //Console.WriteLine ("HIDDEN MESSAGE CASE 1!");
         return;
       }
       else if (bot == 0 && instance == 0 && type == "fiber" &&
                (state == "start" || state == "done"))
       {
+        //Console.WriteLine ("HIDDEN MESSAGE CASE 2!");
         return;
       }
       else if (m_level == RCOutput.Single)
