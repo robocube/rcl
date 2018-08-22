@@ -321,10 +321,9 @@ namespace RCL.Kernel
                                               0, "");
             runner.Yield (closure, result);
           }
-          catch (Exception)
+          catch (Exception ex)
           {
-            //Maybe we should fold the original exception into the output here?
-            RCException rcex = new RCException (closure,
+            RCException rcex = new RCException (closure, ex,
                                                 RCErrors.Native,
                                                 "An exception was thrown by the template.");
             runner.Finish (closure, rcex, (int) RCErrors.Native);
@@ -376,15 +375,23 @@ namespace RCL.Kernel
         RCVector<string> text = child as RCVector<string>;
         if (text == null)
         {
-          ExpandTemplate (builder, template, (RCBlock) child, I + i, indent);
+          RCArray<string> strings = new RCArray<string> (right.Count);
+          RCBlock nestedBlock = (RCBlock) child;
+          for (int j = 0; j < nestedBlock.Count; ++j)
+          {
+            strings.Write (nestedBlock.GetString (j));
+          }
+          text = new RCString (strings);
+          //ExpandTemplate (builder, template, (RCBlock) child, I + i, indent);
         }
-        else
+        //else
         {
           bool somethingAdded = false;
           for (int j = 0; j < text.Count; ++j)
           {
             string section = text [j];
             int start = 0;
+            int lineNum = 0;
             for (int k = 0; k < section.Length; ++k)
             {
               if (section [k] == '\n')
@@ -412,6 +419,7 @@ namespace RCL.Kernel
                     //inserted/indented already.
                     builder.Append (indent);
                   }
+                  //Console.WriteLine("appending line (415): '{0}'", line);
                   builder.Append (line);
                   builder.Append ("\n");
                   somethingAdded = true;
@@ -423,6 +431,7 @@ namespace RCL.Kernel
                   line = section.Substring (start, k - start);
                   if (I + i == 0)
                   {
+                    //Console.WriteLine("appending line (426): '{0}'", line);
                     builder.Append (line);
                     builder.Append ("\n");
                   }
@@ -432,28 +441,35 @@ namespace RCL.Kernel
                     {
                       if (start == 0 && (k < section.Length - 1 || i == right.Count - 1))
                       {
+                        //Console.WriteLine("appending indent (437)");
                         builder.Append (indent);
                       }
                       else if (k == section.Length - 1 && i < right.Count - 1)
                       {
+                        //Console.WriteLine("appending indent (442)");
                         builder.Append (indent);
                       }
-                      else if (start > 1 && i < right.Count - 1)
-                      {
-                        builder.Append (indent);
-                      }
+                      //else if (start > 1 && lineNum > 0 && i < right.Count - 1)
+                      ////else if (start > 1 && i < right.Count - 1)
+                      //{
+                      //  Console.WriteLine("appending indent (447): start={0}, i={1}, k={2}, j={3}, lineNum={4}, section.Length={5}, right.Count={6}",
+                      //                    start, i, k, j, lineNum, section.Length, right.Count);
+                      //  builder.Append (indent);
+                      //}
                     }
+                    //Console.WriteLine("appending line (451): '{0}'", line);
                     builder.Append (line);
                     builder.Append ("\n");
                   }
-                  else if (k > 0 || 
-                           (builder.Length > 0 && builder [builder.Length - 1] != '\n'))
+                  else if (k > 0 || (builder.Length > 0 && builder [builder.Length - 1] != '\n'))
                   {
+                    //Console.WriteLine("appending line (461): '{0}'", line);
                     builder.Append (line);
                     builder.Append ("\n");
                   }
                 }
                 start = k + 1;
+                ++lineNum;
               }
             }
             if (template.Multiline)
@@ -462,6 +478,7 @@ namespace RCL.Kernel
               //There is no newline at the end.
               //If this is a text section, the lastPiece is a prefix for the next code section.
               string lastPiece = section.Substring (start, section.Length - start);
+              //Console.WriteLine("handling lastPiece: section={0} start={1} lastPiece='{2}'", i, start, lastPiece);
               //Console.WriteLine("i={0}, section='{1}', start={2}, section.Length-start={3}", i, section, start, section.Length - start);
               if (i % 2 == 1)
               {
@@ -478,14 +495,14 @@ namespace RCL.Kernel
                 else if (j == text.Count - 1)
                 {
                   indent = parentIndent;
-                  //Console.WriteLine("indent set to '{0}' (480)", indent);
+                  //Console.WriteLine("indent set to '{0}' (481)", indent);
                 }
+                //Console.WriteLine("appending lastPiece: '{0}'", lastPiece);
                 builder.Append (lastPiece);
               }
               else
               {
                 int w;
-                //Console.WriteLine("lastPiece='{0}'", lastPiece);
                 for (w = 0; w < lastPiece.Length; ++w)
                 {
                   if (lastPiece [w] != ' ')
@@ -497,35 +514,39 @@ namespace RCL.Kernel
                 //The non-space part of the text is only inserted once. 
                 //An edge case involves spaces inserted between code sections on the same line.
                 //\t not spoken here.
-                string end;
-                //if (section.Length == 0 || (section[0] != '\n' && section[0] != '\r'))
-                //if (lastPiece.Length > 0 && lastPiece[lastPiece.Length - 1] == '\n')
-                if (builder.Length == 0 || builder[builder.Length - 1] == '\n')
-                //if (lastPiece != " ")
+                //while (builder.Length == 0 || builder[builder.Length - 1] == '\n')
                 {
-                  indent = parentIndent + lastPiece.Substring (0, w);
-                  //Console.WriteLine("indent='{0}',w={1} (497)", indent, w);
-                  end = lastPiece.Substring (w, lastPiece.Length - w);
-                }
-                else
-                {
-                  //end = lastPiece.Substring (w, lastPiece.Length - w);
-                  end = lastPiece;
-                  //builder.Append (lastPiece);
-                }
-                if (i < right.Count - 1)
-                {
-                  if (section.Length > 0)
+                  string end;
+                  if (builder.Length == 0 || builder[builder.Length - 1] == '\n')
                   {
-                    builder.Append (indent);
+                    indent = parentIndent + lastPiece.Substring (0, w);
+                    //Console.WriteLine("indent set to '{0}',w={1} (507)", indent, w);
+                    end = lastPiece.Substring (w, lastPiece.Length - w);
                   }
+                  else
+                  {
+                    end = lastPiece;
+                  }
+                  if (i < right.Count - 1)
+                  {
+                    if (section.Length > 0)
+                    {
+                      if (builder.Length == 0 || builder[builder.Length - 1] == '\n')
+                      {
+                        //Console.WriteLine("appending indent='{0}'", indent);
+                        builder.Append (indent);
+                      }
+                    }
+                  }
+                  builder.Append (end);
+                  //Console.WriteLine("appending end: '{0}'", end);
                 }
-                builder.Append (end);
               }
             }
             else
             {
               //If there are no newlines in the template then just drop the whole thing in as is.
+              //Console.WriteLine("appending text: '{0}'", text[j]);
               builder.Append (text [j]);
             }
           }

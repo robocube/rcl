@@ -1955,6 +1955,13 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestEvalTemplateIndent12 ()
+    {
+      DoEvalTest ("{rcldir:\"VAR1\" tmpdir:\"VAR2\" <-eval [?\n  {\n    {\n      {\n        FIRST LINE BEFORE [! $rcldir !] FIRST LINE BETWEEN [! $tmpdir !] FIRST LINE AFTER\n      }\n      ALIGNED BETWEEN BRACKETS\n      {\n      SECOND LINE BEFORE [! $rcldir !] SECOND LINE BETWEEN [! $tmpdir !] SECOND LINE AFTER\n      }\n    }\n  }\n?]",
+                  "\"{\\n  {\\n    {\\n      FIRST LINE BEFORE VAR1 FIRST LINE BETWEEN VAR2 FIRST LINE AFTER\\n    }\\n    ALIGNED BETWEEN BRACKETS\\n    {\\n    SECOND LINE BEFORE VAR1 SECOND LINE BETWEEN VAR2 SECOND LINE AFTER\\n    }\\n  }\\n}\\n\"");
+    }
+
+    [Test]
     public void TestEvalTemplateLeadingNewline ()
     {
       //content:{

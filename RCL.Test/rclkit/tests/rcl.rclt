@@ -895,7 +895,7 @@ template_nesting_something_added2:{
     screen_js:template eval [?
       first line
         second line
-          [! {<-$R.js_init} each $panel_js !]
+          [! & {<-$R.js_init} each $panel_js !]
         fifth line
       sixth line
     ?]

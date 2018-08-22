@@ -4093,6 +4093,27 @@
     }
     bin:"$VAR BETWEEN$VAR\nSHOULD BE ALIGNED\n$VAR\n"
   }
+  TestEvalTemplateIndent12:{
+    skip:false
+    src:{
+      rcldir:"VAR1"
+      tmpdir:"VAR2"
+      <-eval [?
+        {
+          {
+            {
+              FIRST LINE BEFORE [! $rcldir !] FIRST LINE BETWEEN [! $tmpdir !] FIRST LINE AFTER
+            }
+            ALIGNED BETWEEN BRACKETS
+            {
+            SECOND LINE BEFORE [! $rcldir !] SECOND LINE BETWEEN [! $tmpdir !] SECOND LINE AFTER
+            }
+          }
+        }
+      ?]
+    }
+    bin:"{\n  {\n    {\n      FIRST LINE BEFORE VAR1 FIRST LINE BETWEEN VAR2 FIRST LINE AFTER\n    }\n    ALIGNED BETWEEN BRACKETS\n    {\n    SECOND LINE BEFORE VAR1 SECOND LINE BETWEEN VAR2 SECOND LINE AFTER\n    }\n  }\n}\n"
+  }
   TestEvalTemplateLeadingNewline:{
     skip:false
     src:{

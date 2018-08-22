@@ -91,7 +91,7 @@ namespace RCL.Kernel
     }
 
     public readonly RCClosure Closure;
-    public readonly TargetInvocationException Exception;
+    public readonly Exception Exception;
     public readonly RCErrors Error;
     public readonly RCString Output;
 
@@ -110,7 +110,7 @@ namespace RCL.Kernel
       Output = output;
     }
 
-    public RCException (RCClosure closure, TargetInvocationException ex, RCErrors error, string message)
+    public RCException (RCClosure closure, Exception ex, RCErrors error, string message)
       :base (message)
     {
       Closure = closure;
