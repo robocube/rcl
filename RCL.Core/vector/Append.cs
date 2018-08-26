@@ -10,64 +10,55 @@ namespace RCL.Core
   public class Append
   {
     [RCVerb ("&")]
-    public void EvalAppend (
-      RCRunner runner, RCClosure closure, RCByte left, RCByte right)
+    public void EvalAppend (RCRunner runner, RCClosure closure, RCByte left, RCByte right)
     {
       runner.Yield (closure, new RCByte (DoAppend<byte> (left, right)));
     }
 
     [RCVerb ("&")]
-    public void EvalAppend (
-      RCRunner runner, RCClosure closure, RCDouble left, RCDouble right)
+    public void EvalAppend (RCRunner runner, RCClosure closure, RCDouble left, RCDouble right)
     {
       runner.Yield (closure, new RCDouble (DoAppend<double> (left, right)));
     }
 
     [RCVerb ("&")]
-    public void EvalAppend (
-      RCRunner runner, RCClosure closure, RCLong left, RCLong right)
+    public void EvalAppend (RCRunner runner, RCClosure closure, RCLong left, RCLong right)
     {
       runner.Yield (closure, new RCLong (DoAppend<long> (left, right)));
     }
 
     [RCVerb ("&")]
-    public void EvalAppend (
-      RCRunner runner, RCClosure closure, RCString left, RCString right)
+    public void EvalAppend (RCRunner runner, RCClosure closure, RCString left, RCString right)
     {
       runner.Yield (closure, new RCString (DoAppend<string> (left, right)));
     }
 
     [RCVerb ("&")]
-    public void EvalAppend (
-      RCRunner runner, RCClosure closure, RCDecimal left, RCDecimal right)
+    public void EvalAppend (RCRunner runner, RCClosure closure, RCDecimal left, RCDecimal right)
     {
       runner.Yield (closure, new RCDecimal (DoAppend<decimal> (left, right)));
     }
 
     [RCVerb ("&")]
-    public void EvalAppend (
-      RCRunner runner, RCClosure closure, RCBoolean left, RCBoolean right)
+    public void EvalAppend (RCRunner runner, RCClosure closure, RCBoolean left, RCBoolean right)
     {
       runner.Yield (closure, new RCBoolean (DoAppend<bool> (left, right)));
     }
 
     [RCVerb ("&")]
-    public void EvalAppend (
-      RCRunner runner, RCClosure closure, RCSymbol left, RCSymbol right)
+    public void EvalAppend (RCRunner runner, RCClosure closure, RCSymbol left, RCSymbol right)
     {
       runner.Yield (closure, new RCSymbol (DoAppend<RCSymbolScalar> (left, right)));
     }
 
     [RCVerb ("&")]
-    public void EvalAppend (
-      RCRunner runner, RCClosure closure, RCTime left, RCTime right)
+    public void EvalAppend (RCRunner runner, RCClosure closure, RCTime left, RCTime right)
     {
       runner.Yield (closure, new RCTime (DoAppend<RCTimeScalar> (left, right)));
     }
 
     [RCVerb ("&")]
-    public void EvalAppend (
-      RCRunner runner, RCClosure closure, RCBlock left, RCBlock right)
+    public void EvalAppend (RCRunner runner, RCClosure closure, RCBlock left, RCBlock right)
     {
       RCBlock result = left;
       for (int i = 0; i < right.Count; ++i)
@@ -77,20 +68,26 @@ namespace RCL.Core
       }
       runner.Yield (closure, result);
     }
-      
+
     [RCVerb ("&")]
-    public void EvalAppend (
-      RCRunner runner, RCClosure closure, RCCube left, RCCube right)
+    public void EvalAppend (RCRunner runner, RCClosure closure, RCCube left, RCCube right)
     {
-      RCCube result = new RCCube (left);
+      RCCube result;
+      if (left.Count > 0)
+      {
+        result = new RCCube (left);
+      }
+      else
+      {
+        result = new RCCube (right.Axis.Match ());
+      }
       Writer writer = new Writer (result, null, true, true, 0);
       writer.Write (right);
       runner.Yield (closure, result);
     }
 
     [RCVerb ("&")]
-    public void EvalAppend (
-      RCRunner runner, RCClosure closure, RCString right)
+    public void EvalAppend (RCRunner runner, RCClosure closure, RCString right)
     {
       StringBuilder builder = new StringBuilder ();
       for (int i = 0; i < right.Count; ++i)
@@ -101,8 +98,7 @@ namespace RCL.Core
     }
 
     [RCVerb ("&")]
-    public void EvalAppend (
-      RCRunner runner, RCClosure closure, RCBlock right)
+    public void EvalAppend (RCRunner runner, RCClosure closure, RCBlock right)
     {
       if (right.Count == 0)
       {
