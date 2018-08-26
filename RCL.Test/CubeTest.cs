@@ -3201,6 +3201,12 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestAppendEmptyNoSymbol ()
+    {
+      DoTest ("[] & cube {:{foo:1 bar:2}}", "[foo bar 1 2]");
+    }
+
+    [Test]
     [Ignore ("because")]
     public void TestAppendTime0 ()
     {
