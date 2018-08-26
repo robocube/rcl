@@ -355,6 +355,7 @@ namespace RCL.Kernel
               m_exception = sysex;
               m_exceptionClosure = next;
               ++m_exceptionCount;
+              SafeLogRecord (next, "runner", "killfail", sysex);
               m_done.Set ();
             }
           }
@@ -363,6 +364,19 @@ namespace RCL.Kernel
         }
       }
       Finish (prev, result);
+    }
+
+    protected void SafeLogRecord (RCClosure closure, string module, string state, Exception ex)
+    {
+      try
+      {
+        RCSystem.Log.Record (closure, module, closure.Fiber, state, ex);
+      }
+      catch (Exception innerEx)
+      {
+        RCSystem.Log.Record (closure, module, closure.Fiber, state,
+                             "An exception occured while reporting an exception: " + innerEx.ToString ());
+      }
     }
 
     public void Dispose ()
@@ -579,7 +593,7 @@ namespace RCL.Kernel
       {
         string state = status == 1 ? "failed" : "killed";
         bot.ChangeFiberState (closure.Fiber, state);
-        RCSystem.Log.Record (closure, "fiber", closure.Fiber, state, exception);
+        SafeLogRecord (closure, "fiber", state, exception);
         ++m_exceptionCount;
         if (closure.Fiber == 0 && closure.Bot == 0)
         {
