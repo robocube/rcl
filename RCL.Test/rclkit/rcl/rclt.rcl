@@ -98,6 +98,13 @@ run_test:{
           :$result.data.result_data
           :$result.data.result_error
         }
+        actual:(0 from #setup_incomplete #teardown_incomplete #test_incomplete #complete where
+          not $result.data.setup_completed & $result.data.teardown_completed & $result.data.test_completed & not $result.data.completed) switch {
+          setup_incomplete:$result.data.setup_result.error
+          teardown_incomplete:$result.data.teardown_result.error
+          test_incomplete:$result.data.result_error
+          complete:$result.data.result_data
+        }
         report:eval {
           name:$test.name
           src:$test.src
