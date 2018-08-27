@@ -1255,9 +1255,6 @@ namespace RCL.Kernel
       if (timeline.Count == 0)
       {
         return 0;
-        //Console.WriteLine("timeline.Count == 0");
-        //Console.WriteLine(Environment.StackTrace);
-        throw new Exception ("VisitCellsForward may not be used on empty cubes");
       }
       //Row number in the source data grid.
       //NOT THE DESTINATION!
