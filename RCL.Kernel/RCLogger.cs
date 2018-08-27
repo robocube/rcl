@@ -271,7 +271,14 @@ namespace RCL.Kernel
       }
       else if (info is Exception && (m_level == RCOutput.Test || m_level == RCOutput.Single))
       {
-        message = "<<Reported>>";
+        if (RCSystem.Args.FullStack)
+        {
+          message = string.Format ("<<Reported, {0}>>", info.ToString ());
+        }
+        else
+        {
+          message = "<<Reported>>";
+        }
       }
       else if (info is RCString)
       {

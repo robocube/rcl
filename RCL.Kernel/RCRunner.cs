@@ -204,7 +204,7 @@ namespace RCL.Kernel
       //If an exception was thrown, rethrow it on this thread.
       if (m_exception != null)
       {
-        RCSystem.Log.Record (root, "runner", 0, "unhandled", m_exception);
+        RCSystem.Log.Record (root, "fiber", 0, "unhandled", m_exception);
         Exception exception = m_exception;
         m_exception = null;
         if (restoreStateOnError)

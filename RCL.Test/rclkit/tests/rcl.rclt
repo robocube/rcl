@@ -422,7 +422,6 @@ exec_exithang:{
   }
   bin:[
     bot fiber module   instance event       message
-      0     0 "runner"        0 "unhandled" "<<Native,An exception was thrown by the operator exec.>>"
       0     0 "runner"        0 "signal"    "SIGINT"
       0     0 "runner"        0 "exit"      "0"
       0     0 "exec"          0 "closing"   "export (-1)"
@@ -454,7 +453,6 @@ sigint:{
   bin:[
     bot fiber module   instance event    message
       0     0 "runner"        0 "signal" "SIGINT"
-      0     0 "runner"        0 "unhandled" "<<Reported>>"
       0     0 "runner"        0 "exit"   "0"
 	]
 }
@@ -475,18 +473,9 @@ sigint_twice:{
     :"fiber entries in the log are non-deterministic in this case"
     <-$out_cube where not $out_cube.module in "fiber"
   }
-  bin:[?
-    0 0 runner 0 signal SIGINT
-    0 0 fiber 0 failed <<Reported>>
-    0 0 fiber 0 dead
-    0 0 fiber 0 reported <<Reported>>
-    0 0 runner 0 signal SIGINT (exiting)
-    <<Exec,exit status 2>>
-  ?]
   bin:[
     bot fiber module   instance event    message
       0     0 "runner"        0 "signal"    "SIGINT"
-      0     0 "runner"        0 "unhandled" "<<Reported>>"
       0     0 "runner"        0 "signal"    "SIGINT (exiting)"
      -1    -1 ""             -1 ""          "<<Exec,exit status 2>>"
 	]
