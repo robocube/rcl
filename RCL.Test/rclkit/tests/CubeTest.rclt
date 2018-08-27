@@ -6592,6 +6592,19 @@
       #a --  2  3
     ]
   }
+  TestAppendEmptyNoSymbol:{
+    skip:false
+    src:[] & cube {
+      :{
+        foo:1
+        bar:2
+      }
+    }
+    bin:[
+      foo bar
+        1   2
+    ]
+  }
   TestAppendTime0:{
     skip:true
     src:[

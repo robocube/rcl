@@ -542,6 +542,70 @@
       :Test.TestMultipleCustomArguments {}
     }
   }
+  TestFlag:{
+    src:{
+      rcldir:codebase {}
+      Test:& compile eval [?
+        using System;
+        using RCL.Kernel;
+        public class TestClass
+        {
+          [RCVerb ("TestFlag")]
+          public void EvalTest (RCRunner runner, RCClosure closure, RCBlock right)
+          {
+            RCRunner testRunner = new RCRunner ();
+            if (RCSystem.IsMono ())
+            {
+              testRunner.Rep ("p:startx \"mono [! $rcldir !]/rcl.exe --output=clean --nokeys --myflag\"");
+            }
+            else
+            {
+              testRunner.Rep ("p:startx \"[! $rcldir !]/rcl.exe --output=clean --nokeys --myflag\"");
+            }
+            testRunner.Rep ("$p writex \"flag \\\"myflag\\\"\"");
+            RCString result = (RCString) testRunner.Rep ("\"\\n\" readx $p");
+            testRunner.Rep ("$p writex \"exit\"");
+            testRunner.Rep ("waitx $p");
+            RCL.Kernel.Assert.AreEqual ("true", result[0]);
+            runner.Yield (closure, RCBlock.Empty);
+          }
+        }
+      ?]
+      :Test.TestFlag {}
+    }
+  }
+  TestFlagNegative:{
+    src:{
+      rcldir:codebase {}
+      Test:& compile eval [?
+        using System;
+        using RCL.Kernel;
+        public class TestClass
+        {
+          [RCVerb ("TestFlagNegative")]
+          public void EvalTest (RCRunner runner, RCClosure closure, RCBlock right)
+          {
+            RCRunner testRunner = new RCRunner ();
+            if (RCSystem.IsMono ())
+            {
+              testRunner.Rep ("p:startx \"mono [! $rcldir !]/rcl.exe --output=clean --nokeys --myflag\"");
+            }
+            else
+            {
+              testRunner.Rep ("p:startx \"[! $rcldir !]/rcl.exe --output=clean --nokeys --myflag\"");
+            }
+            testRunner.Rep ("$p writex \"flag \\\"notmyflag\\\"\"");
+            RCString result = (RCString) testRunner.Rep ("\"\\n\" readx $p");
+            testRunner.Rep ("$p writex \"exit\"");
+            testRunner.Rep ("waitx $p");
+            RCL.Kernel.Assert.AreEqual ("false", result[0]);
+            runner.Yield (closure, RCBlock.Empty);
+          }
+        }
+      ?]
+      :Test.TestFlagNegative {}
+    }
+  }
   TestCdWithQuotes:{
     src:{
       rcldir:codebase {}

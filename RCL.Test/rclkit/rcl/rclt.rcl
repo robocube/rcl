@@ -176,7 +176,10 @@ run_file:{
 
 main:{
   files:info #arguments 
-  :"RCL_FLAGS" setenv "--output=test --show=print:test,print:suite,print:debug,runner,compile --nokeys" getenv "RCL_FLAGS"
+  :(flag "debug") switch {
+    :"RCL_FLAGS" setenv "--output=full --nokeys" getenv "RCLT_DEBUG_FLAGS"
+    :"RCL_FLAGS" setenv "--output=test --show=print:test,print:suite,print:debug,runner,compile --nokeys" getenv "RCL_FLAGS"
+  }
   :"RCL_PREFIX" setenv getenv "RCLT_TEST_PREFIX"
   :"RCL_BIN" setenv (getenv "RCLT_TEST_PREFIX") + "/bin"
   :"This variable will cause wsl to pass RCL_FLAGS through"

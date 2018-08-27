@@ -346,6 +346,7 @@ namespace RCL.Kernel
           }
           catch (Exception userex)
           {
+            SafeLogRecord (next, "fiber", "unhandled", userex);
             try
             {
               Kill (next.Bot, next.Fiber, userex, 1);
@@ -355,7 +356,7 @@ namespace RCL.Kernel
               m_exception = sysex;
               m_exceptionClosure = next;
               ++m_exceptionCount;
-              SafeLogRecord (next, "runner", "killfail", sysex);
+              SafeLogRecord (next, "fiber", "killfail", sysex);
               m_done.Set ();
             }
           }

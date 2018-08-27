@@ -263,8 +263,7 @@ namespace RCL.Core
     }
 
     [RCVerb ("loadbin")]
-    public void EvalLoadbin (
-      RCRunner runner, RCClosure closure, RCString right)
+    public void EvalLoadbin (RCRunner runner, RCClosure closure, RCString right)
     {
       byte[] bytes = File.ReadAllBytes (right[0]);
       //I want to change this to split lines.
@@ -294,8 +293,7 @@ namespace RCL.Core
     }
 
     [RCVerb ("delete")]
-    public void EvalDelete (
-      RCRunner runner, RCClosure closure, RCString right)
+    public void EvalDelete (RCRunner runner, RCClosure closure, RCString right)
     {
       //It kind of sucks that if one file can not be deleted
       //it could leave the disk in an inconsistent state.
@@ -308,8 +306,7 @@ namespace RCL.Core
     }
 
     [RCVerb ("delete")]
-    public void EvalDelete (
-      RCRunner runner, RCClosure closure, RCSymbol right)
+    public void EvalDelete (RCRunner runner, RCClosure closure, RCSymbol right)
     {
       for (int i = 0; i < right.Count; ++i)
       {
@@ -341,22 +338,19 @@ namespace RCL.Core
     }
 
     [RCVerb ("pwd")]
-    public void EvalPwd (
-      RCRunner runner, RCClosure closure, RCBlock right)
+    public void EvalPwd (RCRunner runner, RCClosure closure, RCBlock right)
     {
       runner.Yield (closure, new RCString (Environment.CurrentDirectory));
     }
 
     [RCVerb ("pid")]
-    public void EvalPid (
-      RCRunner runner, RCClosure closure, RCBlock right)
+    public void EvalPid (RCRunner runner, RCClosure closure, RCBlock right)
     {
       runner.Yield (closure, new RCLong (Process.GetCurrentProcess ().Id));
     }
 
     [RCVerb ("option")]
-    public void EvalOptions (
-      RCRunner runner, RCClosure closure, RCString left, RCString right)
+    public void EvalOptions (RCRunner runner, RCClosure closure, RCString left, RCString right)
     {
       RCValue result = RCSystem.Args.Options.Get (right[0]);
       if (result == null)
@@ -366,9 +360,15 @@ namespace RCL.Core
       runner.Yield (closure, result);
     }
 
+    [RCVerb ("flag")]
+    public void EvalFlag (RCRunner runner, RCClosure closure, RCString right)
+    {
+      bool result = RCSystem.Args.Options.GetBoolean (right[0], false);
+      runner.Yield (closure, new RCBoolean (result));
+    }
+
     [RCVerb ("option")]
-    public void EvalOptions (
-      RCRunner runner, RCClosure closure, RCString right)
+    public void EvalOptions (RCRunner runner, RCClosure closure, RCString right)
     {
       RCValue result = RCSystem.Args.Options.Get (right[0]);
       if (result == null)
@@ -379,8 +379,7 @@ namespace RCL.Core
     }
 
     [RCVerb ("info")]
-    public void EvalInfo (
-      RCRunner runner, RCClosure closure, RCSymbol right)
+    public void EvalInfo (RCRunner runner, RCClosure closure, RCSymbol right)
     {
       if (right.Count > 1)
       {
@@ -390,8 +389,7 @@ namespace RCL.Core
     }
 
     [RCVerb ("info")]
-    public void EvalInfo (
-      RCRunner runner, RCClosure closure, RCString right)
+    public void EvalInfo (RCRunner runner, RCClosure closure, RCString right)
     {
       if (right.Count > 1)
       {

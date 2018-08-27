@@ -272,6 +272,44 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestFlag ()
+    {
+      RCRunner runner = new RCRunner ();
+      if (RCSystem.IsMono ())
+      {
+        runner.Rep ("p:startx \"mono rcl.exe --output=clean --nokeys --myflag\"");
+      }
+      else
+      {
+        runner.Rep ("p:startx \"rcl.exe --output=clean --nokeys --myflag\"");
+      }
+      runner.Rep ("$p writex \"flag \\\"myflag\\\"\"");
+      RCString result = (RCString) runner.Rep ("\"\\n\" readx $p");
+      runner.Rep ("$p writex \"exit\"");
+      runner.Rep ("waitx $p");
+      RCL.Kernel.Assert.AreEqual ("true", result[0]);
+    }
+
+    [Test]
+    public void TestFlagNegative ()
+    {
+      RCRunner runner = new RCRunner ();
+      if (RCSystem.IsMono ())
+      {
+        runner.Rep ("p:startx \"mono rcl.exe --output=clean --nokeys --myflag\"");
+      }
+      else
+      {
+        runner.Rep ("p:startx \"rcl.exe --output=clean --nokeys --myflag\"");
+      }
+      runner.Rep ("$p writex \"flag \\\"notmyflag\\\"\"");
+      RCString result = (RCString) runner.Rep ("\"\\n\" readx $p");
+      runner.Rep ("$p writex \"exit\"");
+      runner.Rep ("waitx $p");
+      RCL.Kernel.Assert.AreEqual ("false", result[0]);
+    }
+
+    [Test]
     public void TestCdWithQuotes ()
     {
       RCRunner runner = new RCRunner ();

@@ -62,6 +62,15 @@ repeat:{
   doc:[? Test for repeated tests. ?]
 }
 
+debug:{
+  src:{
+    :print "This should appear when --debug is on"
+    <-0
+  }
+  bin:0
+  doc:[? Test for --debug flag ?]
+}
+
 nobin:{
   src:1 + 2
 }

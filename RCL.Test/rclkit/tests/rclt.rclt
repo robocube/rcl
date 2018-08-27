@@ -166,6 +166,24 @@ repeat:{
   ?]
 }
 
+debug:{
+  src:{
+    script:[?
+      export RCLT_DEBUG_FLAGS="--output=test --nokeys --show=print:out"
+      rclt --debug [! getm #rclt_file !]:debug
+      exit
+    ?]
+    sh:startx "bash"
+    :$sh writex script {}
+    out:try {<-waitx $sh}
+    <-template & $out.data + "\n"
+  }
+  bin:[?
+    1 0 print 0 out This should appear when --debug is on
+    0 0 runner 0 exit 0
+  ?]
+}
+
 nobin:{
   src:{
     script:[?
@@ -513,3 +531,5 @@ missing_file:{
   }
   bin:1
 }
+
+
