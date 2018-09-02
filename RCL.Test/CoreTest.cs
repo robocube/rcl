@@ -1875,7 +1875,10 @@ namespace RCL.Test
 
     //Block
     [Test]
-    public void TestNamesK () { DoTest ("names {a:1 b:2 c:3}", "\"a\" \"b\" \"c\""); }
+    public void TestNamesK1 () { DoTest ("names {a:1 b:2 c:3}", "\"a\" \"b\" \"c\""); }
+    [Test]
+    public void TestNamesK2 () { DoTest ("names {abc:1 'name-with-hyphens':2 '2':3 'true':4 '1-2-3':5}",
+                                         "\"abc\" \"name-with-hyphens\" \"2\" \"true\" \"1-2-3\""); }
     [Test]
     public void TestRenameS () { DoTest ("\"x\" \"y\" \"z\" rename {a:1 b:2 c:3}", "{x:1 y:2 z:3}"); }
     [Test]

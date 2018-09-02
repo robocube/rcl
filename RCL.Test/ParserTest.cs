@@ -365,6 +365,12 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestEmptyStringGetsEmptyBlock ()
+    {
+      DoParserTest ("", "{}");
+    }
+
+    [Test]
     public void TestBlockWithOneVariable ()
     {
       DoParserTest ("{x:1}");
@@ -496,6 +502,12 @@ namespace RCL.Test
     public void TestNumericNamesInBlock ()
     {
       DoParserTest ("{'0':1 '2':3 '4':5}");
+    }
+
+    [Test]
+    public void TestBooleanNamesInBlock ()
+    {
+      DoParserTest ("{'true':1 'false':3}");
     }
 
     [Test]

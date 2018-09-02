@@ -2666,7 +2666,7 @@
     src:isname "aaa" "a a" "'foo'" "1foo" "foo1" "foo_bar"
     bin:true false false false true true
   }
-  TestNamesK:{
+  TestNamesK1:{
     skip:false
     src:names {
       a:1
@@ -2674,6 +2674,17 @@
       c:3
     }
     bin:"a" "b" "c"
+  }
+  TestNamesK2:{
+    skip:false
+    src:names {
+      abc:1
+      'name-with-hyphens':2
+      '2':3
+      'true':4
+      '1-2-3':5
+    }
+    bin:"abc" "name-with-hyphens" "2" "true" "1-2-3"
   }
   TestRenameS:{
     skip:false

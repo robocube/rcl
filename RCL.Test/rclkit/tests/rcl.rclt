@@ -650,6 +650,16 @@ http_headers:{
   }
 }
 
+http_headers_bad_type:{
+  src:{
+    headers:{
+      Cookie:$unevaled_reference_to_cookie
+    }
+    <-"status" get try {<-$headers getw "http://localhost:6238/foo"}
+  }
+  bin:1
+}
+
 get_set_httpcookie:{
   src:{
     serve:{

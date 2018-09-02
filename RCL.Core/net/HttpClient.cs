@@ -114,10 +114,17 @@ namespace RCL.Core
 
       public void BeginWebRequest (object ignore)
       {
-        MakeWebRequest ("request");
-        if (Timeout.Ticks >= 0)
+        try
         {
-          OverallTimer.Change (Timeout, NoPeriodicSignal);
+          MakeWebRequest ("request");
+          if (Timeout.Ticks >= 0)
+          {
+            OverallTimer.Change (Timeout, NoPeriodicSignal);
+          }
+        }
+        catch (Exception ex)
+        {
+          Runner.Finish (Closure, ex, 1);
         }
       }
 

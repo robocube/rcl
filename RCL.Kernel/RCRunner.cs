@@ -497,11 +497,17 @@ namespace RCL.Kernel
       RCBlock variable = peek as RCBlock;
       if (variable != null && fragment)
       {
+        if (variable.Count == 0)
+        {
+          return null;
+        }
         if (variable.Value.ArgumentEval)
         {
           RCBlock program = new RCBlock (m_state, "", "<-", variable.Value);
-          RCClosure parent = new RCClosure (m_bots[0].Id, 0, null, null, program, null, m_state, m_state.Count, null, null, noClimb:false);
-          RCClosure child = new RCClosure (parent, m_bots[0].Id, variable.Value, null, RCBlock.Empty, 0, null, null);
+          RCClosure parent = new RCClosure (m_bots[0].Id, 0, null, null, program, null,
+                                            m_state, m_state.Count, null, null, noClimb:false);
+          RCClosure child = new RCClosure (parent, m_bots[0].Id, variable.Value, null,
+                                           RCBlock.Empty, 0, null, null);
           RCValue result = Run (child, restoreStateOnError:false);
           m_state = new RCBlock (m_state, variable.Name, ":", result);
         }

@@ -60,6 +60,11 @@ namespace RCL.Kernel
       int i = 0;
       try
       {
+        if (tokens.Count == 0)
+        {
+          fragment = true;
+          return RCBlock.Empty;
+        }
         for (i = 0; i < tokens.Count; ++i)
         {
           tokens[i].Type.Accept (this, tokens[i]);

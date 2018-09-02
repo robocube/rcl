@@ -289,6 +289,11 @@
     src:format parse "{}"
     bin:"{}"
   }
+  TestEmptyStringGetsEmptyBlock:{
+    skip:false
+    src:format parse ""
+    bin:"{}"
+  }
   TestBlockWithOneVariable:{
     skip:false
     src:format parse "{x:1}"
@@ -398,6 +403,11 @@
     skip:false
     src:format parse "{'0':1 '2':3 '4':5}"
     bin:"{'0':1 '2':3 '4':5}"
+  }
+  TestBooleanNamesInBlock:{
+    skip:false
+    src:format parse "{'true':1 'false':3}"
+    bin:"{'true':1 'false':3}"
   }
   TestNumericNamesInBlockShorthand:{
     skip:true

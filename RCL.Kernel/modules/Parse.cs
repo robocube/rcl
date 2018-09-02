@@ -15,8 +15,7 @@ namespace RCL.Kernel
     }
 
     [RCVerb ("parse")]
-    public void EvalParse (
-      RCRunner runner, RCClosure closure, RCSymbol left, RCString right)
+    public void EvalParse (RCRunner runner, RCClosure closure, RCSymbol left, RCString right)
     {
       RCParser parser = null;
       bool canonical = false;

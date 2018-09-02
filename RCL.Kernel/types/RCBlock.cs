@@ -24,6 +24,12 @@ namespace RCL.Kernel
       RCName empty = new RCName ("", 0, false);
       m_names.Add ("", empty);
       m_index.Write (empty);
+      RCName trueLiteral = new RCName ("'true'", 1, true);
+      m_names.Add ("true", trueLiteral);
+      m_index.Write (trueLiteral);
+      RCName falseLiteral = new RCName ("'false'", 2, true);
+      m_names.Add ("false", falseLiteral);
+      m_index.Write (falseLiteral);
     }
 
     public static RCName GetName (string text)
@@ -50,6 +56,7 @@ namespace RCL.Kernel
             if (text.Length > 1 && text[1] >= '0' && text[1] <= '9')
             {
               name = text;
+              escaped = true;
             }
             for (int i = 1; i < text.Length - 1; ++i)
             {

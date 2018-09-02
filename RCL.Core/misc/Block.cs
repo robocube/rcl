@@ -75,7 +75,14 @@ namespace RCL.Core
       for (int i = 0; i < result.Length; ++i)
       {
         RCBlock name = right.GetName (i);
-        result[i] = name.Name;
+        if (name.EscapeName)
+        {
+          result[i] = RCName.RawName (name.Name);
+        }
+        else
+        {
+          result[i] = name.Name;
+        }
       }
       runner.Yield (closure, new RCString (result));
     }
