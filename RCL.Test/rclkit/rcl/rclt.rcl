@@ -162,7 +162,7 @@ run_file:{
   }
   test_syms:symbol {<-symbol "#" + "," delimit "." split $R} each $tests
   name:($path like "*.rclt") switch {:$path :$path + ".rclt"}
-  FILE:eval #canonical parse load $name
+  FILE:(eval {rclt:$rclt}) eval #canonical parse load $name
   variable_names:names $FILE
   non_tests:$variable_names where $variable_names startswith "_"
   VARS:$non_tests from $FILE

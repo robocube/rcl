@@ -2390,72 +2390,91 @@ namespace RCL.Test
     //JSON parsing test cases are from:
     //http://code.google.com/p/json-ply/source/browse/trunk/jsonply_test.py
 
+    [Test]
     public void TestParseJSONEmptyArray ()
     {
       //Empty array
       DoTest ("#json parse \"[]\"", "{}");
     }
 
+    [Test]
     public void TestParseJSONStringArray ()
     {
       //Array of strings
       DoTest ("#json parse \"[\\\"a\\\",\\\"b\\\",\\\"c\\\"]\"", "{:\"a\" :\"b\" :\"c\"}");
     }
 
+    [Test]
     public void TestParseJSONNumberArray ()
     {
       //Array of numbers
       DoTest ("#json parse \"[1, 2, 3.4e5]\"", "{:1.0 :2.0 :340000.0}");
     }
 
+    [Test]
     public void TestParseJSONArrayOfArrays ()
     {
       //Array of arrays
       DoTest ("#json parse \"[[\\\"a\\\",\\\"b\\\",\\\"c\\\"]]\"", "{:{:\"a\" :\"b\" :\"c\"}}");
     }
 
+    [Test]
     public void TestParseJSONArrayOfDicts ()
     {
       //Array of dicts
       DoTest ("#json parse \"[{\\\"a\\\":\\\"b\\\"},{\\\"c\\\":\\\"d\\\"}]\"", "{:{a:\"b\"} :{c:\"d\"}}");
     }
 
+    [Test]
     public void TestParseJSONMixedArray ()
     {
       //Array of mixed itmems
       DoTest ("#json parse \"[1, true, {\\\"a\\\": \\\"b\\\"}, [\\\"c\\\"]]\"", "{:1.0 :true :{a:\"b\"} :{:\"c\"}}");
     }
 
+    [Test]
+    public void TestParseJSONEmptyString ()
+    {
+      //Empty dict
+      DoTest ("#json parse \"\"", "{}");
+    }
+
+    [Test]
     public void TestParseJSONEmptyDict ()
     {
       //Empty dict
       DoTest ("#json parse \"{}\"", "{}");
     }
 
+    [Test]
     public void TestParseJSONStringDict ()
     {
       //Dict of strings
       DoTest ("#json parse \"{\\\"a\\\":\\\"b\\\" \\\"c\\\":\\\"d\\\"}\"", "{a:\"b\" c:\"d\"}");
     }
 
+    [Test]
     public void TestParseJSONNumberDict ()
     {
       //Dict of numbers
       DoTest ("#json parse \"{\\\"a\\\":1.0 \\\"b\\\":2.3}\"", "{a:1.0 b:2.3}");
     }
 
+    [Test]
     public void TestParseJSONArrayDict ()
     {
       //Dict of arrays
       DoTest ("#json parse \"{\\\"a\\\": [\\\"b\\\", \\\"c\\\"], \\\"d\\\":[1.0, 2.3]}\"", "{a:{:\"b\" :\"c\"} d:{:1.0 :2.3}}");
     }
 
+    [Test]
     public void TestParseJSONDictDict ()
     {
       //Dict of dicts
       DoTest ("#json parse \"{\\\"a\\\": {\\\"b\\\":\\\"c\\\"} \\\"d\\\": {\\\"e\\\":\\\"f\\\"}}\"", "{a:{b:\"c\"} d:{e:\"f\"}}");
     }
 
+    [Test]
     public void TestParseJSONMixedDict ()
     {
       //Dict of mixed items
@@ -2469,42 +2488,49 @@ namespace RCL.Test
       DoTest ("#xml parse \"<a></a>\"", "{a:{:\"\"}}");
     }
 
+    [Test]
     public void TestParseXML2 ()
     {
       //Empty element single tag
       DoTest ("#xml parse \"<a/>\"", "{a:{:\"\"}}");
     }
 
+    [Test]
     public void TestParseXML3 ()
     {
       //Single element with content
       DoTest ("#xml parse \"<a>x</a>\"", "{a:{:\"x\"}}");
     }
 
+    [Test]
     public void TestParseXML4 ()
     {
       //Single element with attribute
       DoTest ("#xml parse \"<a b=\\\"x\\\"></a>\"", "{a:{b:\"x\" :\"\"}}");
     }
 
+    [Test]
     public void TestParseXML5 ()
     {
       //Multiple attributes in an element
       DoTest ("#xml parse \"<a b=\\\"x\\\" c=\\\"y\\\" d=\\\"z\\\">w</a>\"", "{a:{b:\"x\" c:\"y\" d:\"z\" :\"w\"}}");
     }
 
+    [Test]
     public void TestParseXML6 ()
     {
       //Multiple elements in a document
       DoTest ("#xml parse \"<a>x</a><b>y</b><c>z</c>\"", "{a:{:\"x\"} b:{:\"y\"} c:{:\"z\"}}");
     }
 
+    [Test]
     public void TestParseXML7 ()
     {
       //Multiple elements with different content types.
       DoTest ("#xml parse \"<a>x</a><b></b><c/>\"", "{a:{:\"x\"} b:{:\"\"} c:{:\"\"}}");
     }
 
+    [Test]
     public void TestParseXML8 ()
     {
       //Nested elements

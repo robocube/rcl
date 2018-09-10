@@ -844,6 +844,11 @@
       }
     }
   }
+  TestParseJSONEmptyString:{
+    skip:false
+    src:#json parse ""
+    bin:{}
+  }
   TestParseJSONEmptyDict:{
     skip:false
     src:#json parse "{}"

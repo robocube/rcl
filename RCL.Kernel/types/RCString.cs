@@ -44,7 +44,7 @@ namespace RCL.Kernel
     public override void ScalarToString (StringBuilder builder, string scalar)
     {
       builder.Append ("\"");
-      builder.Append (RCTokenType.EscapeControlChars(scalar.ToString(), '"'));
+      builder.Append (RCTokenType.EscapeControlChars (scalar.ToString (), '"'));
       builder.Append ("\"");
     }
 

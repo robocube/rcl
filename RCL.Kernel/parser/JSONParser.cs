@@ -44,9 +44,14 @@ namespace RCL.Kernel
 
     public override RCValue Parse (RCArray<RCToken> tokens, out bool fragment, bool canonical)
     {
+      if (tokens.Count == 0)
+      {
+        fragment = true;
+        return RCBlock.Empty;
+      }
       for (int i = 0; i < tokens.Count; ++i)
       {
-        tokens[i].Type.Accept(this, tokens[i]);
+        tokens[i].Type.Accept (this, tokens[i]);
       }
       //TODO: fragment should be interpreted as in rcl.
       fragment = false;

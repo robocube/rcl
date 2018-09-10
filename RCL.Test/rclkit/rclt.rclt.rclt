@@ -9,6 +9,20 @@ _rclt_teardown:{
   }
 }
 
+___pre_test_name_capture:eval {
+  :"rclt.rcl contains a variable called $path"
+  :"This variable should not be visible or obscure the path operator"
+  :assert (path #home,foo,bar) like "*/foo/bar"
+}
+
+___pre_test_namespace:eval {
+  :rclt.sh [?
+    set -e
+    echo "hello from bash"
+    exit
+  ?]
+}
+
 pass:{
   src:1 + 1
   bin:2
