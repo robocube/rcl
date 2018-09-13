@@ -1827,6 +1827,22 @@
     }
     bin:{}
   }
+  TestSwitchYKWithQuote:{
+    skip:false
+    src:#a switch {
+      a::1 + 1
+      b::2 + 2
+    }
+    bin:1 + 1
+  }
+  TestSwitchSKWithQuote:{
+    skip:false
+    src:"b" switch {
+      a::1 + 1
+      b::2 + 2
+    }
+    bin:2 + 2
+  }
   TestEachL:{
     skip:false
     src:{

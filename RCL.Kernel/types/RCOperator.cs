@@ -66,7 +66,10 @@ namespace RCL.Kernel
       m_left = left;
       m_right = right;
       m_count += m_right.IsOperator ? m_right.Count : 1;
-      m_count += m_left != null && m_left.IsOperator ? m_left.Count : 1;
+      if (m_left != null)
+      {
+        m_count += m_left.IsOperator ? m_left.Count : 1;
+      }
     }
 
     public override void Lock (bool canonical)

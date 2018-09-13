@@ -440,7 +440,7 @@ namespace RCL.Core
       RCOperator op = RCSystem.Activator.New (left[0], block.Get ("l"), block.Get ("r"));
       runner.Yield (closure, op);
     }
-      
+
     [RCVerb ("in")] [RCVerb ("like")]
     public void EvalRightContextual (RCRunner runner, RCClosure closure, object left, object right)
     {

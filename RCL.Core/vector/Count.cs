@@ -80,5 +80,11 @@ namespace RCL.Core
     {
       runner.Yield (closure, new RCLong (right.Count));
     }
+
+    [RCVerb ("count")]
+    public void EvalCount (RCRunner runner, RCClosure closure, RCOperator right)
+    {
+      runner.Yield (closure, new RCLong (right.Count));
+    }
   }
 }

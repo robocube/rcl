@@ -1786,6 +1786,30 @@
     src:count [? foo bar baz ?]
     bin:2
   }
+  TestCountOMonad:{
+    skip:false
+    src:{
+      op::not true
+      <-count $op
+    }
+    bin:1
+  }
+  TestCountODyad:{
+    skip:false
+    src:{
+      op::1 + 2
+      <-count $op
+    }
+    bin:2
+  }
+  TestCountOChain:{
+    skip:false
+    src:{
+      op::1 + 2 + 3
+      <-count $op
+    }
+    bin:3
+  }
   TestLengthS:{
     skip:false
     src:length "aaa" "bb" "a" ""

@@ -6,59 +6,69 @@ namespace RCL.Core
 {
   public class Switch : RCOperator
   {
-    protected delegate RCValue Picker<T>(T val);
+    protected delegate RCValue Picker<T>(T val, out bool eval);
 
     [RCVerb ("switch")]
-    public void EvalSwitch (
-      RCRunner runner, RCClosure closure, RCBoolean left, RCBlock right)
+    public void EvalSwitch (RCRunner runner, RCClosure closure, RCBoolean left, RCBlock right)
     {
-      Picker<bool> picker = delegate (bool val)
+      Picker<bool> picker = delegate (bool val, out bool eval)
       {
         long i = val ? 0 : 1;
-        return i >= right.Count ? RCBlock.Empty : right.Get (i);
+        RCBlock variable = right.GetName (i);
+        eval = !variable.Evaluator.Pass;
+        return i >= right.Count ? RCBlock.Empty : variable.Value;
       };
       DoSwitch<bool> (runner, closure, left, right, picker);
     }
 
     [RCVerb ("switch")]
-    public void EvalSwitch (
-      RCRunner runner, RCClosure closure, RCByte left, RCBlock right)
+    public void EvalSwitch (RCRunner runner, RCClosure closure, RCByte left, RCBlock right)
     {
-      Picker<byte> picker = delegate (byte val)
+      Picker<byte> picker = delegate (byte val, out bool eval)
       {
+        RCBlock variable = right.GetName (val);
         long i = val < 0 ? 1 : 0;
-        return i >= right.Count ? RCBlock.Empty : right.Get (i);
+        eval = !variable.Evaluator.Pass;
+        return i >= right.Count ? RCBlock.Empty : variable.Value;
       };
       DoSwitch<byte> (runner, closure, left, right, picker);
     }
 
     [RCVerb ("switch")]
-    public void EvalSwitch (
-      RCRunner runner, RCClosure closure, RCLong left, RCBlock right)
+    public void EvalSwitch (RCRunner runner, RCClosure closure, RCLong left, RCBlock right)
     {
       //What on earth was I thinking... we need to make this work.
-      Picker<long> picker = delegate (long val)
+      Picker<long> picker = delegate (long val, out bool eval)
       {
-        return right.Get (val);
+        RCBlock variable = right.GetName (val);
+        eval = !variable.Evaluator.Pass;
+        return variable.Value;
       };
       DoSwitch<long> (runner, closure, left, right, picker);
     }
 
     [RCVerb ("switch")]
-    public void EvalSwitch (
-      RCRunner runner, RCClosure closure, RCSymbol left, RCBlock right)
+    public void EvalSwitch (RCRunner runner, RCClosure closure, RCSymbol left, RCBlock right)
     {
-      Picker<RCSymbolScalar> picker = delegate (RCSymbolScalar val)
+      Picker<RCSymbolScalar> picker = delegate (RCSymbolScalar val, out bool eval)
       {
         if (val.Length > 1)
         {
           throw new Exception (
             "switch only supports block lookups using tuples of count 1.  But this could change.");
         }
-        RCValue code = right.Get ((string) val.Key);
-        if (code == null) 
+        RCBlock variable = right.GetName ((string) val.Key);
+        RCValue code;
+        // This behavior is sketchy and should be reevaluated - this should be an exception
+        if (variable == null)
         {
           code = RCBlock.Empty;
+          eval = true;
+        }
+        else
+        {
+          code = variable.Value;
+          eval = !variable.Evaluator.Pass;
         }
         return code;
       };
@@ -66,15 +76,22 @@ namespace RCL.Core
     }
 
     [RCVerb ("switch")]
-    public void EvalSwitch (
-      RCRunner runner, RCClosure closure, RCString left, RCBlock right)
+    public void EvalSwitch (RCRunner runner, RCClosure closure, RCString left, RCBlock right)
     {
-      Picker<string> picker = delegate (string val)
+      Picker<string> picker = delegate (string val, out bool eval)
       {
-        RCValue code = right.Get (val);
-        if (code == null)
+        RCBlock variable = right.GetName (val);
+        RCValue code;
+        // This behavior is sketchy and should be reevaluated - this should be an exception
+        if (variable == null)
         {
           code = RCBlock.Empty;
+          eval = true;
+        }
+        else
+        {
+          code = variable.Value;
+          eval = !variable.Evaluator.Pass;
         }
         return code;
       };
@@ -117,14 +134,23 @@ namespace RCL.Core
       int i = closure.Index - 2;
       if (i < left.Count)
       {
-        RCValue code = picker (left[i]);
-        RCClosure child = new RCClosure (closure,
-                                         closure.Bot,
-                                         code,
-                                         closure.Left,
-                                         RCBlock.Empty,
-                                         0);
-        code.Eval (runner, child);
+        bool eval;
+        RCValue code = picker (left[i], out eval);
+        if (eval)
+        {
+          RCClosure child = new RCClosure (closure,
+                                           closure.Bot,
+                                           code,
+                                           closure.Left,
+                                           RCBlock.Empty,
+                                           0);
+          code.Eval (runner, child);
+        }
+        else
+        {
+          //In this case the "code" can be a value, normally part of a generated program
+          runner.Yield (closure, code);
+        }
       }
       else
       {

@@ -834,6 +834,12 @@ namespace RCL.Test
     public void TestCountR() { DoTest ("count reference \"x.y.z\"", "1"); }
     [Test]
     public void TestCountP() { DoTest ("count [? foo bar baz ?]", "2"); }
+    [Test]
+    public void TestCountOMonad() { DoTest ("{op::not true <-count $op}", "1"); }
+    [Test]
+    public void TestCountODyad() { DoTest ("{op::1 + 2 <-count $op}", "2"); }
+    [Test]
+    public void TestCountOChain() { DoTest ("{op::1 + 2 + 3 <-count $op}", "3"); }
 
     //Length for strings
     [Test]
@@ -1578,6 +1584,10 @@ namespace RCL.Test
     public void TestSwitchYK1() { DoTest("#c switch {b:#y a:#z}", "{}"); }
     //[Test]
     //public void TestSweachInTake() { DoTest("{<-#lock take {<-true sweach {:0l :1l}}}", "{:0l}"); }
+    [Test]
+    public void TestSwitchYKWithQuote () { DoTest ("#a switch {a::1 + 1 b::2 + 2}", "1 + 1"); }
+    [Test]
+    public void TestSwitchSKWithQuote () { DoTest ("\"b\" switch {a::1 + 1 b::2 + 2}", "2 + 2"); }
 
     //Each for blocks
     [Test]
