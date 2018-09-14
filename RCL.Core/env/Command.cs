@@ -83,6 +83,18 @@ namespace RCL.Core
       return path;
     }
 
+    [RCVerb ("readlines")]
+    public void EvalReadLines (RCRunner runner, RCClosure closure, RCBlock right)
+    {
+      StringBuilder result = new StringBuilder ();
+      string line;
+      while ((line = Console.ReadLine ()) != null)
+      {
+        result.AppendLine (line);
+      }
+      runner.Yield (closure, new RCString (result.ToString ()));
+    }
+
     [RCVerb ("file")]
     public void EvalFile (RCRunner runner, RCClosure closure, RCSymbol right)
     {

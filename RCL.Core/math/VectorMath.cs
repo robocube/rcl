@@ -418,6 +418,17 @@ namespace RCL.Core
       runner.Yield (closure, op);
     }
 
+    [RCVerb ("swaplr")]
+    public void EvalSwaplr (RCRunner runner, RCClosure closure, RCOperator right)
+    {
+      if (right.Left == null || right.Right == null)
+      {
+        throw new Exception ("swaplr requires both left and right arguments");
+      }
+      RCOperator result = RCSystem.Activator.New (right.Name, right.Right, right.Left);
+      runner.Yield (closure, result);
+    }
+
     [RCVerb ("in")] [RCVerb ("like")]
     public void EvalRightContextual (RCRunner runner, RCClosure closure, object left, object right)
     {

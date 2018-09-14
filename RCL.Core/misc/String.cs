@@ -13,10 +13,7 @@ namespace RCL.Core
   public class String
   {
     [RCVerb ("substring")]
-    public void EvalSubstring (RCRunner runner,
-                               RCClosure closure,
-                               RCLong left,
-                               RCString right)
+    public void EvalSubstring (RCRunner runner, RCClosure closure, RCLong left, RCString right)
     {
       RCArray<string> result = new RCArray<string> ();
       if (left.Count == 1)
@@ -40,10 +37,7 @@ namespace RCL.Core
     }
 
     [RCVerb ("cut")]
-    public void EvalCut (RCRunner runner,
-                         RCClosure closure,
-                         RCLong left,
-                         RCString right)
+    public void EvalCut (RCRunner runner, RCClosure closure, RCLong left, RCString right)
     {
       RCArray<string> result = new RCArray<string> ();
       if (left.Count == 1)
@@ -88,10 +82,7 @@ namespace RCL.Core
     }
 
     [RCVerb ("cutleft")]
-    public void EvalCutleft (RCRunner runner,
-                             RCClosure closure,
-                             RCLong left,
-                             RCString right)
+    public void EvalCutleft (RCRunner runner, RCClosure closure, RCLong left, RCString right)
     {
       RCArray<string> result = new RCArray<string> ();
       if (left.Count == 1)
@@ -136,10 +127,7 @@ namespace RCL.Core
     }
 
     [RCVerb ("startswith")]
-    public void EvalStartsWith (RCRunner runner,
-                                RCClosure closure,
-                                RCString left,
-                                RCString right)
+    public void EvalStartsWith (RCRunner runner, RCClosure closure, RCString left, RCString right)
     {
       RCArray<bool> result = new RCArray<bool> (left.Count);
       for (int i = 0; i < left.Count; ++i)
@@ -150,10 +138,7 @@ namespace RCL.Core
     }
 
     [RCVerb ("split")]
-    public void EvalSplit (RCRunner runner,
-                           RCClosure closure,
-                           RCString left,
-                           RCString right)
+    public void EvalSplit (RCRunner runner, RCClosure closure, RCString left, RCString right)
     {
       //Would be nice to support muliple strings on the left, like "\" "/" split $blah
       RCArray<string> result = new RCArray<string> ();
@@ -165,10 +150,7 @@ namespace RCL.Core
     }
 
     [RCVerb ("tuple")]
-    public void EvalTuple (RCRunner runner,
-                           RCClosure closure,
-                           RCString left,
-                           RCString right)
+    public void EvalTuple (RCRunner runner, RCClosure closure, RCString left, RCString right)
     {
       RCArray<RCSymbolScalar> result = new RCArray<RCSymbolScalar> ();
       for (int i = 0; i < right.Count; ++i)
@@ -181,10 +163,7 @@ namespace RCL.Core
     }
 
     [RCVerb ("splitw")]
-    public  void EvalSplitw (RCRunner runner,
-                             RCClosure closure,
-                             RCString left,
-                             RCString right)
+    public  void EvalSplitw (RCRunner runner, RCClosure closure, RCString left, RCString right)
     {
       RCArray<string> result = new RCArray<string> ();
       for (int i = 0; i < right.Count; ++i)
@@ -210,10 +189,7 @@ namespace RCL.Core
     }
 
     [RCVerb ("pad")]
-    public void EvalPad (RCRunner runner,
-                         RCClosure closure,
-                         RCString left,
-                         RCLong right)
+    public void EvalPad (RCRunner runner, RCClosure closure, RCString left, RCLong right)
     {
       RCArray<string> result = new RCArray<string> (right.Count);
       for (int i = 0; i < right.Count; ++i)
@@ -225,10 +201,7 @@ namespace RCL.Core
     }
 
     [RCVerb ("indexof")]
-    public void EvalIndexOf (RCRunner runner,
-                             RCClosure closure,
-                             RCString left,
-                             RCString right)
+    public void EvalIndexOf (RCRunner runner, RCClosure closure, RCString left, RCString right)
     {
       if (left.Count != 1)
       {
@@ -262,10 +235,7 @@ namespace RCL.Core
     }
 
     [RCVerb ("indexoflast")]
-    public void EvalIndexOfLast (RCRunner runner,
-                                 RCClosure closure,
-                                 RCString left,
-                                 RCString right)
+    public void EvalIndexOfLast (RCRunner runner, RCClosure closure, RCString left, RCString right)
     {
       if (left.Count != 1)
       {
@@ -299,10 +269,7 @@ namespace RCL.Core
     }
 
     [RCVerb ("slice")]
-    public void EvalSlice (RCRunner runner,
-                           RCClosure closure,
-                           RCString left,
-                           RCString right)
+    public void EvalSlice (RCRunner runner, RCClosure closure, RCString left, RCString right)
     {
       if (left.Count != 1)
       {
@@ -349,9 +316,7 @@ namespace RCL.Core
     }
 
     [RCVerb ("trim")]
-    public void EvalTrim (RCRunner runner,
-                          RCClosure closure,
-                          RCString right)
+    public void EvalTrim (RCRunner runner, RCClosure closure, RCString right)
     {
       RCArray<string> result = new RCArray<string> (right.Count);
       for (int i = 0; i < right.Count; ++i)
@@ -362,10 +327,7 @@ namespace RCL.Core
     }
 
     [RCVerb ("trim")]
-    public void EvalTrim (RCRunner runner,
-                          RCClosure closure,
-                          RCString left,
-                          RCString right)
+    public void EvalTrim (RCRunner runner, RCClosure closure, RCString left, RCString right)
     {
       if (left.Count != 1)
       {
@@ -381,10 +343,7 @@ namespace RCL.Core
     }
 
     [RCVerb ("delimit")]
-    public void EvalDelimit (RCRunner runner,
-                             RCClosure closure,
-                             RCString left,
-                             RCString right)
+    public void EvalDelimit (RCRunner runner, RCClosure closure, RCString left, RCString right)
     {
       StringBuilder result = new StringBuilder ();
       for (int i = 0; i < right.Count; ++i)
