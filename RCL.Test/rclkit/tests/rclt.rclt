@@ -288,6 +288,16 @@ setup_teardown_not_run_as_tests:{
   }
 }
 
+setup_operation_order:{
+  setup:{
+    :assert hasm #rclt_file
+    :#test_setup_after putm true
+  }
+  src:{
+    :assert hasm #test_setup_after
+  }
+}
+
 suite_pass:{
   src:{
     script:[?

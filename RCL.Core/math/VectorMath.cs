@@ -153,19 +153,13 @@ namespace RCL.Core
     public delegate O SeqScalarOp <S, R, O> (ref S s, R r);
     public delegate O ConScalarOp <C, L, R, O> (C c, R r);
 
-    public delegate RCArray<O> VectorOp <R, O> (
-      RCArray<R> right, ScalarOp <R, O> op);
-    public delegate RCArray<O> VectorOp <L, R, O> (
-      RCArray<L> left, RCArray<R> right, ScalarOp<L, R, O> op);
-    public delegate RCArray<O> SeqVectorOp <S, R, O> (
-      RCArray<R> right, SeqScalarOp<S, R, O> op);
-    public delegate RCArray<O> ConVectorOp <C, L, R, O> (
-      RCArray<L> left, RCArray<R> right, ConScalarOp<C, L, R, O> op);
-    public delegate RCArray<R> CumVectorOp <S, R> (
-      RCArray<R> right, SeqScalarOp<S, R, R> op);
+    public delegate RCArray<O> VectorOp <R, O> (RCArray<R> right, ScalarOp <R, O> op);
+    public delegate RCArray<O> VectorOp <L, R, O> (RCArray<L> left, RCArray<R> right, ScalarOp<L, R, O> op);
+    public delegate RCArray<O> SeqVectorOp <S, R, O> (RCArray<R> right, SeqScalarOp<S, R, O> op);
+    public delegate RCArray<O> ConVectorOp <C, L, R, O> (RCArray<L> left, RCArray<R> right, ConScalarOp<C, L, R, O> op);
+    public delegate RCArray<R> CumVectorOp <S, R> (RCArray<R> right, SeqScalarOp<S, R, R> op);
 
-    public static RCArray<O> DyadicOp <L, R, O> (
-      RCArray<L> left, RCArray<R> right, ScalarOp<L, R, O> op)
+    public static RCArray<O> DyadicOp <L, R, O> (RCArray<L> left, RCArray<R> right, ScalarOp<L, R, O> op)
     {
       if (left.Count == 1)
       {
@@ -191,8 +185,7 @@ namespace RCL.Core
       else throw new Exception ("Both vectors must have the same count, or one of them must have a single element.");
     }
 
-    public static RCArray<O> MonadicOp <R, O> (
-      RCArray<R> right, ScalarOp<R, O> op)
+    public static RCArray<O> MonadicOp <R, O> (RCArray<R> right, ScalarOp<R, O> op)
     {
       RCArray<O> output = new RCArray<O> (right.Count);
       for (int i = 0; i < right.Count; ++i)
@@ -200,8 +193,7 @@ namespace RCL.Core
       return output;
     }
 
-    public static RCArray<O> SequentialOp <S, R, O> (
-      RCArray<R> right, SeqScalarOp<S, R, O> op)
+    public static RCArray<O> SequentialOp <S, R, O> (RCArray<R> right, SeqScalarOp<S, R, O> op)
       where S : struct where O : struct
     {
       S s = new S ();
@@ -211,8 +203,7 @@ namespace RCL.Core
       return new RCArray<O> (o);
     }
 
-    public static RCArray<O> ContextualOp <C, L, R, O> (
-      RCArray<L> left, RCArray<R> right, ConScalarOp<C, L, R, O> op)
+    public static RCArray<O> ContextualOp <C, L, R, O> (RCArray<L> left, RCArray<R> right, ConScalarOp<C, L, R, O> op)
       where C : Context<L>, new ()
     {
       //Things left to do to make this work:
@@ -230,8 +221,7 @@ namespace RCL.Core
       return output;
     }
 
-    public static RCArray<R> CumulativeOp <S, R> (
-      RCArray<R> right, SeqScalarOp <S, R, R> op)
+    public static RCArray<R> CumulativeOp <S, R> (RCArray<R> right, SeqScalarOp <S, R, R> op)
       where S : struct
     {
       if (right.Count == 0)
@@ -249,8 +239,7 @@ namespace RCL.Core
       return result;
     }
 
-    public static RCValue InvokeDyadic (
-      RCClosure closure, string name, RCVectorBase left, RCVectorBase right)
+    public static RCValue InvokeDyadic (RCClosure closure, string name, RCVectorBase left, RCVectorBase right)
     {
       RCActivator.OverloadKey key = new RCActivator.OverloadKey (
         name, left.ScalarType, right.ScalarType);
@@ -261,8 +250,7 @@ namespace RCL.Core
       return RCVectorBase.FromArray (array);
     }
 
-    public static RCValue InvokeMonadic (
-      RCClosure closure, string name, RCVectorBase right)
+    public static RCValue InvokeMonadic (RCClosure closure, string name, RCVectorBase right)
     {
       RCActivator.OverloadKey key = new RCActivator.OverloadKey (
         name, null, right.ScalarType);
@@ -273,8 +261,7 @@ namespace RCL.Core
       return RCVectorBase.FromArray (array);
     }
 
-    public static RCValue InvokeSequential (
-      RCClosure closure, string name, RCVectorBase right)
+    public static RCValue InvokeSequential (RCClosure closure, string name, RCVectorBase right)
     {
       RCActivator.OverloadKey key = new RCActivator.OverloadKey (
         name, null, right.ScalarType);
@@ -291,8 +278,7 @@ namespace RCL.Core
     [RCVerb ("min")] [RCVerb ("max")]
     [RCVerb ("long")] [RCVerb ("double")] [RCVerb ("decimal")] [RCVerb ("byte")]
     [RCVerb ("string")] [RCVerb ("symbol")] [RCVerb ("boolean")] [RCVerb ("time")]
-    public void EvalDyadic (
-      RCRunner runner, RCClosure closure, object left, object right)
+    public void EvalDyadic (RCRunner runner, RCClosure closure, object left, object right)
     {
       //Brian! come back here to prevent the native exception
       RCOperator op = (RCOperator) closure.Code;
@@ -301,8 +287,7 @@ namespace RCL.Core
     }
 
     [RCVerb ("+")] [RCVerb ("-")]
-    public void EvalCumulative (
-      RCRunner runner, RCClosure closure, object right)
+    public void EvalCumulative (RCRunner runner, RCClosure closure, object right)
     {
       RCOperator op = (RCOperator) closure.Code;
       runner.Yield (closure, VectorMath.InvokeMonadic (
@@ -311,8 +296,7 @@ namespace RCL.Core
 
     [RCVerb ("sum")] [RCVerb ("avg")] [RCVerb ("high")] [RCVerb ("low")]
     [RCVerb ("any")] [RCVerb ("all")] [RCVerb ("none")]
-    public void EvalSequential (
-      RCRunner runner, RCClosure closure, object right)
+    public void EvalSequential (RCRunner runner, RCClosure closure, object right)
     {
       RCOperator op = (RCOperator) closure.Code;
       runner.Yield (closure, VectorMath.InvokeSequential (
@@ -328,8 +312,7 @@ namespace RCL.Core
     [RCVerb ("second")] [RCVerb ("nano")]
     [RCVerb ("date")] [RCVerb ("daytime")] [RCVerb ("datetime")]
     [RCVerb ("timestamp")] [RCVerb ("timespan")]
-    public void EvalMonadic (
-      RCRunner runner, RCClosure closure, object right)
+    public void EvalMonadic (RCRunner runner, RCClosure closure, object right)
     {
       RCOperator op = (RCOperator) closure.Code;
       runner.Yield (closure, VectorMath.InvokeMonadic (
@@ -337,24 +320,21 @@ namespace RCL.Core
     }
 
     [RCVerb ("typecode")]
-    public void EvalTypecode (
-      RCRunner runner, RCClosure closure, object right)
+    public void EvalTypecode (RCRunner runner, RCClosure closure, object right)
     {
       RCValue val = (RCValue) right;
       runner.Yield (closure, new RCString (val.TypeCode.ToString ()));
     }
 
     [RCVerb ("typename")]
-    public void EvalTypename (
-      RCRunner runner, RCClosure closure, object right)
+    public void EvalTypename (RCRunner runner, RCClosure closure, object right)
     {
       RCValue val = (RCValue) right;
       runner.Yield (closure, new RCString (val.TypeName.ToString ()));
     }
 
     [RCVerb ("map")] [RCVerb ("replace")] [RCVerb ("part")] [RCVerb ("fill")]
-    public void EvalContextual (
-      RCRunner runner, RCClosure closure, object left, object right)
+    public void EvalContextual (RCRunner runner, RCClosure closure, object left, object right)
     {
       RCOperator op = (RCOperator) closure.Code;
       runner.Yield (closure, VectorMath.InvokeDyadic (
@@ -388,8 +368,7 @@ namespace RCL.Core
     }
 
     [RCVerb ("symbol")]
-    public void EvalSymbolString (
-      RCRunner runner, RCClosure closure, RCString right)
+    public void EvalSymbolString (RCRunner runner, RCClosure closure, RCString right)
     {
       RCLexer lexer = new RCLexer (new RCArray<RCTokenType> (
         RCTokenType.Number, RCTokenType.Boolean, RCTokenType.Symbol, RCTokenType.Name));
@@ -403,15 +382,13 @@ namespace RCL.Core
     }
 
     [RCVerb ("reference")]
-    public void EvalReferenceString (
-      RCRunner runner, RCClosure closure, RCString right)
+    public void EvalReferenceString (RCRunner runner, RCClosure closure, RCString right)
     {
       runner.Yield (closure, new RCReference (right.ToArray ()));
     }
 
     [RCVerb ("reference")]
-    public void EvalReferenceString (
-      RCRunner runner, RCClosure closure, RCSymbol right)
+    public void EvalReferenceString (RCRunner runner, RCClosure closure, RCSymbol right)
     {
       if (right.Count != 1)
       {

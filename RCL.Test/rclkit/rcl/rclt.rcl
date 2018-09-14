@@ -45,12 +45,12 @@ run_test:{
           <-try {
             b:bot {
               setup_result:try {
-                :($test has "setup") switch {
-                  :test.setup {}
-                  :{}
-                }
                 :($FILE has "_rclt_setup") switch {
                   :FILE._rclt_setup {}
+                  :{}
+                }
+                :($test has "setup") switch {
+                  :test.setup {}
                   :{}
                 }
               }

@@ -1214,7 +1214,45 @@ namespace RCL.Test
     }
 
     [Test]
-    public void TestFirst() { DoTest ("first {:0 :1 :2}", "0"); }
+    public void TestFirstK() { DoTest ("first {:0 :1 :2}", "0"); }
+    [Test]
+    public void TestFirstX() { DoTest ("first \\x00 \\x01 \\x02", "\\x00"); }
+    [Test]
+    public void TestFirstL() { DoTest ("first 0 1 2", "0"); }
+    [Test]
+    public void TestFirstD() { DoTest ("first 0.0 1.0 2.0", "0.0"); }
+    [Test]
+    public void TestFirstM() { DoTest ("first 0 1 2m", "0m"); }
+    [Test]
+    public void TestFirstB() { DoTest ("first true false true", "true"); }
+    [Test]
+    public void TestFirstY() { DoTest ("first #a #b #c", "#a"); }
+    [Test]
+    public void TestFirstS() { DoTest ("first \"a\" \"b\" \"c\"", "\"a\""); }
+    [Test]
+    public void TestFirstI() { DoTest ("first ++ ++ ++", "++"); }
+    [Test]
+    public void TestFirstT() { DoTest ("first 2018.09.04 2018.09.05 2018.09.06", "2018.09.04"); }
+
+    [Test]
+    public void TestLastX() { DoTest ("last \\x00 \\x01 \\x02", "\\x02"); }
+    [Test]
+    public void TestLastL() { DoTest ("last 0 1 2", "2"); }
+    [Test]
+    public void TestLastD() { DoTest ("last 0.0 1.0 2.0", "2.0"); }
+    [Test]
+    public void TestLastM() { DoTest ("last 0m 1m 2m", "2m"); }
+    [Test]
+    public void TestLastB() { DoTest ("last true false false", "false"); }
+    [Test]
+    public void TestLastY() { DoTest ("last #a #b #c", "#c"); }
+    [Test]
+    public void TestLastS() { DoTest ("last \"a\" \"b\" \"c\"", "\"c\""); }
+    [Test]
+    public void TestLastI() { DoTest ("last ++ ++ +-", "+-"); }
+    [Test]
+    public void TestLastT() { DoTest ("last 2018.09.04 2018.09.05 2018.09.06", "2018.09.06"); }
+
     [Test]
     public void TestLast() { DoTest ("last {:0 :1 :2}", "2"); }
     [Test]

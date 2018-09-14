@@ -18,6 +18,114 @@ namespace RCL.Core
       runner.Yield (closure, right.Get (0));
     }
 
+    [RCVerb ("first")]
+    public void EvalFirst (RCRunner runner, RCClosure closure, RCLong right)
+    {
+      runner.Yield (closure, new RCLong (right[0]));
+    }
+
+    [RCVerb ("first")]
+    public void EvalFirst (RCRunner runner, RCClosure closure, RCDouble right)
+    {
+      runner.Yield (closure, new RCDouble (right[0]));
+    }
+
+    [RCVerb ("first")]
+    public void EvalFirst (RCRunner runner, RCClosure closure, RCDecimal right)
+    {
+      runner.Yield (closure, new RCDecimal (right[0]));
+    }
+
+    [RCVerb ("first")]
+    public void EvalFirst (RCRunner runner, RCClosure closure, RCString right)
+    {
+      runner.Yield (closure, new RCString (right[0]));
+    }
+
+    [RCVerb ("first")]
+    public void EvalFirst (RCRunner runner, RCClosure closure, RCBoolean right)
+    {
+      runner.Yield (closure, new RCBoolean (right[0]));
+    }
+
+    [RCVerb ("first")]
+    public void EvalFirst (RCRunner runner, RCClosure closure, RCSymbol right)
+    {
+      runner.Yield (closure, new RCSymbol (right[0]));
+    }
+
+    [RCVerb ("first")]
+    public void EvalFirst (RCRunner runner, RCClosure closure, RCIncr right)
+    {
+      runner.Yield (closure, new RCIncr (right[0]));
+    }
+
+    [RCVerb ("first")]
+    public void EvalFirst (RCRunner runner, RCClosure closure, RCTime right)
+    {
+      runner.Yield (closure, new RCTime (right[0]));
+    }
+
+    [RCVerb ("first")]
+    public void EvalFirst (RCRunner runner, RCClosure closure, RCByte right)
+    {
+      runner.Yield (closure, new RCByte (right[0]));
+    }
+
+    [RCVerb ("last")]
+    public void EvalLast (RCRunner runner, RCClosure closure, RCLong right)
+    {
+      runner.Yield (closure, new RCLong (right[right.Count - 1]));
+    }
+
+    [RCVerb ("last")]
+    public void EvalLast (RCRunner runner, RCClosure closure, RCDouble right)
+    {
+      runner.Yield (closure, new RCDouble (right[right.Count - 1]));
+    }
+
+    [RCVerb ("last")]
+    public void EvalLast (RCRunner runner, RCClosure closure, RCDecimal right)
+    {
+      runner.Yield (closure, new RCDecimal (right[right.Count - 1]));
+    }
+
+    [RCVerb ("last")]
+    public void EvalLast (RCRunner runner, RCClosure closure, RCString right)
+    {
+      runner.Yield (closure, new RCString (right[right.Count - 1]));
+    }
+
+    [RCVerb ("last")]
+    public void EvalLast (RCRunner runner, RCClosure closure, RCBoolean right)
+    {
+      runner.Yield (closure, new RCBoolean (right[right.Count - 1]));
+    }
+
+    [RCVerb ("last")]
+    public void EvalLast (RCRunner runner, RCClosure closure, RCSymbol right)
+    {
+      runner.Yield (closure, new RCSymbol (right[right.Count - 1]));
+    }
+
+    [RCVerb ("last")]
+    public void EvalLast (RCRunner runner, RCClosure closure, RCIncr right)
+    {
+      runner.Yield (closure, new RCIncr (right[right.Count - 1]));
+    }
+
+    [RCVerb ("last")]
+    public void EvalLast (RCRunner runner, RCClosure closure, RCTime right)
+    {
+      runner.Yield (closure, new RCTime (right[right.Count - 1]));
+    }
+
+    [RCVerb ("last")]
+    public void EvalLast (RCRunner runner, RCClosure closure, RCByte right)
+    {
+      runner.Yield (closure, new RCByte (right[right.Count - 1]));
+    }
+
     [RCVerb ("last")]
     public void EvalLast (RCRunner runner, RCClosure closure, RCBlock right)
     {

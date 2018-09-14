@@ -801,7 +801,7 @@
       'a b c':1
     }
   }
-  TestFirst:{
+  TestFirstK:{
     skip:false
     src:first {
       :0
@@ -809,6 +809,96 @@
       :2
     }
     bin:0
+  }
+  TestFirstX:{
+    skip:false
+    src:first \x00 \x01 \x02
+    bin:\x00
+  }
+  TestFirstL:{
+    skip:false
+    src:first 0 1 2
+    bin:0
+  }
+  TestFirstD:{
+    skip:false
+    src:first 0.0 1.0 2.0
+    bin:0.0
+  }
+  TestFirstM:{
+    skip:false
+    src:first 0 1 2m
+    bin:0m
+  }
+  TestFirstB:{
+    skip:false
+    src:first true false true
+    bin:true
+  }
+  TestFirstY:{
+    skip:false
+    src:first #a #b #c
+    bin:#a
+  }
+  TestFirstS:{
+    skip:false
+    src:first "a" "b" "c"
+    bin:"a"
+  }
+  TestFirstI:{
+    skip:false
+    src:first ++ ++ ++
+    bin:++
+  }
+  TestFirstT:{
+    skip:false
+    src:first 2018.09.04 2018.09.05 2018.09.06
+    bin:2018.09.04
+  }
+  TestLastX:{
+    skip:false
+    src:last \x00 \x01 \x02
+    bin:\x02
+  }
+  TestLastL:{
+    skip:false
+    src:last 0 1 2
+    bin:2
+  }
+  TestLastD:{
+    skip:false
+    src:last 0.0 1.0 2.0
+    bin:2.0
+  }
+  TestLastM:{
+    skip:false
+    src:last 0 1 2m
+    bin:2m
+  }
+  TestLastB:{
+    skip:false
+    src:last true false false
+    bin:false
+  }
+  TestLastY:{
+    skip:false
+    src:last #a #b #c
+    bin:#c
+  }
+  TestLastS:{
+    skip:false
+    src:last "a" "b" "c"
+    bin:"c"
+  }
+  TestLastI:{
+    skip:false
+    src:last ++ ++ +-
+    bin:+-
+  }
+  TestLastT:{
+    skip:false
+    src:last 2018.09.04 2018.09.05 2018.09.06
+    bin:2018.09.06
   }
   TestLast:{
     skip:false
