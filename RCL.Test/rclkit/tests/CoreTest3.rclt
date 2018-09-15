@@ -86,6 +86,11 @@
     src:(path #home,env,'env.rclb') like "*/env/env.rclb"
     bin:true
   }
+  TestFlagDefault:{
+    skip:false
+    src:false flag "not-a-flag"
+    bin:false
+  }
   TestFile:{
     skip:false
     src:{

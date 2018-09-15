@@ -373,6 +373,13 @@ namespace RCL.Core
     }
 
     [RCVerb ("flag")]
+    public void EvalFlag (RCRunner runner, RCClosure closure, RCBoolean left, RCString right)
+    {
+      bool result = RCSystem.Args.Options.GetBoolean (right[0], left[0]);
+      runner.Yield (closure, new RCBoolean (result));
+    }
+
+    [RCVerb ("flag")]
     public void EvalFlag (RCRunner runner, RCClosure closure, RCString right)
     {
       bool result = RCSystem.Args.Options.GetBoolean (right[0], false);

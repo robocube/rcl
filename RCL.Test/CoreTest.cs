@@ -2106,7 +2106,13 @@ namespace RCL.Test
     [Test]
     public void TestPath ()
     {
-      DoTest("(path #home,env,env.rclb) like \"*/env/env.rclb\"", "true");
+      DoTest ("(path #home,env,env.rclb) like \"*/env/env.rclb\"", "true");
+    }
+
+    [Test]
+    public void TestFlagDefault ()
+    {
+      DoTest ("false flag \"not-a-flag\"", "false");
     }
 
     [Test]
