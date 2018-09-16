@@ -1731,6 +1731,18 @@ namespace RCL.Test
     public void TestInT () { DoTest ("2015.05.26 2015.05.27 2015.05.28 2015.05.29 2015.05.30 in 2015.05.28 2015.05.30", "false false true false true"); }
 
     [Test]
+    public void TestWithinL () { DoTest ("1 2 3 4 5 6 7 8 9 10 within 2 4 6 8", "false true true true false true true true false false"); }
+    [Test]
+    public void TestWithinD () { DoTest ("1.0 2.0 3.0 4.0 5.0 6.0 7.0 8.0 9.0 10.0 within 2.0 4.0 6.0 8.0", "false true true true false true true true false false"); }
+    [Test]
+    public void TestWithinM () { DoTest ("1 2 3 4 5 6 7 8 9 10m within 2 4 6 8m", "false true true true false true true true false false"); }
+    [Test]
+    public void TestWithinS () { DoTest ("\"a\" \"b\" \"c\" \"d\" \"e\" \"f\" \"g\" \"h\" \"i\" \"j\" within \"b\" \"d\" \"f\" \"h\"", "false true true true false true true true false false"); }
+    [Test]
+    public void TestWithinY () { DoTest ("#a #b #c #d #e #f #g #h #i #j within #b #d #f #h", "false true true true false true true true false false"); }
+    [Test]
+    public void TestWithinX () { DoTest ("\\x01 \\x02 \\x03 \\x04 \\x05 \\x06 \\x07 \\x08 \\x09 \\x0a within \\x02 \\x04 \\x06 \\x08", "false true true true false true true true false false"); }
+    [Test]
     public void TestReverseL () { DoTest ("reverse 1 2 3", "3 2 1"); }
     [Test]
     public void TestReverseD () { DoTest ("reverse 1.0 2.0 3.0", "3.0 2.0 1.0"); }

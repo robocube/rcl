@@ -3,6 +3,7 @@ using System;
 using DiffMatchPatch;
 using System.Collections.Generic;
 using RCL.Kernel;
+using System.Text;
 
 namespace RCL.Core
 {
@@ -342,6 +343,49 @@ namespace RCL.Core
       diff_match_patch dmp = new diff_match_patch ();
       List<Diff> diffs = dmp.diff_main (left[0], right[0]);
       string result = dmp.diff_prettyHtml (diffs);
+      runner.Yield (closure, new RCString (result));
+    }
+
+    [RCVerb ("utf8")]
+    public void EvalUtf8 (RCRunner runner, RCClosure closure, RCLong right)
+    {
+      byte[] bytes = new byte[right.Count];
+      for (int i = 0; i < bytes.Length; ++i)
+      {
+        bytes[i] = (byte) right[i];
+      }
+      string result = Encoding.UTF8.GetString (bytes);
+      runner.Yield (closure, new RCString (result));
+    }
+
+    [RCVerb ("ascii")]
+    public void EvalAscii (RCRunner runner, RCClosure closure, RCLong right)
+    {
+      byte[] bytes = new byte[right.Count];
+      for (int i = 0; i < bytes.Length; ++i)
+      {
+        bytes[i] = (byte) right[i];
+      }
+      string result = Encoding.ASCII.GetString (bytes);
+      runner.Yield (closure, new RCString (result));
+    }
+
+    [RCVerb ("ascii_strip")]
+    public void EvalAsciiStrip (RCRunner runner, RCClosure closure, RCString right)
+    {
+      RCArray<string> result = new RCArray<string> (right.Count);
+      for (int i = 0; i < right.Count; ++i)
+      {
+        string ascii = Encoding.ASCII.GetString (
+          Encoding.Convert (
+              Encoding.UTF8,
+              Encoding.GetEncoding (
+                  Encoding.ASCII.EncodingName,
+                  new EncoderReplacementFallback (string.Empty),
+                  new DecoderExceptionFallback ()),
+              Encoding.UTF8.GetBytes (right[i])));
+        result.Write (ascii);
+      }
       runner.Yield (closure, new RCString (result));
     }
   }

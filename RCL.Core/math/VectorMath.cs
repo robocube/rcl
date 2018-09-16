@@ -429,7 +429,7 @@ namespace RCL.Core
       runner.Yield (closure, result);
     }
 
-    [RCVerb ("in")] [RCVerb ("like")]
+    [RCVerb ("in")] [RCVerb ("like")] [RCVerb ("within")]
     public void EvalRightContextual (RCRunner runner, RCClosure closure, object left, object right)
     {
       RCOperator op = (RCOperator) closure.Code;

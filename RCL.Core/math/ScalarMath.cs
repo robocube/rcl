@@ -1242,6 +1242,73 @@ namespace RCL.Core
       return o;
     }
 
+    public class WithinContext<T> : Context<T> where T: IComparable<T>
+    {
+      public RCArray<T> ranges;
+      public override void Init (RCArray<T> right)
+      {
+        if (right.Count % 2 != 0)
+        {
+          throw new Exception ("within requires an even list of range values");
+        }
+        ranges = right;
+      }
+
+      public bool IsWithinRanges (T scalar)
+      {
+        for (int i = 0; i < ranges.Count; ++i,++i)
+        {
+          if ((scalar.CompareTo (ranges[i]) >= 0) && scalar.CompareTo (ranges[i + 1]) <= 0)
+          {
+            return true;
+          }
+        }
+        return false;
+      }
+    }
+
+    [Primitive ("within", Profile.Contextual)]
+    public static bool Within (WithinContext<byte> c, byte r)
+    {
+      return c.IsWithinRanges (r);
+    }
+
+    [Primitive ("within", Profile.Contextual)]
+    public static bool Within (WithinContext<long> c, long r)
+    {
+      return c.IsWithinRanges (r);
+    }
+
+    [Primitive ("within", Profile.Contextual)]
+    public static bool Within (WithinContext<double> c, double r)
+    {
+      return c.IsWithinRanges (r);
+    }
+
+    [Primitive ("within", Profile.Contextual)]
+    public static bool Within (WithinContext<decimal> c, decimal r)
+    {
+      return c.IsWithinRanges (r);
+    }
+
+    [Primitive ("within", Profile.Contextual)]
+    public static bool Within (WithinContext<string> c, string r)
+    {
+      return c.IsWithinRanges (r);
+    }
+
+    [Primitive ("within", Profile.Contextual)]
+    public static bool Within (WithinContext<RCSymbolScalar> c, RCSymbolScalar r)
+    {
+      return c.IsWithinRanges (r);
+    }
+
+    [Primitive ("within", Profile.Contextual)]
+    public static bool Within (WithinContext<RCTimeScalar> c, RCTimeScalar r)
+    {
+      return c.IsWithinRanges (r);
+    }
+
     public class ContainsContext<T> : Context<T>
     {
       public HashSet<T> values;
