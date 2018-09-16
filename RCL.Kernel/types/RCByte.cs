@@ -62,5 +62,10 @@ namespace RCL.Kernel
     {
       m_data.Write ((byte) box);
     }
+
+    public string Utf8String ()
+    {
+      return Encoding.UTF8.GetString (m_data.m_source);
+    }
   }
 }

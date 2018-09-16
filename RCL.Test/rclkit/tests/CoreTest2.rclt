@@ -2281,6 +2281,36 @@
     src:2015.05.26 2015.05.27 2015.05.28 2015.05.29 2015.05.30 in 2015.05.28 2015.05.30
     bin:false false true false true
   }
+  TestWithinL:{
+    skip:false
+    src:1 2 3 4 5 6 7 8 9 10 within 2 4 6 8
+    bin:false true true true false true true true false false
+  }
+  TestWithinD:{
+    skip:false
+    src:1.0 2.0 3.0 4.0 5.0 6.0 7.0 8.0 9.0 10.0 within 2.0 4.0 6.0 8.0
+    bin:false true true true false true true true false false
+  }
+  TestWithinM:{
+    skip:false
+    src:1 2 3 4 5 6 7 8 9 10m within 2 4 6 8m
+    bin:false true true true false true true true false false
+  }
+  TestWithinS:{
+    skip:false
+    src:"a" "b" "c" "d" "e" "f" "g" "h" "i" "j" within "b" "d" "f" "h"
+    bin:false true true true false true true true false false
+  }
+  TestWithinY:{
+    skip:false
+    src:#a #b #c #d #e #f #g #h #i #j within #b #d #f #h
+    bin:false true true true false true true true false false
+  }
+  TestWithinX:{
+    skip:false
+    src:\x01 \x02 \x03 \x04 \x05 \x06 \x07 \x08 \x09 \x0A within \x02 \x04 \x06 \x08
+    bin:false true true true false true true true false false
+  }
   TestReverseL:{
     skip:false
     src:reverse 1 2 3
@@ -2771,6 +2801,16 @@
     skip:false
     src:isname "aaa" "a a" "'foo'" "1foo" "foo1" "foo_bar"
     bin:true false false false true true
+  }
+  TestUtf8SX:{
+    skip:false
+    src:utf8 utf8 "foobarbaz"
+    bin:"foobarbaz"
+  }
+  TestAsciiSX:{
+    skip:false
+    src:ascii ascii "foobarbaz"
+    bin:"foobarbaz"
   }
   TestNamesK1:{
     skip:false

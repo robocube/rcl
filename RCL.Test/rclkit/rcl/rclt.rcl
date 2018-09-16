@@ -37,7 +37,7 @@ run_test:{
         time:0.00:00:00.0000000
       }
       :$report_sym write $report except "src" "expected" "actual" "completed"
-      :($report.status in $display_status) then {
+      :($report.status in $RCLT_DISPLAY_STATUS) then {
         :"test" print #pretty format $report except "time"
       }
       <-eval {:$report}
@@ -120,11 +120,11 @@ run_test:{
           status:$passed switch {:"P" :"F"}
           time:$result.data.end_time - $result.data.start_time
         }
-        :($report.status in $display_status) then {
+        :($report.status in $RCLT_DISPLAY_STATUS) then {
           :"test" print #pretty format $report except "time"
         }
         :$report_sym write $report except "src" "expected" "actual" "completed"
-        :($fail_fast and $report.status = "F") then {
+        :($RCLT_FAIL_FAST and $report.status = "F") then {
           :exit 1
         }
         <-$report
@@ -148,7 +148,7 @@ run_suite:{
     fail:count $status where $status.s == "F"
     status:($fail == 0) switch {:"P" :"F"}
   }
-  :($report.status in $display_status) then {
+  :($report.status in $RCLT_DISPLAY_STATUS) then {
     :"suite" print $report
   }
   <-$report
@@ -199,8 +199,8 @@ main:{
   results:& {<-$R.data} each {
     test_op:eval {
       RCL_HOME:$RCL_HOME
-      display_status:"," split "F" option "display-status"
-      fail_fast:false flag "fail-fast"
+      RCLT_DISPLAY_STATUS:"," split ("F" getenv "RCLT_DISPLAY_STATUS") option "rclt-display-status"
+      RCLT_FAIL_FAST:(boolean "false" getenv "RCLT_FAIL_FAST") flag "rclt-fail-fast"
       run_either:$run_either
       run_file:$run_file
       run_suite:$run_suite
@@ -210,6 +210,7 @@ main:{
       result::(#rclt,* snap -1) except #G
       <--$result
     }
+    :"RCLT_DISPLAY_STATUS" setenv "P,F,K"
     output:try {<-isolate $test_op}
     <-($output.status == 0) switch {:$output :exit $output.status}
   } each $files

@@ -10,7 +10,7 @@ _rclt_setup:{
 pass:{
   src:{
     script:[?
-      rclt --display-status=P,K,F [! getm #rclt_file !]:pass
+      rclt [! getm #rclt_file !]:pass
       exit
     ?]
     sh:startx "bash"
@@ -117,7 +117,7 @@ skip:{
 repeat:{
   src:{
     script:[?
-      rclt --display-status=P,K,F [! getm #rclt_file !]:repeat
+      rclt [! getm #rclt_file !]:repeat
       exit
     ?]
     sh:startx "bash"
@@ -187,7 +187,7 @@ debug:{
 test_display_status:{
   src:{
     script:[?
-      rclt --display-status=K [! getm #rclt_file !]
+      rclt --rclt-display-status=K [! getm #rclt_file !]
       # The program is expected to fail - just look at the output
       exit 0
     ?]
@@ -222,7 +222,7 @@ test_display_status:{
 test_fail_fast:{
   src:{
     script:[?
-      rclt --fail-fast [! getm #rclt_file !]
+      rclt --rclt-fail-fast [! getm #rclt_file !]
       # The program is expected to fail - just look at the output
       exit 0
     ?]
@@ -232,6 +232,15 @@ test_fail_fast:{
     <-template & $out.data + "\n"
   }
   bin:[?
+    0 0 print 0 test
+      {
+        name:"pass"
+        src:1 + 1
+        expected:2
+        actual:2
+        completed:true
+        status:"P"
+      }
     0 0 print 0 test
       {
         name:"fail"
@@ -248,7 +257,7 @@ test_fail_fast:{
 nobin:{
   src:{
     script:[?
-      rclt --display-status=P,K,F [! getm #rclt_file !]:nobin
+      rclt [! getm #rclt_file !]:nobin
       exit
     ?]
     sh:startx "bash"
@@ -282,7 +291,7 @@ nobin:{
 setup_teardown:{
   src:{
     out:rclt.sh [?
-      rclt --display-status=P,K,F [! getm #rclt_file !]:setup
+      rclt [! getm #rclt_file !]:setup
       exit
     ?]
     <-template & $out + "\n"
@@ -362,7 +371,7 @@ setup_operation_order:{
 suite_pass:{
   src:{
     script:[?
-      rclt --display-status=P,K,F [! getm #rclt_file !]:suite_pass
+      rclt [! getm #rclt_file !]:suite_pass
       exit
     ?]
     sh:startx "bash"
@@ -423,7 +432,7 @@ suite_pass:{
 suite_fail:{
   src:{
     script:[?
-      rclt --display-status=P,K,F [! getm #rclt_file !]:suite_fail
+      rclt [! getm #rclt_file !]:suite_fail
       exit
     ?]
     sh:startx "bash"
@@ -485,7 +494,7 @@ suite_fail:{
 suite_skip:{
   src:{
     script:[?
-      rclt --display-status=P,K,F [! getm #rclt_file !]:suite_skip
+      rclt [! getm #rclt_file !]:suite_skip
       exit
     ?]
     sh:startx "bash"
@@ -546,7 +555,7 @@ suite_skip:{
 template_as_bin:{
   src:{
     script:[?
-      rclt --display-status=P,K,F [! getm #rclt_file !]:template_as_bin
+      rclt [! getm #rclt_file !]:template_as_bin
       exit
     ?]
     sh:startx "bash"

@@ -1933,6 +1933,11 @@ namespace RCL.Test
     [Test]
     public void TestIsName () { DoTest ("isname \"aaa\" \"a a\" \"'foo'\" \"1foo\" \"foo1\" \"foo_bar\"", "true false false false true true"); }
 
+    [Test]
+    public void TestUtf8SX () { DoTest ("utf8 utf8 \"foobarbaz\"", "\"foobarbaz\""); }
+    [Test]
+    public void TestAsciiSX () { DoTest ("ascii ascii \"foobarbaz\"", "\"foobarbaz\""); }
+
     //Block
     [Test]
     public void TestNamesK1 () { DoTest ("names {a:1 b:2 c:3}", "\"a\" \"b\" \"c\""); }

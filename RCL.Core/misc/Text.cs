@@ -358,6 +358,19 @@ namespace RCL.Core
       runner.Yield (closure, new RCString (result));
     }
 
+    [RCVerb ("utf8")]
+    public void EvalUtf8 (RCRunner runner, RCClosure closure, RCByte right)
+    {
+      string result = right.Utf8String ();
+      runner.Yield (closure, new RCString (result));
+    }
+
+    [RCVerb ("utf8")]
+    public void EvalUtf8 (RCRunner runner, RCClosure closure, RCString right)
+    {
+      runner.Yield (closure, new RCByte (Encoding.UTF8.GetBytes (right[0])));
+    }
+
     [RCVerb ("ascii")]
     public void EvalAscii (RCRunner runner, RCClosure closure, RCLong right)
     {
@@ -370,23 +383,18 @@ namespace RCL.Core
       runner.Yield (closure, new RCString (result));
     }
 
-    [RCVerb ("ascii_strip")]
-    public void EvalAsciiStrip (RCRunner runner, RCClosure closure, RCString right)
+    [RCVerb ("ascii")]
+    public void EvalAscii (RCRunner runner, RCClosure closure, RCByte right)
     {
-      RCArray<string> result = new RCArray<string> (right.Count);
-      for (int i = 0; i < right.Count; ++i)
-      {
-        string ascii = Encoding.ASCII.GetString (
-          Encoding.Convert (
-              Encoding.UTF8,
-              Encoding.GetEncoding (
-                  Encoding.ASCII.EncodingName,
-                  new EncoderReplacementFallback (string.Empty),
-                  new DecoderExceptionFallback ()),
-              Encoding.UTF8.GetBytes (right[i])));
-        result.Write (ascii);
-      }
+      string result = Encoding.ASCII.GetString (right.ToArray ());
       runner.Yield (closure, new RCString (result));
+    }
+
+    [RCVerb ("ascii")]
+    public void EvalAscii (RCRunner runner, RCClosure closure, RCString right)
+    {
+      byte[] result = Encoding.ASCII.GetBytes (right[0]);
+      runner.Yield (closure, new RCByte (result));
     }
   }
 }
