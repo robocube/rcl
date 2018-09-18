@@ -325,14 +325,16 @@ namespace RCL.Kernel
     public override void Format (StringBuilder builder, RCFormat args, int level)
     {
       RCFormat format = new RCFormat (args.Syntax, "  ", args.Newline, args.Delimeter,
-                                      args.RowDelimeter, args.Align, args.Showt, args.ParsableScalars, args.CanonicalCubes);
+                                      args.RowDelimeter, args.Align, args.Showt,
+                                      args.ParsableScalars, args.CanonicalCubes, args.Fragment);
       RCL.Kernel.Format.DoFormat (this, builder, format, null, level);
     }
 
     public override void Format (StringBuilder builder, RCFormat args, RCColmap colmap, int level)
     {
       RCFormat format = new RCFormat (args.Syntax, "  ", args.Newline, args.Delimeter,
-                                      args.RowDelimeter, args.Align, args.Showt, args.ParsableScalars, args.CanonicalCubes);
+                                      args.RowDelimeter, args.Align, args.Showt,
+                                      args.ParsableScalars, args.CanonicalCubes, args.Fragment);
       RCL.Kernel.Format.DoFormat (this, builder, format, colmap, level);
     }
 

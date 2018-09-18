@@ -2686,6 +2686,26 @@
     src:"/" trim "a" "/b" "c/" "/d/"
     bin:"a" "b" "c" "d"
   }
+  TestTrimStart:{
+    skip:false
+    src:trimStart "a" " b" "c " " d "
+    bin:"a" "b" "c " "d "
+  }
+  TestTrimEnd:{
+    skip:false
+    src:trimEnd "a" " b" "c " " d "
+    bin:"a" " b" "c" " d"
+  }
+  TestTrimStartSS:{
+    skip:false
+    src:"/" trimStart "a" "/b" "c/" "d/"
+    bin:"a" "b" "c/" "d/"
+  }
+  TestTrimEndSS:{
+    skip:false
+    src:"/" trimEnd "a" "/b" "c/" "/d/"
+    bin:"a" "/b" "c" "/d"
+  }
   TestIndexOf:{
     skip:false
     src:"foo" indexof "abcfoodef" "abcdef" "foo" "fooabcdef" "abcdeffoo"

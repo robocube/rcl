@@ -40,6 +40,10 @@ namespace RCL.Kernel
         canonical = true;
         result = content.Format (RCFormat.TestCanonical);
       }
+      else if (which.Equals ("fragment"))
+      {
+        result = content.Format (RCFormat.EditorFragment);
+      }
       else if (which.Equals ("html"))
       {
         result = content.Format (RCFormat.Html);
@@ -138,11 +142,17 @@ namespace RCL.Kernel
     {
       if (block.Count == 0)
       {
-        builder.Append ("{}");
+        if (!args.Fragment)
+        {
+          builder.Append ("{}");
+        }
         return;
       }
-      builder.Append ("{");
-      builder.Append (args.Newline);
+      if (level > 0 || !args.Fragment)
+      {
+        builder.Append ("{");
+        builder.Append (args.Newline);
+      }
       ++level;
       //Note the indexer requires a linear search backwards.
       //Maybe a custom iterator is in order?
@@ -150,9 +160,12 @@ namespace RCL.Kernel
       for (int i = 0; i < block.Count; ++i)
       {
         RCBlock child = block.GetName (i);
-        for (int tab = 0; tab < level; ++tab)
+        if (level > 1 || !args.Fragment)
         {
-          builder.Append (args.Indent);
+          for (int tab = args.Fragment ? 1 : 0; tab < level; ++tab)
+          {
+            builder.Append (args.Indent);
+          }
         }
         if (child.EscapeName)
         {
@@ -176,13 +189,16 @@ namespace RCL.Kernel
           builder.Append (args.RowDelimeter);
         }
       }
-      --level;
       builder.Append (args.Newline);
-      for (int tab = 0; tab < level; ++tab)
+      --level;
+      if (level > 0 || !args.Fragment)
       {
-        builder.Append (args.Indent);
+        for (int tab = args.Fragment ? 1 : 0; tab < level; ++tab)
+        {
+          builder.Append (args.Indent);
+        }
+        builder.Append ("}");
       }
-      builder.Append ("}");
     }
 
     public static void DoFormat (RCTemplate template, StringBuilder builder, RCFormat args, RCColmap colmap, int level)
@@ -196,7 +212,7 @@ namespace RCL.Kernel
       if (template.Multiline)
       {
         builder.Append ("\n");
-        for (int tab = 0; tab < level; ++tab)
+        for (int tab = args.Fragment ? 1 : 0; tab < level; ++tab)
         {
           builder.Append (args.Indent);
         }
@@ -220,7 +236,7 @@ namespace RCL.Kernel
                 builder.Append ("\n");
                 if (i < template.Count - 2 || end < str[j].Length - 1)
                 {
-                  for (int tab = 0; tab < level; ++tab)
+                  for (int tab = args.Fragment ? 1 : 0; tab < level; ++tab)
                   {
                     builder.Append (args.Indent);
                   }
@@ -274,7 +290,7 @@ namespace RCL.Kernel
       --level;
       if (template.Multiline)
       {
-        for (int tab = 0; tab < level; ++tab)
+        for (int tab = args.Fragment ? 1 : 0; tab < level; ++tab)
         {
           builder.Append (args.Indent);
         }

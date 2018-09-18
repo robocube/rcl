@@ -342,6 +342,60 @@ namespace RCL.Core
       runner.Yield (closure, new RCString (result));
     }
 
+    [RCVerb ("trimStart")]
+    public void EvalTrimStart (RCRunner runner, RCClosure closure, RCString right)
+    {
+      RCArray<string> result = new RCArray<string> (right.Count);
+      for (int i = 0; i < right.Count; ++i)
+      {
+        result.Write (right[i].TrimStart ());
+      }
+      runner.Yield (closure, new RCString (result));
+    }
+
+    [RCVerb ("trimStart")]
+    public void EvalTrimStart (RCRunner runner, RCClosure closure, RCString left, RCString right)
+    {
+      if (left.Count != 1)
+      {
+        throw new Exception ("left should contain a single string containing the chars to trim.");
+      }
+      char[] chars = left[0].ToCharArray ();
+      RCArray<string> result = new RCArray<string> (right.Count);
+      for (int i = 0; i < right.Count; ++i)
+      {
+        result.Write (right[i].TrimStart (chars));
+      }
+      runner.Yield (closure, new RCString (result));
+    }
+
+    [RCVerb ("trimEnd")]
+    public void EvalTrimEnd (RCRunner runner, RCClosure closure, RCString right)
+    {
+      RCArray<string> result = new RCArray<string> (right.Count);
+      for (int i = 0; i < right.Count; ++i)
+      {
+        result.Write (right[i].TrimEnd ());
+      }
+      runner.Yield (closure, new RCString (result));
+    }
+
+    [RCVerb ("trimEnd")]
+    public void EvalTrimEnd (RCRunner runner, RCClosure closure, RCString left, RCString right)
+    {
+      if (left.Count != 1)
+      {
+        throw new Exception ("left should contain a single string containing the chars to trim.");
+      }
+      char[] chars = left[0].ToCharArray ();
+      RCArray<string> result = new RCArray<string> (right.Count);
+      for (int i = 0; i < right.Count; ++i)
+      {
+        result.Write (right[i].TrimEnd (chars));
+      }
+      runner.Yield (closure, new RCString (result));
+    }
+
     [RCVerb ("delimit")]
     public void EvalDelimit (RCRunner runner, RCClosure closure, RCString left, RCString right)
     {

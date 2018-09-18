@@ -1901,6 +1901,14 @@ namespace RCL.Test
     [Test]
     public void TestTrim3 () { DoTest ("\"/\" trim \"a\" \"/b\" \"c/\" \"/d/\"", "\"a\" \"b\" \"c\" \"d\""); }
     [Test]
+    public void TestTrimStart () { DoTest ("trimStart \"a\" \" b\" \"c \" \" d \"", "\"a\" \"b\" \"c \" \"d \""); }
+    [Test]
+    public void TestTrimEnd () { DoTest ("trimEnd \"a\" \" b\" \"c \" \" d \"", "\"a\" \" b\" \"c\" \" d\""); }
+    [Test]
+    public void TestTrimStartSS () { DoTest ("\"/\" trimStart \"a\" \"/b\" \"c/\" \"d/\"", "\"a\" \"b\" \"c/\" \"d/\""); }
+    [Test]
+    public void TestTrimEndSS () { DoTest ("\"/\" trimEnd \"a\" \"/b\" \"c/\" \"/d/\"", "\"a\" \"/b\" \"c\" \"/d\""); }
+    [Test]
     public void TestIndexOf () { DoTest ("\"foo\" indexof \"abcfoodef\" \"abcdef\" \"foo\" \"fooabcdef\" \"abcdeffoo\"", "3 15 18 33"); }
     [Test]
     public void TestPad () { DoTest (" \"-\" pad 1 2 3", "\"-\" \"--\" \"---\""); }
@@ -2403,6 +2411,18 @@ namespace RCL.Test
     public void TestParseDefault1 ()
     {
       DoTest ("#rcl parse \"{a:1 b:2.0 c:\\\"3\\\"}\"", "{a:1 b:2.0 c:\"3\"}");
+    }
+
+    [Test]
+    public void TestTryParse ()
+    {
+      DoTest ("tryparse \"{a:1 b:2 c:3}\"", "{status:0 fragment:false data:{a:1 b:2 c:3}}");
+    }
+
+    [Test]
+    public void TestTryParseFragment ()
+    {
+      DoTest ("tryparse \"a:1 b:2 c:3\"", "{status:0 fragment:true data:{a:1 b:2 c:3}}");
     }
 
     [Test]

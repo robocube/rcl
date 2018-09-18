@@ -8,10 +8,10 @@ namespace RCL.Kernel
   public class Parse
   {
     [RCVerb ("parse")]
-    public void EvalParse (
-      RCRunner runner, RCClosure closure, RCString right)
+    public void EvalParse (RCRunner runner, RCClosure closure, RCString right)
     {
-      runner.Yield (closure, DoParse (new RCLParser (RCSystem.Activator), right, false));
+      bool fragment;
+      runner.Yield (closure, DoParse (new RCLParser (RCSystem.Activator), right, false, out fragment));
     }
 
     [RCVerb ("parse")]
@@ -50,7 +50,8 @@ namespace RCL.Kernel
         parser = new MarkdownParser ();
       }
       else throw new Exception ("Unknown parser: " + which);
-      runner.Yield (closure, DoParse (parser, right, canonical));
+      bool fragment;
+      runner.Yield (closure, DoParse (parser, right, canonical, out fragment));
     }
 
     [RCVerb ("lex")]
@@ -79,14 +80,38 @@ namespace RCL.Kernel
       runner.Yield (closure, new RCString (result));
     }
 
-    protected RCValue DoParse (RCParser parser, RCString right, bool canonical)
+    [RCVerb ("tryparse")]
+    public void EvalTryParse (RCRunner runner, RCClosure closure, RCString right)
+    {
+      bool fragment;
+      RCValue val;
+      RCBlock result = RCBlock.Empty;
+      try
+      {
+        val = DoParse (new RCLParser (RCSystem.Activator), right, false, out fragment);
+        result = new RCBlock (result, "status", ":", new RCLong (0));
+        result = new RCBlock (result, "fragment", ":", new RCBoolean (fragment));
+        result = new RCBlock (result, "data", ":", val);
+      }
+      catch (Exception ex)
+      {
+        result = new RCBlock (result, "status", ":", new RCLong (1));
+        result = new RCBlock (result, "fragment", ":", new RCBoolean (false));
+        string message = ex.ToString ();
+        RCBlock report = new RCBlock ("", ":", new RCString (message + "\n"));
+        int escapeCount = RCTemplate.CalculateReportTemplateEscapeLevel (message);
+        result = new RCBlock (result, "error", ":", new RCTemplate (report, escapeCount, true));
+      }
+      runner.Yield (closure, result);
+    }
+
+    protected RCValue DoParse (RCParser parser, RCString right, bool canonical, out bool fragment)
     {
       RCArray<RCToken> tokens = new RCArray<RCToken> ();
       for (int i = 0; i < right.Count; ++i)
       {
         parser.Lex (right[i], tokens);
       }
-      bool fragment;
       RCValue result = parser.Parse (tokens, out fragment, canonical);
       return result;
     }

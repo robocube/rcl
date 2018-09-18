@@ -138,7 +138,8 @@ namespace RCL.Kernel
     public virtual string Format (RCFormat args)
     {
       StringBuilder builder = new StringBuilder ();
-      Format (builder, args, null, 0);
+      int level = 0;
+      Format (builder, args, null, level);
       return builder.ToString ();
     }
 
