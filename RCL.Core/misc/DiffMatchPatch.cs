@@ -1796,7 +1796,7 @@ namespace DiffMatchPatch {
      * @param text2 Ignored.
      * @param diffs Array of Diff objects for text1 to text2.
      * @return List of Patch objects.
-     * @deprecated Prefer patch_make(string text1, List<Diff> diffs).
+     * @deprecated Prefer patch_make(string text1, List&lt;Diff&gt; diffs).
      */
     public List<Patch> patch_make(string text1, string text2,
         List<Diff> diffs) {

@@ -2,11 +2,11 @@ using System;
 using System.Text;
 using RCL.Kernel;
 
-/// <summary>
-/// General purpose operations on vectors.
-/// </summary>
 namespace RCL.Core
 {
+  /// <summary>
+  /// General purpose operations on vectors.
+  /// </summary>
   public class Append
   {
     [RCVerb ("&")]

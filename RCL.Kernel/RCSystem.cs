@@ -95,12 +95,12 @@ namespace RCL.Kernel
       runner.Yield (closure, result);
     }
 
+    /*
     /// <summary>
     /// This is a way to listen on debug messages in an isolated appdomain
     /// We don't currently need it because we aren't using Debug.Write,
     /// but that should change.
     /// </summary>
-    /*
     private class DelegateTraceListener : TraceListener
     {
       private Action<string> _write;

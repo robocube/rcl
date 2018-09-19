@@ -2,11 +2,11 @@ using System;
 using System.Text;
 using RCL.Kernel;
 
-/// <summary>
-/// General purpose operations on vectors.
-/// </summary>
 namespace RCL.Core
 {
+  /// <summary>
+  /// Operations to obtain the count of values in a collection.
+  /// </summary>
   public class Count
   {
     [RCVerb ("count")]

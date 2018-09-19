@@ -89,10 +89,10 @@ namespace RCL.Kernel
       }
     }
 
+    /*
     /// <summary>
     /// Reset all of the modules except for Fiber which is needed by the runner
     /// </summary>
-    /*
     public void Reset ()
     {
       List<Type> typeList = new List<Type> ();

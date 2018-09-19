@@ -27,7 +27,6 @@ namespace RCL.Kernel
     {
       if (!left.Equals (right))
       {
-        string expression = closure.Code.ToString ();
         throw new RCException (closure, 
                                RCErrors.Assert, "" +
                                "Expected: " + right.ToString () +

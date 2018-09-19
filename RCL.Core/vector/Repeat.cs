@@ -2,11 +2,11 @@ using System;
 using System.Text;
 using RCL.Kernel;
 
-/// <summary>
-/// General purpose operations on vectors.
-/// </summary>
 namespace RCL.Core
 {
+  /// <summary>
+  /// Operations to create vectors with repeated values.
+  /// </summary>
   public class Repeat
   {
     [RCVerb ("repeat")]

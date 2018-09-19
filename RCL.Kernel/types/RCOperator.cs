@@ -37,11 +37,15 @@ namespace RCL.Kernel
     public virtual void Init (string name, RCValue left, RCValue right)
     {
       if (IsLocked)
+      {
         throw new Exception (
           "Attempted to modify a locked instance of RCOperator");
+      }
 
       if (right == null)
+      {
         throw new ArgumentNullException ("right");
+      }
 
       /*
       if (left == null)
@@ -254,7 +258,7 @@ namespace RCL.Kernel
   /// expression without being given a name.  For the time being this capability is 
   /// restricted to embedded blocks (by the parser).  But we might open it up to 
   /// expressions or other values if the need arises.
-  //  I am thinking of getting rid of these.
+  /// I am thinking of getting rid of these.
   /// </summary>
   public class InlineOperator : RCOperator
   {

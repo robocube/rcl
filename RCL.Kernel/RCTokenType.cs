@@ -67,12 +67,6 @@ namespace RCL.Kernel
     /// Spaces, Tabs, Newlines, etc...
     /// </summary>
     public static readonly RCTokenType WhiteSpace = new WhitespaceToken ();
-    
-    /// <summary>
-    /// C-style comments - I would like to add some introspection on comments
-    /// so I am making them a separate type from whitespace
-    /// </summary>
-    //public static readonly RCTokenType Comment = new RCCommentToken();
 
     /// <summary>
     /// Spacers are used to format tables

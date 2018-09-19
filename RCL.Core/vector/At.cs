@@ -3,11 +3,11 @@ using System;
 using System.Text;
 using RCL.Kernel;
 
-/// <summary>
-/// General purpose operations on vectors.
-/// </summary>
 namespace RCL.Core
 {
+  /// <summary>
+  /// Operations for accessing values by index.
+  /// </summary>
   public class At
   {
     [RCVerb ("at")]

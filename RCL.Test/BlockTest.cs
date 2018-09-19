@@ -84,16 +84,16 @@ namespace RCL.Test
     }
 
     /// <summary>
-    /// Core operations (+,-,/,*,&&,||,!) will have a special case to work
+    /// Core operations like (+,-,/,*,and,or,not) will have a special case to work
     /// over vectors with a scalar on either side of the operation.  Otherwise
-    /// it would be hard to do something like (bp+ap)/2.  You would have to
+    /// it would be hard to do something like ($bp+$ap)/2.  You would have to
     /// create a whole vector of 2's with the same length as the other vectors.
     /// Or I have to introduce scalars into the language which I will not do,
     /// because that means constantly worrying about whether you have a scalar
     /// or a vector and which operators work on which.
     /// </summary>
     [Test]
-    public void TestScalarsRight()
+    public void TestScalarsRight ()
     {
       runner.Reset ();
       RCVector<double> x = new RCDouble (100, 200, 300);

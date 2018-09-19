@@ -75,12 +75,11 @@ namespace RCL.Exe
               }
             }
           }
-          string appDomainName = "Isolated:" + Guid.NewGuid ();
+          string appDomainName = "Isolated build:" + build + " id:" + Guid.NewGuid ();
           appDomain = AppDomain.CreateDomain (appDomainName, null, setupInfo);
           Type type = typeof (Program);
           program = (Program) appDomain.CreateInstanceAndUnwrap (type.Assembly.FullName, type.FullName);
           string appDomainVersionString = setupInfo.ApplicationBase;
-          //Console.WriteLine("Setting IsolateCode to :{0}", code.ToString ());
           //RCSystem.CrossDomainTraceHelper.StartListening (appDomain);
           program.IsolateCode = code.ToString ();
           program.InstanceMain (argQueue.ToArray (), appDomainVersionString);
