@@ -1568,6 +1568,8 @@ namespace RCL.Test
     public void TestUniqueY () { DoTest ("unique #x #y #z #y", "#x #y #z"); }
     [Test]
     public void TestUniqueT () { DoTest ("unique 2015.05.25 2015.05.26 2015.05.27 2015.05.26", "2015.05.25 2015.05.26 2015.05.27"); }
+    [Test]
+    public void TestUniqueK () { DoTest ("unique {a:{x:1 y:2} b:{x:10 y:20} a:{x:100 y:200}}", "{a:{x:100 y:200} b:{x:10 y:20}}"); }
 
     [Test]
     public void TestMapL () { DoTest ("1 10 2 20 map 1 1 2 2 1 3", "10 10 20 20 10 3"); }

@@ -1223,6 +1223,23 @@ namespace RCL.Core
       HashSet<string> rightCols = new HashSet<string> (right.Names);
       HashSet<string> joinCols = new HashSet<string> (leftCols);
       joinCols.IntersectWith (rightCols);
+      string[] joinColsArray = new string[joinCols.Count];
+      joinCols.CopyTo (joinColsArray);
+      // Do not join on any column containing nulls in either cube
+      for (int i = 0; i < joinColsArray.Length; ++i)
+      {
+        string joinCol = joinColsArray[i];
+        ColumnBase column = right.GetColumn (joinCol);
+        if (column.Count != right.Count)
+        {
+          joinCols.Remove (joinCol);
+        }
+        column = left.GetColumn (joinCol);
+        if (column.Count != left.Count)
+        {
+          joinCols.Remove (joinCol);
+        }
+      }
       leftCols.ExceptWith (rightCols);
       rightCols.ExceptWith (leftCols);
       //I just can't do it without constructing the symbols. I'm too stupid.
@@ -1231,7 +1248,9 @@ namespace RCL.Core
       {
         ColumnBase column = right.GetColumn (joinCol);
         if (column.Count != right.Count)
-          throw new Exception ("join column may not have nulls");
+        {
+          throw new Exception (string.Format ("join column '{0}' may not have nulls", joinCol));
+        }
         for (int j = 0; j < column.Count; ++j)
         {
           object val = column.BoxCell (j);
@@ -1251,7 +1270,9 @@ namespace RCL.Core
       {
         ColumnBase column = left.GetColumn (joinCol);
         if (column.Count != left.Count)
-          throw new Exception ("join column may not have nulls");
+        {
+          throw new Exception (string.Format ("join column '{0}' may not have nulls", joinCol));
+        }
         for (int j = 0; j < column.Count; ++j)
         {
           object val = column.BoxCell (j);
@@ -1286,9 +1307,12 @@ namespace RCL.Core
           if (leftRow[i] >= 0)
           {
             int vrow = column.Index.BinarySearch (leftRow[i]);
-            object box = column.BoxCell (vrow);
-            RCSymbolScalar symbol = result.Axis.SymbolAt (i);
-            result.WriteCell (rightCol, symbol, box, i, false, false);
+            if (vrow < column.Count)
+            {
+              object box = column.BoxCell (vrow);
+              RCSymbolScalar symbol = result.Axis.SymbolAt (i);
+              result.WriteCell (rightCol, symbol, box, i, false, true);
+            }
           }
         }
       }
@@ -1823,7 +1847,7 @@ namespace RCL.Core
             RCBlock colkv = row.GetName (j);
             RCVectorBase col = (RCVectorBase) colkv.Value;
             object box = col.Child (0);
-            result.WriteCell (colkv.Name, symbol, box);
+            result.WriteCell (colkv.Name, symbol, box, -1, false, true);
           }
           if (hasS)
           {

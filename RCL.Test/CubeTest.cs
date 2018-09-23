@@ -200,6 +200,12 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestCube10 ()
+    {
+      DoTest ("colofs cube {a:{s:\"x\"} b:{s:\"x\"} a:{s:\"x\"} c:{s:\"y\"}}", "\"x\" \"x\" \"x\" \"y\"");
+    }
+
+    [Test]
     public void TestIdentityCube ()
     {
       DoTest ("cube []", "[]");
@@ -3138,6 +3144,13 @@ namespace RCL.Test
     public void TestJoin3 ()
     {
       DoTest ("[S|k # # #0 #g #0,0 #g,0 #1 #i #1,0 #i,0] join [k src #g,0 #r,0 #i,0 #g,r,0]", "[S|k src # # -- #0 #g -- #0,0 #g,0 #r,0 #1 #i -- #1,0 #i,0 #g,r,0]");
+    }
+
+    [Test]
+    public void TestJoin4 ()
+    {
+      //The column z should not be treated as a join column because it contains nulls.
+      DoTest ("[S|x z #a 1 100] join [S|x y z #b 2 20 -- #c 3 30 300]", "[S|x z #a 1 100]");
     }
 
     [Test]
