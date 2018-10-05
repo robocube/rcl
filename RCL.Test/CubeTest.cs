@@ -2981,6 +2981,24 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestExcept3 ()
+    {
+      DoTest ("[x y 1 10] except \"y\"", "[x 1]");
+    }
+
+    [Test]
+    public void TestExcept4 ()
+    {
+      DoTest ("[S|x y #a 1 10] except \"y\"", "[S|x #a 1]");
+    }
+
+    [Test]
+    public void TestExcept5 ()
+    {
+      DoTest ("[G E S|x 0 0 #a 1] except \"G\" \"E\"", "[S|x #a 1]");
+    }
+
+    [Test]
     public void TestInter ()
     {
       DoTest ("[S|x #a 1] inter [S|x #b 2 #c 3]", "[]");
@@ -3143,7 +3161,8 @@ namespace RCL.Test
     [Test]
     public void TestJoin3 ()
     {
-      DoTest ("[S|k # # #0 #g #0,0 #g,0 #1 #i #1,0 #i,0] join [k src #g,0 #r,0 #i,0 #g,r,0]", "[S|k src # # -- #0 #g -- #0,0 #g,0 #r,0 #1 #i -- #1,0 #i,0 #g,r,0]");
+      DoTest ("[S|k # # #0 #g #0,0 #g,0 #1 #i #1,0 #i,0] join [k src #g,0 #r,0 #i,0 #g,r,0]",
+              "[S|k src # # -- #0 #g -- #0,0 #g,0 #r,0 #1 #i -- #1,0 #i,0 #g,r,0]");
     }
 
     [Test]
@@ -3151,6 +3170,66 @@ namespace RCL.Test
     {
       //The column z should not be treated as a join column because it contains nulls.
       DoTest ("[S|x z #a 1 100] join [S|x y z #b 2 20 -- #c 3 30 300]", "[S|x z #a 1 100]");
+    }
+
+    [Test]
+    public void TestJoin5 ()
+    {
+      DoTest ("[S|x y #a \"XLE\" -- #b \"FOO\" \"C\" #b \"XME\" --] join [S|x y #a \"XLE\" \"BAR\" #b \"FOO\" \"CAR\" #b \"XME\" \"BAZ\"]",
+              "[S|x y #a \"XLE\" \"BAR\" #b \"FOO\" \"CAR\" #b \"XME\" \"BAZ\"]");
+    }
+
+    [Test]
+    public void TestJoin6 ()
+    {
+      DoTest ("[S|x y #ABC \"ABC\" -- #DEF \"DEF nomatch\" \"C\"] join [S|x y #GHI \"ABC\" \"\" #KLM \"DEF\" \"\"]",
+              "[S|x y #ABC \"ABC\" \"\" #DEF \"DEF nomatch\" \"C\"]");
+    }
+
+    [Test]
+    public void TestJoin7 ()
+    {
+      DoTest ("[S|x y #ABC \"ABC\" -- #DEF \"DEF nomatch\" \"C\"] join [S|x y #ABC \"ABC\" \"\" #DEF \"DEF\" \"\"]",
+              "[S|x y #ABC \"ABC\" \"\" #DEF \"DEF nomatch\" \"C\"]");
+    }
+
+    [Test]
+    public void TestJoin8 ()
+    {
+      DoTest ("[S|x y #a 1 -- #b 2 \"b\" #c 3 --] join []", "[S|x y #a 1 -- #b 2 \"b\" #c 3 --]");
+    }
+
+    [Test]
+    public void TestJoin9 ()
+    {
+      DoTest ("[S|x y #a 1 \"a\" #b 2 -- #c 3 \"b\" #e 4 --] join [S|x y #f 5 \"f\"]",
+              "[S|x y #a 1 \"a\" #b 2 -- #c 3 \"b\" #e 4 --]");
+    }
+
+    [Test]
+    public void TestJoin10 ()
+    {
+      DoTest ("[S|x y #a 1 -- #b 2 \"b\" #c 3 --] join [x y 1 -- 2 \"b+\" 3 --]",
+              "[S|x y #a 1 -- #b 2 \"b+\" #c 3 --]");
+    }
+
+    [Test]
+    public void TestJoin11 ()
+    {
+      DoTest ("[S|x y #a 1 -- #b 2 \"b\" #c 3 --] join [x y 1 -- 3 -- 2 \"b+\"]",
+              "[S|x y #a 1 -- #b 2 \"b+\" #c 3 --]");
+    }
+
+    [Test]
+    public void TestJoin12 ()
+    {
+      DoTest ("[S|y #a 1] join [S|z #b \"\"]", "[S|y #a 1]");
+    }
+
+    [Test]
+    public void TestJoin13 ()
+    {
+      DoTest ("[S|x y #a 0 1] join [S|x #b 0]", "[S|x y #a 0 1]");
     }
 
     [Test]

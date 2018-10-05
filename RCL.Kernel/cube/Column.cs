@@ -73,7 +73,6 @@ namespace RCL.Kernel
         }
         m_last[key] = val;
       }
-      //this allows you to overwrite a pre-existing value
       if (m_index.Count == 0 || m_index[m_index.Count - 1] < index)
       {
         m_data.Write (val);
@@ -81,7 +80,9 @@ namespace RCL.Kernel
       }
       else
       {
-        int existing = m_index.BinarySearch (index);
+        //Do we need to look for this?
+        bool found;
+        int existing = m_index.BinarySearch (index, out found);
         if (existing < 0)
         {
           throw new Exception ("Invalid index " + index);

@@ -6019,6 +6019,39 @@
       #c  3
     ]
   }
+  TestExcept3:{
+    skip:false
+    src:[
+       x  y
+       1 10
+    ] except "y"
+    bin:[
+       x
+       1
+    ]
+  }
+  TestExcept4:{
+    skip:false
+    src:[
+      S | x  y
+      #a  1 10
+    ] except "y"
+    bin:[
+      S | x
+      #a  1
+    ]
+  }
+  TestExcept5:{
+    skip:false
+    src:[
+       G| E|S | x
+       0  0 #a  1
+    ] except "G" "E"
+    bin:[
+      S | x
+      #a  1
+    ]
+  }
   TestInter:{
     skip:false
     src:[
@@ -6481,6 +6514,163 @@
     bin:[
       S | x   z
       #a  1 100
+    ]
+  }
+  TestJoin5:{
+    skip:false
+    src:[
+      S |x     y
+      #a "XLE" --
+      #b "FOO" "C"
+      #b "XME" --
+    ] join [
+      S |x     y
+      #a "XLE" "BAR"
+      #b "FOO" "CAR"
+      #b "XME" "BAZ"
+    ]
+    bin:[
+      S |x     y
+      #a "XLE" "BAR"
+      #b "FOO" "CAR"
+      #b "XME" "BAZ"
+    ]
+  }
+  TestJoin6:{
+    skip:false
+    src:[
+      S   |x             y
+      #ABC "ABC"         --
+      #DEF "DEF nomatch" "C"
+    ] join [
+      S   |x     y
+      #GHI "ABC" ""
+      #KLM "DEF" ""
+    ]
+    bin:[
+      S   |x             y
+      #ABC "ABC"         ""
+      #DEF "DEF nomatch" "C"
+    ]
+  }
+  TestJoin7:{
+    skip:false
+    src:[
+      S   |x             y
+      #ABC "ABC"         --
+      #DEF "DEF nomatch" "C"
+    ] join [
+      S   |x     y
+      #ABC "ABC" ""
+      #DEF "DEF" ""
+    ]
+    bin:[
+      S   |x             y
+      #ABC "ABC"         ""
+      #DEF "DEF nomatch" "C"
+    ]
+  }
+  TestJoin8:{
+    skip:false
+    src:[
+      S | x y
+      #a  1 --
+      #b  2 "b"
+      #c  3 --
+    ] join []
+    bin:[
+      S | x y
+      #a  1 --
+      #b  2 "b"
+      #c  3 --
+    ]
+  }
+  TestJoin9:{
+    skip:false
+    src:[
+      S | x y
+      #a  1 "a"
+      #b  2 --
+      #c  3 "b"
+      #e  4 --
+    ] join [
+      S | x y
+      #f  5 "f"
+    ]
+    bin:[
+      S | x y
+      #a  1 "a"
+      #b  2 --
+      #c  3 "b"
+      #e  4 --
+    ]
+  }
+  TestJoin10:{
+    skip:false
+    src:[
+      S | x y
+      #a  1 --
+      #b  2 "b"
+      #c  3 --
+    ] join [
+       x y
+       1 --
+       2 "b+"
+       3 --
+    ]
+    bin:[
+      S | x y
+      #a  1 --
+      #b  2 "b+"
+      #c  3 --
+    ]
+  }
+  TestJoin11:{
+    skip:false
+    src:[
+      S | x y
+      #a  1 --
+      #b  2 "b"
+      #c  3 --
+    ] join [
+       x y
+       1 --
+       3 --
+       2 "b+"
+    ]
+    bin:[
+      S | x y
+      #a  1 --
+      #b  2 "b+"
+      #c  3 --
+    ]
+  }
+  TestJoin12:{
+    skip:false
+    src:[
+      S | y
+      #a  1
+    ] join [
+      S |z
+      #b ""
+    ]
+    bin:[
+      S | y
+      #a  1
+    ]
+  }
+  TestJoin13:{
+    skip:false
+    src:[
+      S | x  y
+      #a  0  1
+    ] join [
+      S | x
+      #b  0
+    ]
+    bin:[
+      S | x  y
+      #a  0  1
     ]
   }
   TestAppendRect0:{
