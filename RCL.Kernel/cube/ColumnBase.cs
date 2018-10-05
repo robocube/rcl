@@ -48,7 +48,8 @@ namespace RCL.Kernel
 
     public int CountBefore (int tlcount)
     {
-      return Index.BinarySearch (tlcount);
+      bool found;
+      return Index.BinarySearch (tlcount, out found);
     }
   }
 }

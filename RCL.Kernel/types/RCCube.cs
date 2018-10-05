@@ -98,6 +98,44 @@ namespace RCL.Kernel
       m_columns = columns;
     }
 
+    /// <summary>
+    /// A block representation of the internals of the cube.
+    /// Used for debugging.
+    /// </summary>
+    public RCBlock FlatPack ()
+    {
+      RCBlock result = RCBlock.Empty;
+      if (Axis.ColCount > 0)
+      {
+        RCBlock axis = RCBlock.Empty;
+        if (Axis.Global != null)
+        {
+          axis = new RCBlock ("G", ":", new RCLong (Axis.Global));
+        }
+        if (Axis.Event != null)
+        {
+          axis = new RCBlock ("E", ":", new RCLong (Axis.Event));
+        }
+        if (Axis.Time != null)
+        {
+          axis = new RCBlock ("T", ":", new RCTime (Axis.Time));
+        }
+        if (Axis.Symbol != null)
+        {
+          axis = new RCBlock ("S", ":", new RCSymbol (Axis.Symbol));
+        }
+        result = new RCBlock ("", ":", axis);
+      }
+      for (int i = 0; i < m_columns.Count; ++i)
+      {
+        RCBlock column = RCBlock.Empty;
+        column = new RCBlock (column, "index", ":", RCVectorBase.FromArray (m_columns[i].Index));
+        column = new RCBlock (column, "array", ":", RCVectorBase.FromArray (m_columns[i].Array));
+        result = new RCBlock (result, m_names[i], ":", column);
+      }
+      return result;
+    }
+
     public int FirstRow
     {
       get
@@ -914,26 +952,6 @@ namespace RCL.Kernel
       return result;
     }
 
-    public void AttachCols (string name, RCCube cols)
-    {
-      if (cols.Axis != this.Axis)
-      {
-        throw new Exception ("AttachCols requires both cols to have the same Axis already.");
-      }
-      for (int i = 0; i < cols.Cols; ++i)
-      {
-        if (name == "")
-        {
-          m_names.Write (cols.ColumnAt (i));
-        }
-        else
-        {
-          m_names.Write (name);
-        }
-        m_columns.Write (cols.GetColumn (i));
-      }
-    }
-
     public RCCube Read (ReadSpec spec, ReadCounter counter, bool forceg, int end)
     {
       //Always include the G column when reading from the blackboard.
@@ -942,7 +960,6 @@ namespace RCL.Kernel
       result.m_reader = reader;
       if (result.Axis.Global != null && result.Axis.Global.Count > 0)
       {
-        //result.m_lines = Count + result.Axis.Global[0];
         result.m_lines = result.Axis.Global[result.Axis.Global.Count - 1] + 1;
       }
       else
@@ -1467,7 +1484,7 @@ namespace RCL.Kernel
     /// Visit all of the cells in temporal order.
     /// This should really have a start and end row.
     /// I think we have the possibility of reading cells that are in the 
-    /// process of being written.  Also I want to generalize this so that 
+    /// process of being written. Also I want to generalize this so that
     /// it can go backwards, and write a read visitor that can read from 
     /// the end of the cube.
     /// </summary>
@@ -1632,8 +1649,7 @@ namespace RCL.Kernel
     /// </summary>
     public virtual long VisitCellsBackward (Visitor visitor, int start, int end)
     {
-      return VisitCellsBackward (
-        Axis, visitor, m_names, m_columns, start, end);
+      return VisitCellsBackward (Axis, visitor, m_names, m_columns, start, end);
     }
   }
 }

@@ -1082,7 +1082,8 @@ namespace RCL.Core
     {
       if (key.Count != cube.Count)
       {
-        throw new Exception (string.Format ("New symbol column must have the same count as the old one. New count: {0}, old count: {1}", key.Count, cube.Count));
+        throw new Exception (string.Format ("New symbol column must have the same count as the old one. New count: {0}, old count: {1}",
+                                            key.Count, cube.Count));
       }
       Timeline axis = new Timeline (cube.Axis.Global, cube.Axis.Event, cube.Axis.Time, key);
       axis.Count = cube.Count;
@@ -1242,7 +1243,8 @@ namespace RCL.Core
       }
       leftCols.ExceptWith (rightCols);
       rightCols.ExceptWith (leftCols);
-      //I just can't do it without constructing the symbols. I'm too stupid.
+      // I just can't do it without constructing the symbols. I'm too stupid.
+      // Symbols are a convenient data structure here for extracting the shared values.
       RCSymbolScalar[] rightSyms = new RCSymbolScalar[right.Count];
       foreach (string joinCol in joinCols)
       {
@@ -1251,6 +1253,7 @@ namespace RCL.Core
         {
           throw new Exception (string.Format ("join column '{0}' may not have nulls", joinCol));
         }
+        //There is no need to do the irow schtick here because there are no nulls.
         for (int j = 0; j < column.Count; ++j)
         {
           object val = column.BoxCell (j);
@@ -1273,32 +1276,116 @@ namespace RCL.Core
         {
           throw new Exception (string.Format ("join column '{0}' may not have nulls", joinCol));
         }
-        for (int j = 0; j < column.Count; ++j)
+        for (int j = 0; j < leftSyms.Length; ++j)
         {
-          object val = column.BoxCell (j);
-          if (val.GetType () != typeof (RCSymbolScalar))
+          bool found;
+          int irow = column.Index.BinarySearch (j, out found);
+          if (found && irow < column.Count)
           {
-            leftSyms[j] = new RCSymbolScalar (null, val);
+            object val = column.BoxCell (irow);
+            if (val.GetType () != typeof (RCSymbolScalar))
+            {
+              leftSyms[j] = new RCSymbolScalar (null, val);
+            }
+            else
+            {
+              leftSyms[j] = (RCSymbolScalar) val;
+            }
           }
           else
           {
-            leftSyms[j] = (RCSymbolScalar) val;
+            leftSyms[j] = null;
           }
         }
       }
       for (int i = 0; i < leftSyms.Length; ++i)
       {
+        //Indicate a missing symbol from the right-hand column.
         leftRow[i] = -1;
         for (int j = 0; j < rightSyms.Length; ++j)
         {
-          if (leftSyms[i].Equals (rightSyms[j]))
+          if (leftSyms[i] != null && leftSyms[i].Equals (rightSyms[j]))
           {
             leftRow[i] = j;
             break;
           }
         }
       }
-      RCCube result = new RCCube (left);
+      int col = 0;
+      RCCube result = new RCCube (left.Axis.Match ());
+      if (result.Axis.Global != null)
+      {
+        result.Axis.Global.Write (left.Axis.Global);
+      }
+      if (result.Axis.Event != null)
+      {
+        result.Axis.Event.Write (left.Axis.Event);
+      }
+      if (result.Axis.Time != null)
+      {
+        result.Axis.Time.Write (left.Axis.Time);
+      }
+      if (result.Axis.Symbol != null)
+      {
+        result.Axis.Symbol.Write (left.Axis.Symbol);
+      }
+      result.Axis.Count = left.Axis.Count;
+      foreach (string leftCol in left.Names)
+      {
+        col = left.FindColumn (leftCol);
+        //Need a test that fails with this line commented in:
+        //if (col > -1 && !joinCols.Contains (leftCol))
+        if (col > -1 && rightCols.Contains (leftCol) && !joinCols.Contains (leftCol))
+        {
+          ColumnBase rightColumn = right.GetColumn (leftCol);
+          ColumnBase leftColumn = left.GetColumn (col);
+          for (int i = 0; i < leftSyms.Length; ++i)
+          {
+            if (leftRow[i] < 0)
+            {
+              // The symbol is not represented in the right-hand column
+              // Use the value in the left-hand column instead
+              // Don't forget that the the left-hand column too can be empty
+              bool found;
+              int irow = leftColumn.Index.BinarySearch (i, out found);
+              if (found && irow < leftColumn.Count)
+              {
+                object box = leftColumn.BoxCell (irow);
+                RCSymbolScalar symbol = result.Axis.SymbolAt (i);
+                result.WriteCell (leftCol, symbol, box, i, false, true);
+              }
+            }
+            else
+            {
+              // The symbol is in the right-hand column, override the value on the left
+              // However this particular column may not have a value for this row
+              bool found;
+              int irow = rightColumn.Index.BinarySearch (leftRow[i], out found);
+              if (found && irow < rightColumn.Count)
+              {
+                object box = rightColumn.BoxCell (irow);
+                RCSymbolScalar symbol = result.Axis.SymbolAt (i);
+                result.WriteCell (leftCol, symbol, box, i, false, true);
+              }
+            }
+          }
+        }
+        else
+        {
+          ColumnBase leftColumn = left.GetColumn (leftCol);
+          for (int i = 0; i < leftSyms.Length; ++i)
+          {
+            bool found;
+            int irow = leftColumn.Index.BinarySearch (i, out found);
+            if (found && irow < leftColumn.Count)
+            {
+              object box = leftColumn.BoxCell (irow);
+              RCSymbolScalar symbol = result.Axis.SymbolAt (i);
+              result.WriteCell (leftCol, symbol, box, i, false, true);
+            }
+          }
+        }
+      }
       foreach (string rightCol in rightCols)
       {
         ColumnBase column = right.GetColumn (rightCol);
@@ -1306,8 +1393,9 @@ namespace RCL.Core
         {
           if (leftRow[i] >= 0)
           {
-            int vrow = column.Index.BinarySearch (leftRow[i]);
-            if (vrow < column.Count)
+            bool found;
+            int vrow = column.Index.BinarySearch (leftRow[i], out found);
+            if (found && vrow < column.Count)
             {
               object box = column.BoxCell (vrow);
               RCSymbolScalar symbol = result.Axis.SymbolAt (i);
@@ -1317,6 +1405,12 @@ namespace RCL.Core
         }
       }
       runner.Yield (closure, result);
+    }
+
+    [RCVerb ("flatPack")]
+    public void EvalFlatPack (RCRunner runner, RCClosure closure, RCCube right)
+    {
+      runner.Yield (closure, right.FlatPack ());
     }
 
     [RCVerb ("delta")]
@@ -1393,8 +1487,9 @@ namespace RCL.Core
     public void Except (RCRunner runner, RCClosure closure, RCCube left, RCSymbol right)
     {
       if (left.Axis.Symbol == null || right == null)
+      {
         throw new Exception ("except requires both cubes to have S");
-
+      }
       HashSet<RCSymbolScalar> rightSyms = new HashSet<RCSymbolScalar> (right);
       RCArray<RCSymbolScalar> s = new RCArray<RCSymbolScalar> (8);
       for (int i = 0; i < left.Count; ++i)
@@ -1542,64 +1637,11 @@ namespace RCL.Core
         string name = left.NameAt (col);
         if (leftOnly.Contains (name))
         {
-          //Possible optimization here is to steal the underlying column object
-          //because it will not change and we will not be changing it.
-          ColumnBase column = left.GetColumn (col);
-          for (int vrow = 0; vrow < column.Count; ++vrow)
-          {
-            int row = column.Index[vrow];
-            RCSymbolScalar symbol = result.Axis.SymbolAt (row);
-            object box = column.BoxCell (vrow);
-            result.WriteCell (name, symbol, box, row, keepIncrs, force);
-          }
+          this.CopyUnsharedColumn (left, result, col, name, force:force, keepIncrs:keepIncrs);
         }
         else if (both.Contains (name))
         {
-          //We have to do a careful merge for these columns.
-          ColumnBase lcol = left.GetColumn (col);
-          ColumnBase rcol;
-          if (colname != null)
-          {
-            rcol = right.GetColumn (0);
-          }
-          else
-          {
-            rcol = right.GetColumn (name);
-          }
-          for (int row = 0; row < result.Axis.Count; ++row)
-          {
-            RCSymbolScalar symbol = result.Axis.SymbolAt (row);
-            object box;
-            if (rcol.BoxLast (symbol, out box))
-            {
-              if (box is RCIncrScalar)
-              {
-                object lbox;
-                if (lcol.BoxLast (symbol, out lbox))
-                {
-                  //You could try to do this with a double or decimal.
-                  //In the end I think incrops should be restricted to integer types.
-                  //And decimals should be taken out of the language.
-                  //Aug 22, 2014. No longer so sure about taking decimals out.
-                  long lint = (long) lbox;
-                  ++lint;
-                  result.WriteCell (name, symbol, lint, row, false, force);
-                }
-                else
-                {
-                  result.WriteCell (name, symbol, 0L, row, false, force);
-                }
-              }
-              else
-              {
-                result.WriteCell (name, symbol, box, row, false, force);
-              }
-            }
-            else if (lcol.BoxLast (symbol, out box))
-            {
-              result.WriteCell (name, symbol, box, row, false, force);
-            }
-          }
+          this.MergeSharedColumn (left, right, result, col, name:name, colname:colname, force:force, keepIncrs:keepIncrs);
         }
       }
       for (int col = 0; col < right.Cols; ++col)
@@ -1611,32 +1653,111 @@ namespace RCL.Core
         }
         if (rightOnly.Contains (name))
         {
-          if (right.Axis.Symbol != null)
+          this.CopyUnsharedColumnSmart (right, result, col, name, keepIncrs:keepIncrs, force:force);
+        }
+      }
+      return result;
+    }
+
+    protected void CopyUnsharedColumn (RCCube source, RCCube result,
+                                       int col, string name, bool force, bool keepIncrs)
+    {
+      //Possible optimization here is to steal the underlying column object
+      //because it will not change and we will not be changing it.
+      ColumnBase column = source.GetColumn (col);
+      if (column == null)
+      {
+        throw new Exception ("No column " + col + " in source");
+      }
+      for (int vrow = 0; vrow < column.Count; ++vrow)
+      {
+        int row = column.Index[vrow];
+        RCSymbolScalar symbol = result.Axis.SymbolAt (row);
+        object box = column.BoxCell (vrow);
+        result.WriteCell (name, symbol, box, row, keepIncrs, force);
+      }
+    }
+
+    protected void CopyUnsharedColumnSmart (RCCube source, RCCube result,
+                                            int col, string name, bool keepIncrs, bool force)
+    {
+      if (source.Axis.Symbol != null)
+      {
+        ColumnBase column = source.GetColumn (col);
+        for (int row = 0; row < result.Axis.Count; ++row)
+        {
+          RCSymbolScalar symbol = result.Axis.SymbolAt (row);
+          object box;
+          if (column.BoxLast (symbol, out box))
           {
-            ColumnBase column = right.GetColumn (col);
-            for (int row = 0; row < result.Axis.Count; ++row)
+            result.WriteCell (name, symbol, box, row, false, force);
+          }
+        }
+      }
+      else
+      {
+        ColumnBase column = source.GetColumn (col);
+        for (int row = 0; row < result.Axis.Count; ++row)
+        {
+          RCSymbolScalar symbol = result.Axis.SymbolAt (row);
+          object box = column.BoxCell (row);
+          result.WriteCell (name, symbol, box, row, false, force);
+        }
+      }
+    }
+
+    protected void MergeSharedColumn (RCCube left, RCCube right, RCCube result,
+                                      int col, string name, string colname, bool keepIncrs, bool force)
+    {
+      //We have to do a careful merge for these columns.
+      ColumnBase lcol = left.GetColumn (col);
+      if (lcol == null)
+      {
+        throw new Exception (string.Format ("Invalid column index col:{0}", col));
+      }
+      ColumnBase rcol;
+      if (colname != null)
+      {
+        rcol = right.GetColumn (0);
+      }
+      else
+      {
+        rcol = right.GetColumn (name);
+      }
+      for (int row = 0; row < result.Axis.Count; ++row)
+      {
+        RCSymbolScalar symbol = result.Axis.SymbolAt (row);
+        object box;
+        if (rcol.BoxLast (symbol, out box))
+        {
+          if (box is RCIncrScalar)
+          {
+            object lbox;
+            if (lcol.BoxLast (symbol, out lbox))
             {
-              RCSymbolScalar symbol = result.Axis.SymbolAt (row);
-              object box;
-              if (column.BoxLast (symbol, out box))
-              {
-                result.WriteCell (name, symbol, box, row, false, force);
-              }
+              //You could try to do this with a double or decimal.
+              //In the end I think incrops should be restricted to integer types.
+              //And decimals should be taken out of the language.
+              //Aug 22, 2014. No longer so sure about taking decimals out.
+              long lint = (long) lbox;
+              ++lint;
+              result.WriteCell (name, symbol, lint, row, false, force);
+            }
+            else
+            {
+              result.WriteCell (name, symbol, 0L, row, false, force);
             }
           }
           else
           {
-            ColumnBase column = right.GetColumn (col);
-            for (int row = 0; row < result.Axis.Count; ++row)
-            {
-              RCSymbolScalar symbol = result.Axis.SymbolAt (row);
-              object box = column.BoxCell (row);
-              result.WriteCell (name, symbol, box, row, false, force);
-            }
+            result.WriteCell (name, symbol, box, row, false, force);
           }
         }
+        else if (lcol.BoxLast (symbol, out box))
+        {
+          result.WriteCell (name, symbol, box, row, false, force);
+        }
       }
-      return result;
     }
 
     protected RCCube BangRectCubes (RCCube left, RCCube right, string colname)
@@ -1989,6 +2110,45 @@ namespace RCL.Core
         if (right.Has (name))
         {
           ColumnBase column = right.GetColumn (name);
+          result.Names.Write (name);
+          result.Columns.Write (column);
+        }
+      }
+      runner.Yield (closure, result);
+    }
+
+    [RCVerb ("except")]
+    public void EvalExcept (RCRunner runner, RCClosure closure, RCCube left, RCString right)
+    {
+      RCArray<long> g = null;
+      RCArray<long> e = null;
+      RCArray<RCTimeScalar> t = null;
+      RCArray<RCSymbolScalar> s = null;
+      if (!right.Data.Contains ("G"))
+      {
+        g = left.Axis.Global;
+      }
+      if (!right.Data.Contains ("E"))
+      {
+        e = left.Axis.Event;
+      }
+      if (!right.Data.Contains ("T"))
+      {
+        t = left.Axis.Time;
+      }
+      if (!right.Data.Contains ("S"))
+      {
+        s = left.Axis.Symbol;
+      }
+      Timeline axis = new Timeline (g, e, t, s);
+      axis.Count = left.Count;
+      RCCube result = new RCCube (axis);
+      for (int i = 0; i < left.Names.Count; ++i)
+      {
+        string name = left.Names[i];
+        if (!right.Data.Contains (name))
+        {
+          ColumnBase column = left.GetColumn (name);
           result.Names.Write (name);
           result.Columns.Write (column);
         }

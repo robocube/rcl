@@ -296,12 +296,27 @@ namespace RCL.Kernel
       Array.Reverse (m_source, 0, (int) m_count);
     }
 
-    public int BinarySearch (T val)
+    public int BinarySearch (T val, out bool found)
     {
+      // The index of the specified value in the specified array, if value is found;
+      // otherwise, a negative number.If value is not found and value is less than one or more elements in array,
+      // the negative number returned is the bitwise complement of the index of the first element that is larger than value.If
+      // value is not found and value is greater than all elements in array,
+      // the negative number returned is the bitwise complement of (the index of the last element plus 1).If this method is
+      // called with a non - sorted array, the return value can be incorrect and a negative number could be returned,
+      // even if value is present in array .
+      // https://docs.microsoft.com/en-us/dotnet/api/system.array.binarysearch?view=netframework-4.7.2
       int index = Array.BinarySearch<T> (m_source, 0, (int) m_count, val);
       if (index < 0)
+      {
+        found = false;
         return ~index;
-      else return index;
+      }
+      else
+      {
+        found = true;
+        return index;
+      }
     }
 
     public bool Contains (T val)
