@@ -122,19 +122,19 @@ namespace RCL.Test
     [Test]
     public void TestCubeMathObject ()
     {
-      DoTest ("[S|x #a 1] + [S|x #b 1]", "[S|x #a 1 #b 1]");
+      DoTest ("[S|x #a 1] + [S|x #b 1]", "[]");
     }
 
     [Test]
     public void TestCubeMathObject1 ()
     {
-      DoTest ("[S|x #a 1] + [S|x #b 1 #a 1]", "[S|x #a 2 #b 1]");
+      DoTest ("[S|x #a 1] + [S|x #b 1 #a 1]", "[S|x #a 2]");
     }
 
     [Test]
     public void TestCubeMathObject2 ()
     {
-      DoTest ("[S|x #a 1 #b 1] + [S|x #b 1]", "[S|x #a 1 #b 2]");
+      DoTest ("[S|x #a 1 #b 1] + [S|x #b 1]", "[S|x #b 2]");
     }
 
     [Test]
@@ -142,7 +142,7 @@ namespace RCL.Test
     {
       // I may want to change the output in this case.
       DoTest ("[x 08:00 09:00 10:00] + [x 00:30 00:30 00:30]",
-              "[x 0001.01.01 08:30:00.0000000 0001.01.01 09:30:00.0000000 0001.01.01 10:30:00.0000000]");
+              "[x 0001.01.01 08:30:00.000000 0001.01.01 09:30:00.000000 0001.01.01 10:30:00.000000]");
     }
 
     [Test]
@@ -1437,7 +1437,7 @@ namespace RCL.Test
     [Test]
     public void TestSortByTime ()
     {
-      DoTest ("#asc,t sort [t 0.03:00:00.0000000 0.02:00:00.0000000 0.01:00:00.0000000]", "[t 0.01:00:00.0000000 0.02:00:00.0000000 0.03:00:00.0000000]"); 
+      DoTest ("#asc,t sort [t 0.03:00:00.000000 0.02:00:00.000000 0.01:00:00.000000]", "[t 0.01:00:00.000000 0.02:00:00.000000 0.03:00:00.000000]");
     }
 
     [Test]
@@ -1583,6 +1583,12 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestMinus5 ()
+    {
+      DoTest ("[S|x #a 1 #b 2 #c 3] - [S|x #d 4 #e 5 #f 6]", "[]");
+    }
+
+    [Test]
     public void TestMultiply1 ()
     {
       DoTest ("[S|x #a 10 #a 11 #a 12] * 2", "[S|x #a 20 #a 22 #a 24]");
@@ -1697,6 +1703,12 @@ namespace RCL.Test
     public void TestSum8 ()
     {
       DoTest ("-4 sum [S|x #a,b,x 0 #a,b,y 1 #a,b,x 2 #a,b,y 3 #a,b,x 4 #a,b,y 5]", "[S|x # 15 #a 15 #a,b 15 #a,b,x 6 #a,b,y 9]");
+    }
+
+    [Test]
+    public void TestSumMultiColumns ()
+    {
+      DoTest ("sum [S|x y #a 1 10 #b 2 20 #c 3 30]", "[S|x y # 6 60 #a 1 10 #b 2 20 #c 3 30]");
     }
 
     [Test]

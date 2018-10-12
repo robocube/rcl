@@ -920,10 +920,16 @@ namespace RCL.Core
     }
 
     [Primitive ("time", Profile.Monadic)]
-    public static RCTimeScalar Time (long r) { return new RCTimeScalar (new DateTime (r), RCTimeType.Timestamp); }
+    public static RCTimeScalar Time (long r)
+    {
+      return new RCTimeScalar (new DateTime (r), RCTimeType.Timestamp);
+    }
 
     [Primitive ("time", Profile.Monadic)]
-    public static RCTimeScalar Time (string r) { return TimeToken.ParseTime (r); }
+    public static RCTimeScalar Time (string r)
+    {
+      return TimeToken.ParseTime (r);
+    }
 
     [Primitive ("time", Profile.Contextual)]
     public static RCTimeScalar Time (ParseContext<RCTimeScalar> c, string r) { 
@@ -939,6 +945,38 @@ namespace RCL.Core
     {
       return (t.Type == RCTimeType.Timespan) ? 
         new TimeSpan (t.Ticks).Days : new DateTime (t.Ticks).Day;
+    }
+
+    [Primitive ("day", Profile.Monadic)]
+    public static RCTimeScalar Day (long day)
+    {
+      return new RCTimeScalar (new TimeSpan ((int) day, 0, 0, 0).Ticks, RCTimeType.Timespan);
+    }
+
+    [Primitive ("hour", Profile.Monadic)]
+    public static RCTimeScalar Hour (long hour)
+    {
+      return new RCTimeScalar (new TimeSpan (0, (int) hour, 0, 0).Ticks, RCTimeType.Timespan);
+    }
+
+    [Primitive ("minute", Profile.Monadic)]
+    public static RCTimeScalar Minute (long minute)
+    {
+      return new RCTimeScalar (new TimeSpan (0, 0, (int) minute, 0).Ticks, RCTimeType.Timespan);
+    }
+
+    [Primitive ("second", Profile.Monadic)]
+    public static RCTimeScalar Second (long second)
+    {
+      return new RCTimeScalar (new TimeSpan (0, 0, 0, (int) second).Ticks, RCTimeType.Timespan);
+    }
+
+    [Primitive ("nano", Profile.Monadic)]
+    public static RCTimeScalar Nano (long nano)
+    {
+      // That last parameter is millis though - not nanos - wut to do
+      // I think a nano is 100 Ticks
+      return new RCTimeScalar (nano * 100, RCTimeType.Timespan);
     }
 
     [Primitive ("hour", Profile.Monadic)]

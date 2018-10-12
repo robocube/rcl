@@ -81,18 +81,18 @@
   }
   TestPlusTT:{
     skip:false
-    src:2015.05.31 + 1.00:00:00.0000000
-    bin:2015.06.01 00:00:00.0000000
+    src:2015.05.31 + 1.00:00:00.000000
+    bin:2015.06.01 00:00:00.000000
   }
   TestPlusTT1:{
     skip:false
-    src:1.00:00:00.0000000 + 2015.05.31
-    bin:2015.06.01 00:00:00.0000000
+    src:1.00:00:00.000000 + 2015.05.31
+    bin:2015.06.01 00:00:00.000000
   }
   TestPlusTT2:{
     skip:false
-    src:1.00:00:00.0000000 + 2.00:00:00.0000000
-    bin:3.00:00:00.0000000
+    src:1.00:00:00.000000 + 2.00:00:00.000000
+    bin:3.00:00:00.000000
   }
   TestPlusYY1:{
     skip:false
@@ -216,18 +216,18 @@
   }
   TestMinusTT0:{
     skip:false
-    src:2015.05.31 - 1.00:00:00.0000000
-    bin:2015.05.30 00:00:00.0000000
+    src:2015.05.31 - 1.00:00:00.000000
+    bin:2015.05.30 00:00:00.000000
   }
   TestMinusTT1:{
     skip:false
     src:2015.05.31 - 2015.05.10
-    bin:21.00:00:00.0000000
+    bin:21.00:00:00.000000
   }
   TestMinusTT2:{
     skip:false
-    src:1.00:00:00.0000000 - 2.00:00:00.0000000
-    bin:-1.00:00:00.0000000
+    src:1.00:00:00.000000 - 2.00:00:00.000000
+    bin:-1.00:00:00.000000
   }
   TestMinusL:{
     skip:false
@@ -506,7 +506,7 @@
   }
   TestGtTT2:{
     skip:false
-    src:1.00:00:00.0000000 > 2.00:00:00.0000000
+    src:1.00:00:00.000000 > 2.00:00:00.000000
     bin:false
   }
   TestGteXX:{
@@ -591,7 +591,7 @@
   }
   TestGteTT2:{
     skip:false
-    src:1.00:00:00.0000000 >= 2.00:00:00.0000000
+    src:1.00:00:00.000000 >= 2.00:00:00.000000
     bin:false
   }
   TestLtXX:{
@@ -676,7 +676,7 @@
   }
   TestLtTT2:{
     skip:false
-    src:1.00:00:00.0000000 < 2.00:00:00.0000000
+    src:1.00:00:00.000000 < 2.00:00:00.000000
     bin:true
   }
   TestLteXX:{
@@ -761,7 +761,7 @@
   }
   TestLteTT2:{
     skip:false
-    src:1.00:00:00.0000000 <= 2.00:00:00.0000000
+    src:1.00:00:00.000000 <= 2.00:00:00.000000
     bin:true
   }
   TestEqXX:{
@@ -1059,8 +1059,8 @@
   }
   TestStringT3:{
     skip:false
-    src:string 2015.05.26 08:26:00.1234567
-    bin:"2015.05.26 08:26:00.1234567"
+    src:string 2015.05.26 08:26:00.123456
+    bin:"2015.05.26 08:26:00.123456"
   }
   TestSymbolX:{
     skip:false
@@ -1242,7 +1242,7 @@
   }
   TestLongT3:{
     skip:false
-    src:long 0001.01.01 00:00:00.0000000
+    src:long 0001.01.01 00:00:00.000000
     bin:0
   }
   TestByteX:{
@@ -1480,42 +1480,42 @@
   TestTimeL:{
     skip:false
     src:time 0
-    bin:0001.01.01 00:00:00.0000000
+    bin:0001.01.01 00:00:00.000000
   }
   TestTimeT0:{
     skip:false
-    src:time 0001.01.01 00:00:00.0000000
-    bin:0001.01.01 00:00:00.0000000
+    src:time 0001.01.01 00:00:00.000000
+    bin:0001.01.01 00:00:00.000000
   }
   TestTimeS:{
     skip:false
-    src:time "0001.01.01 00:00:00.0000000"
-    bin:0001.01.01 00:00:00.0000000
+    src:time "0001.01.01 00:00:00.000000"
+    bin:0001.01.01 00:00:00.000000
   }
   TestTimeTS:{
     skip:false
-    src:0001.01.01 00:00:00.0000000 time ""
-    bin:0001.01.01 00:00:00.0000000
+    src:0001.01.01 00:00:00.000000 time ""
+    bin:0001.01.01 00:00:00.000000
   }
   TestTimeYT1:{
     skip:false
-    src:#date time 0001.01.01 00:00:00.0000000
+    src:#date time 0001.01.01 00:00:00.000000
     bin:0001.01.01
   }
   TestTimeYT2:{
     skip:false
-    src:#daytime time 0001.01.01 00:00:00.0000000
+    src:#daytime time 0001.01.01 00:00:00.000000
     bin:00:00
   }
   TestTimeYT3:{
     skip:false
-    src:#datetime time 0001.01.01 00:00:00.0000000
+    src:#datetime time 0001.01.01 00:00:00.000000
     bin:0001.01.01 00:00
   }
   TestTimeYT4:{
     skip:false
-    src:#timestamp time 0001.01.01 00:00:00.0000000
-    bin:0001.01.01 00:00:00.0000000
+    src:#timestamp time 0001.01.01 00:00:00.000000
+    bin:0001.01.01 00:00:00.000000
   }
   TestTimeYL0:{
     skip:false
@@ -1535,18 +1535,18 @@
   TestTimeYL3:{
     skip:false
     src:#timestamp time 0
-    bin:0001.01.01 00:00:00.0000000
+    bin:0001.01.01 00:00:00.000000
   }
   TestDayT:{
     skip:false
-    src:day 0.12:34:56.7890123
+    src:day 0.12:34:56.789123
     bin:0
   }
   TestDayTU:{
     skip:false
     src:day [
-                       x
-      0.12:34:56.7890123
+                      x
+      0.12:34:56.789123
     ]
     bin:[
        x
@@ -1555,14 +1555,14 @@
   }
   TestHourT:{
     skip:false
-    src:hour 0.12:34:56.7890123
+    src:hour 0.12:34:56.789123
     bin:12
   }
   TestHourTU:{
     skip:false
     src:hour [
-                       x
-      0.12:34:56.7890123
+                      x
+      0.12:34:56.789123
     ]
     bin:[
        x
@@ -1571,14 +1571,14 @@
   }
   TestMinuteT:{
     skip:false
-    src:minute 0.12:34:56.7890123
+    src:minute 0.12:34:56.789123
     bin:34
   }
   TestMinuteTU:{
     skip:false
     src:minute [
-                       x
-      0.12:34:56.7890123
+                      x
+      0.12:34:56.789123
     ]
     bin:[
        x
@@ -1587,14 +1587,14 @@
   }
   TestSecondT:{
     skip:false
-    src:second 0.12:34:56.7890123
+    src:second 0.12:34:56.789123
     bin:56
   }
   TestSecondTU:{
     skip:false
     src:second [
-                       x
-      0.12:34:56.7890123
+                      x
+      0.12:34:56.789123
     ]
     bin:[
        x
@@ -1603,99 +1603,194 @@
   }
   TestNanoT:{
     skip:false
-    src:nano 0.12:34:56.7890123
-    bin:789012300
+    src:nano 0.12:34:56.789123
+    bin:789123000
   }
   TestNanoTU:{
     skip:false
     src:nano [
-                       x
-      0.12:34:56.7890123
+                      x
+      0.12:34:56.789123
     ]
     bin:[
               x
-      789012300
+      789123000
+    ]
+  }
+  TestDayL:{
+    skip:false
+    src:day 0
+    bin:0.00:00:00.000000
+  }
+  TestDayLU:{
+    skip:false
+    src:day [
+       x
+       0
+    ]
+    bin:[
+                      x
+      0.00:00:00.000000
+    ]
+  }
+  TestHourL:{
+    skip:false
+    src:hour 12
+    bin:0.12:00:00.000000
+  }
+  TestHourLU:{
+    skip:false
+    src:hour [
+       x
+      12
+    ]
+    bin:[
+                      x
+      0.12:00:00.000000
+    ]
+  }
+  TestMinuteL:{
+    skip:false
+    src:minute 34
+    bin:0.00:34:00.000000
+  }
+  TestMinuteLU:{
+    skip:false
+    src:minute [
+       x
+      34
+    ]
+    bin:[
+                      x
+      0.00:34:00.000000
+    ]
+  }
+  TestSecondL:{
+    skip:false
+    src:second 56
+    bin:0.00:00:56.000000
+  }
+  TestSecondLU:{
+    skip:false
+    src:second [
+       x
+      56
+    ]
+    bin:[
+                      x
+      0.00:00:56.000000
+    ]
+  }
+  TestNanoL:{
+    skip:false
+    src:nano 0.12:34:56.789123
+    bin:789123000
+  }
+  TestNanoLU:{
+    skip:false
+    src:nano [
+                      x
+      0.12:34:56.789123
+    ]
+    bin:[
+              x
+      789123000
     ]
   }
   TestDateT:{
     skip:false
-    src:timestamp date 1979.09.04 12:34:56.7891011
-    bin:1979.09.04 00:00:00.0000000
+    src:timestamp date 1979.09.04 12:34:56.789101
+    bin:1979.09.04 00:00:00.000000
   }
   TestDateTU:{
     skip:false
     src:timestamp date [
-                                x
-      1979.09.04 12:34:56.7891011
+                               x
+      1979.09.04 12:34:56.789101
     ]
     bin:[
-                                x
-      1979.09.04 00:00:00.0000000
+                               x
+      1979.09.04 00:00:00.000000
     ]
   }
   TestDaytimeT:{
     skip:false
-    src:timestamp daytime 1979.09.04 12:34:56.7891011
-    bin:0001.01.01 12:34:00.0000000
+    src:timestamp daytime 1979.09.04 12:34:56.789101
+    bin:0001.01.01 12:34:00.000000
   }
   TestDaytimeTU:{
     skip:false
     src:timestamp daytime [
-                                x
-      1979.09.04 12:34:56.7891011
+                               x
+      1979.09.04 12:34:56.789101
     ]
     bin:[
-                                x
-      0001.01.01 12:34:00.0000000
+                               x
+      0001.01.01 12:34:00.000000
     ]
   }
   TestDatetimeT:{
     skip:false
-    src:timestamp datetime 1979.09.04 12:34:56.7891011
-    bin:1979.09.04 12:34:00.0000000
+    src:timestamp datetime 1979.09.04 12:34:56.789101
+    bin:1979.09.04 12:34:00.000000
   }
   TestDatetimeTU:{
     skip:false
     src:timestamp datetime [
-                                x
-      1979.09.04 12:34:56.7891011
+                               x
+      1979.09.04 12:34:56.789101
     ]
     bin:[
-                                x
-      1979.09.04 12:34:00.0000000
+                               x
+      1979.09.04 12:34:00.000000
     ]
   }
   TestTimestampT:{
     skip:false
-    src:timestamp timestamp 1979.09.04 12:34:56.7891011
-    bin:1979.09.04 12:34:56.7891011
+    src:timestamp timestamp 1979.09.04 12:34:56.789101
+    bin:1979.09.04 12:34:56.789101
   }
   TestTimestampTU:{
     skip:false
     src:timestamp timestamp [
-                                x
-      1979.09.04 12:34:56.7891011
+                               x
+      1979.09.04 12:34:56.789101
     ]
     bin:[
-                                x
-      1979.09.04 12:34:56.7891011
+                               x
+      1979.09.04 12:34:56.789101
     ]
   }
   TestTimespanT:{
     skip:false
-    src:timespan 1979.09.04 12:34:56.7891011
-    bin:722695.12:34:56.7891011
+    src:timespan 1979.09.04 12:34:56.789101
+    bin:722695.12:34:56.789101
   }
   TestTimespanTU:{
     skip:false
     src:timespan [
-                                x
-      1979.09.04 12:34:56.7891011
+                               x
+      1979.09.04 12:34:56.789101
     ]
     bin:[
-                            x
-      722695.12:34:56.7891011
+                           x
+      722695.12:34:56.789101
     ]
+  }
+  TestNextDayOfWeek1:{
+    skip:false
+    src:2018.10.07 nextDayOfWeek "Friday"
+    bin:2018.10.12
+  }
+  TestNextDayOfWeek2:{
+    skip:false
+    src:2018.10.05 nextDayOfWeek "Friday"
+    bin:2018.10.05
+  }
+  TestNextDayOfWeek3:{
+    skip:false
+    src:2018.10.04 nextDayOfWeek "Friday"
+    bin:2018.10.05
   }
   TestReferenceS:{
     skip:false

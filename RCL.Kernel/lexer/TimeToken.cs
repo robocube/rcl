@@ -101,6 +101,7 @@ namespace RCL.Kernel
 
     public static int LengthOfTimespan (string text, int start)
     {
+      //Console.WriteLine("LengthOfTimespan");
       int current = start;
       if (current < text.Length && text[current] == '-') ++current;
       while (current < text.Length && (text[current] >= '0' && text[current] <= '9')) ++current;
@@ -113,15 +114,22 @@ namespace RCL.Kernel
       if (current < text.Length && text[current] == ':') ++current; else return -1;
       if (current < text.Length && (text[current] >= '0' && text[current] <= '9')) ++current; else return -1;
       if (current < text.Length && (text[current] >= '0' && text[current] <= '9')) ++current; else return -1;
-      if (current < text.Length && text[current] == '.') ++current; else return -1;
-      if (current < text.Length && (text[current] >= '0' && text[current] <= '9')) ++current; else return -1;
-      if (current < text.Length && (text[current] >= '0' && text[current] <= '9')) ++current; else return -1;
-      if (current < text.Length && (text[current] >= '0' && text[current] <= '9')) ++current; else return -1;
-      if (current < text.Length && (text[current] >= '0' && text[current] <= '9')) ++current; else return -1;
-      if (current < text.Length && (text[current] >= '0' && text[current] <= '9')) ++current; else return -1;
-      if (current < text.Length && (text[current] >= '0' && text[current] <= '9')) ++current; else return -1;
-      if (current < text.Length && (text[current] >= '0' && text[current] <= '9')) ++current; else return -1;
-      return current - start;
+      if (current < text.Length && text[current] == '.')
+      {
+        ++current;
+        while (true)
+        {
+          if (current < text.Length && (text[current] >= '0' && text[current] <= '9'))
+          {
+            ++current;
+          }
+          else
+          {
+            return current - start;
+          }
+        }
+      }
+      else return current - start;
     }
 
     public static int LengthOfTimestamp (string text, int start)
@@ -146,15 +154,22 @@ namespace RCL.Kernel
       if (current < text.Length && text[current] == ':') ++current; else return -1;
       if (current < text.Length && (text[current] >= '0' && text[current] <= '9')) ++current; else return -1;
       if (current < text.Length && (text[current] >= '0' && text[current] <= '9')) ++current; else return -1;
-      if (current < text.Length && text[current] == '.') ++current; else return -1;
-      if (current < text.Length && (text[current] >= '0' && text[current] <= '9')) ++current; else return -1;
-      if (current < text.Length && (text[current] >= '0' && text[current] <= '9')) ++current; else return -1;
-      if (current < text.Length && (text[current] >= '0' && text[current] <= '9')) ++current; else return -1;
-      if (current < text.Length && (text[current] >= '0' && text[current] <= '9')) ++current; else return -1;
-      if (current < text.Length && (text[current] >= '0' && text[current] <= '9')) ++current; else return -1;
-      if (current < text.Length && (text[current] >= '0' && text[current] <= '9')) ++current; else return -1;
-      if (current < text.Length && (text[current] >= '0' && text[current] <= '9')) ++current; else return -1;
-      return current - start;
+      if (current < text.Length && text[current] == '.')
+      {
+        ++current;
+        while (true)
+        {
+          if (current < text.Length && (text[current] >= '0' && text[current] <= '9'))
+          {
+            ++current;
+          }
+          else
+          {
+            return current - start;
+          }
+        }
+      }
+      else return current - start;
     }
 
     public override void Accept (RCParser parser, RCToken token)
@@ -189,7 +204,14 @@ namespace RCL.Kernel
                                     DateTimeStyles.NoCurrentDateDefault,
                                     out result))
         {
-          return new RCTimeScalar (result, (RCTimeType) i);
+          if (i <= (int) RCTimeType.Timestamp)
+          {
+            return new RCTimeScalar (result, (RCTimeType) i);
+          }
+          else
+          {
+            return new RCTimeScalar (result, RCTimeType.Timestamp);
+          }
         }
       }
       TimeSpan ts;

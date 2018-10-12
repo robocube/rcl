@@ -33,7 +33,21 @@ namespace RCL.Kernel
       //datetime
       "yyyy.MM.dd HH:mm",
       //timestamp
-      "yyyy.MM.dd HH:mm:ss.fffffff"
+      "yyyy.MM.dd HH:mm:ss.ffffff",
+      //timestamp
+      "yyyy.MM.dd HH:mm:ss.fffffff",
+      //timestamp
+      "yyyy.MM.dd HH:mm:ss.fffff",
+      //timestamp
+      "yyyy.MM.dd HH:mm:ss.ffff",
+      //timestamp
+      "yyyy.MM.dd HH:mm:ss.fff",
+      //timestamp
+      "yyyy.MM.dd HH:mm:ss.ff",
+      //timestamp
+      "yyyy.MM.dd HH:mm:ss.f",
+      //timestamp
+      "yyyy.MM.dd HH:mm:ss"
     };
 
     /// <summary>
@@ -109,13 +123,14 @@ namespace RCL.Kernel
         if (scalar.Type == RCTimeType.Timespan)
         {
           TimeSpan ts = new TimeSpan (scalar.Ticks);
-          int fraction = (int) (scalar.Ticks % TimeSpan.TicksPerSecond);
-          return string.Format ("{0}.{1:00}:{2:00}:{3:00}.{4:0000000}",
+          int micros = ((int) (scalar.Ticks % TimeSpan.TicksPerSecond)) / 10;
+          string result = string.Format ("{0}.{1:00}:{2:00}:{3:00}.{4:000000}",
                                 ts.Days,
                                 Math.Abs (ts.Hours),
                                 Math.Abs (ts.Minutes),
                                 Math.Abs (ts.Seconds),
-                                Math.Abs (fraction));
+                                Math.Abs (micros));
+          return result;
         }
         else if (scalar.Type == RCTimeType.Date)
         {

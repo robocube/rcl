@@ -81,8 +81,8 @@
   }
   TestTimestamp:{
     skip:false
-    src:format parse "2015.05.24 08:12:00.1234567 2015.05.25 09:13:00.1234567 2015.05.26 10:14:00.1234567"
-    bin:"2015.05.24 08:12:00.1234567 2015.05.25 09:13:00.1234567 2015.05.26 10:14:00.1234567"
+    src:format parse "2015.05.24 08:12:00.123456 2015.05.25 09:13:00.123456 2015.05.26 10:14:00.123456"
+    bin:"2015.05.24 08:12:00.123456 2015.05.25 09:13:00.123456 2015.05.26 10:14:00.123456"
   }
   TestDate:{
     skip:false
@@ -101,8 +101,38 @@
   }
   TestTimespan:{
     skip:false
-    src:format parse "100.07:29:00.0000001 -10.07:30:00.0000001 1.07:31:00.0000001"
-    bin:"100.07:29:00.0000001 -10.07:30:00.0000001 1.07:31:00.0000001"
+    src:format parse "100.07:29:00.000001 -10.07:30:00.000001 1.07:31:00.000001"
+    bin:"100.07:29:00.000001 -10.07:30:00.000001 1.07:31:00.000001"
+  }
+  TestTimespanExtraZero:{
+    skip:false
+    src:format parse "0.00:00:00.0000000"
+    bin:"0.00:00:00.000000"
+  }
+  TestTimespanOneZero:{
+    skip:false
+    src:format parse "0.00:00:00.0"
+    bin:"0.00:00:00.000000"
+  }
+  TestTimespanNoZero:{
+    skip:false
+    src:format parse "0.00:00:00.0"
+    bin:"0.00:00:00.000000"
+  }
+  TestTimestampExtraZero:{
+    skip:false
+    src:format parse "2018.10.11 12:34:56.7891911"
+    bin:"2018.10.11 12:34:56.789191"
+  }
+  TestTimestampOneZero:{
+    skip:false
+    src:format parse "2018.10.11 12:34:56.7"
+    bin:"2018.10.11 12:34:56.700000"
+  }
+  TestTimestampNoZero:{
+    skip:false
+    src:format parse "2018.10.11 12:34:56"
+    bin:"2018.10.11 12:34:56.000000"
   }
   TestSymbolSimple:{
     skip:false

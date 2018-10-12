@@ -3742,11 +3742,7 @@
       ]
       <-$u.a + $u.b
     }
-    bin:[
-      S | x
-      #x  1
-      #y  2
-    ]
+    bin:[]
   }
   TestCubeEmptyArguments1:{
     skip:false

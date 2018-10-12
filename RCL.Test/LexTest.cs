@@ -139,24 +139,24 @@ namespace RCL.Test
     [Test]
     public void TestTimestamp ()
     {
-      RCArray<RCToken> tokens = Lex ("2015.05.24 08:12:00.1234567");
-      CheckTokens (tokens, "2015.05.24 08:12:00.1234567");
+      RCArray<RCToken> tokens = Lex ("2015.05.24 08:12:00.123456");
+      CheckTokens (tokens, "2015.05.24 08:12:00.123456");
       CheckTypes (tokens, RCTokenType.Time);
     }
 
     [Test]
     public void TestTimestamp1 ()
     {
-      RCArray<RCToken> tokens = Lex ("2015.05.24 08:12:00.1234567 2015.05.25 09:13:00.1234567");
-      CheckTokens (tokens, "2015.05.24 08:12:00.1234567", " ", "2015.05.25 09:13:00.1234567");
+      RCArray<RCToken> tokens = Lex ("2015.05.24 08:12:00.123456 2015.05.25 09:13:00.123456");
+      CheckTokens (tokens, "2015.05.24 08:12:00.123456", " ", "2015.05.25 09:13:00.123456");
       CheckTypes (tokens, RCTokenType.Time, RCTokenType.WhiteSpace, RCTokenType.Time);
     }
 
     [Test]
     public void TestTimespan ()
     {
-      RCArray<RCToken> tokens = Lex ("0.08:00:00.0000000 10.08:00:00.0000000 100.08:00:00.0000000");
-      CheckTokens (tokens, "0.08:00:00.0000000", " ", "10.08:00:00.0000000", " ", "100.08:00:00.0000000");
+      RCArray<RCToken> tokens = Lex ("0.08:00:00.000000 10.08:00:00.000000 100.08:00:00.000000");
+      CheckTokens (tokens, "0.08:00:00.000000", " ", "10.08:00:00.000000", " ", "100.08:00:00.000000");
       CheckTypes (tokens, RCTokenType.Time, RCTokenType.WhiteSpace, RCTokenType.Time, RCTokenType.WhiteSpace, RCTokenType.Time);
     }
 

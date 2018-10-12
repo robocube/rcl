@@ -112,7 +112,7 @@ namespace RCL.Test
     [Test]
     public void TestTimestamp ()
     {
-      DoParserTest ("2015.05.24 08:12:00.1234567 2015.05.25 09:13:00.1234567 2015.05.26 10:14:00.1234567");
+      DoParserTest ("2015.05.24 08:12:00.123456 2015.05.25 09:13:00.123456 2015.05.26 10:14:00.123456");
     }
 
     [Test]
@@ -136,7 +136,43 @@ namespace RCL.Test
     [Test]
     public void TestTimespan ()
     {
-      DoParserTest ("100.07:29:00.0000001 -10.07:30:00.0000001 1.07:31:00.0000001"); 
+      DoParserTest ("100.07:29:00.000001 -10.07:30:00.000001 1.07:31:00.000001");
+    }
+
+    [Test]
+    public void TestTimespanExtraZero ()
+    {
+      DoParserTest ("0.00:00:00.0000000", "0.00:00:00.000000");
+    }
+
+    [Test]
+    public void TestTimespanOneZero ()
+    {
+      DoParserTest ("0.00:00:00.0", "0.00:00:00.000000");
+    }
+
+    [Test]
+    public void TestTimespanNoZero ()
+    {
+      DoParserTest ("0.00:00:00.0", "0.00:00:00.000000");
+    }
+
+    [Test]
+    public void TestTimestampExtraZero ()
+    {
+      DoParserTest ("2018.10.11 12:34:56.7891911", "2018.10.11 12:34:56.789191");
+    }
+
+    [Test]
+    public void TestTimestampOneZero ()
+    {
+      DoParserTest ("2018.10.11 12:34:56.7", "2018.10.11 12:34:56.700000");
+    }
+
+    [Test]
+    public void TestTimestampNoZero ()
+    {
+      DoParserTest ("2018.10.11 12:34:56", "2018.10.11 12:34:56.000000");
     }
 
     [Test]

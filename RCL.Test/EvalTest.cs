@@ -1712,7 +1712,7 @@ namespace RCL.Test
     [Test]
     public void TestCubeOpWithNoResult2 ()
     {
-      DoEvalTest ("{u:[S|a b #x 1 -- #y -- 2] <-$u.a + $u.b}", "[S|x #x 1 #y 2]");
+      DoEvalTest ("{u:[S|a b #x 1 -- #y -- 2] <-$u.a + $u.b}", "[]");
     }
 
     [Test]
