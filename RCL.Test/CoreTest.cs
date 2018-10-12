@@ -136,11 +136,11 @@ namespace RCL.Test
     [Test]
     public void TestPlusYY() { DoTest("#x+#y", "#x,y"); }
     [Test]
-    public void TestPlusTT() { DoTest ("2015.05.31 + 1.00:00:00.0000000", "2015.06.01 00:00:00.0000000"); }
+    public void TestPlusTT() { DoTest ("2015.05.31 + 1.00:00:00.000000", "2015.06.01 00:00:00.000000"); }
     [Test]
-    public void TestPlusTT1() { DoTest ("1.00:00:00.0000000 + 2015.05.31", "2015.06.01 00:00:00.0000000"); }
+    public void TestPlusTT1() { DoTest ("1.00:00:00.000000 + 2015.05.31", "2015.06.01 00:00:00.000000"); }
     [Test]
-    public void TestPlusTT2() { DoTest ("1.00:00:00.0000000 + 2.00:00:00.0000000", "3.00:00:00.0000000"); }
+    public void TestPlusTT2() { DoTest ("1.00:00:00.000000 + 2.00:00:00.000000", "3.00:00:00.000000"); }
     [Test]
     public void TestPlusYY1() { DoTest("#+#y", "#y"); }
     [Test]
@@ -196,11 +196,11 @@ namespace RCL.Test
     [Test]
     public void TestMinusMX() { DoTest("1m-\\x02", "-1m"); }
     [Test]
-    public void TestMinusTT0() { DoTest ("2015.05.31 - 1.00:00:00.0000000", "2015.05.30 00:00:00.0000000"); }
+    public void TestMinusTT0() { DoTest ("2015.05.31 - 1.00:00:00.000000", "2015.05.30 00:00:00.000000"); }
     [Test]
-    public void TestMinusTT1() { DoTest ("2015.05.31 - 2015.05.10", "21.00:00:00.0000000"); }
+    public void TestMinusTT1() { DoTest ("2015.05.31 - 2015.05.10", "21.00:00:00.000000"); }
     [Test]
-    public void TestMinusTT2() { DoTest ("1.00:00:00.0000000 - 2.00:00:00.0000000", "-1.00:00:00.0000000"); }
+    public void TestMinusTT2() { DoTest ("1.00:00:00.000000 - 2.00:00:00.000000", "-1.00:00:00.000000"); }
 
     [Test]
     public void TestMinusL () { DoTest ("- 1 3 5 8 12", "1 2 2 3 4"); }
@@ -337,7 +337,7 @@ namespace RCL.Test
     [Test]
     public void TestGtTT1() { DoTest ("2015.05.31 08:00 > 2015.05.31 08:01", "false"); }
     [Test]
-    public void TestGtTT2() { DoTest ("1.00:00:00.0000000 > 2.00:00:00.0000000", "false"); }
+    public void TestGtTT2() { DoTest ("1.00:00:00.000000 > 2.00:00:00.000000", "false"); }
     //Greater Than or Equal To
     [Test]
     public void TestGteXX() { DoTest("\\x01>=\\x02", "false"); }
@@ -378,7 +378,7 @@ namespace RCL.Test
     [Test]
     public void TestGteTT1() { DoTest ("2015.05.31 08:00 >= 2015.05.31 08:00", "true"); }
     [Test]
-    public void TestGteTT2() { DoTest ("1.00:00:00.0000000 >= 2.00:00:00.0000000", "false"); }
+    public void TestGteTT2() { DoTest ("1.00:00:00.000000 >= 2.00:00:00.000000", "false"); }
 
     //Less Than
     [Test]
@@ -418,7 +418,7 @@ namespace RCL.Test
     [Test]
     public void TestLtTT1() { DoTest ("2015.05.31 08:00 < 2015.05.31 08:01", "true"); }
     [Test]
-    public void TestLtTT2() { DoTest ("1.00:00:00.0000000 < 2.00:00:00.0000000", "true"); }
+    public void TestLtTT2() { DoTest ("1.00:00:00.000000 < 2.00:00:00.000000", "true"); }
 
     //Less Than or Equal To
     [Test]
@@ -460,7 +460,7 @@ namespace RCL.Test
     [Test]
     public void TestLteTT1() { DoTest ("2015.05.31 08:00 <= 2015.05.31 08:00", "true"); }
     [Test]
-    public void TestLteTT2() { DoTest ("1.00:00:00.0000000 <= 2.00:00:00.0000000", "true"); }
+    public void TestLteTT2() { DoTest ("1.00:00:00.000000 <= 2.00:00:00.000000", "true"); }
 
     //Vector Equals
     [Test]
@@ -591,7 +591,7 @@ namespace RCL.Test
     [Test]
     public void TestStringT2 () { DoTest ("string 2015.05.26 08:26", "\"2015.05.26 08:26\""); }
     [Test]
-    public void TestStringT3 () { DoTest ("string 2015.05.26 08:26:00.1234567", "\"2015.05.26 08:26:00.1234567\""); }
+    public void TestStringT3 () { DoTest ("string 2015.05.26 08:26:00.123456", "\"2015.05.26 08:26:00.123456\""); }
 
     [Test]
     public void TestSymbolX () { DoTest ("symbol \\xFF", "#\\xFF"); }
@@ -655,7 +655,7 @@ namespace RCL.Test
     [Test]
     public void TestLongT2 () { DoTest ("long 0001.01.01 00:00", "0"); }
     [Test]
-    public void TestLongT3 () { DoTest ("long 0001.01.01 00:00:00.0000000", "0"); }
+    public void TestLongT3 () { DoTest ("long 0001.01.01 00:00:00.000000", "0"); }
 
     [Test]
     public void TestByteX() { DoTest("byte \\xFF", "\\xFF"); }
@@ -734,21 +734,21 @@ namespace RCL.Test
     public void TestDecimalK() { DoTest("decimal {x:0m y:1m z:2m}", "0 1 2m"); }
 
     [Test]
-    public void TestTimeL () { DoTest ("time 0", "0001.01.01 00:00:00.0000000"); }
+    public void TestTimeL () { DoTest ("time 0", "0001.01.01 00:00:00.000000"); }
     [Test]
-    public void TestTimeT0 () { DoTest ("time 0001.01.01 00:00:00.0000000", "0001.01.01 00:00:00.0000000"); }
+    public void TestTimeT0 () { DoTest ("time 0001.01.01 00:00:00.000000", "0001.01.01 00:00:00.000000"); }
     [Test]
-    public void TestTimeS () { DoTest ("time \"0001.01.01 00:00:00.0000000\"", "0001.01.01 00:00:00.0000000"); }
+    public void TestTimeS () { DoTest ("time \"0001.01.01 00:00:00.000000\"", "0001.01.01 00:00:00.000000"); }
     [Test]
-    public void TestTimeTS () { DoTest ("0001.01.01 00:00:00.0000000 time \"\"", "0001.01.01 00:00:00.0000000"); }
+    public void TestTimeTS () { DoTest ("0001.01.01 00:00:00.000000 time \"\"", "0001.01.01 00:00:00.000000"); }
     [Test]
-    public void TestTimeYT1 () { DoTest ("#date time 0001.01.01 00:00:00.0000000", "0001.01.01"); }
+    public void TestTimeYT1 () { DoTest ("#date time 0001.01.01 00:00:00.000000", "0001.01.01"); }
     [Test]
-    public void TestTimeYT2 () { DoTest ("#daytime time 0001.01.01 00:00:00.0000000", "00:00"); }
+    public void TestTimeYT2 () { DoTest ("#daytime time 0001.01.01 00:00:00.000000", "00:00"); }
     [Test]
-    public void TestTimeYT3 () { DoTest ("#datetime time 0001.01.01 00:00:00.0000000", "0001.01.01 00:00"); }
+    public void TestTimeYT3 () { DoTest ("#datetime time 0001.01.01 00:00:00.000000", "0001.01.01 00:00"); }
     [Test]
-    public void TestTimeYT4 () { DoTest ("#timestamp time 0001.01.01 00:00:00.0000000", "0001.01.01 00:00:00.0000000"); }
+    public void TestTimeYT4 () { DoTest ("#timestamp time 0001.01.01 00:00:00.000000", "0001.01.01 00:00:00.000000"); }
     [Test]
     public void TestTimeYL0 () { DoTest ("#date time 0", "0001.01.01"); }
     [Test]
@@ -756,50 +756,77 @@ namespace RCL.Test
     [Test]
     public void TestTimeYL2 () { DoTest ("#datetime time 0", "0001.01.01 00:00"); }
     [Test]
-    public void TestTimeYL3 () { DoTest ("#timestamp time 0", "0001.01.01 00:00:00.0000000"); }
+    public void TestTimeYL3 () { DoTest ("#timestamp time 0", "0001.01.01 00:00:00.000000"); }
 
     [Test]
-    public void TestDayT () { DoTest ("day 0.12:34:56.7890123", "0"); }
+    public void TestDayT () { DoTest ("day 0.12:34:56.789123", "0"); }
     [Test]
-    public void TestDayTU () { DoTest ("day [x 0.12:34:56.7890123]", "[x 0]"); }
+    public void TestDayTU () { DoTest ("day [x 0.12:34:56.789123]", "[x 0]"); }
     [Test]
-    public void TestHourT () { DoTest ("hour 0.12:34:56.7890123", "12"); }
+    public void TestHourT () { DoTest ("hour 0.12:34:56.789123", "12"); }
     [Test]
-    public void TestHourTU () { DoTest ("hour [x 0.12:34:56.7890123]", "[x 12]"); }
+    public void TestHourTU () { DoTest ("hour [x 0.12:34:56.789123]", "[x 12]"); }
     [Test]
-    public void TestMinuteT () { DoTest ("minute 0.12:34:56.7890123", "34"); }
+    public void TestMinuteT () { DoTest ("minute 0.12:34:56.789123", "34"); }
     [Test]
-    public void TestMinuteTU () { DoTest ("minute [x 0.12:34:56.7890123]", "[x 34]"); }
+    public void TestMinuteTU () { DoTest ("minute [x 0.12:34:56.789123]", "[x 34]"); }
     [Test]
-    public void TestSecondT () { DoTest ("second 0.12:34:56.7890123", "56"); }
+    public void TestSecondT () { DoTest ("second 0.12:34:56.789123", "56"); }
     [Test]
-    public void TestSecondTU () { DoTest ("second [x 0.12:34:56.7890123]", "[x 56]"); }
+    public void TestSecondTU () { DoTest ("second [x 0.12:34:56.789123]", "[x 56]"); }
     [Test]
-    public void TestNanoT () { DoTest ("nano 0.12:34:56.7890123", "789012300"); }
+    public void TestNanoT () { DoTest ("nano 0.12:34:56.789123", "789123000"); }
     [Test]
-    public void TestNanoTU () { DoTest ("nano [x 0.12:34:56.7890123]", "[x 789012300]"); }
+    public void TestNanoTU () { DoTest ("nano [x 0.12:34:56.789123]", "[x 789123000]"); }
 
     [Test]
-    public void TestDateT () { DoTest ("timestamp date 1979.09.04 12:34:56.7891011", "1979.09.04 00:00:00.0000000"); }
+    public void TestDayL () { DoTest ("day 0", "0.00:00:00.000000"); }
     [Test]
-    public void TestDateTU () { DoTest ("timestamp date [x 1979.09.04 12:34:56.7891011]", "[x 1979.09.04 00:00:00.0000000]"); }
+    public void TestDayLU () { DoTest ("day [x 0]", "[x 0.00:00:00.000000]"); }
     [Test]
-    public void TestDaytimeT () { DoTest ("timestamp daytime 1979.09.04 12:34:56.7891011", "0001.01.01 12:34:00.0000000"); }
+    public void TestHourL () { DoTest ("hour 12", "0.12:00:00.000000"); }
     [Test]
-    public void TestDaytimeTU () { DoTest ("timestamp daytime [x 1979.09.04 12:34:56.7891011]", "[x 0001.01.01 12:34:00.0000000]"); }
+    public void TestHourLU () { DoTest ("hour [x 12]", "[x 0.12:00:00.000000]"); }
     [Test]
-    public void TestDatetimeT () { DoTest ("timestamp datetime 1979.09.04 12:34:56.7891011", "1979.09.04 12:34:00.0000000"); }
+    public void TestMinuteL () { DoTest ("minute 34", "0.00:34:00.000000"); }
     [Test]
-    public void TestDatetimeTU () { DoTest ("timestamp datetime [x 1979.09.04 12:34:56.7891011]", "[x 1979.09.04 12:34:00.0000000]"); }
+    public void TestMinuteLU () { DoTest ("minute [x 34]", "[x 0.00:34:00.000000]"); }
     [Test]
-    public void TestTimestampT () { DoTest ("timestamp timestamp 1979.09.04 12:34:56.7891011", "1979.09.04 12:34:56.7891011"); }
+    public void TestSecondL () { DoTest ("second 56", "0.00:00:56.000000"); }
     [Test]
-    public void TestTimestampTU () { DoTest ("timestamp timestamp [x 1979.09.04 12:34:56.7891011]", "[x 1979.09.04 12:34:56.7891011]"); }
+    public void TestSecondLU () { DoTest ("second [x 56]", "[x 0.00:00:56.000000]"); }
     [Test]
-    public void TestTimespanT () { DoTest ("timespan 1979.09.04 12:34:56.7891011", "722695.12:34:56.7891011"); }
+    public void TestNanoL () { DoTest ("nano 0.12:34:56.789123", "789123000"); }
     [Test]
-    public void TestTimespanTU () { DoTest ("timespan [x 1979.09.04 12:34:56.7891011]", "[x 722695.12:34:56.7891011]"); }
+    public void TestNanoLU () { DoTest ("nano [x 0.12:34:56.789123]", "[x 789123000]"); }
 
+    [Test]
+    public void TestDateT () { DoTest ("timestamp date 1979.09.04 12:34:56.789101", "1979.09.04 00:00:00.000000"); }
+    [Test]
+    public void TestDateTU () { DoTest ("timestamp date [x 1979.09.04 12:34:56.789101]", "[x 1979.09.04 00:00:00.000000]"); }
+    [Test]
+    public void TestDaytimeT () { DoTest ("timestamp daytime 1979.09.04 12:34:56.789101", "0001.01.01 12:34:00.000000"); }
+    [Test]
+    public void TestDaytimeTU () { DoTest ("timestamp daytime [x 1979.09.04 12:34:56.789101]", "[x 0001.01.01 12:34:00.000000]"); }
+    [Test]
+    public void TestDatetimeT () { DoTest ("timestamp datetime 1979.09.04 12:34:56.789101", "1979.09.04 12:34:00.000000"); }
+    [Test]
+    public void TestDatetimeTU () { DoTest ("timestamp datetime [x 1979.09.04 12:34:56.789101]", "[x 1979.09.04 12:34:00.000000]"); }
+    [Test]
+    public void TestTimestampT () { DoTest ("timestamp timestamp 1979.09.04 12:34:56.789101", "1979.09.04 12:34:56.789101"); }
+    [Test]
+    public void TestTimestampTU () { DoTest ("timestamp timestamp [x 1979.09.04 12:34:56.789101]", "[x 1979.09.04 12:34:56.789101]"); }
+    [Test]
+    public void TestTimespanT () { DoTest ("timespan 1979.09.04 12:34:56.789101", "722695.12:34:56.789101"); }
+    [Test]
+    public void TestTimespanTU () { DoTest ("timespan [x 1979.09.04 12:34:56.789101]", "[x 722695.12:34:56.789101]"); }
+
+    [Test]
+    public void TestNextDayOfWeek1 () { DoTest ("2018.10.07 nextDayOfWeek \"Friday\"", "2018.10.12"); }
+    [Test]
+    public void TestNextDayOfWeek2 () { DoTest ("2018.10.05 nextDayOfWeek \"Friday\"", "2018.10.05"); }
+    [Test]
+    public void TestNextDayOfWeek3 () { DoTest ("2018.10.04 nextDayOfWeek \"Friday\"", "2018.10.05"); }
     [Test]
     public void TestReferenceS () { DoTest ("reference \"x\" \"y\" \"z\"", "$x.y.z"); }
     [Test]
@@ -1590,13 +1617,13 @@ namespace RCL.Test
 
     //Flow Control Operators
     [Test]
-    public void TestSleepL() { DoTest("{t0:now{} :sleep 100 t1:now{} <-0.00:00:00.1000000<$t1-$t0}", "true"); }
+    public void TestSleepL() { DoTest("{t0:now{} :sleep 100 t1:now{} <-0.00:00:00.100000<$t1-$t0}", "true"); }
     [Test]
-    public void TestSleepD() { DoTest("{t0:now{} :sleep 100.0 t1:now{} <-0.00:00:00.1000000<$t1-$t0}", "true"); }
+    public void TestSleepD() { DoTest("{t0:now{} :sleep 100.0 t1:now{} <-0.00:00:00.100000<$t1-$t0}", "true"); }
     [Test]
-    public void TestSleepM() { DoTest("{t0:now{} :sleep 100m t1:now{} <-0.00:00:00.1000000<$t1-$t0}", "true"); }
+    public void TestSleepM() { DoTest("{t0:now{} :sleep 100m t1:now{} <-0.00:00:00.100000<$t1-$t0}", "true"); }
     [Test]
-    public void TestSleepX() { DoTest("{t0:now{} :sleep \\x64 t1:now{} <-0.00:00:00.1000000<$t1-$t0}", "true"); }
+    public void TestSleepX() { DoTest("{t0:now{} :sleep \\x64 t1:now{} <-0.00:00:00.100000<$t1-$t0}", "true"); }
 
     //The defining characteristic of sweach is that it takes a bunch of code blocks on the right
     //and evaluates the correct ones based on the argument on the left.  Other than that it is much

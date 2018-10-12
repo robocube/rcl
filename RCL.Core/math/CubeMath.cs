@@ -100,7 +100,7 @@ namespace RCL.Core
                 Type otype = method.ReturnType;
 
                 RCActivator.OverloadKey key = new RCActivator.OverloadKey (verb.Name, null, rtype);
-                Type vectoroptype = typeof (CubeMath).GetNestedType ("SeqCubeOpM`3").
+                Type vectoroptype = typeof (CubeMath).GetNestedType ("SeqCubeOpMonadic`3").
                   MakeGenericType (stype, rtype, otype);
                 //Why do I have to do the backtick thingy on GetNestedType but not on GetMethod?
                 MethodInfo vectoropMethod = typeof (CubeMath).GetMethod ("SequentialOpMonadic").
@@ -114,7 +114,7 @@ namespace RCL.Core
                 m_overloads.Add (key, new Overload (vectorop, primop));
 
                 RCActivator.OverloadKey key1 = new RCActivator.OverloadKey (verb.Name, typeof (RCVector<long>), rtype);
-                Type vectoroptype1 = typeof (CubeMath).GetNestedType ("SeqCubeOpD`3").
+                Type vectoroptype1 = typeof (CubeMath).GetNestedType ("SeqCubeOpDyadic`3").
                   MakeGenericType (stype, rtype, otype);
                 MethodInfo vectoropMethod1 = typeof (CubeMath).GetMethod ("SequentialOpDyadic").
                   MakeGenericMethod (stype, rtype, otype);
@@ -174,7 +174,6 @@ namespace RCL.Core
         LI = li;
         RI = ri;
       }
-
       public int LI;
       public int RI;
       public O Result;
@@ -187,13 +186,12 @@ namespace RCL.Core
 
     public delegate RCValue CubeOp <R, O> (RCCube right, ScalarOp <R, O> op);
     public delegate RCValue CumCubeOp <R, O> (RCCube right, ScalarOp <R, R, O> op);
-
     public delegate RCValue CubeOp <L, R, O> (RCCube left, RCCube right, ScalarOp<L, R, O> op);
     public delegate RCValue CubeOpLeftScalar <L, R, O> (RCVector<L> left, RCCube right, ScalarOp<L, R, O> op);
     public delegate RCValue CubeOpRightScalar <L, R, O> (RCCube left, RCVector<R> right, ScalarOp<L, R, O> op);
 
-    public delegate RCValue SeqCubeOpM <S, R, O> (RCCube right, SeqScalarOp<S, R, O> op);
-    public delegate RCValue SeqCubeOpD <S, R, O> (RCLong left, RCCube right, SeqScalarOp<S, R, O> op);
+    public delegate RCValue SeqCubeOpMonadic <S, R, O> (RCCube right, SeqScalarOp<S, R, O> op);
+    public delegate RCValue SeqCubeOpDyadic <S, R, O> (RCLong left, RCCube right, SeqScalarOp<S, R, O> op);
     public delegate RCValue ConCubeOp <C, L, R, O> (RCVector<L> left, RCCube right, ConScalarOp<C, L, R, O> op);
 
     public static RCValue MonadicOp <R, O> (RCCube right, ScalarOp<R, O> op)
@@ -264,8 +262,7 @@ namespace RCL.Core
     /// in a row by row fashion.  Choose between the multiple timeline, single
     /// timeline, or no timeline variations of the algorithm.
     /// </summary>
-    public static RCValue DyadicOp <L, R, O> (
-      RCCube left, RCCube right, ScalarOp<L, R, O> op)
+    public static RCValue DyadicOp <L, R, O> (RCCube left, RCCube right, ScalarOp<L, R, O> op)
       where O : IComparable
     {
       Timeline ltimeline = left.Axis;
@@ -552,10 +549,14 @@ namespace RCL.Core
         RCSymbolScalar s = otimeline.Symbol[i];
         L l;
         R r;
-        llast.Last (s, out l);
-        rlast.Last (s, out r);
-        oindex.Write (i);
-        odata.Write (op (l, r));
+        if (llast.Last (s, out l))
+        {
+          if (rlast.Last (s, out r))
+          {
+            oindex.Write (i);
+            odata.Write (op (l, r));
+          }
+        }
       }
     }
 
@@ -683,6 +684,7 @@ namespace RCL.Core
       return SequentialOpDyadic <S, R, O> (null, right, op);
     }
 
+    /*
     public static RCValue SequentialOpDyadic<S, R, O> (RCLong left, RCCube right, SeqScalarOp<S, R, O> op)
       where S : struct where O : struct
     {
@@ -804,6 +806,150 @@ namespace RCL.Core
         else return new RCCube ();
       }
     }
+    */
+
+    //New version with multiple column support
+    public static RCValue SequentialOpDyadic<S, R, O> (RCLong left, RCCube right, SeqScalarOp<S, R, O> op)
+      where S : struct where O : struct
+    {
+      if (right.Count == 0)
+      {
+        return right;
+      }
+      else if (right.Axis.Symbol != null && right.Axis.ColCount == 1)
+      {
+        RCArray<string> names = new RCArray<string> (right.Columns.Count);
+        RCArray<ColumnBase> columns = new RCArray<ColumnBase> (right.Columns.Count);
+        RCArray<Dictionary<RCSymbolScalar, SeqState<S,O>>> resultsByColumn =
+          new RCArray<Dictionary<RCSymbolScalar, SeqState<S,O>>> (right.Columns.Count);
+        RCArray<RCSymbolScalar> symbol = new RCArray<RCSymbolScalar> ();
+        for (int col = 0; col < right.Columns.Count; ++col)
+        {
+          RCArray<int> rindex = right.GetIndex<R> (col);
+          RCArray<R> rdata = right.GetData<R> (col);
+          Dictionary<RCSymbolScalar, SeqState<S,O>> results = new Dictionary<RCSymbolScalar, SeqState<S,O>> ();
+          int levels = left == null ? 0 : (int) left[0];
+          for (int i = 0; i < rdata.Count; ++i)
+          {
+            RCSymbolScalar scalar = right.Axis.SymbolAt (rindex[i]);
+            int level = (int) scalar.Length;
+            int count = (int) scalar.Length;
+            while (scalar != null)
+            {
+              SeqState<S,O> state;
+              if (levels == 0 ||
+                  (levels > 0 && level < levels) ||
+                  (levels < 0 && (count - level) < Math.Abs (levels)))
+              {
+                if (!results.TryGetValue (scalar, out state))
+                {
+                  state = new SeqState<S,O> ();
+                  results.Add (scalar, state);
+                }
+                O o = op (ref state.s, rdata[i]);
+                state.o = o;
+                results[scalar] = state;
+                if (!symbol.Contains (scalar))
+                {
+                  symbol.Write (scalar);
+                }
+              }
+              //We should change this to make it possible to say how many levels you want.
+              //Specify the number from the beginning or the end using a negative number.
+              scalar = scalar.Previous;
+              --level;
+            }
+          }
+          names.Write (right.NameAt (col));
+          resultsByColumn.Write (results);
+        }
+        // Sort by symbol before writing the results
+        symbol.SortInPlace ();
+        Timeline axis = new Timeline (null, null, null, symbol);
+        for (int col = 0; col < right.Columns.Count; ++col)
+        {
+          RCArray<O> data = new RCArray<O> (resultsByColumn[col].Count);
+          RCArray<int> index = new RCArray<int> (resultsByColumn[col].Count);
+          for (int i = 0; i < symbol.Count; ++i)
+          {
+            SeqState<S,O> state;
+            if (symbol[i] == null)
+            {
+              throw new Exception (string.Format ("wtf symbol[{0}] was null", i));
+            }
+            if (resultsByColumn[col].TryGetValue (symbol[i], out state))
+            {
+              index.Write (i);
+              data.Write (state.o);
+            }
+          }
+          columns.Write (ColumnBase.FromArray (axis, index, data));
+        }
+        if (symbol.Count > 0)
+        {
+          return new RCCube (axis, names, columns);
+        }
+        else return new RCCube ();
+      }
+      else if (right.Axis.ColCount == 0)
+      {
+        RCArray<int> rindex = right.GetIndex<R> (0);
+        RCArray<R> rdata = right.GetData<R> (0);
+        RCArray<int> index = new RCArray<int> ();
+        RCArray<O> data = new RCArray<O> ();
+        Comparer<O> c = Comparer<O>.Default;
+        SeqState<S,O> s = new SeqState<S,O> ();
+        for (int i = 0; i < rdata.Count; ++i)
+        {
+          s.o = op (ref s.s, rdata[i]);
+          index.Write (rindex[i]);
+          data.Write (s.o);
+        }
+        if (data.Count > 0)
+        {
+          ColumnBase column = ColumnBase.FromArray (right.Axis, index, data);
+          return new RCCube (
+            right.Axis,
+            new RCArray<string> ("x"),
+            new RCArray<ColumnBase> (column));
+        }
+        else return new RCCube ();
+      }
+      else
+      {
+        Timeline rtimeline = right.Axis;
+        RCArray<int> rindex = right.GetIndex<R> (0);
+        RCArray<R> rdata = right.GetData<R> (0);
+        Dictionary<RCSymbolScalar, SeqState<S,O>> states =
+          new Dictionary<RCSymbolScalar, SeqState<S,O>> ();
+        RCArray<int> index = new RCArray<int> ();
+        RCArray<O> data = new RCArray<O> ();
+        Comparer<O> c = Comparer<O>.Default;
+        for (int i = 0; i < rdata.Count; ++i)
+        {
+          RCSymbolScalar symbol = rtimeline.SymbolAt (rindex[i]);
+          SeqState<S,O> s = new SeqState<S,O> ();
+          states.TryGetValue (symbol, out s);
+          O o = op (ref s.s, rdata[i]);
+          if (c.Compare (o, s.o) != 0)
+          {
+            s.o = o;
+            index.Write (rindex[i]);
+            data.Write (o);
+            states[symbol] = s;
+          }
+        }
+        if (data.Count > 0)
+        {
+          ColumnBase column = ColumnBase.FromArray (rtimeline, index, data);
+          return new RCCube (
+            rtimeline,
+            new RCArray<string> ("x"),
+            new RCArray<ColumnBase> (column));
+        }
+        else return new RCCube ();
+      }
+    }
 
     public static RCValue Invoke (RCClosure closure, string name, RCCube left, RCCube right)
     {
@@ -853,12 +999,15 @@ namespace RCL.Core
 
     public static RCValue Invoke (RCClosure closure, string name, RCCube right)
     {
-      //RCVectorBase rvector = right.GetVector (0);
+      // So we need a version that does this, and a version that looks for all
+      // columns which can have the specified operator applied to them
       RCActivator.OverloadKey key = new RCActivator.OverloadKey (
         name, null, right.GetType (0));
       Overload overload;
       if (!m_overloads.TryGetValue (key, out overload))
+      {
         throw RCException.Overload (closure, name, right);
+      }
       //The result should almost always be a cube.
       //But there might be a couple exceptions.
       RCValue result = (RCValue) overload.Invoke (right);
@@ -1033,6 +1182,32 @@ namespace RCL.Core
       RCCube result = new RCCube (cube.Axis);
       Filler filler = new Filler (result);
       filler.Fill (cube);
+      runner.Yield (closure, result);
+    }
+
+    [RCVerb ("plug")]
+    public void EvalPlug (RCRunner runner, RCClosure closure, RCLong left, RCCube cube)
+    {
+      if (left.Count != 1)
+      {
+        throw new Exception ("plug takes only one default value on the left");
+      }
+      RCCube result = new RCCube (cube.Axis);
+      Plugger plugger = new Plugger (result, left[0]);
+      plugger.Plug (cube);
+      runner.Yield (closure, result);
+    }
+
+    [RCVerb ("plug")]
+    public void EvalPlug (RCRunner runner, RCClosure closure, RCDouble left, RCCube cube)
+    {
+      if (left.Count != 1)
+      {
+        throw new Exception ("plug takes only one default value on the left");
+      }
+      RCCube result = new RCCube (cube.Axis);
+      Plugger plugger = new Plugger (result, left[0]);
+      plugger.Plug (cube);
       runner.Yield (closure, result);
     }
 

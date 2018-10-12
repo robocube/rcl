@@ -23,5 +23,61 @@ namespace RCL.Core
     {
       runner.Yield (closure, new RCTime (new RCTimeScalar (DateTime.UtcNow.Ticks, RCTimeType.Timestamp)));
     }
+
+    /// <summary>
+    /// Return the date corresponding to the following day of week eg "Friday."
+    /// The date returned is inclusive of the current day.
+    /// </summary>
+    [RCVerb ("nextDayOfWeek")]
+    public void EvalNextDayOfWeek (RCRunner runner, RCClosure closure, RCTime left, RCString right)
+    {
+      if (right.Count != 1)
+      {
+        throw new Exception ("Only one day of week allowed");
+      }
+      RCArray<RCTimeScalar> result = new RCArray<RCTimeScalar> (left.Count);
+      DayOfWeek dayOfWeek = (DayOfWeek) Enum.Parse (typeof (DayOfWeek), right[0], ignoreCase:true);
+      for (int i = 0; i < left.Count; ++i)
+      {
+        DateTime date = new DateTime (left[i].Ticks);
+        int daysUntil = dayOfWeek - date.DayOfWeek;
+        DateTime targetDate = date;
+        if (daysUntil < 0)
+        {
+          daysUntil += 7;
+        }
+        targetDate = date.AddDays (daysUntil);
+        result.Write (new RCTimeScalar (targetDate, RCTimeType.Date));
+      }
+      runner.Yield (closure, new RCTime (result));
+    }
+
+    [RCVerb ("dayOfWeek")]
+    public void EvalDayOfWeek (RCRunner runner, RCClosure closure, RCTime right)
+    {
+      RCArray<string> result = new RCArray<string> (right.Count);
+      for (int i = 0; i < right.Count; ++i)
+      {
+        DateTime date = new DateTime (right[i].Ticks);
+        result.Write (date.DayOfWeek.ToString ());
+      }
+      runner.Yield (closure, new RCString (result));
+    }
+
+    [RCVerb ("addDays")]
+    public void EvalNextDay (RCRunner runner, RCClosure closure, RCTime left, RCLong right)
+    {
+      if (right.Count != 1)
+      {
+        throw new Exception ("Only one number of days to add allowed");
+      }
+      RCArray<RCTimeScalar> result = new RCArray<RCTimeScalar> (left.Count);
+      for (int i = 0; i < left.Count; ++i)
+      {
+        DateTime date = new DateTime (left[i].Ticks).AddDays (1);
+        result.Write (new RCTimeScalar (date, left[i].Type));
+      }
+      runner.Yield (closure, new RCTime (result));
+    }
   }
 }

@@ -349,7 +349,6 @@ namespace RCL.Kernel
       Type rtype = right.GetType ();
       try
       {
-        //Console.WriteLine("name:{0}, ltype:{1}, rtype:{2}", name, ltype.ToString (), rtype.ToString ());
         if (m_dispatch.TryGetValue (new OverloadKey (name, ltype, rtype), out overload))
         {
           RCBot bot = runner.GetBot (closure.Bot);

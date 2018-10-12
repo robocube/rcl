@@ -67,6 +67,7 @@ namespace RCL.Kernel
         }
         for (i = 0; i < tokens.Count; ++i)
         {
+          //Console.WriteLine ("tokens[{0}]: '{1}'", i, tokens[i]);
           tokens[i].Type.Accept (this, tokens[i]);
         }
         if (m_vector != null || m_reference != null)
@@ -89,7 +90,14 @@ namespace RCL.Kernel
       }
       catch (Exception ex)
       {
-        throw new Exception (string.Format ("Parse error at token: {0} value: {1}", i, tokens[i].Text), ex);
+        if (i < tokens.Count)
+        {
+          throw new Exception (string.Format ("Parse error at token: {0} value: {1}", i, tokens[i].Text), ex);
+        }
+        else
+        {
+          throw new Exception (string.Format ("Parse error at token: {0} value: {1}", i, "UNKNOWN"), ex);
+        }
       }
     }
 
