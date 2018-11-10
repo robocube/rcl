@@ -11,8 +11,7 @@ namespace RCL.Kernel
     protected readonly RCArray<bool> m_indicator;
     protected readonly RCCube m_target;
 
-    public WhereIndicator (RCCube source, 
-                           RCArray<bool> indicator)
+    public WhereIndicator (RCCube source, RCArray<bool> indicator)
     {
       m_source = source;
       m_indicator = indicator;
@@ -25,10 +24,7 @@ namespace RCL.Kernel
       return m_target;
     }
 
-    public override void AfterRow (long e, 
-                                   RCTimeScalar t, 
-                                   RCSymbolScalar s, 
-                                   int row)
+    public override void AfterRow (long e, RCTimeScalar t, RCSymbolScalar s, int row)
     {
       if (m_indicator[row])
       {
@@ -38,24 +34,27 @@ namespace RCL.Kernel
       }
     }
 
-    public override void VisitNull<T> (string name, 
-                                       Column<T> vector, 
-                                       int row)
+    public override void VisitNull<T> (string name, Column<T> vector, int row)
     {
       //base.VisitNull (name, vector, row);
     }
 
-    public override void VisitScalar<T> (string name, 
-                                         Column<T> column, 
-                                         int row)
+    public override void VisitScalar<T> (string name, Column<T> column, int row)
     {
       int tlrow = column.Index[row];
-      if (m_indicator[tlrow])
+      if (m_source.Axis.Symbol != null)
       {
-        m_target.WriteCell (name, 
-                            m_source.SymbolAt (tlrow), 
-                            column.Data[row],
-                            -1, true, true);
+        if (m_indicator[tlrow])
+        {
+          m_target.WriteCell (name, m_source.SymbolAt (tlrow), column.Data[row], -1, true, true);
+        }
+      }
+      else
+      {
+        if (m_indicator[tlrow])
+        {
+          m_target.WriteCell (name, null, column.Data[row], -1, true, true);
+        }
       }
     }
   }
