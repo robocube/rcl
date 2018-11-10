@@ -3027,6 +3027,13 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestBangTimeSeries4 ()
+    {
+      DoTest ("{<-! {u0:[T|S|x 2018.11.04 #a 1] u1:[T|S|x 2018.01.04 #b 2]}}",
+              "[T|S|x 2018.01.04 #b 2 2018.11.04 #a 1]");
+    }
+
+    [Test]
     public void TestBangTimeSeriesDyadic2 ()
     {
       DoTest ("[T|S|x 2018.10.01 #a 1 2018.10.02 #a 2 2018.10.03 #a 3] ! [T|S|y 2018.10.01 #a 10 2018.10.02 #a 20 2018.10.03 #a 30]",

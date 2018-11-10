@@ -2541,42 +2541,61 @@ namespace RCL.Core
         }
       }
 
-      for (int i = 0; i < mergedMaps.Length; ++i)
+      //Debugging aid
+      //for (int i = 0; i < mergedMaps.Length; ++i)
+      //{
+      //  foreach (KeyValuePair<long, int> kv in mergedMaps[i])
+      //  {
+      //    Console.WriteLine("mergedMaps[i:{0}][k:{1}]: {2}", i, kv.Key, kv.Value);
+      //  }
+      //}
+
+      RCCube result = new RCCube (resultAxis);
+      // Produce final column order for the result set.
+      RCArray<string> columns = new RCArray<string> (8);
+      for (int i = 0; i < cubes.Length; ++i)
       {
-        foreach (KeyValuePair<long, int> kv in mergedMaps[i])
+        for (int j = 0; j < cubes[i].Cols; ++j)
         {
-          //Console.WriteLine("mergedMaps[i:{0}][k:{1}]: {2}", i, kv.Key, kv.Value);
+          string colName = cubes[i].ColumnAt (j);
+          if (!columns.Contains (colName))
+          {
+            columns.Write (colName);
+            result.ReserveColumn (colName);
+          }
         }
       }
 
-      RCCube result = new RCCube (resultAxis);
-      // Merge each column into the result timeline.
-      for (int i = 0; i < cubes.Length; ++i)
+      // Write source data to the result cube by consulting mergedMaps.
+      for (int k = 0; k < result.Axis.Count; ++k)
       {
-        RCCube cube = cubes[i];
-        for (int j = 0; j < cube.Cols; ++j)
+        for (int j = 0; j < columns.Count; ++j)
         {
-          ColumnBase column = cube.GetColumn (j);
-          string name = cube.ColumnAt (j);
-          RCArray<int> index = column.Index;
-          //for (int k = 0; k < index.Count; ++k)
-          for (int k = 0; k < result.Axis.Count; ++k)
+          for (int i = 0; i < cubes.Length; ++i)
           {
-            // mergedMaps goes from a merged axis index to a sorted axis index
-            if (mergedMaps[i].ContainsKey (k))
+            RCCube cube = cubes[i];
+            ColumnBase column = cube.GetColumn (j);
+            if (column != null)
             {
-              int sortedIndex = mergedMaps[i][k];
-              // sortedMaps goes from a sorted axis index to an unsorted axis index
-              int unsortedIndex = sortedMaps[i][sortedIndex];
-              bool found;
-              int unsortedVrow = index.BinarySearch (unsortedIndex, out found);
-              if (found)
+              string name = cube.ColumnAt (j);
+              RCArray<int> index = column.Index;
+              //Console.WriteLine("name:{0}, k:{1}, S:{2}, T:{3}", name, k, result.Axis.SymbolAt (k), result.Axis.TimeAt (k));
+              // mergedMaps goes from a merged axis index to a sorted axis index
+              if (mergedMaps[i].ContainsKey (k))
               {
-                object box = column.BoxCell (unsortedVrow);
-                RCSymbolScalar symbol = result.SymbolAt (unsortedIndex);
-                //Console.WriteLine ("result.WriteCell (name:{0}, symbol:{1}, box:{2}, k:{3}, parsing:false, force:false)", name, symbol, box, k);
-                //Console.WriteLine ("  (unsortedIndex: {0}, sortedIndex: {1}, k:{2})", unsortedIndex, sortedIndex, k);
-                result.WriteCell (name, symbol, box, k, parsing:false, force:true);
+                int sortedIndex = mergedMaps[i][k];
+                // sortedMaps goes from a sorted axis index to an unsorted axis index
+                int unsortedIndex = sortedMaps[i][sortedIndex];
+                bool found;
+                int unsortedVrow = index.BinarySearch (unsortedIndex, out found);
+                if (found)
+                {
+                  object box = column.BoxCell (unsortedVrow);
+                  RCSymbolScalar symbol = result.SymbolAt (k);
+                  //Console.WriteLine ("result.WriteCell (name:{0}, symbol:{1}, box:{2}, k:{3}, parsing:false, force:false)", name, symbol, box, k);
+                  //Console.WriteLine ("  (unsortedIndex: {0}, sortedIndex: {1}, k:{2})", unsortedIndex, sortedIndex, k);
+                  result.WriteCell (name, symbol, box, k, parsing:false, force:true);
+                }
               }
             }
           }

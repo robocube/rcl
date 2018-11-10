@@ -6141,6 +6141,26 @@
       2018.06.18 #b  3
     ]
   }
+  TestBangTimeSeries4:{
+    skip:false
+    src:{
+      <-! {
+        u0:[
+                   T|S | x
+          2018.11.04 #a  1
+        ]
+        u1:[
+                   T|S | x
+          2018.01.04 #b  2
+        ]
+      }
+    }
+    bin:[
+               T|S | x
+      2018.01.04 #b  2
+      2018.11.04 #a  1
+    ]
+  }
   TestBangTimeSeriesDyadic2:{
     skip:false
     src:[
