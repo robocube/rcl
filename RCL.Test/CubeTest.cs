@@ -2043,6 +2043,12 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestRectEquals ()
+    {
+      DoTest ("{u:[x y 1 -- 2 20] <-$u.y == 20}", "[x -- true]");
+    }
+
+    [Test]
     public void TestAbs1 ()
     {
       DoTest ("abs [S|x #a -1 #b 2 #c -3]", "[S|x #a 1 #b 2 #c 3]");
@@ -2155,6 +2161,12 @@ namespace RCL.Test
     public void TestColofl7 ()
     {
       DoTest ("0 colofl [S|x #a -- #b 1 #c 2]", "0 1 2");
+    }
+
+    [Test]
+    public void TestColofl8 ()
+    {
+      DoTest ("0 colofl [x 1 --]", "1 0");
     }
 
     [Test]
@@ -2549,6 +2561,18 @@ namespace RCL.Test
       DoTest (RCFormat.Default,
               "#pretty format [E|S|a_long_name 0 #x 100.0]",
               "\"[\\n   E|S |a_long_name\\n   0 #x       100.0\\n]\"");
+    }
+
+    [Test]
+    public void TestDefaultFormatWithSparseRectCubes ()
+    {
+      DoTest (RCFormat.Default, "parse \"[x -- 1 -- 3 -- 5]\"", "[x -- 1 -- 3 -- 5]");
+    }
+
+    [Test]
+    public void TestDefaultFormatWithSparseRectCubes1 ()
+    {
+      DoTest (RCFormat.Default, "parse \"[x -- 1 -- 3 --]\"", "[x -- 1 -- 3 --]");
     }
 
     [Test]
@@ -2975,6 +2999,41 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestBangTimeSeries0 ()
+    {
+      DoTest ("! {u1:[T|S|x 2018.10.01 #a 1 2018.10.02 #a 2 2018.10.03 #a 3] u2:[T|S|y 2018.10.01 #a 10 2018.10.02 #a 20 2018.10.03 #a 30]}",
+              "[T|S|x y 2018.10.01 #a 1 10 2018.10.02 #a 2 20 2018.10.03 #a 3 30]");
+    }
+
+    [Test]
+    public void TestBangTimeSeries1 ()
+    {
+      DoTest ("! {u1:[T|S|x 2018.10.04 #a 1 2018.10.02 #a 2 2018.10.03 #a 3] u2:[T|S|y 2018.10.01 #a 10 2018.10.02 #a 20 2018.10.03 #a 30]}",
+              "[T|S|x y 2018.10.01 #a -- 10 2018.10.02 #a 2 20 2018.10.03 #a 3 30 2018.10.04 #a 1 --]");
+    }
+
+    [Test]
+    public void TestBangTimeSeries2 ()
+    {
+      DoTest ("! {u1:[T|S|x 2018.10.01 #a 1 2018.10.01 #b 2 2018.10.02 #a 3] u2:[T|S|y 2018.10.01 #a 10 2018.10.01 #b 20 2018.10.02 #a 30]}",
+              "[T|S|x y 2018.10.01 #a 1 10 2018.10.01 #b 2 20 2018.10.02 #a 3 30]");
+    }
+
+    [Test]
+    public void TestBangTimeSeriesDyadic2 ()
+    {
+      DoTest ("[T|S|x 2018.10.01 #a 1 2018.10.02 #a 2 2018.10.03 #a 3] ! [T|S|y 2018.10.01 #a 10 2018.10.02 #a 20 2018.10.03 #a 30]",
+              "[T|S|x y 2018.10.01 #a 1 10 2018.10.02 #a 2 20 2018.10.03 #a 3 30]");
+    }
+
+    [Test]
+    public void TestBangTimeSeriesDyadic3 ()
+    {
+      DoTest ("[T|S|x 2018.10.01 #a 1 2018.10.01 #b 2 2018.10.02 #a 3] ! [T|S|y 2018.10.01 #a 10 2018.10.01 #b 20 2018.10.02 #a 30]",
+              "[T|S|x y 2018.10.01 #a 1 10 2018.10.01 #b 2 20 2018.10.02 #a 3 30]");
+    }
+
+    [Test]
     public void TestExcept ()
     {
       DoTest ("[S|x #a 1] except [S|x #b 2 #c 3]", "[S|x #a 1]");
@@ -3077,7 +3136,7 @@ namespace RCL.Test
     [Test]
     public void TestWhere7 ()
     {
-      //Do not remove dups while wring to the result.
+      //Do not remove dups while writing to the result.
       DoTest ("{u:[E|S|x 0 #a 0 1 #a 0] <-$u where $u.x == 0}", "[E|S|x 0 #a 0 1 #a 0]");
     }
 
@@ -3093,6 +3152,12 @@ namespace RCL.Test
     {
       //18007130744
       DoTest ("[] where []", "[]");
+    }
+
+    [Test]
+    public void TestWhereNulls1 ()
+    {
+      DoTest ("{u:[x y 1 -- 2 20] <-$u where $u.y == 20}", "[x y 2 20]");
     }
 
     [Test]

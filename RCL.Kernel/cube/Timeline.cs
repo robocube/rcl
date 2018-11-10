@@ -1,4 +1,3 @@
-
 using System;
 using System.Text;
 using System.Collections.Generic;
@@ -19,16 +18,16 @@ namespace RCL.Kernel
     public readonly RCArray<long> Global;
 
     /// <summary>
-    /// The (T)ime at the point the event was recorded.
-    /// Mostly useful for display.
-    /// It is also used when merging two cubes that don't share a common source.
+    /// Multiple rows in the timeline can be grouped together to represent a single,
+    /// discrete event.  Consecutive rows having the same value in E (but differing symbols)
+    /// will be treated as a single event.
     /// </summary>
     public readonly RCArray<long> Event;
 
     /// <summary>
-    /// Multiple rows in the timeline can be grouped together to represent a single,
-    /// discrete event.  Consecutive rows having the same value in E will be treated
-    /// like a single event.
+    /// The (T)ime at the point the event was recorded.
+    /// Mostly useful for display.
+    /// It is also used when merging two cubes that don't share a common source.
     /// </summary>
     public readonly RCArray<RCTimeScalar> Time;
   
@@ -40,11 +39,53 @@ namespace RCL.Kernel
     /// </summary>
     public readonly RCArray<RCSymbolScalar> Symbol;
 
+    /// <summary>
+    /// A collection of methods customizing behavior for various axis configurations.
+    /// </summary>
+    public readonly CubeProto Proto;
+
     //The list of columns on the axis.
     public readonly RCArray<string> Colset;
 
     protected int m_count = 0;
 
+    public Timeline (RCArray<RCSymbolScalar> s)
+    {
+      Colset = new RCArray<string> (1);
+      Colset.Write ("S");
+      Symbol = s;
+      m_count = Symbol.Count;
+      Proto = CubeProto.Create (this);
+    }
+
+    public Timeline (RCArray<string> cols)
+    {
+      Colset = cols;
+      if (Colset.Contains ("G"))
+      {
+        Global = new RCArray<long> ();
+      }
+      if (Colset.Contains ("E"))
+      {
+        Event = new RCArray<long> ();
+      }
+      if (Colset.Contains ("T"))
+      {
+        Time = new RCArray<RCTimeScalar> ();
+      }
+      if (Colset.Contains ("S"))
+      {
+        Symbol = new RCArray<RCSymbolScalar> ();
+      }
+      Proto = CubeProto.Create (this);
+    }
+
+    public Timeline (int count)
+    {
+      Colset = new RCArray<string> (0);
+      m_count = count;
+      Proto = CubeProto.Create (this);
+    }
     public Timeline (RCArray<long> g, 
                      RCArray<long> e,
                      RCArray<RCTimeScalar> t,
@@ -75,44 +116,19 @@ namespace RCL.Kernel
         Symbol = s;
         m_count = Symbol.Count;
       }
-    }
-
-    public Timeline (RCArray<RCSymbolScalar> s)
-    {
-      Colset = new RCArray<string> (1);
-      Colset.Write ("S");
-      Symbol = s;
-      m_count = Symbol.Count;
+      Proto = CubeProto.Create (this);
     }
 
     public Timeline (params string[] cols) 
       :this (new RCArray<string> (cols)) {}
 
-    public Timeline (RCArray<string> cols)
+    /// <summary>
+    /// For a Timeline, the standard sort order is by time column (G, E or T) followed by the symbol column, ascending.
+    /// Timelines need to be sorted before they can be merged together with other timelines.
+    /// </summary>
+    public Timeline EnsureSorted ()
     {
-      Colset = cols;
-      if (Colset.Contains ("G"))
-      {
-        Global = new RCArray<long> ();
-      }
-      if (Colset.Contains ("E"))
-      {
-        Event = new RCArray<long> ();
-      }
-      if (Colset.Contains ("T"))
-      {
-        Time = new RCArray<RCTimeScalar> ();
-      }
-      if (Colset.Contains ("S"))
-      {
-        Symbol = new RCArray<RCSymbolScalar> ();
-      }
-    }
-
-    public Timeline (int count)
-    {
-      Colset = new RCArray<string> (0);
-      m_count = count;
+      return Proto.Sort ();
     }
 
     public long TimeAt (int i)
@@ -132,7 +148,7 @@ namespace RCL.Kernel
       }
       return Symbol[i];
     }
-  
+
     public int Count
     {
       get

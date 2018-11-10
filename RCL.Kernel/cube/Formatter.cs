@@ -98,11 +98,11 @@ namespace RCL.Kernel
       //Populate m_columns and m_max.
       if (m_args.CanonicalCubes)
       {
-        source.VisitCellsCanonical (this, 0, source.Count);
+        source.VisitCellsCanonical (this, 0, source.Axis.Count);
       }
       else
       {
-        source.VisitCellsForward (this, 0, source.Count);
+        source.VisitCellsForward (this, 0, source.Axis.Count);
       }
       if (m_args.Syntax == "RCL")
       {

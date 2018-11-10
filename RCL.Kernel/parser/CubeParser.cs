@@ -38,6 +38,9 @@ namespace RCL.Kernel
       // True if the cube contains column T.
       public bool m_hasT = false;
 
+      // True if the cube contains column S.
+      public bool m_hasS = false;
+
       // True if the cube has a timeline.
       public bool m_hasTimeline = false;
 
@@ -85,6 +88,7 @@ namespace RCL.Kernel
       }
       else if (token.Text == "G" || token.Text == "T" || token.Text == "S")
       {
+        s.m_hasS = false;
         s.m_tlcolnames.Write (token.Text);
       }
     }

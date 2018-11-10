@@ -1,4 +1,3 @@
-
 using System;
 using System.IO;
 using System.Threading;
@@ -497,22 +496,39 @@ namespace RCL.Core
     {
       //Neither cube may have a timeline.
       if (left.Axis.Colset.Count > 0 || right.Axis.Colset.Count > 0)
+      {
         throw new Exception ("Neither cube may have timeline columns.");
+      }
       //Both cubes must have the same number of rows.
       if (left.Count != right.Count)
+      {
         throw new Exception ("Both cubes must have the same count.");
+      }
       //And the same number of columns.
       if (left.Cols != right.Cols)
+      {
         throw new Exception ("Both cubes must have the same number of columns.");
+      }
 
       if (left.Cols == 1 && right.Cols == 1)
       {
-        RCArray<L> ldata = left.GetData<L> (0);
-        RCArray<R> rdata = right.GetData<R> (0);
-        for (int i = 0; i < left.Count; ++i)
+        RCArray<int> leftIndex = left.GetIndex<L> (0);
+        RCArray<L> leftData = left.GetData<L> (0);
+        RCArray<int> rightIndex = right.GetIndex<R> (0);
+        RCArray<R> rightData = right.GetData<R> (0);
+        for (int i = 0; i < left.Axis.Count; ++i)
         {
-          data.Write (op (ldata[i], rdata[i]));
-          index.Write (i);
+          bool leftFound;
+          int leftIndexRow = leftIndex.BinarySearch (i, out leftFound);
+          bool rightFound;
+          int rightIndexRow = rightIndex.BinarySearch (i, out rightFound);
+          if (leftFound && rightFound)
+          {
+            L leftScalar = leftData[leftIndexRow];
+            R rightScalar = rightData[rightIndexRow];
+            data.Write (op (leftScalar, rightScalar));
+            index.Write (i);
+          }
         }
       }
       else
@@ -567,7 +583,6 @@ namespace RCL.Core
       ScalarOp<L, R, O> op) where O : IComparable
     {
       Comparer<O> c = Comparer<O>.Default;
-
       //li and ri are the current indices on the left vector and the right
       //vector respectively.  lt is the index of the timeline of the left
       int li = 0, ri = 0;
@@ -577,7 +592,6 @@ namespace RCL.Core
       //This map stores the current index into the left and right arguments.
       Dictionary<RCSymbolScalar, IndexPair<O>> map =
         new Dictionary<RCSymbolScalar, IndexPair<O>> ();
-
       while (true)
       {
         //check to see if there is more to do.
@@ -585,17 +599,19 @@ namespace RCL.Core
         bool hasRight = ri < rdata.Count;
         if (hasLeft) lt = ltimeline.TimeAt (lindex[li]);
         if (hasRight) rt = rtimeline.TimeAt (rindex[ri]);
-        if (!(hasLeft || hasRight)) break;
-
+        if (!(hasLeft || hasRight))
+        {
+          break;
+        }
         RCSymbolScalar symbol = null;
         IndexPair<O> pair = null;
-
         if (lt == rt)
         {
           symbol = rtimeline.SymbolAt (rindex[ri]);
           if (symbol == null)
+          {
             symbol = RCSymbolScalar.Empty;
-
+          }
           bool first = !map.TryGetValue (symbol, out pair);
           if (pair == null)
           {
@@ -684,131 +700,9 @@ namespace RCL.Core
       return SequentialOpDyadic <S, R, O> (null, right, op);
     }
 
-    /*
-    public static RCValue SequentialOpDyadic<S, R, O> (RCLong left, RCCube right, SeqScalarOp<S, R, O> op)
-      where S : struct where O : struct
-    {
-      if (right.Count == 0)
-      {
-        return right;
-      }
-      else if (right.Axis.Symbol != null && right.Axis.ColCount == 1)
-      {
-        RCArray<int> rindex = right.GetIndex<R> (0);
-        RCArray<R> rdata = right.GetData<R> (0);
-        Dictionary<RCSymbolScalar, SeqState<S,O>> results = new Dictionary<RCSymbolScalar, SeqState<S,O>> ();
-        int levels = left == null ? 0 : (int) left[0];
-        for (int i = 0; i < rdata.Count; ++i)
-        {
-          RCSymbolScalar scalar = right.Axis.SymbolAt (rindex[i]);
-          int level = (int) scalar.Length;
-          int count = (int) scalar.Length;
-          while (scalar != null)
-          {
-            SeqState<S,O> state;
-            if (levels == 0 ||
-                (levels > 0 && level < levels) ||
-                (levels < 0 && (count - level) < Math.Abs (levels)))
-            {
-              if (!results.TryGetValue (scalar, out state))
-              {
-                state = new SeqState<S,O> ();
-                results.Add (scalar, state);
-              }
-              O o = op (ref state.s, rdata[i]);
-              state.o = o;
-              results[scalar] = state;
-            }
-            //We should change this to make it possible to say how many levels you want.
-            //Specify the number from the beginning or the end using a negative number.
-            scalar = scalar.Previous;
-            --level;
-          }
-        }
-        RCSymbolScalar[] symbol = new RCSymbolScalar[results.Count];
-        results.Keys.CopyTo (symbol, 0);
-        Array.Sort (symbol);
-        RCArray<O> data = new RCArray<O> (results.Count);
-        RCArray<int> index = new RCArray<int> (results.Count);
-        for (int i = 0; i < symbol.Length; ++i)
-        {
-          index.Write (i);
-          O x = results[symbol[i]].o;
-          data.Write (x);
-        }
-        if (data.Count > 0)
-        {
-          Timeline axis = new Timeline (null, null, null,
-                                        new RCArray<RCSymbolScalar> (symbol));
-          ColumnBase column = ColumnBase.FromArray (axis, index, data);
-          return new RCCube (axis,
-                             new RCArray<string> ("x"),
-                             new RCArray<ColumnBase> (column));
-        }
-        else return new RCCube ();
-      }
-      else if (right.Axis.ColCount == 0)
-      {
-        RCArray<int> rindex = right.GetIndex<R> (0);
-        RCArray<R> rdata = right.GetData<R> (0);
-        RCArray<int> index = new RCArray<int> ();
-        RCArray<O> data = new RCArray<O> ();
-        Comparer<O> c = Comparer<O>.Default;
-        SeqState<S,O> s = new SeqState<S,O> ();
-        for (int i = 0; i < rdata.Count; ++i)
-        {
-          s.o = op (ref s.s, rdata[i]);
-          index.Write (rindex[i]);
-          data.Write (s.o);
-        }
-        if (data.Count > 0)
-        {
-          ColumnBase column = ColumnBase.FromArray (right.Axis, index, data);
-          return new RCCube (
-            right.Axis,
-            new RCArray<string> ("x"),
-            new RCArray<ColumnBase> (column));
-        }
-        else return new RCCube ();
-      }
-      else
-      {
-        Timeline rtimeline = right.Axis;
-        RCArray<int> rindex = right.GetIndex<R> (0);
-        RCArray<R> rdata = right.GetData<R> (0);
-        Dictionary<RCSymbolScalar, SeqState<S,O>> states =
-          new Dictionary<RCSymbolScalar, SeqState<S,O>> ();
-        RCArray<int> index = new RCArray<int> ();
-        RCArray<O> data = new RCArray<O> ();
-        Comparer<O> c = Comparer<O>.Default;
-        for (int i = 0; i < rdata.Count; ++i)
-        {
-          RCSymbolScalar symbol = rtimeline.SymbolAt (rindex[i]);
-          SeqState<S,O> s = new SeqState<S,O> ();
-          states.TryGetValue (symbol, out s);
-          O o = op (ref s.s, rdata[i]);
-          if (c.Compare (o, s.o) != 0)
-          {
-            s.o = o;
-            index.Write (rindex[i]);
-            data.Write (o);
-            states[symbol] = s;
-          }
-        }
-        if (data.Count > 0)
-        {
-          ColumnBase column = ColumnBase.FromArray (rtimeline, index, data);
-          return new RCCube (
-            rtimeline,
-            new RCArray<string> ("x"),
-            new RCArray<ColumnBase> (column));
-        }
-        else return new RCCube ();
-      }
-    }
-    */
-
-    //New version with multiple column support
+    /// <summary>
+    /// Now with multiple column support.
+    /// </summary>
     public static RCValue SequentialOpDyadic<S, R, O> (RCLong left, RCCube right, SeqScalarOp<S, R, O> op)
       where S : struct where O : struct
     {
@@ -1337,20 +1231,21 @@ namespace RCL.Core
         runner.Yield (closure, RCCube.Empty);
         return;
       }
-      Column<bool> wherecol = (Column<bool>)right.GetColumn (0);
       if (left.Axis.ColCount == 0)
       {
-        WhereIndicator wherer = new WhereIndicator (left, wherecol.Data);
+        RCArray<bool> whereCol = right.DoColof<bool> (col:0, def:false, allowSparse:true);
+        WhereIndicator wherer = new WhereIndicator (left, whereCol);
         runner.Yield (closure, wherer.Where ());
       }
       else if (left.Axis.ColCount == 1 && left.Axis.Symbol != null)
       {
+        RCArray<bool> whereCol = right.DoColof<bool> (col:0, def:false, allowSparse:true);
         RCCube result = new RCCube (new RCArray<string> ("S"));
-        for (int i = 0; i < wherecol.Data.Count; ++i)
+        for (int i = 0; i < whereCol.Count; ++i)
         {
-          if (wherecol.Data[i])
+          if (whereCol[i])
           {
-            result.Write (right.Axis.SymbolAt (wherecol.Index[i]));
+            result.Write (right.Axis.SymbolAt (i));
           }
         }
         result = Bang (result, left, null, false, false, true, true);
@@ -1358,14 +1253,14 @@ namespace RCL.Core
       }
       else
       {
-        WhereLocator wherer = new WhereLocator (left, wherecol);
+        Column<bool> whereCol = (Column<bool>) right.GetColumn (0);
+        WhereLocator wherer = new WhereLocator (left, whereCol);
         runner.Yield (closure, wherer.Where ());
       }
     }
 
     [RCVerb ("where")]
-    public void EvalWhere (
-      RCRunner runner, RCClosure closure, RCCube left, RCBoolean right)
+    public void EvalWhere (RCRunner runner, RCClosure closure, RCCube left, RCBoolean right)
     {
       if (left.Axis.ColCount == 0)
       {
@@ -1611,7 +1506,13 @@ namespace RCL.Core
     [RCVerb ("!")]
     public void Bang (RCRunner runner, RCClosure closure, RCBlock right)
     {
-      Bang (runner, closure, new RCCube (new RCArray<string> ("S")), right);
+      if (right.Count == 0)
+      {
+        runner.Yield (closure, RCCube.Empty);
+        return;
+      }
+      RCCube result = new RCCube (((RCCube) right.Get (0)).Axis.Match ());
+      Bang (runner, closure, result, right);
     }
 
     [RCVerb ("inter")]
@@ -1699,7 +1600,14 @@ namespace RCL.Core
       }
       if (left.Axis.Symbol != null && right.Axis.Symbol != null)
       {
-        return BangSymCubes (left, right, colname, insert, dedup, force, keepIncrs);
+        if (left.Axis.Time != null)
+        {
+          return MergeMultipleCubes (new RCCube[] {left, right});
+        }
+        else
+        {
+          return BangSymCubes (left, right, colname, insert, dedup, force, keepIncrs);
+        }
       }
       else
       {
@@ -1710,6 +1618,7 @@ namespace RCL.Core
     public RCCube Bang (RCCube left, RCBlock right,
                         bool insert, bool dedup, bool force, bool keepIncrs)
     {
+      // For operators having no left cube parameter, the left axis will be built to match the first cube in the block.
       RCCube result = left;
       try
       {
@@ -1717,29 +1626,42 @@ namespace RCL.Core
         {
           result = new RCCube (left);
         }
-        for (int i = 0; i < right.Count; ++i)
+        if (result.Axis.Time != null)
         {
-          RCBlock name = right.GetName (i);
-          RCCube cube = name.Value as RCCube;
-          if (cube != null)
+          RCCube[] cubes = new RCCube[right.Count];
+          for (int i = 0; i < right.Count; ++i)
           {
-            string colname = null;
-            if (cube.Cols == 1 && name.Name != "")
-            {
-              colname = name.Name;
-            }
-            result = Bang (result, cube, colname, insert, dedup, force, keepIncrs);
-            continue;
+            cubes[i] = (RCCube) right.Get (i);
           }
-          RCVectorBase vector = name.Value as RCVectorBase;
-          if (vector != null)
+          result = MergeMultipleCubes (cubes);
+        }
+        else
+        {
+          for (int i = 0; i < right.Count; ++i)
           {
-            if (name.Name == "")
+            //Here we need to check to see if the cubes are time cubes and use MergeMultipleCubes
+            RCBlock name = right.GetName (i);
+            RCCube cube = name.Value as RCCube;
+            if (cube != null)
             {
-              throw new Exception ("vector values must have names assigned");
+              string colname = null;
+              if (cube.Cols == 1 && name.Name != "")
+              {
+                colname = name.Name;
+              }
+              result = Bang (result, cube, colname, insert, dedup, force, keepIncrs);
+              continue;
             }
-            result = Bang (result, vector, name.Name, force, keepIncrs);
-            continue;
+            RCVectorBase vector = name.Value as RCVectorBase;
+            if (vector != null)
+            {
+              if (name.Name == "")
+              {
+                throw new Exception ("vector values must have names assigned");
+              }
+              result = Bang (result, vector, name.Name, force, keepIncrs);
+              continue;
+            }
           }
         }
       }
@@ -2471,6 +2393,193 @@ namespace RCL.Core
       Stack<object> names = new Stack<object> ();
       right.Cubify (target, names);
       runner.Yield (closure, target);
+    }
+
+    protected static RCCube MergeMultipleCubes (RCCube[] cubes)
+    {
+      if (cubes.Length == 0)
+      {
+        return RCCube.Empty;
+      }
+      //Timeline[] sortedAxes = new Timeline[cubes.Length];
+      // These maps take each cube from unsorted to sorted.
+      Dictionary<long, int>[] sortedMaps = new Dictionary<long, int>[cubes.Length];
+      // These maps take each cube from sorted (or should it be unsorted?) to merged. Accounting for matching timestamps.
+      Dictionary<long, int>[] mergedMaps = new Dictionary<long, int>[cubes.Length];
+      for (int i = 0; i < cubes.Length; ++i)
+      {
+        //sortedMaps[i] = RankUtils.DoAxisRank (cubes[i].Axis);
+        Dictionary<long, int> rankMap = RankUtils.DoAxisRank (cubes[i].Axis);
+        Dictionary<long, int> invertedRankMap = new Dictionary<long, int> ();
+        foreach (KeyValuePair<long, int> kv in rankMap)
+        {
+          invertedRankMap[kv.Value] = (int) kv.Key;
+        }
+        sortedMaps[i] = invertedRankMap;
+        //foreach (KeyValuePair<long, int> kv in sortedMaps[i])
+        //{
+        //  Console.WriteLine("sortedMaps[i:{0}][k:{1}]: {2}", i, kv.Key, kv.Value);
+        //}
+        mergedMaps[i] = new Dictionary<long, int> ();
+      }
+      // Now build the merged axis from the sorted source axes.
+      Timeline resultAxis = cubes[0].Axis.Match ();
+      int[] sortedAxisIndex = new int[cubes.Length];
+      for (int i = 0; i < cubes.Length; ++i)
+      {
+        if (cubes[i].Axis.Count == 0)
+        {
+          sortedAxisIndex[i] = -1;
+        }
+        else
+        {
+          sortedAxisIndex[i] = 0;
+        }
+      }
+
+      int doneCubes = 0;
+      Queue<int> cubesWithCurrentRow = new Queue<int> ();
+      while (doneCubes < cubes.Length)
+      {
+        long g = -1;
+        long e = -1;
+        RCTimeScalar t = RCTimeScalar.Empty;
+        RCSymbolScalar s = RCSymbolScalar.Empty;
+        // Figure out which cube(s) have the next axis row.
+        // The cube with the lowest ranking row.
+        //int mincube;
+        //int minrow;
+        //for (int i = 0; i < cubes.Length; ++i)
+        //{
+        //  if (sortedAxisIndex[i] > -1)
+        //  {
+        //  }
+        //}
+        for (int i = 0; i < cubes.Length; ++i)
+        {
+          RCCube cube = cubes[i];
+          //Console.WriteLine(" cube: {0}", i);
+          //First, scan for the lowest ranking row in sortedAxisIndex.
+          //Then find all matches.
+          if (sortedAxisIndex[i] > -1)
+          {
+            //Console.WriteLine ("  checking cube:{0} sortedAxisIndex[{0}]:{1}", i, sortedAxisIndex[i]);
+            if (cubesWithCurrentRow.Count == 0)
+            {
+              cubesWithCurrentRow.Enqueue (i);
+              int rowInUnsorted = sortedMaps[i][sortedAxisIndex[i]];
+              g = cube.Axis.Global != null ? cube.Axis.Global[rowInUnsorted] : -1;
+              e = cube.Axis.Event != null ? cube.Axis.Event[rowInUnsorted] : -1;
+              t = cube.Axis.Time != null ? cube.Axis.Time[rowInUnsorted] : RCTimeScalar.Empty;
+              s = cube.Axis.Symbol != null ? cube.Axis.Symbol[rowInUnsorted] : RCSymbolScalar.Empty;
+              //Console.WriteLine ("  empty queue. rowInUnsorted:{0} cube:{1} t:{2} s:{3}", rowInUnsorted, i, t, s);
+            }
+            else
+            {
+              int other = cubesWithCurrentRow.Peek ();
+              // sortedAxisIndex goes from 0 to length.
+              // Find the index in the source row that matches the desired sorted row.
+              int unsortedIndexCurrent = sortedMaps[i][sortedAxisIndex[i]];
+              int unsortedIndexOther = sortedMaps[other][sortedAxisIndex[other]];
+              int comparison = cubes[other].Axis.Proto.CompareAxisRows (cubes[i].Axis,
+                                                                        unsortedIndexCurrent,
+                                                                        cubes[other].Axis,
+                                                                        unsortedIndexOther);
+              RCTimeScalar t1 = cube.Axis.Time != null ? cube.Axis.Time[unsortedIndexCurrent] : RCTimeScalar.Empty;
+              RCTimeScalar t2 = cube.Axis.Time != null ? cube.Axis.Time[unsortedIndexOther] : RCTimeScalar.Empty;
+              RCSymbolScalar s1 = cube.Axis.Symbol != null ? cube.Axis.Symbol[unsortedIndexCurrent] : RCSymbolScalar.Empty;
+              RCSymbolScalar s2 = cube.Axis.Symbol != null ? cube.Axis.Symbol[unsortedIndexOther] : RCSymbolScalar.Empty;
+              //Console.WriteLine("  comparison: {0} {1}, {2} {3} current:{4} unsortedIndexCurrent:{5} other:{6} unsortedIndexOther:{7} result:{8}",
+              //                t1, s1, t2, s2, i, unsortedIndexCurrent, other, unsortedIndexOther, comparison);
+              if (comparison < 0)
+              {
+                cubesWithCurrentRow.Clear ();
+                cubesWithCurrentRow.Enqueue (i);
+                int rowInUnsorted = sortedMaps[i][sortedAxisIndex[i]];
+                cube = cubes[i];
+                g = cube.Axis.Global != null ? cube.Axis.Global[rowInUnsorted] : -1;
+                e = cube.Axis.Event != null ? cube.Axis.Event[rowInUnsorted] : -1;
+                t = cube.Axis.Time != null ? cube.Axis.Time[rowInUnsorted] : RCTimeScalar.Empty;
+                s = cube.Axis.Symbol != null ? cube.Axis.Symbol[rowInUnsorted] : RCSymbolScalar.Empty;
+                //Console.WriteLine("  Found a lower row on cube:{0}... t:{1} s:{2}", i, t, s);
+                //i = 0;
+              }
+              else if (comparison > 0)
+              {
+                //Console.WriteLine("  comparision > 0 - wut to do");
+              }
+              else if (comparison == 0)
+              {
+                //Console.WriteLine("  Match!");
+                cubesWithCurrentRow.Enqueue (i);
+              }
+            }
+          }
+        }
+        // This must be the part where we update the mergedMaps
+        while (cubesWithCurrentRow.Count > 0)
+        {
+          int i = cubesWithCurrentRow.Dequeue ();
+          //mergedMaps[i].Add (sortedAxisIndex[i], resultAxis.Count);
+          mergedMaps[i].Add (resultAxis.Count, sortedAxisIndex[i]);
+          ++sortedAxisIndex[i];
+          //Console.WriteLine("increment sortedAxisIndex[{0}]: {1}", i, sortedAxisIndex[i]);
+          if (sortedAxisIndex[i] >= cubes[i].Count)
+          {
+            // This means all rows have been merged and mapped.
+            sortedAxisIndex[i] = -1;
+            ++doneCubes;
+          }
+          if (cubesWithCurrentRow.Count == 0)
+          {
+            resultAxis.Write (g, e, t, s);
+            //Console.WriteLine("AXIS.WRITE row:{0}, g:{1}, e:{2}, t:{3}, s:{4}", resultAxis.Count - 1, g, e, t, s);
+          }
+        }
+      }
+
+      for (int i = 0; i < mergedMaps.Length; ++i)
+      {
+        foreach (KeyValuePair<long, int> kv in mergedMaps[i])
+        {
+          //Console.WriteLine("mergedMaps[i:{0}][k:{1}]: {2}", i, kv.Key, kv.Value);
+        }
+      }
+
+      RCCube result = new RCCube (resultAxis);
+      // Merge each column into the result timeline.
+      for (int i = 0; i < cubes.Length; ++i)
+      {
+        RCCube cube = cubes[i];
+        for (int j = 0; j < cube.Cols; ++j)
+        {
+          ColumnBase column = cube.GetColumn (j);
+          string name = cube.ColumnAt (j);
+          RCArray<int> index = column.Index;
+          //for (int k = 0; k < index.Count; ++k)
+          for (int k = 0; k < result.Axis.Count; ++k)
+          {
+            // mergedMaps goes from a merged axis index to a sorted axis index
+            if (mergedMaps[i].ContainsKey (k))
+            {
+              int sortedIndex = mergedMaps[i][k];
+              // sortedMaps goes from a sorted axis index to an unsorted axis index
+              int unsortedIndex = sortedMaps[i][sortedIndex];
+              bool found;
+              int unsortedVrow = index.BinarySearch (unsortedIndex, out found);
+              if (found)
+              {
+                object box = column.BoxCell (unsortedVrow);
+                RCSymbolScalar symbol = result.SymbolAt (unsortedIndex);
+                //Console.WriteLine ("result.WriteCell (name:{0}, symbol:{1}, box:{2}, k:{3}, parsing:false, force:false)", name, symbol, box, k);
+                //Console.WriteLine ("  (unsortedIndex: {0}, sortedIndex: {1}, k:{2})", unsortedIndex, sortedIndex, k);
+                result.WriteCell (name, symbol, box, k, parsing:false, force:true);
+              }
+            }
+          }
+        }
+      }
+      return result;
     }
   }
 }
