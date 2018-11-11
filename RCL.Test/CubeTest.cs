@@ -3169,9 +3169,27 @@ namespace RCL.Test
     }
 
     [Test]
-    public void TestWhereNulls1 ()
+    public void TestWhereEmpty1 ()
     {
       DoTest ("{u:[x y 1 -- 2 20] <-$u where $u.y == 20}", "[x y 2 20]");
+    }
+
+    [Test]
+    public void TestEmpty1 ()
+    {
+      DoTest ("empty [x 1 2 -- 3 -- --]", "[x false false true false true true]");
+    }
+
+    [Test]
+    public void TestEmpty2 ()
+    {
+      DoTest ("empty [S|x #a 1 #b 2 #c -- #d 3 #e -- #f --]", "[S|x #a false #b false #c true #d false #e true #f true]");
+    }
+
+    [Test]
+    public void TestEmpty3 ()
+    {
+      DoTest ("empty [date -- 2018.11.13 2018.11.14]", "[x true false false]");
     }
 
     [Test]
