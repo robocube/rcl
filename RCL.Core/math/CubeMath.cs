@@ -2265,6 +2265,50 @@ namespace RCL.Core
       EvalFrom (runner, closure, right, left);
     }
 
+    [RCVerb ("empty")]
+    public void EvalEmpty (RCRunner runner, RCClosure closure, RCCube right)
+    {
+      RCCube result = new RCCube (right.Axis.Match ());
+      ColumnBase column = right.GetColumn (0);
+      RCArray<int> index = column.Index;
+      int vrow = 0;
+      for (int i = 0; i < right.Axis.Count; ++i)
+      {
+        if (vrow > index.Count)
+        {
+          //Console.WriteLine("i:{0} (vrow: >= index.Count) --> true", i);
+          result.WriteCell ("x", right.SymbolAt (i), true);
+          result.Axis.Write (right.Axis, i);
+        }
+        else if (vrow == index.Count)
+        {
+          //Console.WriteLine("i:{0} (vrow == index.Count) --> false", i);
+          result.WriteCell ("x", right.SymbolAt (i), false);
+          result.Axis.Write (right.Axis, i);
+          ++vrow;
+        }
+        else if (i == index[vrow])
+        {
+          //Console.WriteLine("i:{0} (i == index[vrow]) --> false", i);
+          result.WriteCell ("x", right.SymbolAt (i), false);
+          // Operators should not lose G and E columns like this, the bill will come.
+          result.Axis.Write (right.Axis, i);
+          ++vrow;
+        }
+        else if (i < index[vrow])
+        {
+          //Console.WriteLine("i:{0} (i:{1} < index[vrow]:{2}) --> true", i, i, index[vrow]);
+          result.WriteCell ("x", right.SymbolAt (i), true);
+          result.Axis.Write (right.Axis, i);
+        }
+        else
+        {
+          throw new Exception ();
+        }
+      }
+      runner.Yield (closure, result);
+    }
+
     [RCVerb ("names")]
     public void NamesOp (RCRunner runner, RCClosure closure, RCCube right)
     {

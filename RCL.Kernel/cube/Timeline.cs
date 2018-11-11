@@ -255,6 +255,27 @@ namespace RCL.Kernel
       ++m_count;
     }
 
+    public void Write (Timeline source, int i)
+    {
+      if (source.Global != null)
+      {
+        Global.Write (source.Global[i]);
+      }
+      if (source.Event != null)
+      {
+        Event.Write (source.Event[i]);
+      }
+      if (source.Time != null)
+      {
+        Time.Write (source.Time[i]);
+      }
+      if (source.Symbol != null)
+      {
+        Symbol.Write (source.Symbol[i]);
+      }
+      ++m_count;
+    }
+
     public Timeline Match ()
     {
       return new Timeline (new RCArray<string> (Colset));
