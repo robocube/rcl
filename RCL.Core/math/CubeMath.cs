@@ -2485,10 +2485,10 @@ namespace RCL.Core
                                                                         unsortedIndexCurrent,
                                                                         cubes[other].Axis,
                                                                         unsortedIndexOther);
-              RCTimeScalar t1 = cube.Axis.Time != null ? cube.Axis.Time[unsortedIndexCurrent] : RCTimeScalar.Empty;
-              RCTimeScalar t2 = cubes[other].Axis.Time != null ? cubes[other].Axis.Time[unsortedIndexOther] : RCTimeScalar.Empty;
-              RCSymbolScalar s1 = cube.Axis.Symbol != null ? cube.Axis.Symbol[unsortedIndexCurrent] : RCSymbolScalar.Empty;
-              RCSymbolScalar s2 = cubes[other].Axis.Symbol != null ? cubes[other].Axis.Symbol[unsortedIndexOther] : RCSymbolScalar.Empty;
+              //RCTimeScalar t1 = cube.Axis.Time != null ? cube.Axis.Time[unsortedIndexCurrent] : RCTimeScalar.Empty;
+              //RCTimeScalar t2 = cubes[other].Axis.Time != null ? cubes[other].Axis.Time[unsortedIndexOther] : RCTimeScalar.Empty;
+              //RCSymbolScalar s1 = cube.Axis.Symbol != null ? cube.Axis.Symbol[unsortedIndexCurrent] : RCSymbolScalar.Empty;
+              //RCSymbolScalar s2 = cubes[other].Axis.Symbol != null ? cubes[other].Axis.Symbol[unsortedIndexOther] : RCSymbolScalar.Empty;
               //Console.WriteLine("  comparison: {0} {1}, {2} {3} current:{4} unsortedIndexCurrent:{5} other:{6} unsortedIndexOther:{7} result:{8}",
               //                t1, s1, t2, s2, i, unsortedIndexCurrent, other, unsortedIndexOther, comparison);
               if (comparison < 0)

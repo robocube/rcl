@@ -2818,6 +2818,12 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestFormatFragment ()
+    {
+      DoTest ("#fragment format {:[S|x #a 1 #b 2 #c 3]}", "\":[\\n  S | x\\n  #a  1\\n  #b  2\\n  #c  3\\n]\\n\"");
+    }
+
+    [Test]
     public void TestFormatTextCrlf ()
     {
       DoTest ("#textcrlf format \"line one\" \"line two\" \"line three\"", "\"line one\\r\\nline two\\r\\nline three\\r\\n\"");
