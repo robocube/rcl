@@ -131,7 +131,7 @@ namespace RCL.Kernel
       //Format the header line with the appropriate
       //column widths determined in VisitCellsForward.
       ++m_level;
-      for (int i = 0; i < m_level; ++i)
+      for (int i = m_args.Fragment ? 1 : 0; i < m_level; ++i)
       {
         m_builder.Append (m_args.Indent);
       }
@@ -172,7 +172,7 @@ namespace RCL.Kernel
       int rows = m_columns[0].Count;
       for (int row = 0; row < rows; ++row)
       {
-        for (int i = 0; i < m_level; ++i)
+        for (int i = m_args.Fragment ? 1 : 0; i < m_level; ++i)
         {
           m_builder.Append (m_args.Indent);
         }
@@ -201,7 +201,7 @@ namespace RCL.Kernel
       m_builder.Append (m_args.Newline);
   
       --m_level;
-      for (int i = 0; i < m_level; ++i)
+      for (int i = m_args.Fragment ? 1 : 0; i < m_level; ++i)
       {
         m_builder.Append (m_args.Indent);
       }
