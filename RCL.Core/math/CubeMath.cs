@@ -2282,8 +2282,8 @@ namespace RCL.Core
         }
         else if (vrow == index.Count)
         {
-          //Console.WriteLine("i:{0} (vrow == index.Count) --> false", i);
-          result.WriteCell ("x", right.SymbolAt (i), false);
+          //Console.WriteLine("i:{0} (vrow == index.Count) --> true", i);
+          result.WriteCell ("x", right.SymbolAt (i), true);
           result.Axis.Write (right.Axis, i);
           ++vrow;
         }
