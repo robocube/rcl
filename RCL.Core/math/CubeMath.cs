@@ -1149,13 +1149,13 @@ namespace RCL.Core
 
     protected RCCube Key (RCArray<RCSymbolScalar> key, RCCube cube)
     {
-      if (key.Count != cube.Count)
+      if (key.Count != cube.Axis.Count)
       {
         throw new Exception (string.Format ("New symbol column must have the same count as the old one. New count: {0}, old count: {1}",
                                             key.Count, cube.Count));
       }
       Timeline axis = new Timeline (cube.Axis.Global, cube.Axis.Event, cube.Axis.Time, key);
-      axis.Count = cube.Count;
+      axis.Count = cube.Axis.Count;
       RCArray<ColumnBase> columns = new RCArray<ColumnBase> ();
       RCArray<string> names = new RCArray<string> ();
       for (int i = 0; i < cube.Cols; ++i)
@@ -2276,20 +2276,17 @@ namespace RCL.Core
       {
         if (vrow > index.Count)
         {
-          //Console.WriteLine("i:{0} (vrow: >= index.Count) --> true", i);
           result.WriteCell ("x", right.SymbolAt (i), true);
           result.Axis.Write (right.Axis, i);
         }
         else if (vrow == index.Count)
         {
-          //Console.WriteLine("i:{0} (vrow == index.Count) --> true", i);
           result.WriteCell ("x", right.SymbolAt (i), true);
           result.Axis.Write (right.Axis, i);
           ++vrow;
         }
         else if (i == index[vrow])
         {
-          //Console.WriteLine("i:{0} (i == index[vrow]) --> false", i);
           result.WriteCell ("x", right.SymbolAt (i), false);
           // Operators should not lose G and E columns like this, the bill will come.
           result.Axis.Write (right.Axis, i);
@@ -2297,7 +2294,6 @@ namespace RCL.Core
         }
         else if (i < index[vrow])
         {
-          //Console.WriteLine("i:{0} (i:{1} < index[vrow]:{2}) --> true", i, i, index[vrow]);
           result.WriteCell ("x", right.SymbolAt (i), true);
           result.Axis.Write (right.Axis, i);
         }
@@ -2554,7 +2550,6 @@ namespace RCL.Core
               }
               else if (comparison == 0)
               {
-                //Console.WriteLine("  Match!");
                 cubesWithCurrentRow.Enqueue (i);
               }
             }
@@ -2569,7 +2564,6 @@ namespace RCL.Core
           if (sortedAxisIndex[i] > -1)
           {
             ++sortedAxisIndex[i];
-            //Console.WriteLine("increment sortedAxisIndex[{0}]: {1}", i, sortedAxisIndex[i]);
             if (sortedAxisIndex[i] >= cubes[i].Axis.Count)
             {
               // This means all rows have been merged and mapped.
@@ -2580,7 +2574,6 @@ namespace RCL.Core
           if (cubesWithCurrentRow.Count == 0)
           {
             resultAxis.Write (g, e, t, s);
-            //Console.WriteLine("AXIS.WRITE row:{0}, g:{1}, e:{2}, t:{3}, s:{4}", resultAxis.Count - 1, g, e, t, s);
           }
         }
       }
@@ -2623,7 +2616,6 @@ namespace RCL.Core
             {
               string name = cube.ColumnAt (j);
               RCArray<int> index = column.Index;
-              //Console.WriteLine("name:{0}, k:{1}, S:{2}, T:{3}", name, k, result.Axis.SymbolAt (k), result.Axis.TimeAt (k));
               // mergedMaps goes from a merged axis index to a sorted axis index
               if (mergedMaps[i].ContainsKey (k))
               {
@@ -2636,8 +2628,6 @@ namespace RCL.Core
                 {
                   object box = column.BoxCell (unsortedVrow);
                   RCSymbolScalar symbol = result.SymbolAt (k);
-                  //Console.WriteLine ("result.WriteCell (name:{0}, symbol:{1}, box:{2}, k:{3}, parsing:false, force:false)", name, symbol, box, k);
-                  //Console.WriteLine ("  (unsortedIndex: {0}, sortedIndex: {1}, k:{2})", unsortedIndex, sortedIndex, k);
                   result.WriteCell (name, symbol, box, k, parsing:false, force:true);
                 }
               }

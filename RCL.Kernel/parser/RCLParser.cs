@@ -67,7 +67,6 @@ namespace RCL.Kernel
         }
         for (i = 0; i < tokens.Count; ++i)
         {
-          //Console.WriteLine ("tokens[{0}]: '{1}'", i, tokens[i]);
           tokens[i].Type.Accept (this, tokens[i]);
         }
         if (m_vector != null || m_reference != null)
@@ -677,27 +676,27 @@ namespace RCL.Kernel
     {
       AcceptScalar (token);
     }
-  
+
     public override void AcceptString (RCToken token)
     {
       AcceptScalar (token);
     }
-  
+
     public override void AcceptBoolean (RCToken token)
     {
       AcceptScalar (token);
     }
-  
+
     public override void AcceptIncr (RCToken token)
     {
       AcceptScalar (token);
     }
-  
+
     public override void AcceptLiteral (RCToken token)
     {
       AcceptScalar (token);
     }
-  
+ 
     public override void AcceptSpacer (RCToken token)
     {
       //The table may have one or two of these pipes in the header
@@ -713,16 +712,15 @@ namespace RCL.Kernel
       //I think a null should really be its own type of token.
       else if (token.Text == "--")
       {
-        //m_extension.AcceptSpacer (m_extarg, token);
         AcceptScalar (token);
       }
     }
-  
+
     public override void AcceptJunk (RCToken token)
     {
   
     }
-  
+
     protected void MakeExpression ()
     {
       while (m_operators.Peek ().Count > 0)
@@ -732,7 +730,7 @@ namespace RCL.Kernel
         m_result = op.AsOperator (m_activator, left, m_result);
       }
     }
-  
+
     protected RCValue MakeReference ()
     {
       string[] typeAndName = m_reference.Text.Split ('$');
@@ -757,7 +755,7 @@ namespace RCL.Kernel
       //  return new RCReference(type, name);
       //}
     }
-  
+
     /*
       protected Type InferType(string[] name, string original)
       {
@@ -794,7 +792,7 @@ namespace RCL.Kernel
       else return target.Yields;
       }
     */
-  
+
     protected RCVectorBase MakeVector (RCArray<RCToken> vector)
     {
       RCVectorBase result = null;

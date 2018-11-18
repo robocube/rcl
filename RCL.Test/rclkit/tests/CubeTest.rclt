@@ -554,7 +554,7 @@
       #vars,a 11
     ]
   }
-  TestKeyWithPart:{
+  TestKeyWithPart1:{
     skip:false
     src:-1 -2 -3 key [
       S     | x
@@ -565,6 +565,21 @@
       S     | x
       #c,b,a  0
       #f,e,d  1
+    ]
+  }
+  TestKeyWithPart2:{
+    skip:false
+    src:1 key [
+      S        | x
+      #a,aa,aaa  0
+      #b,bb,bbb  1
+      #c,cc,ccc --
+    ]
+    bin:[
+      S  | x
+      #aa  0
+      #bb  1
+      #cc --
     ]
   }
   TestCubeNoSymbol1:{
@@ -4492,7 +4507,7 @@
     skip:false
     src:0 colofl [
       S | x
-      #b --
+      #a --
       #b  1
       #c  2
     ]
@@ -4522,7 +4537,7 @@
     skip:false
     src:0 colofl [
       S | x
-      #b --
+      #a --
       #b  1
       #c  2
     ]
@@ -4567,7 +4582,7 @@
     src:NaN colofd [
       S |  x
       #a 0.0
-      #c  --
+      #b  --
       #c 2.0
     ]
     bin:0.0 NaN 2.0
@@ -4576,7 +4591,7 @@
     skip:false
     src:0.0 colofd [
       S |  x
-      #b  --
+      #a  --
       #b 1.0
       #c 2.0
     ]
@@ -4611,7 +4626,7 @@
     skip:false
     src:0m colofm [
       S | x
-      #b --
+      #a --
       #b 1m
       #c 2m
     ]
@@ -4646,7 +4661,7 @@
     skip:false
     src:\x00 colofx [
       S |   x
-      #b   --
+      #a   --
       #b \x01
       #c \x02
     ]
@@ -4680,7 +4695,7 @@
     skip:false
     src:false colofb [
       S |    x
-      #b    --
+      #a    --
       #b false
       #c  true
     ]
@@ -4715,7 +4730,7 @@
     skip:false
     src:"0" colofs [
       S |x
-      #b --
+      #a --
       #b "1"
       #c "2"
     ]
@@ -4770,7 +4785,7 @@
     skip:false
     src:#0 colofy [
       S |x
-      #b --
+      #a --
       #b #1
       #c #2
     ]
@@ -4805,7 +4820,7 @@
     skip:false
     src:08:00 coloft [
       S |    x
-      #b    --
+      #a    --
       #b 09:00
       #c 10:00
     ]
@@ -4816,7 +4831,7 @@
     src:#status from try {
       <-colofl [
         S | x
-        #b --
+        #a --
         #b  1
         #c  2
       ]
@@ -4830,7 +4845,7 @@
     src:#status from try {
       <-colofm [
         S | x
-        #b --
+        #a --
         #b 1m
         #c 2m
       ]
@@ -4844,7 +4859,7 @@
     src:#status from try {
       <-colofd [
         S |  x
-        #b  --
+        #a  --
         #b 1.0
         #c 2.0
       ]
@@ -4858,7 +4873,7 @@
     src:#status from try {
       <-colofx [
         S |   x
-        #b   --
+        #a   --
         #b \x01
         #c \x02
       ]
@@ -4872,7 +4887,7 @@
     src:#status from try {
       <-colofb [
         S |    x
-        #b    --
+        #a    --
         #b false
         #c  true
       ]
@@ -4886,7 +4901,7 @@
     src:#status from try {
       <-colofs [
         S |x
-        #b --
+        #a --
         #b "1"
         #c "2"
       ]
@@ -4900,7 +4915,7 @@
     src:#status from try {
       <-colofy [
         S |x
-        #b --
+        #a --
         #b #1
         #c #2
       ]
@@ -6496,7 +6511,7 @@
     src:[] where []
     bin:[]
   }
-  TestWhereNulls1:{
+  TestWhereEmpty1:{
     skip:false
     src:{
       u:[
@@ -6509,6 +6524,63 @@
     bin:[
        x  y
        2 20
+    ]
+  }
+  TestEmpty1:{
+    skip:false
+    src:empty [
+       x
+       1
+       2
+      --
+       3
+      --
+      --
+    ]
+    bin:[
+          x
+      false
+      false
+       true
+      false
+       true
+       true
+    ]
+  }
+  TestEmpty2:{
+    skip:false
+    src:empty [
+      S | x
+      #a  1
+      #b  2
+      #c --
+      #d  3
+      #e --
+      #f --
+    ]
+    bin:[
+      S |    x
+      #a false
+      #b false
+      #c  true
+      #d false
+      #e  true
+      #f  true
+    ]
+  }
+  TestEmpty3:{
+    skip:false
+    src:empty [
+            date
+              --
+      2018.11.13
+      2018.11.14
+    ]
+    bin:[
+          x
+       true
+      false
+      false
     ]
   }
   TestIn:{

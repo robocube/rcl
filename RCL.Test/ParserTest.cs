@@ -730,9 +730,21 @@ namespace RCL.Test
     }
 
     [Test]
-    public void TestCubeCanonicalParse ()
+    public void TestCubeCanonical1 ()
     {
       DoParserTest ("[S|l d m #a 10 -- -- #a 11 21.0 -- #a 12 22.0 32m]", "[S|l d m #a 10 -- -- #a 11 21.0 -- #a 12 22.0 32m]", RCFormat.TestCanonical);
+    }
+
+    [Test]
+    public void TestCubeCanonical2 ()
+    {
+      DoParserTest ("[S|x #a 0 #b 1 #c --]", "[S|x #a 0 #b 1 #c --]", RCFormat.TestCanonical);
+    }
+
+    [Test]
+    public void TestCubeCanonical3 ()
+    {
+      DoParserTest ("[S|x #a 1 #b 2 #c -- #d 3 #e -- #f --]", "[S|x #a 1 #b 2 #c -- #d 3 #e -- #f --]", RCFormat.TestCanonical);
     }
 
     [Test]

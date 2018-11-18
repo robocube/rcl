@@ -47,6 +47,9 @@ namespace RCL.Kernel
       // True if cube should contain rows and columns consisting entirely of nulls
       public bool m_canonical = false;
 
+      // In the canonical case, use this to unsure empty rows are not skipped over.
+      //public bool m_forceAxisWrite = false;
+
       public RCArray<string> m_tlcolnames = new RCArray<string> ();
     }
 
@@ -66,12 +69,10 @@ namespace RCL.Kernel
       }
       if (!s.m_hasTimeline && s.m_cube.Axis.Exists)
       {
-        //s.m_cube.m_count = s.m_cube.Axis.Count;
         return s.m_cube.Untimeline ();
       }
       else
       {
-        //s.m_cube.m_count = s.m_cube.m_columns[0].Count;
         return s.m_cube;
       }
     }
@@ -139,9 +140,10 @@ namespace RCL.Kernel
         }
         else
         {
-          s.m_cube.ReserveColumn (s.m_tnames[s.m_tcolumn], canonical:s.m_canonical); //, canonical:true);
+          s.m_cube.ReserveColumn (s.m_tnames[s.m_tcolumn], canonical:s.m_canonical);
         }
       }
+      //if (s.m_forceAxisWrite || s.m_tcolumn == s.m_tnames.Count - 1)
       if (s.m_tcolumn == s.m_tnames.Count - 1)
       {
         //If there is no time column in the source text then create a
@@ -150,7 +152,8 @@ namespace RCL.Kernel
         {
           ++s.m_event;
         }
-        s.m_cube.Write (s.m_global, s.m_event, s.m_time, s.m_symbol);
+        s.m_cube.Axis.Write (s.m_global, s.m_event, s.m_time, s.m_symbol);
+        //s.m_forceAxisWrite = false;
       }
     }
 
