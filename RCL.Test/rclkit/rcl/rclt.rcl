@@ -38,7 +38,7 @@ run_test:{
       }
       :$report_sym write $report except "src" "expected" "actual" "completed"
       :($report.status in $RCLT_DISPLAY_STATUS) then {
-        :"test" print #pretty format $report except "time"
+        :"test" print #canonical format $report except "time"
       }
       <-eval {:$report}
     }

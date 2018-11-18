@@ -589,10 +589,20 @@
     src:#testcanonical format #canonical parse "[a b c d e -- 10 100 1000 1 -- 20 200 2000 2]"
     bin:"[a b c d e -- 10 100 1000 1 -- 20 200 2000 2]"
   }
-  TestCubeCanonicalParse:{
+  TestCubeCanonical1:{
     skip:false
     src:format parse "[S|l d m #a 10 -- -- #a 11 21.0 -- #a 12 22.0 32m]"
     bin:"[S|l d m #a 10 -- -- #a 11 21.0 -- #a 12 22.0 32m]"
+  }
+  TestCubeCanonical2:{
+    skip:false
+    src:#testcanonical format #canonical parse "[S|x #a 0 #b 1 #c --]"
+    bin:"[S|x #a 0 #b 1 #c --]"
+  }
+  TestCubeCanonical3:{
+    skip:false
+    src:#testcanonical format #canonical parse "[S|x #a 1 #b 2 #c -- #d 3 #e -- #f --]"
+    bin:"[S|x #a 1 #b 2 #c -- #d 3 #e -- #f --]"
   }
   TestCubeWithNullInFirstRow:{
     skip:false

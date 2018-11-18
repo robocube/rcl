@@ -51,7 +51,8 @@ namespace RCL.Kernel
       }
       else throw new Exception ("Unknown parser: " + which);
       bool fragment;
-      runner.Yield (closure, DoParse (parser, right, canonical, out fragment));
+      RCValue result = DoParse (parser, right, canonical, out fragment);
+      runner.Yield (closure, result);
     }
 
     [RCVerb ("lex")]

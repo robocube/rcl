@@ -1,4 +1,3 @@
-
 using System;
 using System.Text;
 using System.Collections.Generic;
@@ -503,7 +502,6 @@ namespace RCL.Kernel
         }
       }
       m_columns.Lock ();
-
       //This happens because of the way cubes are parsed,
       //As they are read in we use WriteCell and something called ReserveColumn
       //Reserve columns holds the order for a column whose initial value is null,
@@ -1367,11 +1365,20 @@ namespace RCL.Kernel
           mincol = col;
           if (timeline.Symbol != null)
           {
-            symbol = timeline.Symbol[columns[col].Index[vrow[col]]];
+            int symbolIndex;
+            if (destTlRow < nextSourceRow)
+            {
+              symbolIndex = destTlRow;
+            }
+            else
+            {
+              symbolIndex = columns[col].Index[vrow[col]];
+            }
+            symbol = timeline.Symbol[symbolIndex];
             if (timeline.Time != null)
             {
               // Not sure whether to use destTlRow here - I think we should? Maybe
-              time = timeline.Time[tlrow];
+              time = timeline.Time[symbolIndex];
             }
           }
           else
@@ -1395,6 +1402,7 @@ namespace RCL.Kernel
       }
 
       visitor.BeforeRow (mintime, time, symbol, tlrow);
+      //VisitAxisColumns (visitor, timeline, tlrow);
       if (timeline.Has ("G"))
       {
         visitor.GlobalCol (timeline.Global[tlrow]);
@@ -1479,23 +1487,20 @@ namespace RCL.Kernel
       }
       else
       {
-        if (timeline.ColCount == 0)
+        if (canonical)
         {
-          while (tlrow < end - 1)
+          visitor.AfterRow (mintime, time, symbol, tlrow);
+          visitor.BetweenRows (tlrow);
+          ++tlrow;
+          while (tlrow < end)
           {
-            for (int i = 0; i < columns.Count; ++i)
+            if (timeline.Symbol != null)
             {
-              columns[i].AcceptNull (names[i], visitor, tlrow);
-              if (i < columns.Count - 1)
-              {
-                visitor.BetweenCols (i);
-              }
+              symbol = timeline.Symbol[tlrow];
             }
-            visitor.AfterRow (mintime, time, symbol, tlrow);
-            visitor.BetweenRows (tlrow);
+            VisitEmptyRow (visitor, timeline, columns, names, tlrow, end, mintime, time, symbol);
             ++tlrow;
           }
-          visitor.AfterRow (mintime, time, symbol, tlrow);
         }
         else
         {
@@ -1505,6 +1510,54 @@ namespace RCL.Kernel
       }
 
     DONE: return tlrow;
+    }
+
+    protected static void VisitEmptyRow (Visitor visitor,
+                                         Timeline timeline,
+                                         RCArray<ColumnBase> columns,
+                                         RCArray<string> names,
+                                         int tlrow,
+                                         int end,
+                                         long mintime,
+                                         RCTimeScalar time,
+                                         RCSymbolScalar symbol)
+    {
+      // Do timeline columns here:
+      if (timeline.Has ("G"))
+      {
+        visitor.GlobalCol (timeline.Global[tlrow]);
+      }
+      if (timeline.Has ("E"))
+      {
+        visitor.EventCol (timeline.Event[tlrow]);
+      }
+      if (timeline.Has ("T"))
+      {
+        visitor.TimeCol (timeline.Time[tlrow]);
+      }
+      visitor.BetweenCols (-2);
+      if (timeline.Has ("S"))
+      {
+        visitor.SymbolCol (timeline.Symbol[tlrow]);
+      }
+      visitor.BetweenCols (-1);
+      if (timeline.Symbol != null)
+      {
+        symbol = timeline.Symbol[tlrow];
+      }
+      for (int i = 0; i < columns.Count; ++i)
+      {
+        columns[i].AcceptNull (names[i], visitor, tlrow);
+        if (i < columns.Count - 1)
+        {
+          visitor.BetweenCols (i);
+        }
+      }
+      visitor.AfterRow (mintime, time, symbol, tlrow);
+      if (tlrow == end - 1)
+      {
+        visitor.BetweenRows (tlrow);
+      }
     }
 
     /// <summary>

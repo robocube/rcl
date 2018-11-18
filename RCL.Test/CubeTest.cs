@@ -234,9 +234,15 @@ namespace RCL.Test
     }
 
     [Test]
-    public void TestKeyWithPart ()
+    public void TestKeyWithPart1 ()
     {
       DoTest ("-1 -2 -3 key [S|x #a,b,c 0 #d,e,f 1]", "[S|x #c,b,a 0 #f,e,d 1]");
+    }
+
+    [Test]
+    public void TestKeyWithPart2 ()
+    {
+      DoTest (RCFormat.TestCanonical, "1 key [S|x #a,aa,aaa 0 #b,bb,bbb 1 #c,cc,ccc --]", "[S|x #aa 0 #bb 1 #cc --]");
     }
 
     [Test]
