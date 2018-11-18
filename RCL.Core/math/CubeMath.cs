@@ -1602,7 +1602,7 @@ namespace RCL.Core
       {
         if (left.Axis.Time != null)
         {
-          return MergeMultipleCubes (new RCCube[] {left, right});
+          return MergeMultipleCubes (new string[]{"", ""}, new RCCube[] {left, right});
         }
         else
         {
@@ -1628,12 +1628,14 @@ namespace RCL.Core
         }
         if (result.Axis.Time != null)
         {
+          string[] names = new string[right.Count];
           RCCube[] cubes = new RCCube[right.Count];
           for (int i = 0; i < right.Count; ++i)
           {
+            names[i] = right.GetName (i).Name;
             cubes[i] = (RCCube) right.Get (i);
           }
-          result = MergeMultipleCubes (cubes);
+          result = MergeMultipleCubes (names, cubes);
         }
         else
         {
@@ -2435,7 +2437,7 @@ namespace RCL.Core
       runner.Yield (closure, target);
     }
 
-    protected static RCCube MergeMultipleCubes (RCCube[] cubes)
+    protected static RCCube MergeMultipleCubes (string[] names, RCCube[] cubes)
     {
       if (cubes.Length == 0)
       {
@@ -2487,14 +2489,6 @@ namespace RCL.Core
         RCSymbolScalar s = RCSymbolScalar.Empty;
         // Figure out which cube(s) have the next axis row.
         // The cube with the lowest ranking row.
-        //int mincube;
-        //int minrow;
-        //for (int i = 0; i < cubes.Length; ++i)
-        //{
-        //  if (sortedAxisIndex[i] > -1)
-        //  {
-        //  }
-        //}
         for (int i = 0; i < cubes.Length; ++i)
         {
           RCCube cube = cubes[i];
@@ -2587,34 +2581,57 @@ namespace RCL.Core
       //  }
       //}
 
+      Dictionary<int, Dictionary<string, int>> columnMaps = new Dictionary<int, Dictionary<string, int>> ();
       RCCube result = new RCCube (resultAxis);
       // Produce final column order for the result set.
       RCArray<string> columns = new RCArray<string> (8);
       for (int i = 0; i < cubes.Length; ++i)
       {
+        columnMaps[i] = new Dictionary<string, int> ();
         for (int j = 0; j < cubes[i].Cols; ++j)
         {
-          string colName = cubes[i].ColumnAt (j);
-          if (!columns.Contains (colName))
+          string colName;
+          if (cubes[i].Columns.Count == 1 && names[i] != "")
+          {
+            colName = names[i];
+          }
+          else
+          {
+            colName = cubes[i].ColumnAt (j);
+          }
+          int columnIndex = columns.IndexOf (colName);
+          if (columnIndex < 0)
           {
             columns.Write (colName);
             result.ReserveColumn (colName);
           }
+          columnMaps[i][colName] = j;
         }
       }
 
+      //Console.WriteLine("COLUMNS: {0}", columns);
       // Write source data to the result cube by consulting mergedMaps.
       for (int k = 0; k < result.Axis.Count; ++k)
       {
+        //Console.WriteLine("ROW: {0}", k);
         for (int j = 0; j < columns.Count; ++j)
         {
+          //Console.WriteLine("  COL: j:{0}, columns[j]:{1}", j, columns[j]);
           for (int i = 0; i < cubes.Length; ++i)
           {
             RCCube cube = cubes[i];
-            ColumnBase column = cube.GetColumn (j);
+            //Console.WriteLine("    CUB: i:{0}", i);
+            ColumnBase column = null;
+            int sourceCol;
+            if (columnMaps[i].TryGetValue (columns[j], out sourceCol))
+            {
+              //Console.WriteLine("      sourceCol={0}, columns[j]:{1}", sourceCol, columns[j]);
+              column = cube.GetColumn (sourceCol);
+            }
             if (column != null)
             {
-              string name = cube.ColumnAt (j);
+              string name = columns[j];
+              //Console.WriteLine("      name={0}, j:{1}", name, j);
               RCArray<int> index = column.Index;
               // mergedMaps goes from a merged axis index to a sorted axis index
               if (mergedMaps[i].ContainsKey (k))
@@ -2628,6 +2645,7 @@ namespace RCL.Core
                 {
                   object box = column.BoxCell (unsortedVrow);
                   RCSymbolScalar symbol = result.SymbolAt (k);
+                  //Console.WriteLine("      >>WriteCell: name:{0}, symbol:{1}, box:{2}<<", name, symbol, box);
                   result.WriteCell (name, symbol, box, k, parsing:false, force:true);
                 }
               }
