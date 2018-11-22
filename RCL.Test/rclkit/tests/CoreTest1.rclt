@@ -1792,6 +1792,11 @@
     src:2018.10.04 nextDayOfWeek "Friday"
     bin:2018.10.05
   }
+  TestToLocalTime:{
+    skip:false
+    src:date toLocalTime 2018.11.22 02:04:11.871303
+    bin:2018.11.21
+  }
   TestReferenceS:{
     skip:false
     src:reference "x" "y" "z"

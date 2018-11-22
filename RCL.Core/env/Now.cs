@@ -24,6 +24,19 @@ namespace RCL.Core
       runner.Yield (closure, new RCTime (new RCTimeScalar (DateTime.UtcNow.Ticks, RCTimeType.Timestamp)));
     }
 
+    [RCVerb ("toLocalTime")]
+    public void EvalNow (RCRunner runner, RCClosure closure, RCTime right)
+    {
+      RCArray<RCTimeScalar> result = new RCArray<RCTimeScalar> (right.Count);
+      for (int i = 0; i < right.Count; ++i)
+      {
+        DateTime date = new DateTime (right[i].Ticks);
+        DateTime adjustedDate = date.ToLocalTime ();
+        result.Write (new RCTimeScalar (adjustedDate, right[i].Type));
+      }
+      runner.Yield (closure, new RCTime (result));
+    }
+
     /// <summary>
     /// Return the date corresponding to the following day of week eg "Friday."
     /// The date returned is inclusive of the current day.
