@@ -1792,9 +1792,14 @@
     src:2018.10.04 nextDayOfWeek "Friday"
     bin:2018.10.05
   }
-  TestToLocalTime:{
+  TestToDisplayTime:{
     skip:false
-    src:date toLocalTime 2018.11.22 02:04:11.871303
+    src:{
+      :displayTimezone "America/Chicago"
+      result:date toDisplayTime 2018.11.22 02:04:11.871303
+      :displayTimezone "UTC"
+      <-$result
+    }
     bin:2018.11.21
   }
   TestReferenceS:{
