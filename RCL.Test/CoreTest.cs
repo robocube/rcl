@@ -828,6 +828,8 @@ namespace RCL.Test
     [Test]
     public void TestNextDayOfWeek3 () { DoTest ("2018.10.04 nextDayOfWeek \"Friday\"", "2018.10.05"); }
     [Test]
+    public void TestToLocalTime () { DoTest ("date toLocalTime 2018.11.22 02:04:11.871303", "2018.11.21"); }
+    [Test]
     public void TestReferenceS () { DoTest ("reference \"x\" \"y\" \"z\"", "$x.y.z"); }
     [Test]
     public void TestReferenceY () { DoTest ("reference #x,y,z", "$x.y.z"); }
