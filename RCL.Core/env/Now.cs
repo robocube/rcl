@@ -37,6 +37,19 @@ namespace RCL.Core
       runner.Yield (closure, new RCTime (result));
     }
 
+    [RCVerb ("toDisplayTime")]
+    public void EvalToDisplayTime (RCRunner runner, RCClosure closure, RCTime right)
+    {
+      RCArray<RCTimeScalar> result = new RCArray<RCTimeScalar> (right.Count);
+      for (int i = 0; i < right.Count; ++i)
+      {
+        DateTime utcDateTime = new DateTime (right[i].Ticks);
+        DateTime adjustedDateTime = TimeZoneInfo.ConvertTimeFromUtc (utcDateTime, RCTime.DisplayTimeZone);
+        result.Write (new RCTimeScalar (adjustedDateTime, right[i].Type));
+      }
+      runner.Yield (closure, new RCTime (result));
+    }
+
     /// <summary>
     /// Return the date corresponding to the following day of week eg "Friday."
     /// The date returned is inclusive of the current day.
