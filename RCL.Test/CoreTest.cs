@@ -42,7 +42,7 @@ namespace RCL.Test
     public static void DoRawTest (RCRunner runner, RCFormat args, string code, string expected)
     {
       runner.Reset ();
-      string method = new System.Diagnostics.StackFrame (2).GetMethod ().Name;
+      string method = new System.Diagnostics.StackFrame (3).GetMethod ().Name;
       Console.Out.Write (method + ": ");
       RCValue program = runner.Read (code);
       RCValue result = runner.Run (program);
