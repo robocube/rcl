@@ -13,52 +13,25 @@ namespace RCL.Test
     {
       try
       {
-        runner.Reset ();
-        string method = new System.Diagnostics.StackFrame (2).GetMethod ().Name;
-        Console.Out.Write (method + ": ");
-        RCValue program = runner.Read (code);
-        RCValue result = runner.Run (program);
-        NUnit.Framework.Assert.IsNotNull (result, "RCRunner.Run result was null");
-        string actual = result.Format (args);
-        NUnit.Framework.Assert.AreEqual (expected, actual);
-        Console.Out.WriteLine ("P");
+        DoRawTest (runner, args, code, expected);
       }
       catch (RCException ex)
       {
         Console.Out.WriteLine ("F");
-        Console.Out.WriteLine (ex.ToString ());
-        throw;
+        if (ex.Exception != null)
+        {
+          throw ex.Exception;
+        }
+        else
+        {
+          throw;
+        }
       }
       catch (Exception ex)
       {
         Console.Out.WriteLine ("F");
         NUnit.Framework.Assert.Fail (ex.ToString ());
       }
-    }
-
-    public static string DoEval (RCRunner runner, string code)
-    {
-      try
-      {
-        runner.Reset ();
-        string method = new System.Diagnostics.StackFrame (2).GetMethod ().Name;
-        Console.Out.Write (method + ": ");
-        RCValue program = runner.Read (code);
-        RCValue result = runner.Run (program);
-        return result.ToString ();
-      }
-      catch (RCException ex)
-      {
-        Console.Out.WriteLine ("F");
-        Console.Out.WriteLine (ex.ToString ());
-        throw;
-      }
-      catch (Exception ex)
-      {
-        Console.Out.WriteLine ("F");
-        NUnit.Framework.Assert.Fail (ex.ToString ());
-      }
-      throw new Exception ("WTF");
     }
 
     public void DoTest (string code, string expected)
@@ -66,24 +39,17 @@ namespace RCL.Test
       DoTest (runner, RCFormat.Default, code, expected);
     }
 
-    public static void DoTestException (RCRunner runner, string code, RCErrors error, string message)
+    public static void DoRawTest (RCRunner runner, RCFormat args, string code, string expected)
     {
-      try
-      {
-        runner.Reset ();
-        RCValue program = runner.Read (code);
-        runner.Run (program);
-        NUnit.Framework.Assert.Fail ("No exception thrown.");
-      }
-      catch (RCException ex)
-      {
-        NUnit.Framework.Assert.AreEqual (message, ex.Message);
-        NUnit.Framework.Assert.AreEqual (error, ex.Error);
-      }
-      catch (Exception ex)
-      {
-        NUnit.Framework.Assert.Fail (ex.ToString ());
-      }
+      runner.Reset ();
+      string method = new System.Diagnostics.StackFrame (2).GetMethod ().Name;
+      Console.Out.Write (method + ": ");
+      RCValue program = runner.Read (code);
+      RCValue result = runner.Run (program);
+      NUnit.Framework.Assert.IsNotNull (result, "RCRunner.Run result was null");
+      string actual = result.Format (args);
+      NUnit.Framework.Assert.AreEqual (expected, actual);
+      Console.Out.WriteLine ("P");
     }
   }
 
@@ -1289,7 +1255,7 @@ namespace RCL.Test
     [Test]
     public void TestUnwrapEx ()
     {
-      NUnit.Framework.Assert.Throws<RCException> (delegate () { DoTest ("unwrap {:0 :1 :2}", "{}"); });
+      NUnit.Framework.Assert.Throws<RCException> (delegate () { DoRawTest (runner, RCFormat.DefaultNoT, "unwrap {:0 :1 :2}", "{}"); });
     }
 
     //Oh no! What if find doesn't find anything.  How do I represent the result?
@@ -2122,7 +2088,7 @@ namespace RCL.Test
       // file but I have yet to see any evidence that the runsettings file is honored at all by the Test Explorer.
       Environment.SetEnvironmentVariable ("RCL_HOME", "Y:\\dev");
       // This operator alters the runtime environment, not just the current runner state.
-      DoEval (runner, "cd #home,src,rcl,RCL.Test,bin,Debug");
+      runner.Run ("cd #home,src,rcl,RCL.Test,bin,Debug");
     }
 #endif
 

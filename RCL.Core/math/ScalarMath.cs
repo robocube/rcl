@@ -1124,21 +1124,34 @@ namespace RCL.Core
     {
       RCTimeScalar o; 
       if (s.m.TryGetValue (r, out o)) 
+      {
         return o; 
-      else return r; 
+      }
+      else
+      {
+        return r;
+      }
     }
-     
+
     public class ReplaceContext<T> : Context<T>
     {
-      //f from, t to
-      public T f,t;
+      public RCArray<T> m;
       public override void Init (RCArray<T> map)
-        { f = map[0]; t = map[1]; }
+      {
+        m = map;
+      }
     }
 
     [Primitive ("replace", Profile.Contextual)]
     public static string Replace (ReplaceContext<string> c, string r)
-      { return r.Replace (c.f, c.t); }
+    {
+      string result = r;
+      for (int i = 0; i < c.m.Count; ++i,++i)
+      {
+        result = result.Replace (c.m[i], c.m[i+1]);
+      }
+      return result;
+    }
 
     public class FillContext<T> : Context<T>
     {

@@ -140,6 +140,24 @@ namespace RCL.Kernel
       return Event[i];
     }
 
+    public long EventAt (int i)
+    {
+      if (Event == null)
+      {
+        return i;
+      }
+      return Event[i];
+    }
+
+    public RCTimeScalar RealTimeAt (int i)
+    {
+      if (Time == null)
+      {
+        return RCTimeScalar.Empty;
+      }
+      return Time[i];
+    }
+
     public RCSymbolScalar SymbolAt (int i)
     {
       if (Symbol == null)

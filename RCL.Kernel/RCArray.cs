@@ -120,10 +120,8 @@ namespace RCL.Kernel
     {
       if (m_lock)
       {
-        throw new InvalidOperationException (
-          "Attempted to Write to an RCArray after it was locked.");
+        throw new InvalidOperationException ("Attempted to Write to an RCArray after it was locked.");
       }
-
       Resize (values.Length, 0);
       for (int i = 0; i < values.Length; ++i)
       {
@@ -136,10 +134,8 @@ namespace RCL.Kernel
     {
       if (m_lock)
       {
-        throw new InvalidOperationException (
-          "Attempted to Write to an RCArray after it was locked.");
+        throw new InvalidOperationException ("Attempted to Write to an RCArray after it was locked.");
       }
-
       Resize (values.Count, 0);
       for (int i = 0; i < values.Count; ++i)
       {
@@ -152,10 +148,8 @@ namespace RCL.Kernel
     {
       if (m_lock)
       {
-        throw new Exception (
-          "Cannot write to an RCArray after it is locked.");
+        throw new Exception ("Cannot write to an RCArray after it is locked.");
       }
-
       Resize (1, 0);
       m_source[m_count] = value;
       ++m_count;
@@ -168,21 +162,32 @@ namespace RCL.Kernel
     {
       if (m_lock)
       {
-        throw new Exception (
-          "Cannot write to an RCArray after it is locked.");
+        throw new Exception ("Cannot write to an RCArray after it is locked.");
       }
-
       Resize (1, 0);
       m_source[i] = value;
     }
 
     public void RemoveAt (int i)
     {
+      if (m_lock)
+      {
+        throw new Exception ("Cannot write to an RCArray after it is locked");
+      }
       for (;i < Count - 1; ++i)
       {
         m_source[i] = m_source[i+1];
       }
       --m_count;
+    }
+
+    public void Clear ()
+    {
+      if (m_lock)
+      {
+        throw new Exception ("Cannot write to an RCArray after it is locked");
+      }
+      m_count = 0;
     }
 
     public void Lock ()
@@ -255,7 +260,7 @@ namespace RCL.Kernel
 
     public bool Contains (T val)
     {
-      return Array.IndexOf (m_source, val) > -1;
+      return Array.IndexOf (m_source, val, 0, (int) m_count) > -1;
     }
   }
 
