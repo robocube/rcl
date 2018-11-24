@@ -1005,7 +1005,7 @@ namespace RCL.Test
     [Test]
     public void TestWriteChecksCount()
     {
-      NUnit.Framework.Assert.Throws<RCException> (delegate () { DoEvalTest ("#x write {a:1 10 b:2 20 c:3 30}", "0"); });
+      NUnit.Framework.Assert.Throws<RCException> (delegate () { DoRawTest ("#x write {a:1 10 b:2 20 c:3 30}", "0"); });
     }
 
     [Test]
@@ -2186,9 +2186,9 @@ namespace RCL.Test
       CoreTest.DoTest (runner, RCFormat.DefaultNoT, code, expected);
     }
 
-    public void DoTestException (string code, RCErrors error, string message)
+    public void DoRawTest (string code, string expected)
     {
-      CoreTest.DoTestException (runner, code, error, message);
+      CoreTest.DoRawTest (runner, RCFormat.DefaultNoT, code, expected);
     }
 
     public void DoEvalTest (string code, string expected, RCFormat format)

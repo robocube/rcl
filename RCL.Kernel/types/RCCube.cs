@@ -477,7 +477,6 @@ namespace RCL.Kernel
     public override void Lock (bool canonical)
     {
       Axis.Lock ();
-      m_names.Lock ();
       if (m_reader != null)
       {
         m_reader.Lock ();
@@ -501,12 +500,10 @@ namespace RCL.Kernel
           m_columns[i].Lock ();
         }
       }
-      m_columns.Lock ();
       //This happens because of the way cubes are parsed,
       //As they are read in we use WriteCell and something called ReserveColumn
       //Reserve columns holds the order for a column whose initial value is null,
       //But if nothing comes in later those empty columns need to be removed or bad things happen.
-      //for (int i = 0; i < missingCols.Count; ++i)
       for (int i = missingCols.Count - 1; i >= 0; --i)
       {
         m_columns.RemoveAt (missingCols[i]);

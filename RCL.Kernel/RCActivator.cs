@@ -324,11 +324,6 @@ namespace RCL.Kernel
       }
       catch (TargetInvocationException tiex)
       {
-        //At least this way I can know which method the exception came from.
-        //Maybe change this to RCRuntimeException.
-        //throw new Exception (
-        //  "An exception was thrown by the operator implementation:" +
-        //    "(" + name + " " + r.ToString () + ")");
         Exception ex = tiex.GetBaseException ();
         RCException rcex = ex as RCException;
         if (rcex != null)
@@ -337,6 +332,7 @@ namespace RCL.Kernel
         }
         else
         {
+          //You have to pass the tiex, not ex here so that the interior stack trace will be preserved when/if it is rethrown.
           throw new RCException (closure, tiex, RCErrors.Native, ThrowMessage (name, ex));
         }
       }
@@ -391,12 +387,9 @@ namespace RCL.Kernel
         }
         else
         {
+          //You have to pass the tiex, not ex here so that the interior stack trace will be preserved when/if it is rethrown.
           throw new RCException (closure, tiex, RCErrors.Native, ThrowMessage (name, ex));
         }
-        //throw;
-        //At least this way I can know which method the exception came from.
-        //Maybe change this to RCRuntimeException.
-        //throw new Exception ("An exception was thrown by the operator implementation:" + overload.ToString (), ex);
       }
     }
 

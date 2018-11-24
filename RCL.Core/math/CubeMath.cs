@@ -811,7 +811,7 @@ namespace RCL.Core
       }
       else
       {
-        Timeline rtimeline = right.Axis;
+        int levels = left == null ? 0 : (int) left[0];
         RCArray<int> rindex = right.GetIndex<R> (0);
         RCArray<R> rdata = right.GetData<R> (0);
         Dictionary<RCSymbolScalar, SeqState<S,O>> states =
@@ -819,25 +819,85 @@ namespace RCL.Core
         RCArray<int> index = new RCArray<int> ();
         RCArray<O> data = new RCArray<O> ();
         Comparer<O> c = Comparer<O>.Default;
+        RCTimeScalar prevTime = right.Axis.RealTimeAt (rindex[0]);
+        Timeline axis = new Timeline ("T", "S");
+        RCArray<RCSymbolScalar> symbol = new RCArray<RCSymbolScalar> ();
         for (int i = 0; i < rdata.Count; ++i)
         {
-          RCSymbolScalar symbol = rtimeline.SymbolAt (rindex[i]);
-          SeqState<S,O> s = new SeqState<S,O> ();
-          states.TryGetValue (symbol, out s);
-          O o = op (ref s.s, rdata[i]);
-          if (c.Compare (o, s.o) != 0)
+          RCSymbolScalar scalar = right.Axis.SymbolAt (rindex[i]);
+          RCTimeScalar time = right.Axis.RealTimeAt (rindex[i]);
+          int timeCompare = time.CompareTo (prevTime);
+          if (timeCompare < 0)
           {
-            s.o = o;
-            index.Write (rindex[i]);
-            data.Write (o);
-            states[symbol] = s;
+            throw new Exception (string.Format ("Timeline out of order: time:{0} < prevTime:{1}", time, prevTime));
           }
+          else if (timeCompare > 0)// || i == rdata.Count - 1)
+          {
+            symbol.SortInPlace ();
+            for (int j = 0; j < symbol.Count; ++j)
+            // Should we make aggregate rows appear AFTER their components in the time series case?
+            // This would be inconsistent with sorting for non-time cubes.
+            {
+              SeqState<S, O> state = states[symbol[j]];
+              axis.Write (prevTime, symbol[j]);
+              index.Write (axis.Count - 1);
+              data.Write (state.o);
+            }
+            symbol.Clear ();
+            states.Clear ();
+            prevTime = time;
+          }
+          //BEGIN NEW
+          int level = (int) scalar.Length;
+          int count = (int) scalar.Length;
+          while (scalar != null)
+          {
+            SeqState<S,O> state;
+            if (levels == 0 ||
+                (levels > 0 && level < levels) ||
+                (levels < 0 && (count - level) < Math.Abs (levels)))
+            {
+              if (!states.TryGetValue (scalar, out state))
+              {
+                state = new SeqState<S,O> ();
+                states.Add (scalar, state);
+              }
+              O o = op (ref state.s, rdata[i]);
+              state.o = o;
+              states[scalar] = state;
+              if (!symbol.Contains (scalar))
+              {
+                symbol.Write (scalar);
+              }
+            }
+            //We should change this to make it possible to say how many levels you want.
+            //Specify the number from the beginning or the end using a negative number.
+            scalar = scalar.Previous;
+            --level;
+          }
+          if (i == rdata.Count - 1)
+          {
+            symbol.SortInPlace ();
+            // Should we make aggregate rows appear AFTER their components in the time series case?
+            // This would be inconsistent with sorting for non-time cubes.
+            for (int j = 0; j < symbol.Count; ++j)
+            {
+              SeqState<S, O> state = states[symbol[j]];
+              axis.Write (prevTime, symbol[j]);
+              index.Write (axis.Count - 1);
+              data.Write (state.o);
+            }
+            symbol.Clear ();
+            states.Clear ();
+            prevTime = time;
+          }
+          //END NEW
         }
         if (data.Count > 0)
         {
-          ColumnBase column = ColumnBase.FromArray (rtimeline, index, data);
+          ColumnBase column = ColumnBase.FromArray (axis, index, data);
           return new RCCube (
-            rtimeline,
+            axis,
             new RCArray<string> ("x"),
             new RCArray<ColumnBase> (column));
         }
@@ -2450,7 +2510,6 @@ namespace RCL.Core
       Dictionary<long, int>[] mergedMaps = new Dictionary<long, int>[cubes.Length];
       for (int i = 0; i < cubes.Length; ++i)
       {
-        //sortedMaps[i] = RankUtils.DoAxisRank (cubes[i].Axis);
         Dictionary<long, int> rankMap = RankUtils.DoAxisRank (cubes[i].Axis);
         Dictionary<long, int> invertedRankMap = new Dictionary<long, int> ();
         foreach (KeyValuePair<long, int> kv in rankMap)
@@ -2458,10 +2517,6 @@ namespace RCL.Core
           invertedRankMap[kv.Value] = (int) kv.Key;
         }
         sortedMaps[i] = invertedRankMap;
-        //foreach (KeyValuePair<long, int> kv in sortedMaps[i])
-        //{
-        //  Console.WriteLine("sortedMaps[i:{0}][k:{1}]: {2}", i, kv.Key, kv.Value);
-        //}
         mergedMaps[i] = new Dictionary<long, int> ();
       }
       // Now build the merged axis from the sorted source axes.
@@ -2492,7 +2547,6 @@ namespace RCL.Core
         for (int i = 0; i < cubes.Length; ++i)
         {
           RCCube cube = cubes[i];
-          //Console.WriteLine(" cube: {0}", i);
           //First, scan for the lowest ranking row in sortedAxisIndex.
           //Then find all matches.
           if (sortedAxisIndex[i] > -1)
@@ -2519,12 +2573,6 @@ namespace RCL.Core
                                                                         unsortedIndexCurrent,
                                                                         cubes[other].Axis,
                                                                         unsortedIndexOther);
-              //RCTimeScalar t1 = cube.Axis.Time != null ? cube.Axis.Time[unsortedIndexCurrent] : RCTimeScalar.Empty;
-              //RCTimeScalar t2 = cubes[other].Axis.Time != null ? cubes[other].Axis.Time[unsortedIndexOther] : RCTimeScalar.Empty;
-              //RCSymbolScalar s1 = cube.Axis.Symbol != null ? cube.Axis.Symbol[unsortedIndexCurrent] : RCSymbolScalar.Empty;
-              //RCSymbolScalar s2 = cubes[other].Axis.Symbol != null ? cubes[other].Axis.Symbol[unsortedIndexOther] : RCSymbolScalar.Empty;
-              //Console.WriteLine("  comparison: {0} {1}, {2} {3} current:{4} unsortedIndexCurrent:{5} other:{6} unsortedIndexOther:{7} result:{8}",
-              //                t1, s1, t2, s2, i, unsortedIndexCurrent, other, unsortedIndexOther, comparison);
               if (comparison < 0)
               {
                 cubesWithCurrentRow.Clear ();
@@ -2535,12 +2583,9 @@ namespace RCL.Core
                 e = cube.Axis.Event != null ? cube.Axis.Event[rowInUnsorted] : -1;
                 t = cube.Axis.Time != null ? cube.Axis.Time[rowInUnsorted] : RCTimeScalar.Empty;
                 s = cube.Axis.Symbol != null ? cube.Axis.Symbol[rowInUnsorted] : RCSymbolScalar.Empty;
-                //Console.WriteLine("  Found a lower row on cube:{0}... t:{1} s:{2}", i, t, s);
-                //i = 0;
               }
               else if (comparison > 0)
               {
-                //Console.WriteLine("  comparision > 0 - wut to do");
               }
               else if (comparison == 0)
               {
@@ -2572,15 +2617,6 @@ namespace RCL.Core
         }
       }
 
-      //Debugging aid
-      //for (int i = 0; i < mergedMaps.Length; ++i)
-      //{
-      //  foreach (KeyValuePair<long, int> kv in mergedMaps[i])
-      //  {
-      //    Console.WriteLine("mergedMaps[i:{0}][k:{1}]: {2}", i, kv.Key, kv.Value);
-      //  }
-      //}
-
       Dictionary<int, Dictionary<string, int>> columnMaps = new Dictionary<int, Dictionary<string, int>> ();
       RCCube result = new RCCube (resultAxis);
       // Produce final column order for the result set.
@@ -2609,29 +2645,23 @@ namespace RCL.Core
         }
       }
 
-      //Console.WriteLine("COLUMNS: {0}", columns);
       // Write source data to the result cube by consulting mergedMaps.
       for (int k = 0; k < result.Axis.Count; ++k)
       {
-        //Console.WriteLine("ROW: {0}", k);
         for (int j = 0; j < columns.Count; ++j)
         {
-          //Console.WriteLine("  COL: j:{0}, columns[j]:{1}", j, columns[j]);
           for (int i = 0; i < cubes.Length; ++i)
           {
             RCCube cube = cubes[i];
-            //Console.WriteLine("    CUB: i:{0}", i);
             ColumnBase column = null;
             int sourceCol;
             if (columnMaps[i].TryGetValue (columns[j], out sourceCol))
             {
-              //Console.WriteLine("      sourceCol={0}, columns[j]:{1}", sourceCol, columns[j]);
               column = cube.GetColumn (sourceCol);
             }
             if (column != null)
             {
               string name = columns[j];
-              //Console.WriteLine("      name={0}, j:{1}", name, j);
               RCArray<int> index = column.Index;
               // mergedMaps goes from a merged axis index to a sorted axis index
               if (mergedMaps[i].ContainsKey (k))
@@ -2645,7 +2675,6 @@ namespace RCL.Core
                 {
                   object box = column.BoxCell (unsortedVrow);
                   RCSymbolScalar symbol = result.SymbolAt (k);
-                  //Console.WriteLine("      >>WriteCell: name:{0}, symbol:{1}, box:{2}<<", name, symbol, box);
                   result.WriteCell (name, symbol, box, k, parsing:false, force:true);
                 }
               }
