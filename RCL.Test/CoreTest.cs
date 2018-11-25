@@ -794,7 +794,7 @@ namespace RCL.Test
     [Test]
     public void TestNextDayOfWeek3 () { DoTest ("2018.10.04 nextDayOfWeek \"Friday\"", "2018.10.05"); }
     [Test]
-    public void TestToDisplayTime () { DoTest ("{:displayTimezone \"America/Chicago\" result:date toDisplayTime 2018.11.22 02:04:11.871303 :displayTimezone \"UTC\" <-$result}", "2018.11.21"); }
+    public void TestToDisplayTime () { DoTest ("{tzid:(\"Unix\" = info \"platform\") switch {:\"America/Chicago\" :\"Central Standard Time\"} :displayTimezone $tzid result:date toDisplayTime 2018.11.22 02:04:11.871303 :displayTimezone \"UTC\" <-$result}", "2018.11.21"); }
     [Test]
     public void TestReferenceS () { DoTest ("reference \"x\" \"y\" \"z\"", "$x.y.z"); }
     [Test]

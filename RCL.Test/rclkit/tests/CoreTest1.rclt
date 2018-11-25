@@ -1795,7 +1795,11 @@
   TestToDisplayTime:{
     skip:false
     src:{
-      :displayTimezone "America/Chicago"
+      tzid:("Unix" = info "platform") switch {
+        :"America/Chicago"
+        :"Central Standard Time"
+      }
+      :displayTimezone $tzid
       result:date toDisplayTime 2018.11.22 02:04:11.871303
       :displayTimezone "UTC"
       <-$result
