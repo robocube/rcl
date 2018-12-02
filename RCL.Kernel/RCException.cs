@@ -12,7 +12,7 @@ namespace RCL.Kernel
   public class RCException : Exception
   {
     protected static string MONADIC_OVERLOAD_FORMAT = "Operator {0} cannot receive a single argument of type {1}";
-    protected static string DYADIC_OVERLOAD_FORMAT = "Operator {0} cannot receive arguments of type {1} and {2}";
+    protected static string DYADIC_OVERLOAD_FORMAT = "Operator {0} cannot receive arguments of type {2} and {1}";
     public static RCException Overload (RCClosure closure, RCOperator op, RCValue right)
     {
       string message = string.Format (MONADIC_OVERLOAD_FORMAT, op.Name, right.TypeName);

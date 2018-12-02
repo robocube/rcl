@@ -458,6 +458,16 @@ namespace RCL.Kernel
       return obj.Value;
     }
 
+    public Type GetType (int index)
+    {
+      RCVectorBase vector = this.Get (index) as RCVectorBase;
+      if (vector != null)
+      {
+        return vector.GetElementType ();
+      }
+      else throw new Exception ("GetType (index) assumes a vector");
+    }
+
     public override RCValue Edit (RCRunner runner, RCValueDelegate editor)
     {
       RCValue val = base.Edit (runner, editor);

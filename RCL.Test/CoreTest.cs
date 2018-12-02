@@ -914,6 +914,51 @@ namespace RCL.Test
     public void TestNone2 () { DoTest ("none false false true", "false"); }
 
     [Test]
+    public void TestSumKD() { DoTest("sum {x:1.0 2.0 3.0 y:4.0 5.0 6.0}", "5.0 7.0 9.0"); }
+    [Test]
+    public void TestSumKL() { DoTest("sum {x:1 2 3 y:4 5 6}", "5 7 9"); }
+    [Test]
+    public void TestSumKM() { DoTest("sum {x:1 2 3m y:4 5 6m}", "5 7 9m"); }
+    [Test]
+    public void TestSumKX() { DoTest("sum {x:\\x01 \\x02 \\x03 y:\\x04 \\x05 \\x06}", "\\x05 \\x07 \\x09"); }
+    [Test]
+    public void TestAvgKD() { DoTest("avg {x:1.0 2.0 3.0 y:4.0 5.0 6.0}", "2.5 3.5 4.5"); }
+    [Test]
+    public void TestAvgKL() { DoTest("avg {x:1 2 3 y:4 5 6}", "2.5 3.5 4.5"); }
+    [Test]
+    public void TestAvgKM() { DoTest("avg {x:1 2 3m y:4 5 6m}", "2.5 3.5 4.5m"); }
+    [Test]
+    public void TestAvgKX() { DoTest("avg {x:\\x01 \\x02 \\x03 y:\\x04 \\x05 \\x06}", "2.5 3.5 4.5"); }
+    [Test]
+    public void TestLowKD() { DoTest("low {x:1.0 2.0 3.0 y:4.0 5.0 6.0}", "1.0 2.0 3.0"); }
+    [Test]
+    public void TestLowKL() { DoTest("low {x:1 2 3 y:4 5 6}", "1 2 3"); }
+    [Test]
+    public void TestLowKM() { DoTest("low {x:1 2 3m y:4 5 6m}", "1 2 3m"); }
+    [Test]
+    public void TestLowKX() { DoTest("low {x:\\x01 \\x02 \\x03 y:\\x04 \\x05 \\x06}", "\\x01 \\x02 \\x03"); }
+    [Test]
+    public void TestHighKD() { DoTest("high {x:-1.0 -2.0 -3.0 y:-4.0 -5.0 -6.0}", "-1.0 -2.0 -3.0"); }
+    [Test]
+    public void TestHighKL() { DoTest("high {x:-1 -2 -3 y:-4 -5 -6}", "-1 -2 -3"); }
+    [Test]
+    public void TestHighKM() { DoTest("high {x:-1 -2 -3m y:-4 -5 -6m}", "-1 -2 -3m"); }
+    [Test]
+    public void TestHighKX() { DoTest("high {x:\\x01 \\x02 \\x03 y:\\x04 \\x05 \\x06}", "\\x04 \\x05 \\x06"); }
+    [Test]
+    public void TestAnyKB1 () { DoTest ("any {x:false true false y:true true false}", "true true false"); }
+    [Test]
+    public void TestAnyKB2 () { DoTest ("any {x:false false false y:true true true}", "true true true"); }
+    [Test]
+    public void TestAllKB1 () { DoTest ("all {x:true false true y:false true true}", "false false true"); }
+    [Test]
+    public void TestAllKB2 () { DoTest ("all {x:false false false y:true true true}", "false false false"); }
+    [Test]
+    public void TestNoneKB1 () { DoTest ("none {x:false false true y:false true false}", "true false false"); }
+    [Test]
+    public void TestNoneKB2 () { DoTest ("none {x:false false true y:false true false}", "true false false"); }
+
+    [Test]
     public void TestMinDD() { DoTest("3.0 2.0 1.0 min 1.0 2.0 3.0", "1.0 2.0 1.0"); }
     [Test]
     public void TestMinLL() { DoTest("3 2 1 min 1 2 3", "1 2 1"); }
@@ -2088,7 +2133,7 @@ namespace RCL.Test
       // file but I have yet to see any evidence that the runsettings file is honored at all by the Test Explorer.
       Environment.SetEnvironmentVariable ("RCL_HOME", "Y:\\dev");
       // This operator alters the runtime environment, not just the current runner state.
-      runner.Run ("cd #home,src,rcl,RCL.Test,bin,Debug");
+      runner.Run (RCSystem.Parse ("cd #home,src,rcl,RCL.Test,bin,Debug"));
     }
 #endif
 

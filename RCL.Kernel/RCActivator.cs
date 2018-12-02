@@ -132,7 +132,7 @@ namespace RCL.Kernel
           ParameterInfo[] parameters = method.GetParameters ();
           if (parameters.Length == 3)
           {
-            OverloadKey key = new OverloadKey (verb.Name, null, parameters[2].ParameterType);
+            OverloadKey key = new OverloadKey (verb.Name, typeof (object), null, parameters[2].ParameterType);
             if (m_dispatch.ContainsKey (key))
             {
               throw new Exception ("dispatch table already contains the key:" + key);
@@ -144,7 +144,7 @@ namespace RCL.Kernel
           }
           else if (parameters.Length == 4)
           {
-            OverloadKey key = new OverloadKey (verb.Name, parameters[2].ParameterType, parameters[3].ParameterType);
+            OverloadKey key = new OverloadKey (verb.Name, typeof (object), parameters[2].ParameterType, parameters[3].ParameterType);
             if (m_dispatch.ContainsKey (key))
             {
               throw new Exception ("dispatch table already contains the key:" + key);
@@ -210,13 +210,22 @@ namespace RCL.Kernel
       public readonly string Name;
       public readonly Type Left;
       public readonly Type Right;
+      public readonly Type Collection;
       public readonly int Hash;
 
-      public OverloadKey (string name, Type left, Type right)
+      /// <summary>
+      /// The collection type should be either RCBlock or RCCube.
+      /// </summary>
+      public OverloadKey (string name, Type collection, Type left, Type right)
       {
+        if (collection == null)
+        {
+          throw new ArgumentNullException ("collection");
+        }
         Name = name;
         Left = left;
         Right = right.IsSubclassOf (typeof (RCOperator)) ? typeof (RCOperator) : right;
+        Collection = collection;
 
         //xor the hashes together for name, left and right type.
         //No idea whether this technique is sufficient for good performance.
@@ -242,6 +251,7 @@ namespace RCL.Kernel
         Hash = 17;
         Hash = Hash * 31 + name.GetHashCode ();
         Hash = Hash * 31 + (left == null ? 0 : left.GetHashCode ());
+        Hash = Hash * 31 + (Collection == null ? 0 : Collection.GetHashCode ());
         Hash = Hash * 31 + right.GetHashCode ();
       }
 
@@ -260,6 +270,18 @@ namespace RCL.Kernel
           return false;
         }
         if (!Name.Equals (other.Name))
+        {
+          return false;
+        }
+        if (Collection == null && other.Collection != null)
+        {
+          return false;
+        }
+        if (other.Collection == null && Collection != null)
+        {
+          return false;
+        }
+        if (Collection != null && !Collection.Equals (other.Collection))
         {
           return false;
         }
@@ -300,21 +322,29 @@ namespace RCL.Kernel
     public void Invoke (RCRunner runner, RCClosure closure, string name, object right)
     {
       OverloadValue overload;
+      Type rtype = right.GetType ();
+      Type ctype = right.GetType ();
       try
       {
-        if (m_dispatch.TryGetValue (new OverloadKey (name, null, right.GetType ()), out overload))
+        if (m_dispatch.TryGetValue (new OverloadKey (name, ctype, null, rtype), out overload))
         {
           RCBot bot = runner.GetBot (closure.Bot);
           object state = bot.GetModule (overload.Module);
           overload.Implementation.Invoke (state, new object[] {runner, closure, right});
         }
-        else if (m_dispatch.TryGetValue (new OverloadKey (name, null, typeof (object)), out overload))
+        else if (m_dispatch.TryGetValue (new OverloadKey (name, typeof (object), null, rtype), out overload))
         {
           RCBot bot = runner.GetBot (closure.Bot);
           object state = bot.GetModule (overload.Module);
           overload.Implementation.Invoke (state, new object[] {runner, closure, right});
         }
-        else if (m_dispatch.TryGetValue (new OverloadKey (name, null, typeof (RCOperator)), out overload))
+        else if (m_dispatch.TryGetValue (new OverloadKey (name, typeof (object), null, typeof (object)), out overload))
+        {
+          RCBot bot = runner.GetBot (closure.Bot);
+          object state = bot.GetModule (overload.Module);
+          overload.Implementation.Invoke (state, new object[] {runner, closure, right});
+        }
+        else if (m_dispatch.TryGetValue (new OverloadKey (name, typeof (object), null, typeof (RCOperator)), out overload))
         {
           RCBot bot = runner.GetBot (closure.Bot);
           object state = bot.GetModule (overload.Module);
@@ -343,33 +373,40 @@ namespace RCL.Kernel
       OverloadValue overload;
       Type ltype = left.GetType ();
       Type rtype = right.GetType ();
+      Type ctype = right.GetType ();
       try
       {
-        if (m_dispatch.TryGetValue (new OverloadKey (name, ltype, rtype), out overload))
+        if (m_dispatch.TryGetValue (new OverloadKey (name, ctype, ltype, rtype), out overload))
         {
           RCBot bot = runner.GetBot (closure.Bot);
           object state = bot.GetModule (overload.Module);
           overload.Implementation.Invoke (state, new object[] {runner, closure, left, right});
         }
-        else if (m_dispatch.TryGetValue (new OverloadKey (name, typeof (object), rtype), out overload))
+        else if (m_dispatch.TryGetValue (new OverloadKey (name, typeof (object), ltype, rtype), out overload))
         {
           RCBot bot = runner.GetBot (closure.Bot);
           object state = bot.GetModule (overload.Module);
           overload.Implementation.Invoke (state, new object[] {runner, closure, left, right});
         }
-        else if (m_dispatch.TryGetValue (new OverloadKey (name, ltype, typeof (object)), out overload))
+        else if (m_dispatch.TryGetValue (new OverloadKey (name, typeof (object), typeof (object), rtype), out overload))
         {
           RCBot bot = runner.GetBot (closure.Bot);
           object state = bot.GetModule (overload.Module);
           overload.Implementation.Invoke (state, new object[] {runner, closure, left, right});
         }
-        else if (m_dispatch.TryGetValue (new OverloadKey (name, typeof (object), typeof (object)), out overload))
+        else if (m_dispatch.TryGetValue (new OverloadKey (name, typeof (object), ltype, typeof (object)), out overload))
         {
           RCBot bot = runner.GetBot (closure.Bot);
           object state = bot.GetModule (overload.Module);
           overload.Implementation.Invoke (state, new object[] {runner, closure, left, right});
         }
-        else if (m_dispatch.TryGetValue (new OverloadKey (name, ltype, typeof (RCOperator)), out overload))
+        else if (m_dispatch.TryGetValue (new OverloadKey (name, typeof (object), typeof (object), typeof (object)), out overload))
+        {
+          RCBot bot = runner.GetBot (closure.Bot);
+          object state = bot.GetModule (overload.Module);
+          overload.Implementation.Invoke (state, new object[] {runner, closure, left, right});
+        }
+        else if (m_dispatch.TryGetValue (new OverloadKey (name, typeof (object), ltype, typeof (RCOperator)), out overload))
         {
           RCBot bot = runner.GetBot (closure.Bot);
           object state = bot.GetModule (overload.Module);
