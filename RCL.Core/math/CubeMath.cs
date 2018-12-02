@@ -29,7 +29,7 @@ namespace RCL.Core
               {
                 Type rtype = parameters[0].ParameterType;
                 Type otype = method.ReturnType;
-                RCActivator.OverloadKey key = new RCActivator.OverloadKey (verb.Name, null, rtype);
+                RCActivator.OverloadKey key = new RCActivator.OverloadKey (verb.Name, typeof (RCCube), null, rtype);
 
                 Type vectoroptype = typeof (CubeMath).GetNestedType ("CubeOp`2").
                   MakeGenericType (rtype, otype);
@@ -51,11 +51,11 @@ namespace RCL.Core
                 Type rtype = parameters[1].ParameterType;
                 Type otype = method.ReturnType;
 
-                Type latype = typeof (RCVector<>).MakeGenericType (ltype); //parameters[0].ParameterType;
+                Type latype = typeof (RCVector<>).MakeGenericType (ltype);
                 Type ratype = typeof (RCVector<>).MakeGenericType (rtype);
 
                 RCActivator.OverloadKey key0 = new RCActivator.OverloadKey (
-                  verb.Name, ltype, rtype);
+                  verb.Name, typeof (RCCube), ltype, rtype);
                 Type cubeOpType = typeof (CubeMath).GetNestedType ("CubeOp`3").
                   MakeGenericType (ltype, rtype, otype);
                 //Why do I have to do the backtick thingy on GetNestedType but not on GetMethod?
@@ -72,7 +72,7 @@ namespace RCL.Core
                 //and the collection type -- what to do?...
 
                 RCActivator.OverloadKey key1 = new RCActivator.OverloadKey (
-                  verb.Name, latype, rtype);
+                  verb.Name, typeof (RCCube), latype, rtype);
                 cubeOpType = typeof (CubeMath).GetNestedType ("CubeOpLeftScalar`3").
                   MakeGenericType (ltype, rtype, otype);
                 cubeOpMethod = typeof (CubeMath).GetMethod ("DyadicOpLeftScalar").
@@ -81,7 +81,7 @@ namespace RCL.Core
                 m_overloads.Add (key1, new Overload (cubeOp, scalarOp));
 
                 RCActivator.OverloadKey key2 = new RCActivator.OverloadKey (
-                  verb.Name, ltype, ratype);
+                  verb.Name, typeof (RCCube), ltype, ratype);
                 cubeOpType = typeof (CubeMath).GetNestedType ("CubeOpRightScalar`3").
                   MakeGenericType (ltype, rtype, otype);
                 cubeOpMethod = typeof (CubeMath).GetMethod ("DyadicOpRightScalar").
@@ -98,7 +98,8 @@ namespace RCL.Core
                 Type rtype = parameters[1].ParameterType;
                 Type otype = method.ReturnType;
 
-                RCActivator.OverloadKey key = new RCActivator.OverloadKey (verb.Name, null, rtype);
+                // The monadic version without modifiers
+                RCActivator.OverloadKey key = new RCActivator.OverloadKey (verb.Name, typeof (RCCube), null, rtype);
                 Type vectoroptype = typeof (CubeMath).GetNestedType ("SeqCubeOpMonadic`3").
                   MakeGenericType (stype, rtype, otype);
                 //Why do I have to do the backtick thingy on GetNestedType but not on GetMethod?
@@ -109,21 +110,40 @@ namespace RCL.Core
                   MakeGenericType (stype, rtype, otype);
                 Delegate primop = Delegate.CreateDelegate (primoptype, method);
                 if (m_overloads.ContainsKey (key))
+                {
                   throw new Exception ("dispatch table already contains the key:" + key);
+                }
                 m_overloads.Add (key, new Overload (vectorop, primop));
 
-                RCActivator.OverloadKey key1 = new RCActivator.OverloadKey (verb.Name, typeof (RCVector<long>), rtype);
+                // The dyadic version allows passing a vector on the left
+                RCActivator.OverloadKey key1 = new RCActivator.OverloadKey (verb.Name, typeof (RCCube), typeof (RCVector<long>), rtype);
                 Type vectoroptype1 = typeof (CubeMath).GetNestedType ("SeqCubeOpDyadic`3").
                   MakeGenericType (stype, rtype, otype);
                 MethodInfo vectoropMethod1 = typeof (CubeMath).GetMethod ("SequentialOpDyadic").
                   MakeGenericMethod (stype, rtype, otype);
                 Delegate vectorop1 = Delegate.CreateDelegate (vectoroptype1, vectoropMethod1);
-                Type primoptype1 = typeof (CubeMath).GetNestedType ("SeqScalarOp`3").
-                  MakeGenericType (stype, rtype, otype);
-                Delegate primop1 = Delegate.CreateDelegate (primoptype1, method);
                 if (m_overloads.ContainsKey (key1))
+                {
                   throw new Exception ("dispatch table already contains the key:" + key1);
-                m_overloads.Add (key1, new Overload (vectorop1, primop1));
+                }
+                m_overloads.Add (key1, new Overload (vectorop1, primop));
+
+                // The monadic version for BLOCKS
+                RCActivator.OverloadKey key2 = new RCActivator.OverloadKey (verb.Name, typeof (RCBlock), null, rtype);
+                Type blockOpType = typeof (CubeMath).GetNestedType ("SeqBlockOpMonadic`3").
+                  MakeGenericType (stype, rtype, otype);
+                //Why do I have to do the backtick thingy on GetNestedType but not on GetMethod?
+                MethodInfo blockOpMethod = typeof (CubeMath).GetMethod ("SequentialOpBlockMonadic").
+                  MakeGenericMethod (stype, rtype, otype);
+                Delegate blockOp = Delegate.CreateDelegate (blockOpType, blockOpMethod);
+                if (m_overloads.ContainsKey (key2))
+                {
+                  throw new Exception ("dispatch table already contains the key:" + key2);
+                }
+                m_overloads.Add (key2, new Overload (blockOp, primop));
+
+                // There is no need for a "dyadic sequential" operation like "1 sum {x:1 2 3 y:4 5 6}"
+                // This only comes into play in the case of cubes.
               }
               else if (verb.Profile == Profile.Contextual)
               {
@@ -136,7 +156,7 @@ namespace RCL.Core
                 Type otype = method.ReturnType;
                 //The stype is not a parameter to the operator so it is not included in the key.
                 Type latype = typeof (RCVector<>).MakeGenericType (ltype);
-                RCActivator.OverloadKey key = new RCActivator.OverloadKey (verb.Name, latype, rtype);
+                RCActivator.OverloadKey key = new RCActivator.OverloadKey (verb.Name, typeof (RCCube), latype, rtype);
 
                 Type vectoroptype = typeof (CubeMath).GetNestedType ("ConCubeOp`4").
                   MakeGenericType (ctype, ltype, rtype, otype);
@@ -149,21 +169,17 @@ namespace RCL.Core
                 Delegate primop = Delegate.CreateDelegate (primoptype, method);
 
                 if (m_overloads.ContainsKey (key))
+                {
                   throw new Exception ("dispatch table already contains the key:" + key);
+                }
                 m_overloads.Add (key, new Overload (vectorop, primop));
               }
             }
-            catch (Exception)
-            {
-              throw;
-            }
+            finally {}
           }
         }
       }
-      catch (Exception)
-      {
-        throw;
-      }
+      finally {}
     }
 
     protected class IndexPair<O> where O : IComparable
@@ -191,6 +207,8 @@ namespace RCL.Core
 
     public delegate RCValue SeqCubeOpMonadic <S, R, O> (RCCube right, SeqScalarOp<S, R, O> op);
     public delegate RCValue SeqCubeOpDyadic <S, R, O> (RCLong left, RCCube right, SeqScalarOp<S, R, O> op);
+    public delegate RCValue SeqBlockOpMonadic <S, R, O> (RCBlock right, SeqScalarOp<S, R, O> op);
+    public delegate RCValue SeqBlockOpDyadic <S, R, O> (RCLong left, RCBlock right, SeqScalarOp<S, R, O> op);
     public delegate RCValue ConCubeOp <C, L, R, O> (RCVector<L> left, RCCube right, ConScalarOp<C, L, R, O> op);
 
     public static RCValue MonadicOp <R, O> (RCCube right, ScalarOp<R, O> op)
@@ -691,13 +709,49 @@ namespace RCL.Core
       }
     }
 
-    //Combine the significant statistics from RCScalar
     protected struct SeqState<S, O> { public S s; public O o; }
 
     public static RCValue SequentialOpMonadic<S, R, O> (RCCube right, SeqScalarOp<S, R, O> op)
       where S : struct where O : struct
     {
       return SequentialOpDyadic <S, R, O> (null, right, op);
+    }
+
+    public static RCValue SequentialOpBlockMonadic<S, R, O> (RCBlock right, SeqScalarOp<S, R, O> op)
+    {
+      int resultCount;
+      RCArray<RCArray<R>> inputColumns = new RCArray<RCArray<R>> (right.Count);
+      if (right.Count == 0)
+      {
+        throw new Exception ("right argument must be a block containing at least one vector");
+      }
+      else
+      {
+        RCVectorBase column = (RCVectorBase) right.Get (0);
+        resultCount = column.Count;
+        inputColumns.Write ((RCArray<R>) column.Array);
+        for (int i = 1; i < right.Count; ++i)
+        {
+          column = (RCVectorBase) right.Get (i);
+          int count = column.Count;
+          if (resultCount != count)
+          {
+            throw new Exception (string.Format ("Expected all columns to have count {0}, but column {1} had count {2}", resultCount, i, count));
+          }
+          inputColumns.Write ((RCArray<R>) column.Array);
+        }
+      }
+      RCArray<O> result = new RCArray<O> (resultCount);
+      for (int i = 0; i < resultCount; ++i)
+      {
+        SeqState<S, O> state = new SeqState<S, O> ();
+        for (int j = 0; j < inputColumns.Count; ++j)
+        {
+          state.o = op (ref state.s, inputColumns[j][i]);
+        }
+        result.Write (state.o);
+      }
+      return RCVectorBase.FromArray (result);
     }
 
     /// <summary>
@@ -831,7 +885,7 @@ namespace RCL.Core
           {
             throw new Exception (string.Format ("Timeline out of order: time:{0} < prevTime:{1}", time, prevTime));
           }
-          else if (timeCompare > 0)// || i == rdata.Count - 1)
+          else if (timeCompare > 0)
           {
             symbol.SortInPlace ();
             for (int j = 0; j < symbol.Count; ++j)
@@ -910,7 +964,7 @@ namespace RCL.Core
       //If the scalar type is used as the key it is assumed that the
       //argument will be a cube whose first column will be a vector of that scalar type.
       RCActivator.OverloadKey key = new RCActivator.OverloadKey (
-        name, left.GetType (0), right.GetType (0));
+        name, typeof (RCCube), left.GetType (0), right.GetType (0));
       Overload overload;
       if (!m_overloads.TryGetValue (key, out overload))
         throw RCException.Overload (closure, name, left, right);
@@ -925,7 +979,7 @@ namespace RCL.Core
       //Here BaseType is always RCVector<T>.
       //This is a bit fragile.
       RCActivator.OverloadKey key = new RCActivator.OverloadKey (
-        name, left.GetType ().BaseType, right.GetType (0));
+        name, typeof (RCCube), left.GetType ().BaseType, right.GetType (0));
       Overload overload;
       if (!m_overloads.TryGetValue (key, out overload))
         throw RCException.Overload (closure, name, left, right);
@@ -941,7 +995,7 @@ namespace RCL.Core
       //Here BaseType is always RCVector<T>.
       //This is a bit fragile.
       RCActivator.OverloadKey key = new RCActivator.OverloadKey (
-        name, left.GetType (0), right.GetType ().BaseType);
+        name, typeof (RCCube), left.GetType (0), right.GetType ().BaseType);
       Overload overload;
       if (!m_overloads.TryGetValue (key, out overload))
         throw RCException.Overload (closure, name, left, right);
@@ -951,12 +1005,12 @@ namespace RCL.Core
       return result;
     }
 
-    public static RCValue Invoke (RCClosure closure, string name, RCCube right)
+    public static RCValue InvokeMonadic (RCClosure closure, string name, RCCube right)
     {
       // So we need a version that does this, and a version that looks for all
       // columns which can have the specified operator applied to them
       RCActivator.OverloadKey key = new RCActivator.OverloadKey (
-        name, null, right.GetType (0));
+        name, typeof (RCCube), null, right.GetType (0));
       Overload overload;
       if (!m_overloads.TryGetValue (key, out overload))
       {
@@ -964,6 +1018,45 @@ namespace RCL.Core
       }
       //The result should almost always be a cube.
       //But there might be a couple exceptions.
+      RCValue result = (RCValue) overload.Invoke (right);
+      return result;
+    }
+
+    public static RCValue InvokeSequential (RCClosure closure, string name, RCCube right)
+    {
+      RCActivator.OverloadKey key = new RCActivator.OverloadKey (
+        name, typeof (RCCube), null, right.GetType (0));
+      Overload overload;
+      if (!m_overloads.TryGetValue (key, out overload))
+      {
+        throw RCException.Overload (closure, name, right);
+      }
+      RCValue result = (RCValue) overload.Invoke (right);
+      return result;
+    }
+
+    public static RCValue InvokeSequential (RCClosure closure, string name, RCVectorBase left, RCCube right)
+    {
+      RCActivator.OverloadKey key = new RCActivator.OverloadKey (
+        name, typeof (RCCube), left.GetType ().BaseType, right.GetType (0));
+      Overload overload;
+      if (!m_overloads.TryGetValue (key, out overload))
+      {
+        throw RCException.Overload (closure, name, right);
+      }
+      RCValue result = (RCValue) overload.Invoke (left, right);
+      return result;
+    }
+
+    public static RCValue InvokeSequential (RCClosure closure, string name, RCBlock right)
+    {
+      RCActivator.OverloadKey key = new RCActivator.OverloadKey (
+        name, typeof (RCBlock), null, right.GetType (0));
+      Overload overload;
+      if (!m_overloads.TryGetValue (key, out overload))
+      {
+        throw RCException.Overload (closure, name, right);
+      }
       RCValue result = (RCValue) overload.Invoke (right);
       return result;
     }
@@ -1027,8 +1120,7 @@ namespace RCL.Core
         closure, Invoke (closure, op.Name, left, (RCVectorBase) right));
     }
 
-    [RCVerb ("sqrt")] [RCVerb ("abs")] [RCVerb ("high")] [RCVerb ("low")]
-    [RCVerb ("sum")] [RCVerb ("sums")] [RCVerb ("avg")]
+    [RCVerb ("sqrt")] [RCVerb ("abs")] [RCVerb ("sums")]
     [RCVerb ("long")] [RCVerb ("double")] [RCVerb ("decimal")]
     [RCVerb ("byte")] [RCVerb ("string")] [RCVerb ("symbol")]
     [RCVerb ("boolean")] [RCVerb ("not")] [RCVerb ("upper")]
@@ -1036,14 +1128,15 @@ namespace RCL.Core
     [RCVerb ("hour")] [RCVerb ("minute")] [RCVerb ("second")]
     [RCVerb ("nano")] [RCVerb ("date")] [RCVerb ("daytime")]
     [RCVerb ("datetime")] [RCVerb ("timestamp")] [RCVerb ("timespan")]
-    [RCVerb ("any")] [RCVerb ("all")] [RCVerb ("none")]
+    //[RCVerb ("high")] [RCVerb ("low")] [RCVerb ("sum")] [RCVerb ("avg")]
+    //[RCVerb ("any")] [RCVerb ("all")] [RCVerb ("none")]
     public void EvalMonadic (RCRunner runner, RCClosure closure, RCCube right)
     {
       RCOperator op = (RCOperator) closure.Code;
       if (right.Cols == 0)
         runner.Yield (closure, new RCCube ());
       else runner.Yield (
-        closure, Invoke (closure, op.Name, right));
+        closure, InvokeMonadic (closure, op.Name, right));
     }
 
     [RCVerb ("map")] [RCVerb ("replace")] [RCVerb ("part")]
@@ -1057,13 +1150,36 @@ namespace RCL.Core
     }
 
     [RCVerb ("sum")] [RCVerb ("avg")] [RCVerb ("high")] [RCVerb ("low")]
+    //[RCVerb ("any")] [RCVerb ("all")] [RCVerb ("none")]
     public void EvalAggregate (RCRunner runner, RCClosure closure, RCLong left, RCCube right)
     {
       RCOperator op = (RCOperator) closure.Code;
-      if (right.Cols == 0)  
+      if (right.Cols == 0)
         runner.Yield (closure, new RCCube ());
       else runner.Yield (
-        closure, Invoke (closure, op.Name, (RCVectorBase) left, right));
+        closure, InvokeSequential (closure, op.Name, (RCVectorBase) left, right));
+    }
+
+    [RCVerb ("sum")] [RCVerb ("avg")] [RCVerb ("high")] [RCVerb ("low")]
+    [RCVerb ("any")] [RCVerb ("all")] [RCVerb ("none")]
+    public void EvalAggregate (RCRunner runner, RCClosure closure, RCCube right)
+    {
+      RCOperator op = (RCOperator) closure.Code;
+      if (right.Cols == 0)
+        runner.Yield (closure, new RCCube ());
+      else runner.Yield (
+        closure, InvokeSequential (closure, op.Name, right));
+    }
+
+    [RCVerb ("sum")] [RCVerb ("avg")] [RCVerb ("high")] [RCVerb ("low")]
+    [RCVerb ("any")] [RCVerb ("all")] [RCVerb ("none")]
+    public void EvalAggregate (RCRunner runner, RCClosure closure, RCBlock right)
+    {
+      RCOperator op = (RCOperator) closure.Code;
+      if (right.Count == 0)
+        runner.Yield (closure, new RCDouble (0.0));
+      else runner.Yield (
+        closure, InvokeSequential (closure, op.Name, right));
     }
 
     [RCVerb ("in")] [RCVerb ("like")]

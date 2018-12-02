@@ -2089,6 +2089,182 @@
     src:none false false true
     bin:false
   }
+  TestSumKD:{
+    skip:false
+    src:sum {
+      x:1.0 2.0 3.0
+      y:4.0 5.0 6.0
+    }
+    bin:5.0 7.0 9.0
+  }
+  TestSumKL:{
+    skip:false
+    src:sum {
+      x:1 2 3
+      y:4 5 6
+    }
+    bin:5 7 9
+  }
+  TestSumKM:{
+    skip:false
+    src:sum {
+      x:1 2 3m
+      y:4 5 6m
+    }
+    bin:5 7 9m
+  }
+  TestSumKX:{
+    skip:false
+    src:sum {
+      x:\x01 \x02 \x03
+      y:\x04 \x05 \x06
+    }
+    bin:\x05 \x07 \x09
+  }
+  TestAvgKD:{
+    skip:false
+    src:avg {
+      x:1.0 2.0 3.0
+      y:4.0 5.0 6.0
+    }
+    bin:2.5 3.5 4.5
+  }
+  TestAvgKL:{
+    skip:false
+    src:avg {
+      x:1 2 3
+      y:4 5 6
+    }
+    bin:2.5 3.5 4.5
+  }
+  TestAvgKM:{
+    skip:false
+    src:avg {
+      x:1 2 3m
+      y:4 5 6m
+    }
+    bin:2.5 3.5 4.5m
+  }
+  TestAvgKX:{
+    skip:false
+    src:avg {
+      x:\x01 \x02 \x03
+      y:\x04 \x05 \x06
+    }
+    bin:2.5 3.5 4.5
+  }
+  TestLowKD:{
+    skip:false
+    src:low {
+      x:1.0 2.0 3.0
+      y:4.0 5.0 6.0
+    }
+    bin:1.0 2.0 3.0
+  }
+  TestLowKL:{
+    skip:false
+    src:low {
+      x:1 2 3
+      y:4 5 6
+    }
+    bin:1 2 3
+  }
+  TestLowKM:{
+    skip:false
+    src:low {
+      x:1 2 3m
+      y:4 5 6m
+    }
+    bin:1 2 3m
+  }
+  TestLowKX:{
+    skip:false
+    src:low {
+      x:\x01 \x02 \x03
+      y:\x04 \x05 \x06
+    }
+    bin:\x01 \x02 \x03
+  }
+  TestHighKD:{
+    skip:false
+    src:high {
+      x:-1.0 -2.0 -3.0
+      y:-4.0 -5.0 -6.0
+    }
+    bin:-1.0 -2.0 -3.0
+  }
+  TestHighKL:{
+    skip:false
+    src:high {
+      x:-1 -2 -3
+      y:-4 -5 -6
+    }
+    bin:-1 -2 -3
+  }
+  TestHighKM:{
+    skip:false
+    src:high {
+      x:-1 -2 -3m
+      y:-4 -5 -6m
+    }
+    bin:-1 -2 -3m
+  }
+  TestHighKX:{
+    skip:false
+    src:high {
+      x:\x01 \x02 \x03
+      y:\x04 \x05 \x06
+    }
+    bin:\x04 \x05 \x06
+  }
+  TestAnyKB1:{
+    skip:false
+    src:any {
+      x:false true false
+      y:true true false
+    }
+    bin:true true false
+  }
+  TestAnyKB2:{
+    skip:false
+    src:any {
+      x:false false false
+      y:true true true
+    }
+    bin:true true true
+  }
+  TestAllKB1:{
+    skip:false
+    src:all {
+      x:true false true
+      y:false true true
+    }
+    bin:false false true
+  }
+  TestAllKB2:{
+    skip:false
+    src:all {
+      x:false false false
+      y:true true true
+    }
+    bin:false false false
+  }
+  TestNoneKB1:{
+    skip:false
+    src:none {
+      x:false false true
+      y:false true false
+    }
+    bin:true false false
+  }
+  TestNoneKB2:{
+    skip:false
+    src:none {
+      x:false false true
+      y:false true false
+    }
+    bin:true false false
+  }
   TestMinDD:{
     skip:false
     src:3.0 2.0 1.0 min 1.0 2.0 3.0

@@ -166,6 +166,11 @@ namespace RCL.Kernel
         target.Write (0, symboli);
       }
     }
+
+    public override Type GetElementType ()
+    {
+      return typeof (T);
+    }
   }
 
   public class RCVectorEnumerator<T> : IEnumerator<T>

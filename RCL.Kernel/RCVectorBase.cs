@@ -22,6 +22,9 @@ namespace RCL.Kernel
       m_types.Add (typeof(RCIncrScalar).Name, new RCIncr ());
     }
 
+    /// <summary>
+    /// Array must be an RCArray. Not a native one.
+    /// </summary>
     public static RCVectorBase FromArray (object array)
     {
       Type arrayType = array.GetType ();
@@ -95,5 +98,6 @@ namespace RCL.Kernel
     public abstract string Shorthand (object scalar);
     public abstract string IdShorthand (object scalar);
     public abstract object Array { get; }
+    public abstract Type GetElementType ();
   }
 }

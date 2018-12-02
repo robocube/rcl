@@ -25,7 +25,7 @@ namespace RCL.Core
           {
             Type rtype = parameters[0].ParameterType;
             Type otype = method.ReturnType;
-            RCActivator.OverloadKey key = new RCActivator.OverloadKey (verb.Name, null, rtype);
+            RCActivator.OverloadKey key = new RCActivator.OverloadKey (verb.Name, typeof (object), null, rtype);
 
             Type vectoroptype = typeof (VectorMath).GetNestedType ("VectorOp`2").
               MakeGenericType (rtype, otype);
@@ -47,7 +47,7 @@ namespace RCL.Core
             Type rtype = parameters[1].ParameterType;
             Type otype = method.ReturnType;
 
-            RCActivator.OverloadKey key = new RCActivator.OverloadKey (verb.Name, ltype, rtype);
+            RCActivator.OverloadKey key = new RCActivator.OverloadKey (verb.Name, typeof (object), ltype, rtype);
             Type vectoroptype = typeof (VectorMath).GetNestedType ("VectorOp`3").
               MakeGenericType (ltype, rtype, otype);
             //Why do I have to do the backtick thingy on GetNestedType but not on GetMethod?
@@ -70,7 +70,7 @@ namespace RCL.Core
             Type rtype = parameters[1].ParameterType;
             Type otype = method.ReturnType;
             //The stype is not a parameter to the operator so it is not included in the key.
-            RCActivator.OverloadKey key = new RCActivator.OverloadKey (verb.Name, null, rtype);
+            RCActivator.OverloadKey key = new RCActivator.OverloadKey (verb.Name, typeof (object), null, rtype);
 
             Type cumoptype = typeof (VectorMath).GetNestedType ("CumVectorOp`2").
               MakeGenericType (stype, rtype);
@@ -94,7 +94,7 @@ namespace RCL.Core
             Type rtype = parameters[1].ParameterType;
             Type otype = method.ReturnType;
             //The stype is not a parameter to the operator so it is not included in the key.
-            RCActivator.OverloadKey key = new RCActivator.OverloadKey (verb.Name, null, rtype);
+            RCActivator.OverloadKey key = new RCActivator.OverloadKey (verb.Name, typeof (object), null, rtype);
 
             Type vectoroptype = typeof (VectorMath).GetNestedType ("SeqVectorOp`3").
               MakeGenericType (stype, rtype, otype);
@@ -112,9 +112,6 @@ namespace RCL.Core
           }
           else if (verb.Profile == Profile.Contextual)
           {
-            try
-            {
-            
             //The parameter is a ref parameter which is actually a different type than the type
             //which is being referenced.  GetElementType () gives you the referenced type which is
             //what we want when constructing generic methods.
@@ -123,7 +120,7 @@ namespace RCL.Core
             Type rtype = parameters[1].ParameterType;
             Type otype = method.ReturnType;
             //The stype is not a parameter to the operator so it is not included in the key.
-            RCActivator.OverloadKey key = new RCActivator.OverloadKey (verb.Name, ltype, rtype);
+            RCActivator.OverloadKey key = new RCActivator.OverloadKey (verb.Name, typeof (object), ltype, rtype);
 
             Type vectoroptype = typeof (VectorMath).GetNestedType ("ConVectorOp`4").
               MakeGenericType (ctype, ltype, rtype, otype);
@@ -138,11 +135,6 @@ namespace RCL.Core
             if (m_overloads.ContainsKey (key))
               throw new Exception ("dispatch table already contains the key:" + key);
             m_overloads.Add (key, new Overload (vectorop, primop));
-            }
-            catch (Exception)
-            {
-              throw;
-            }
           }
         }
       }
@@ -242,10 +234,12 @@ namespace RCL.Core
     public static RCValue InvokeDyadic (RCClosure closure, string name, RCVectorBase left, RCVectorBase right)
     {
       RCActivator.OverloadKey key = new RCActivator.OverloadKey (
-        name, left.ScalarType, right.ScalarType);
+        name, typeof (object), left.ScalarType, right.ScalarType);
       Overload overload;
       if (!m_overloads.TryGetValue (key, out overload))
+      {
         throw RCException.Overload (closure, name, left, right);
+      }
       object array = overload.Invoke (left.Array, right.Array);
       return RCVectorBase.FromArray (array);
     }
@@ -253,10 +247,12 @@ namespace RCL.Core
     public static RCValue InvokeMonadic (RCClosure closure, string name, RCVectorBase right)
     {
       RCActivator.OverloadKey key = new RCActivator.OverloadKey (
-        name, null, right.ScalarType);
+        name, typeof (object), null, right.ScalarType);
       Overload overload;
       if (!m_overloads.TryGetValue (key, out overload))
+      {
         throw RCException.Overload (closure, name, right);
+      }
       object array = overload.Invoke (right.Array);
       return RCVectorBase.FromArray (array);
     }
@@ -264,10 +260,12 @@ namespace RCL.Core
     public static RCValue InvokeSequential (RCClosure closure, string name, RCVectorBase right)
     {
       RCActivator.OverloadKey key = new RCActivator.OverloadKey (
-        name, null, right.ScalarType);
+        name, typeof (object), null, right.ScalarType);
       Overload overload;
       if (!m_overloads.TryGetValue (key, out overload))
+      {
         throw RCException.Overload (closure, name, right);
+      }
       object array = overload.Invoke (right.Array);
       return RCVectorBase.FromArray (array);
     }
