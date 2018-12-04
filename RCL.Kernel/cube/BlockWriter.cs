@@ -39,6 +39,10 @@ namespace RCL.Kernel
       }
       if (m_source.Axis.Has ("S"))
       {
+        // Include S as both a field on the row blocks and as the names of the rows themselves
+        // This is so that you can get back to what you had with "flip block $my_cube"
+        // While also being able to treat the result of "block $my_cube" as a dictionary if you wish
+        m_row = new RCBlock (m_row, "S", ":", new RCSymbol (m_source.Axis.Symbol[row]));
         m_rowName = m_source.Axis.Symbol[row].Key.ToString ();
       }
     }

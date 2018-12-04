@@ -2216,12 +2216,18 @@ namespace RCL.Core
       RCCube result = null;
       //If the first row is a block, all rows must be blocks.
       //If the first has a name, all rows must have names.
+      //If the block is created with "block" it will have S fields as well as names.
+      //The S field is what we want to use when recreating the cube.
+      //Otherwise we use the (shortened) name. Ex #a,b,c becomes #c if there is no "S."
       RCBlock first = data.GetName (0);
-      bool hasS = first.Name != "";
+      bool hasS = first.Get ("S", null) != null;
+      bool hasName = first.Name != "";
       bool isRow = first.Value is RCBlock;
+
+      // It is a block of rows
       if (isRow)
       {
-        if (hasS)
+        if (hasS || hasName)
         {
           result = new RCCube (new RCArray<string> ("S"));
         }
@@ -2232,20 +2238,27 @@ namespace RCL.Core
         for (int i = 0; i < data.Count; ++i)
         {
           RCBlock rowkv = data.GetName (i);
-          RCSymbolScalar symbol = null;
-          if (hasS)
-          {
-            symbol = new RCSymbolScalar (null, rowkv.Name);
-          }
           RCBlock row = (RCBlock) rowkv.Value;
+          RCSymbolScalar symbol = null;
           for (int j = 0; j < row.Count; ++j)
           {
             RCBlock colkv = row.GetName (j);
-            RCVectorBase col = (RCVectorBase) colkv.Value;
-            object box = col.Child (0);
-            result.WriteCell (colkv.Name, symbol, box, -1, false, true);
+            if (hasS)
+            {
+              symbol = colkv.GetSymbol ("S");
+            }
+            else if (hasName)
+            {
+              symbol = new RCSymbolScalar (null, rowkv.Name);
+            }
+            if (colkv.Name != "S")
+            {
+              RCVectorBase col = (RCVectorBase) colkv.Value;
+              object box = col.Child (0);
+              result.WriteCell (colkv.Name, symbol, box, -1, false, true);
+            }
           }
-          if (hasS)
+          if (hasS || hasName)
           {
             result.Axis.Write (symbol);
           }
@@ -2256,6 +2269,8 @@ namespace RCL.Core
         }
         return result;
       }
+
+      // It is a block of columns
       RCArray<long> G = null, E = null;
       RCArray<RCTimeScalar> T = null;
       RCArray<RCSymbolScalar> S = null;
@@ -2291,6 +2306,8 @@ namespace RCL.Core
           names.Write (block.Name);
         }
       }
+
+      // Build the final result using the regular bang code path
       string name;
       RCCube cube;
       RCVectorBase vector;
@@ -2298,7 +2315,6 @@ namespace RCL.Core
       {
         Timeline axis = new Timeline (G, E, T, S);
         result = new RCCube (axis);
-        //result.m_count = count;
       }
       for (int i = 0; i < vectors.Count; ++i)
       {
@@ -2308,7 +2324,9 @@ namespace RCL.Core
         {
           string colname = null;
           if (cube.Cols == 1 && name != "")
+          {
             colname = name;
+          }
           result = Bang (result, cube, colname, false, false, true, true);
           continue;
         }
@@ -2316,7 +2334,9 @@ namespace RCL.Core
         if (vector != null)
         {
           if (name == "")
+          {
             throw new Exception ("vector values must have names assigned");
+          }
           result = Bang (result, vector, name, true, true);
           continue;
         }

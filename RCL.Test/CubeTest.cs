@@ -432,7 +432,8 @@ namespace RCL.Test
     [Test]
     public void TestBlockCubeConversions6 ()
     {
-      DoTest ("block cube {a:{x:0}}", "{a:{x:0}}");
+      // In this case the symbol will be added twice - just how it is
+      DoTest ("block cube {a:{x:0}}", "{a:{S:#a x:0}}");
     }
 
     [Test]
