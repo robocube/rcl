@@ -1427,10 +1427,18 @@ namespace RCL.Core
       }
       while (start < r.Length && part < c.m_parts.Length)
       {
-        if (c.m_parts[part] != "")
+        if (c.m_parts.Length == 1)
+        {
+          return r.Equals (c.m_parts[0]);
+        }
+        else if (c.m_parts[part] != "")
         {
           int index = r.IndexOf (c.m_parts[part], start);
-          if (index >= 0)
+          if (part == 0 && index > 0)
+          {
+            return false;
+          }
+          else if (index >= 0)
           {
             start += c.m_parts[part].Length;
           }
