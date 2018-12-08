@@ -2793,6 +2793,21 @@
     src:"" like "*"
     bin:true
   }
+  TestLike6:{
+    skip:false
+    src:"foo bar baz" like "bar*"
+    bin:false
+  }
+  TestLike7:{
+    skip:false
+    src:"foo bar baz" like "bar"
+    bin:false
+  }
+  TestLike8:{
+    skip:false
+    src:"foo bar baz" like "foo"
+    bin:false
+  }
   TestLike1U:{
     skip:false
     src:[

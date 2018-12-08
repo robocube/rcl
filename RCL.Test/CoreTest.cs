@@ -1975,6 +1975,12 @@ namespace RCL.Test
     [Test]
     public void TestLike5 () { DoTest ("\"\" like \"*\"", "true"); }
     [Test]
+    public void TestLike6 () { DoTest ("\"foo bar baz\" like \"bar*\"", "false"); }
+    [Test]
+    public void TestLike7 () { DoTest ("\"foo bar baz\" like \"bar\"", "false"); }
+    [Test]
+    public void TestLike8 () { DoTest ("\"foo bar baz\" like \"foo\"", "false"); }
+    [Test]
     public void TestLike1U () { DoTest ("[x \"foobar\" \"foobaz\" \"foo\" \"fazbar\"] like \"foo*\"", "[x true true true false]"); }
     [Test]
     public void TestLike2U () { DoTest ("[S|x #a \"foobar\" #b \"fazbar\" #c \"bar\" #d \"foobaz\"] like \"*bar\"", "[S|x #a true #b true #c true #d false]"); }
