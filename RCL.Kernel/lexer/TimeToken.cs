@@ -194,19 +194,31 @@ namespace RCL.Kernel
 
     public static RCTimeScalar ParseTime (string text)
     {
+      return ParseTime (text, RCTime.FORMATS, smartType:true);
+    }
+
+    public static RCTimeScalar ParseTime (string text, string[] formats, bool smartType)
+    {
       DateTime result;
-      for (int i = 0; i < RCTime.FORMATS.Length; ++i)
+      for (int i = 0; i < formats.Length; ++i)
       {
         if (DateTime.TryParseExact (text,
-                                    RCTime.FORMATS[i],
+                                    formats[i],
                                     CultureInfo.InvariantCulture,
                                     //Without this times will implicity have today's date.
                                     DateTimeStyles.NoCurrentDateDefault,
                                     out result))
         {
-          if (i <= (int) RCTimeType.Timestamp)
+          if (smartType)
           {
-            return new RCTimeScalar (result, (RCTimeType) i);
+            if (i <= (int) RCTimeType.Timestamp)
+            {
+              return new RCTimeScalar (result, (RCTimeType) i);
+            }
+            else
+            {
+              return new RCTimeScalar (result, RCTimeType.Timestamp);
+            }
           }
           else
           {

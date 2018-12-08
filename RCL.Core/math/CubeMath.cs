@@ -2687,7 +2687,6 @@ namespace RCL.Core
           //Then find all matches.
           if (sortedAxisIndex[i] > -1)
           {
-            //Console.WriteLine ("  checking cube:{0} sortedAxisIndex[{0}]:{1}", i, sortedAxisIndex[i]);
             if (cubesWithCurrentRow.Count == 0)
             {
               cubesWithCurrentRow.Enqueue (i);
@@ -2696,7 +2695,6 @@ namespace RCL.Core
               e = cube.Axis.Event != null ? cube.Axis.Event[rowInUnsorted] : -1;
               t = cube.Axis.Time != null ? cube.Axis.Time[rowInUnsorted] : RCTimeScalar.Empty;
               s = cube.Axis.Symbol != null ? cube.Axis.Symbol[rowInUnsorted] : RCSymbolScalar.Empty;
-              //Console.WriteLine ("  empty queue. rowInUnsorted:{0} cube:{1} t:{2} s:{3}", rowInUnsorted, i, t, s);
             }
             else
             {

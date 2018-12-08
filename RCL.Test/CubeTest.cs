@@ -1454,6 +1454,18 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestSortFunnyName ()
+    {
+      DoTest ("{u:['f. bar' 0 1 2 3 4 5 6 7] <-#desc,'f. bar' sort $u}", "['f. bar' 7 6 5 4 3 2 1 0]");
+    }
+
+    [Test]
+    public void TestReferenceColumnFunnyName ()
+    {
+      DoTest ("{u:['f. bar' 0 1 2 3 4 5 6 7] <-$u.'f. bar'}", "['f. bar' 0 1 2 3 4 5 6 7]");
+    }
+
+    [Test]
     public void TestRows ()
     {
       DoTest ("2 4 rows [a b c d e 1 10 100 1000 -- 2 20 -- 2000 20000 3 30 300 3000 -- 4 -- -- -- -- 5 50 500 -- 50000]", "[a b c d e 3 30 300 3000 -- 4 -- -- -- -- 5 50 500 -- 50000]");

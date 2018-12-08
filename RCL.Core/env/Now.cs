@@ -24,6 +24,17 @@ namespace RCL.Core
       runner.Yield (closure, new RCTime (new RCTimeScalar (DateTime.UtcNow.Ticks, RCTimeType.Timestamp)));
     }
 
+    [RCVerb ("parseTime")]
+    public void EvalParseTime (RCRunner runner, RCClosure closure, RCString left, RCString right)
+    {
+      RCArray<RCTimeScalar> result = new RCArray<RCTimeScalar> ();
+      for (int i = 0; i < right.Count; ++i)
+      {
+        result.Write (TimeToken.ParseTime (right[i], left.ToArray (), smartType:false));
+      }
+      runner.Yield (closure, new RCTime (result));
+    }
+
     [RCVerb ("toLocalTime")]
     public void EvalNow (RCRunner runner, RCClosure closure, RCTime right)
     {
