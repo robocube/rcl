@@ -2803,6 +2803,62 @@
       -1
     ]
   }
+  TestSortFunnyName:{
+    skip:false
+    src:{
+      u:[
+        'f. bar'
+               0
+               1
+               2
+               3
+               4
+               5
+               6
+               7
+      ]
+      <-#desc,'f. bar' sort $u
+    }
+    bin:[
+      'f. bar'
+             7
+             6
+             5
+             4
+             3
+             2
+             1
+             0
+    ]
+  }
+  TestReferenceColumnFunnyName:{
+    skip:false
+    src:{
+      u:[
+        'f. bar'
+               0
+               1
+               2
+               3
+               4
+               5
+               6
+               7
+      ]
+      <-$u.'f. bar'
+    }
+    bin:[
+      'f. bar'
+             0
+             1
+             2
+             3
+             4
+             5
+             6
+             7
+    ]
+  }
   TestRows:{
     skip:false
     src:2 4 rows [

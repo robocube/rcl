@@ -17,7 +17,7 @@ namespace RCL.Kernel
     public RCReference (string name)
     {
       Name = name;
-      Parts = new RCArray<string> (name.Split ('.'));
+      Parts = RCName.MultipartName (name, '.');
       Parts.Lock ();
     }
 
@@ -32,7 +32,9 @@ namespace RCL.Kernel
         {
           Name += parts[i];
           if (i < parts.Length - 1)
+          {
             Name += '.';
+          }
         }
       }
       else Name = parts[0];

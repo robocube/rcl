@@ -32,6 +32,58 @@ namespace RCL.Kernel
       m_index.Write (falseLiteral);
     }
 
+    public static RCArray<string> MultipartName (string text, char delimeter)
+    {
+      int partStart = 0;
+      RCArray<string> result = new RCArray<string> (4);
+      for (int i = 0; i < text.Length; ++i)
+      {
+        if (i == text.Length - 1)
+        {
+          string partString = text.Substring (partStart);
+          RCName part = GetName (partString);
+          partStart += partString.Length;
+          //Consume the delimeter
+          ++partStart;
+          result.Write (part.Text);
+        }
+        else if (text[i] == delimeter)
+        {
+          string partString = text.Substring (partStart, i - partStart);
+          RCName part = GetName (partString);
+          partStart += partString.Length;
+          //Consume the delimeter
+          ++partStart;
+          result.Write (part.Text);
+        }
+        else if (text[i] == '\'')
+        {
+          int matchingQuote = text.IndexOf ('\'', i + 1);
+          if (matchingQuote < 0)
+          {
+            throw new Exception ("Unmatched single quote in name: " + text);
+          }
+          else
+          {
+            while (matchingQuote > 0 && text[matchingQuote - 1] == '\\')
+            {
+              matchingQuote = text.IndexOf ('\'', matchingQuote + 1);
+            }
+            if (matchingQuote <= 0 || text[matchingQuote] != '\'')
+            {
+              throw new Exception ("Unmatched single quote among escaped single quotes in name: " + text);
+            }
+            string partString = text.Substring (partStart, 1 + (matchingQuote - partStart));
+            RCName part = GetName (partString);
+            partStart += partString.Length;
+            result.Write (part.Text);
+            i = matchingQuote;
+          }
+        }
+      }
+      return result;
+    }
+
     public static RCName GetName (string text)
     {
       if (text == null) 

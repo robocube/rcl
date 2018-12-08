@@ -630,7 +630,7 @@ namespace RCL.Kernel
 
     public RCValue Get (string name)
     {
-      int column = m_names.IndexOf (name);
+      int column = m_names.IndexOf (RCName.Get (name));
       if (column < 0)
       {
         //Special columns in the timeline.
@@ -670,7 +670,7 @@ namespace RCL.Kernel
 
     public ColumnBase GetColumn (string name)
     {
-      int column = m_names.IndexOf (name);
+      int column = m_names.IndexOf (RCName.Get (name));
       if (column < 0)
       {
         return null;
