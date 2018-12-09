@@ -501,7 +501,7 @@
   }
   TestGtTT1:{
     skip:false
-    src:2015.05.31 08:00 > 2015.05.31 08:01
+    src:2015.05.31 08:00:00 > 2015.05.31 08:01:00
     bin:false
   }
   TestGtTT2:{
@@ -586,7 +586,7 @@
   }
   TestGteTT1:{
     skip:false
-    src:2015.05.31 08:00 >= 2015.05.31 08:00
+    src:2015.05.31 08:00:00 >= 2015.05.31 08:00:00
     bin:true
   }
   TestGteTT2:{
@@ -671,7 +671,7 @@
   }
   TestLtTT1:{
     skip:false
-    src:2015.05.31 08:00 < 2015.05.31 08:01
+    src:2015.05.31 08:00:00 < 2015.05.31 08:01:00
     bin:true
   }
   TestLtTT2:{
@@ -756,7 +756,7 @@
   }
   TestLteTT1:{
     skip:false
-    src:2015.05.31 08:00 <= 2015.05.31 08:00
+    src:2015.05.31 08:00:00 <= 2015.05.31 08:00:00
     bin:true
   }
   TestLteTT2:{
@@ -876,7 +876,7 @@
   }
   TestEqTTWithTime:{
     skip:false
-    src:2018.05.04 11:21 == 2018.05.04
+    src:2018.05.04 11:21:00 == 2018.05.04
     bin:false
   }
   TestNeqXX:{
@@ -1049,13 +1049,13 @@
   }
   TestStringT1:{
     skip:false
-    src:string 08:26
-    bin:"08:26"
+    src:string 08:26:00
+    bin:"08:26:00"
   }
   TestStringT2:{
     skip:false
-    src:string 2015.05.26 08:26
-    bin:"2015.05.26 08:26"
+    src:string 2015.05.26 08:26:00
+    bin:"2015.05.26 08:26:00"
   }
   TestStringT3:{
     skip:false
@@ -1232,12 +1232,12 @@
   }
   TestLongT1:{
     skip:false
-    src:long 00:00
+    src:long 00:00:00
     bin:0
   }
   TestLongT2:{
     skip:false
-    src:long 0001.01.01 00:00
+    src:long 0001.01.01 00:00:00
     bin:0
   }
   TestLongT3:{
@@ -1505,12 +1505,12 @@
   TestTimeYT2:{
     skip:false
     src:#daytime time 0001.01.01 00:00:00.000000
-    bin:00:00
+    bin:00:00:00
   }
   TestTimeYT3:{
     skip:false
     src:#datetime time 0001.01.01 00:00:00.000000
-    bin:0001.01.01 00:00
+    bin:0001.01.01 00:00:00
   }
   TestTimeYT4:{
     skip:false
@@ -1525,12 +1525,12 @@
   TestTimeYL1:{
     skip:false
     src:#daytime time 0
-    bin:00:00
+    bin:00:00:00
   }
   TestTimeYL2:{
     skip:false
     src:#datetime time 0
-    bin:0001.01.01 00:00
+    bin:0001.01.01 00:00:00
   }
   TestTimeYL3:{
     skip:false
@@ -1716,7 +1716,7 @@
   TestDaytimeT:{
     skip:false
     src:timestamp daytime 1979.09.04 12:34:56.789101
-    bin:0001.01.01 12:34:00.000000
+    bin:0001.01.01 12:34:56.000000
   }
   TestDaytimeTU:{
     skip:false
@@ -1726,13 +1726,13 @@
     ]
     bin:[
                                x
-      0001.01.01 12:34:00.000000
+      0001.01.01 12:34:56.000000
     ]
   }
   TestDatetimeT:{
     skip:false
     src:timestamp datetime 1979.09.04 12:34:56.789101
-    bin:1979.09.04 12:34:00.000000
+    bin:1979.09.04 12:34:56.000000
   }
   TestDatetimeTU:{
     skip:false
@@ -1742,7 +1742,7 @@
     ]
     bin:[
                                x
-      1979.09.04 12:34:00.000000
+      1979.09.04 12:34:56.000000
     ]
   }
   TestTimestampT:{

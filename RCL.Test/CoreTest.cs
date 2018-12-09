@@ -553,9 +553,9 @@ namespace RCL.Test
     [Test]
     public void TestStringT0 () { DoTest ("string 2015.05.26", "\"2015.05.26\""); }
     [Test]
-    public void TestStringT1 () { DoTest ("string 08:26", "\"08:26\""); }
+    public void TestStringT1 () { DoTest ("string 08:26", "\"08:26:00\""); }
     [Test]
-    public void TestStringT2 () { DoTest ("string 2015.05.26 08:26", "\"2015.05.26 08:26\""); }
+    public void TestStringT2 () { DoTest ("string 2015.05.26 08:26", "\"2015.05.26 08:26:00\""); }
     [Test]
     public void TestStringT3 () { DoTest ("string 2015.05.26 08:26:00.123456", "\"2015.05.26 08:26:00.123456\""); }
 
@@ -710,17 +710,17 @@ namespace RCL.Test
     [Test]
     public void TestTimeYT1 () { DoTest ("#date time 0001.01.01 00:00:00.000000", "0001.01.01"); }
     [Test]
-    public void TestTimeYT2 () { DoTest ("#daytime time 0001.01.01 00:00:00.000000", "00:00"); }
+    public void TestTimeYT2 () { DoTest ("#daytime time 0001.01.01 00:00:00.000000", "00:00:00"); }
     [Test]
-    public void TestTimeYT3 () { DoTest ("#datetime time 0001.01.01 00:00:00.000000", "0001.01.01 00:00"); }
+    public void TestTimeYT3 () { DoTest ("#datetime time 0001.01.01 00:00:00.000000", "0001.01.01 00:00:00"); }
     [Test]
     public void TestTimeYT4 () { DoTest ("#timestamp time 0001.01.01 00:00:00.000000", "0001.01.01 00:00:00.000000"); }
     [Test]
     public void TestTimeYL0 () { DoTest ("#date time 0", "0001.01.01"); }
     [Test]
-    public void TestTimeYL1 () { DoTest ("#daytime time 0", "00:00"); }
+    public void TestTimeYL1 () { DoTest ("#daytime time 0", "00:00:00"); }
     [Test]
-    public void TestTimeYL2 () { DoTest ("#datetime time 0", "0001.01.01 00:00"); }
+    public void TestTimeYL2 () { DoTest ("#datetime time 0", "0001.01.01 00:00:00"); }
     [Test]
     public void TestTimeYL3 () { DoTest ("#timestamp time 0", "0001.01.01 00:00:00.000000"); }
 
@@ -771,13 +771,13 @@ namespace RCL.Test
     [Test]
     public void TestDateTU () { DoTest ("timestamp date [x 1979.09.04 12:34:56.789101]", "[x 1979.09.04 00:00:00.000000]"); }
     [Test]
-    public void TestDaytimeT () { DoTest ("timestamp daytime 1979.09.04 12:34:56.789101", "0001.01.01 12:34:00.000000"); }
+    public void TestDaytimeT () { DoTest ("timestamp daytime 1979.09.04 12:34:56.789101", "0001.01.01 12:34:56.000000"); }
     [Test]
-    public void TestDaytimeTU () { DoTest ("timestamp daytime [x 1979.09.04 12:34:56.789101]", "[x 0001.01.01 12:34:00.000000]"); }
+    public void TestDaytimeTU () { DoTest ("timestamp daytime [x 1979.09.04 12:34:56.789101]", "[x 0001.01.01 12:34:56.000000]"); }
     [Test]
-    public void TestDatetimeT () { DoTest ("timestamp datetime 1979.09.04 12:34:56.789101", "1979.09.04 12:34:00.000000"); }
+    public void TestDatetimeT () { DoTest ("timestamp datetime 1979.09.04 12:34:56.789101", "1979.09.04 12:34:56.000000"); }
     [Test]
-    public void TestDatetimeTU () { DoTest ("timestamp datetime [x 1979.09.04 12:34:56.789101]", "[x 1979.09.04 12:34:00.000000]"); }
+    public void TestDatetimeTU () { DoTest ("timestamp datetime [x 1979.09.04 12:34:56.789101]", "[x 1979.09.04 12:34:56.000000]"); }
     [Test]
     public void TestTimestampT () { DoTest ("timestamp timestamp 1979.09.04 12:34:56.789101", "1979.09.04 12:34:56.789101"); }
     [Test]
@@ -1098,13 +1098,13 @@ namespace RCL.Test
     [Test]
     public void TestAtYX() { DoTest ("#x #y #z at \\x01", "#y"); }
     [Test]
-    public void TestAtTL() { DoTest ("01:00 02:00 03:00 at 1", "02:00"); }
+    public void TestAtTL() { DoTest ("01:00 02:00 03:00 at 1", "02:00:00"); }
     [Test]
-    public void TestAtTD() { DoTest ("01:00 02:00 03:00 at 1.0", "02:00"); }
+    public void TestAtTD() { DoTest ("01:00 02:00 03:00 at 1.0", "02:00:00"); }
     [Test]
-    public void TestAtTM() { DoTest ("01:00 02:00 03:00 at 1m", "02:00"); }
+    public void TestAtTM() { DoTest ("01:00 02:00 03:00 at 1m", "02:00:00"); }
     [Test]
-    public void TestAtTX() { DoTest ("01:00 02:00 03:00 at \\x01", "02:00"); }
+    public void TestAtTX() { DoTest ("01:00 02:00 03:00 at \\x01", "02:00:00"); }
     [Test]
     public void TestAtKL() { DoTest ("{x:0 y:1 z:2} at 1", "{y:1}"); }
     [Test]
@@ -1209,13 +1209,13 @@ namespace RCL.Test
     [Test]
     public void TestFromXY() { DoTest ("\\x01 from #x #y #z", "#y"); }
     [Test]
-    public void TestFromTL() { DoTest ("1 from 01:00 02:00 03:00", "02:00"); }
+    public void TestFromTL() { DoTest ("1 from 01:00 02:00 03:00", "02:00:00"); }
     [Test]
-    public void TestFromTD() { DoTest ("1.0 from 01:00 02:00 03:00", "02:00"); }
+    public void TestFromTD() { DoTest ("1.0 from 01:00 02:00 03:00", "02:00:00"); }
     [Test]
-    public void TestFromTM() { DoTest ("1m from 01:00 02:00 03:00", "02:00"); }
+    public void TestFromTM() { DoTest ("1m from 01:00 02:00 03:00", "02:00:00"); }
     [Test]
-    public void TestFromTX() { DoTest ("\\x01 from 01:00 02:00 03:00", "02:00"); }
+    public void TestFromTX() { DoTest ("\\x01 from 01:00 02:00 03:00", "02:00:00"); }
     [Test]
     public void TestFromLK() { DoTest ("1 from {x:0 y:1 z:2}", "{y:1}"); }
     [Test]
@@ -1825,7 +1825,7 @@ namespace RCL.Test
     [Test]
     public void TestSubB  () { DoTest ("true false false true sub true false", "false true"); }
     [Test]
-    public void TestSubT  () { DoTest ("08:00 08:10 08:10 08:20 08:20 08:30 sub 08:00 08:10 08:20", "08:10 08:20 08:30"); }
+    public void TestSubT  () { DoTest ("08:00 08:10 08:10 08:20 08:20 08:30 sub 08:00 08:10 08:20", "08:10:00 08:20:00 08:30:00"); }
 
     [Test]
     public void TestFillL () { DoTest ("0 fill 1 0 2 0 0 3 0 0 0", "1 1 2 2 2 3 3 3 3"); }
@@ -1842,7 +1842,7 @@ namespace RCL.Test
     [Test]
     public void TestFillB () { DoTest ("false fill false false true false false", "false false true true true"); }
     [Test]
-    public void TestFillT () { DoTest ("00:00 fill 08:00 00:00 00:00 09:00 00:00 00:00 10:00 00:00 00:00", "08:00 08:00 08:00 09:00 09:00 09:00 10:00 10:00 10:00"); }
+    public void TestFillT () { DoTest ("00:00 fill 08:00 00:00 00:00 09:00 00:00 00:00 10:00 00:00 00:00", "08:00:00 08:00:00 08:00:00 09:00:00 09:00:00 09:00:00 10:00:00 10:00:00 10:00:00"); }
     //Eval
 
     //Range
@@ -1901,13 +1901,13 @@ namespace RCL.Test
     public void TestRangeX3 () { DoTest ("0 1 2 5 range \\x01 \\x02 \\x03 \\x04 \\x05 \\x06", "\\x01 \\x02 \\x03 \\x04 \\x05 \\x06"); }
 
     [Test]
-    public void TestRangeT () { DoTest ("3 range 00:01 00:02 00:03 00:04 00:05 00:06", "00:04 00:05 00:06"); }
+    public void TestRangeT () { DoTest ("3 range 00:01 00:02 00:03 00:04 00:05 00:06", "00:04:00 00:05:00 00:06:00"); }
     [Test]
-    public void TestRangeT1 () { DoTest ("1 4 range 00:01 00:02 00:03 00:04 00:05 00:06", "00:02 00:03 00:04 00:05"); }
+    public void TestRangeT1 () { DoTest ("1 4 range 00:01 00:02 00:03 00:04 00:05 00:06", "00:02:00 00:03:00 00:04:00 00:05:00"); }
     [Test]
-    public void TestRangeT2 () { DoTest ("0 1 3 5 range 00:01 00:02 00:03 00:04 00:05 00:06", "00:01 00:02 00:04 00:05 00:06"); }
+    public void TestRangeT2 () { DoTest ("0 1 3 5 range 00:01 00:02 00:03 00:04 00:05 00:06", "00:01:00 00:02:00 00:04:00 00:05:00 00:06:00"); }
     [Test]
-    public void TestRangeT3 () { DoTest ("0 1 2 5 range 00:01 00:02 00:03 00:04 00:05 00:06", "00:01 00:02 00:03 00:04 00:05 00:06"); }
+    public void TestRangeT3 () { DoTest ("0 1 2 5 range 00:01 00:02 00:03 00:04 00:05 00:06", "00:01:00 00:02:00 00:03:00 00:04:00 00:05:00 00:06:00"); }
 
     //String/Text Operators
     [Test]

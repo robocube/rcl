@@ -325,15 +325,15 @@
   TestCubeMathTime:{
     skip:false
     src:[
-          x
-      08:00
-      09:00
-      10:00
+             x
+      08:00:00
+      09:00:00
+      10:00:00
     ] + [
-          x
-      00:30
-      00:30
-      00:30
+             x
+      00:30:00
+      00:30:00
+      00:30:00
     ]
     bin:[
                                x
@@ -902,15 +902,15 @@
     skip:false
     src:cube {
       E:0 1 2
-      T:08:00 09:00 10:00
+      T:08:00:00 09:00:00 10:00:00
       S:#x #x #x
       a:10 20 30
     }
     bin:[
-       E|    T|S | a
-       0 08:00 #x 10
-       1 09:00 #x 20
-       2 10:00 #x 30
+       E|       T|S | a
+       0 08:00:00 #x 10
+       1 09:00:00 #x 20
+       2 10:00:00 #x 30
     ]
   }
   TestCubeNoTimeline:{
@@ -930,13 +930,13 @@
   TestCubeNoTimeline1:{
     skip:false
     src:cube {
-      t:08:00 09:00 10:00
+      t:08:00:00 09:00:00 10:00:00
     }
     bin:[
-          t
-      08:00
-      09:00
-      10:00
+             t
+      08:00:00
+      09:00:00
+      10:00:00
     ]
   }
   TestCubeLeftSymbol:{
@@ -1971,8 +1971,8 @@
   TestTree7:{
     skip:false
     src:#k #v from tree [
-       G| E|    T|S | x
-       0  0 00:00 #a  1
+       G| E|       T|S | x
+       0  0 00:00:00 #a  1
     ]
     bin:[
       S   |k    v
@@ -2323,8 +2323,8 @@
   TestChart7:{
     skip:false
     src:#k #v from chart [
-       G| E|    T|S | x
-       0  0 00:00 #a  1
+       G| E|       T|S | x
+       0  0 00:00:00 #a  1
     ]
     bin:[
       S     |k    v
@@ -2335,7 +2335,7 @@
       #2,0,0 #E   "E"
       #2,1,0 #E,0 "0"
       #3,0,0 #T   "T"
-      #3,1,0 #T,0 "00:00"
+      #3,1,0 #T,0 "00:00:00"
       #4,0,0 #S   "S"
       #4,1,0 #S,0 "#a"
     ]
@@ -5087,32 +5087,32 @@
   TestColoft2:{
     skip:false
     src:coloft [
-          x
-      08:00
-      09:00
-      10:00
+             x
+      08:00:00
+      09:00:00
+      10:00:00
     ]
-    bin:08:00 09:00 10:00
+    bin:08:00:00 09:00:00 10:00:00
   }
   TestColoft3:{
     skip:false
     src:coloft [
-      S |    x
-      #a 08:00
-      #b 09:00
-      #c 10:00
+      S |       x
+      #a 08:00:00
+      #b 09:00:00
+      #c 10:00:00
     ]
-    bin:08:00 09:00 10:00
+    bin:08:00:00 09:00:00 10:00:00
   }
   TestColoft4:{
     skip:false
-    src:08:00 coloft [
-      S |    x
-      #a    --
-      #b 09:00
-      #c 10:00
+    src:08:00:00 coloft [
+      S |       x
+      #a       --
+      #b 09:00:00
+      #c 10:00:00
     ]
-    bin:08:00 09:00 10:00
+    bin:08:00:00 09:00:00 10:00:00
   }
   TestColoflError:{
     skip:false
@@ -5643,32 +5643,32 @@
   TestFromTimelineG:{
     skip:true
     src:#G from [
-       G| E|    T|S | x
-       1  2 08:00 #a  3
+       G| E|       T|S | x
+       1  2 08:00:00 #a  3
     ]
     bin:1
   }
   TestFromTimelineE:{
     skip:true
     src:#E from [
-       G| E|    T|S | x
-       1  2 08:00 #a  3
+       G| E|       T|S | x
+       1  2 08:00:00 #a  3
     ]
     bin:2
   }
   TestFromTimelineT:{
     skip:true
     src:#T from [
-       G| E|    T|S | x
-       1  2 08:00 #a  3
+       G| E|       T|S | x
+       1  2 08:00:00 #a  3
     ]
-    bin:08:00
+    bin:08:00:00
   }
   TestFromTimelineS:{
     skip:true
     src:#S from [
-       G| E|    T|S | x
-       1  2 08:00 #a  3
+       G| E|       T|S | x
+       1  2 08:00:00 #a  3
     ]
     bin:#a
   }
@@ -5790,12 +5790,12 @@
   TestTime:{
     skip:false
     src:untimeline [
-       G| E|    T|S | a
-       0  0 00:00 #x  1
+       G| E|       T|S | a
+       0  0 00:00:00 #x  1
     ]
     bin:[
-       G  E     T S   a
-       0  0 00:00 #x  1
+       G  E        T S   a
+       0  0 00:00:00 #x  1
     ]
   }
   TestBlock:{
@@ -7518,16 +7518,16 @@
   TestAppendTime3:{
     skip:false
     src:[
-          T|S | x
-      08:00 #a  0
+             T|S | x
+      08:00:00 #a  0
     ] & [
-          T|S | x
-      08:01 #a  1
+             T|S | x
+      08:01:00 #a  1
     ]
     bin:[
-          T|S | x
-      08:00 #a  0
-      08:01 #a  1
+             T|S | x
+      08:00:00 #a  0
+      08:01:00 #a  1
     ]
   }
   TestAppendTime4:{

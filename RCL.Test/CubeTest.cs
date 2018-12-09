@@ -338,7 +338,7 @@ namespace RCL.Test
     {
       //This cube operator could be called flip (or table/untable).
       //And the name cube applied to an operator that creates a cube that fully represents a block.
-      DoTest ("cube {E:0 1 2 T:08:00 09:00 10:00 S:#x #x #x a:10 20 30}", "[E|T|S|a 0 08:00 #x 10 1 09:00 #x 20 2 10:00 #x 30]");
+      DoTest ("cube {E:0 1 2 T:08:00 09:00 10:00 S:#x #x #x a:10 20 30}", "[E|T|S|a 0 08:00:00 #x 10 1 09:00:00 #x 20 2 10:00:00 #x 30]");
     }
 
     [Test]
@@ -350,7 +350,7 @@ namespace RCL.Test
     [Test]
     public void TestCubeNoTimeline1 ()
     {
-      DoTest ("cube {t:08:00 09:00 10:00}", "[t 08:00 09:00 10:00]");
+      DoTest ("cube {t:08:00 09:00 10:00}", "[t 08:00:00 09:00:00 10:00:00]");
     }
 
     [Test]
@@ -1078,7 +1078,7 @@ namespace RCL.Test
       //        "[S|n v #0l,0l,0l #G    \"G\" #0l,1l,0l #E    \"E\" #0l,2l,0l #T    \"T\" #0l,3l,0l #S    \"S\" #0l,4l,0l #x    \"x\"" +
       //        "       #1l,0l,0l #G,0l \"0\" #1l,1l,0l #E,0l \"0\" #1l,2l,0l #T,0l \"0\" #1l,3l,0l #S,0l \"#\" #1l,4l,0l #x,0l \"1\"]");
       DoTest ("#k #v from chart [G E T S|x 0 0 00:00 #a 1]",
-              "[S|k v #0,0,0 #x \"x\" #0,1,0 #x,0 \"1\" #1,0,0 #G \"G\" #1,1,0 #G,0 \"0\" #2,0,0 #E \"E\" #2,1,0 #E,0 \"0\" #3,0,0 #T \"T\" #3,1,0 #T,0 \"00:00\" #4,0,0 #S \"S\" #4,1,0 #S,0 \"#a\"]");
+              "[S|k v #0,0,0 #x \"x\" #0,1,0 #x,0 \"1\" #1,0,0 #G \"G\" #1,1,0 #G,0 \"0\" #2,0,0 #E \"E\" #2,1,0 #E,0 \"0\" #3,0,0 #T \"T\" #3,1,0 #T,0 \"00:00:00\" #4,0,0 #S \"S\" #4,1,0 #S,0 \"#a\"]");
               //"[S|k v #0,0,0 #G \"G\" #1,0,0 #E \"E\" #2,0,0 #T \"T\" #3,0,0 #S \"S\" #4,0,0 #x \"x\" #0,1,0 #G,0 \"0\" #1,1,0 #E,0 \"0\" #2,1,0 #T,0 \"0\" #3,1,0 #S,0 \"#a\" #4,1,0 #x,0 \"1\"]");
     }
 
@@ -2408,19 +2408,19 @@ namespace RCL.Test
     [Test]
     public void TestColoft2 ()
     {
-      DoTest ("coloft [x 08:00 09:00 10:00]", "08:00 09:00 10:00");
+      DoTest ("coloft [x 08:00 09:00 10:00]", "08:00:00 09:00:00 10:00:00");
     }
 
     [Test]
     public void TestColoft3 ()
     {
-      DoTest ("coloft [S|x #a 08:00 #b 09:00 #c 10:00]", "08:00 09:00 10:00");
+      DoTest ("coloft [S|x #a 08:00 #b 09:00 #c 10:00]", "08:00:00 09:00:00 10:00:00");
     }
 
     [Test]
     public void TestColoft4 ()
     {
-      DoTest ("08:00 coloft [S|x #a -- #b 09:00 #c 10:00]", "08:00 09:00 10:00");
+      DoTest ("08:00 coloft [S|x #a -- #b 09:00 #c 10:00]", "08:00:00 09:00:00 10:00:00");
     }
 
     [Test]
@@ -2847,7 +2847,7 @@ namespace RCL.Test
       //   G E T S |a
       //   0 0 0 #x 1
       //]
-      DoTest ("untimeline [G E T S|a 0 0 00:00 #x 1]", "[G E T S a 0 0 00:00 #x 1]");
+      DoTest ("untimeline [G E T S|a 0 0 00:00 #x 1]", "[G E T S a 0 0 00:00:00 #x 1]");
     }
 
     [Test]
@@ -3498,7 +3498,7 @@ namespace RCL.Test
     [Test]
     public void TestAppendTime3 ()
     {
-      DoTest ("[T|S|x 08:00 #a 0] & [T|S|x 08:01 #a 1]", "[T|S|x 08:00 #a 0 08:01 #a 1]");
+      DoTest ("[T|S|x 08:00 #a 0] & [T|S|x 08:01 #a 1]", "[T|S|x 08:00:00 #a 0 08:01:00 #a 1]");
     }
       
     [Test]

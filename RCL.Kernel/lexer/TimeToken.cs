@@ -74,6 +74,10 @@ namespace RCL.Kernel
       if (current < text.Length && text[current] == ':') ++current; else return -1;
       if (current < text.Length && (text[current] >= '0' && text[current] <= '9')) ++current; else return -1;
       if (current < text.Length && (text[current] >= '0' && text[current] <= '9')) ++current; else return -1;
+      // Seconds are optional
+      if (current < text.Length && text[current] == ':') ++current; else return current - start;
+      if (current < text.Length && (text[current] >= '0' && text[current] <= '9')) ++current; else return -1;
+      if (current < text.Length && (text[current] >= '0' && text[current] <= '9')) ++current; else return -1;
       return current - start;
     }
 
@@ -94,6 +98,10 @@ namespace RCL.Kernel
       if (current < text.Length && (text[current] >= '0' && text[current] <= '9')) ++current; else return -1;
       if (current < text.Length && (text[current] >= '0' && text[current] <= '9')) ++current; else return -1;
       if (current < text.Length && text[current] == ':') ++current; else return -1;
+      if (current < text.Length && (text[current] >= '0' && text[current] <= '9')) ++current; else return -1;
+      if (current < text.Length && (text[current] >= '0' && text[current] <= '9')) ++current; else return -1;
+      // Seconds are optional
+      if (current < text.Length && text[current] == ':') ++current; else return current - start;
       if (current < text.Length && (text[current] >= '0' && text[current] <= '9')) ++current; else return -1;
       if (current < text.Length && (text[current] >= '0' && text[current] <= '9')) ++current; else return -1;
       return current - start;
@@ -194,7 +202,7 @@ namespace RCL.Kernel
 
     public static RCTimeScalar ParseTime (string text)
     {
-      return ParseTime (text, RCTime.FORMATS, smartType:true);
+      return ParseTime (text, RCTime.ALLOWED_FORMATS, smartType:true);
     }
 
     public static RCTimeScalar ParseTime (string text, string[] formats, bool smartType)
@@ -211,14 +219,8 @@ namespace RCL.Kernel
         {
           if (smartType)
           {
-            if (i <= (int) RCTimeType.Timestamp)
-            {
-              return new RCTimeScalar (result, (RCTimeType) i);
-            }
-            else
-            {
-              return new RCTimeScalar (result, RCTimeType.Timestamp);
-            }
+            RCTimeType type = RCTime.ALLOWED_FORMAT_TYPES[i];
+            return new RCTimeScalar (result, type);
           }
           else
           {
