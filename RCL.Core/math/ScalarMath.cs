@@ -1037,7 +1037,7 @@ namespace RCL.Core
     public static RCTimeScalar Daytime (RCTimeScalar t)
     {
       DateTime old = new DateTime (t.Ticks);
-      DateTime result = new DateTime (1, 1, 1, old.Hour, old.Minute, 0);
+      DateTime result = new DateTime (1, 1, 1, old.Hour, old.Minute, old.Second);
       return new RCTimeScalar (result, RCTimeType.Daytime);
     }
 
@@ -1045,7 +1045,7 @@ namespace RCL.Core
     public static RCTimeScalar Datetime (RCTimeScalar t)
     {
       DateTime old = new DateTime (t.Ticks);
-      DateTime result = new DateTime (old.Year, old.Month, old.Day, old.Hour, old.Minute, 0);
+      DateTime result = new DateTime (old.Year, old.Month, old.Day, old.Hour, old.Minute, old.Second);
       return new RCTimeScalar (result, RCTimeType.Datetime);
     }
 

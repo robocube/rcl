@@ -25,29 +25,48 @@ namespace RCL.Kernel
     /// <summary>
     /// Defines formats for each type of RCTimeScalar.
     /// </summary>
-    public static readonly string[] FORMATS = new string[] {
+    public static readonly string[] DEFAULT_FORMATS = new string[] {
+      "yyyy.MM.dd",
+      "HH:mm:ss",
+      "yyyy.MM.dd HH:mm:ss",
+      "yyyy.MM.dd HH:mm:ss.ffffff",
+    };
+
+    /// <summary>
+    /// Defines formats for each type of RCTimeScalar.
+    /// </summary>
+    public static readonly string[] ALLOWED_FORMATS = new string[] {
       //date
       "yyyy.MM.dd",
       //daytime
       "HH:mm",
+      "HH:mm:ss",
       //datetime
       "yyyy.MM.dd HH:mm",
+      "yyyy.MM.dd HH:mm:ss",
       //timestamp
       "yyyy.MM.dd HH:mm:ss.ffffff",
-      //timestamp
       "yyyy.MM.dd HH:mm:ss.fffffff",
-      //timestamp
       "yyyy.MM.dd HH:mm:ss.fffff",
-      //timestamp
       "yyyy.MM.dd HH:mm:ss.ffff",
-      //timestamp
       "yyyy.MM.dd HH:mm:ss.fff",
-      //timestamp
       "yyyy.MM.dd HH:mm:ss.ff",
-      //timestamp
       "yyyy.MM.dd HH:mm:ss.f",
-      //timestamp
-      "yyyy.MM.dd HH:mm:ss"
+    };
+
+    public static readonly RCTimeType[] ALLOWED_FORMAT_TYPES = new RCTimeType[] {
+      RCTimeType.Date,
+      RCTimeType.Daytime,
+      RCTimeType.Daytime,
+      RCTimeType.Datetime,
+      RCTimeType.Datetime,
+      RCTimeType.Timestamp,
+      RCTimeType.Timestamp,
+      RCTimeType.Timestamp,
+      RCTimeType.Timestamp,
+      RCTimeType.Timestamp,
+      RCTimeType.Timestamp,
+      RCTimeType.Timestamp
     };
 
     /// <summary>
@@ -134,13 +153,13 @@ namespace RCL.Kernel
         }
         else if (scalar.Type == RCTimeType.Date)
         {
-          return new DateTime (scalar.Ticks).ToString (FORMATS[(int) scalar.Type]);
+          return new DateTime (scalar.Ticks).ToString (DEFAULT_FORMATS[(int) scalar.Type]);
         }
         else
         {
           DateTime displayTime = TimeZoneInfo.ConvertTimeFromUtc (new DateTime (scalar.Ticks),
                                                                   RCTime.DisplayTimeZone);
-          return displayTime.ToString (FORMATS[(int) scalar.Type]);
+          return displayTime.ToString (DEFAULT_FORMATS[(int) scalar.Type]);
         }
       }
       else

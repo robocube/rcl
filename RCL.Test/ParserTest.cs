@@ -124,13 +124,13 @@ namespace RCL.Test
     [Test]
     public void TestTime ()
     {
-      DoParserTest ("08:12 09:13 10:14");
+      DoParserTest ("08:12:00 09:13:00 10:14:00");
     }
 
     [Test]
     public void TestDatetime ()
     {
-      DoParserTest ("2015.05.24 08:12 2015.05.25 09:13 2015.05.26 10:14");
+      DoParserTest ("2015.05.24 08:12:00 2015.05.25 09:13:00 2015.05.26 10:14:00");
     }
 
     [Test]
@@ -172,7 +172,8 @@ namespace RCL.Test
     [Test]
     public void TestTimestampNoZero ()
     {
-      DoParserTest ("2018.10.11 12:34:56", "2018.10.11 12:34:56.000000");
+      // This is now the default format for a datetime - it was originally considered a timestamp.
+      DoParserTest ("2018.10.11 12:34:56", "2018.10.11 12:34:56");
     }
 
     [Test]
@@ -684,19 +685,19 @@ namespace RCL.Test
     [Test]
     public void TestCubesWithNoTimelineHavingGETS2 ()
     {
-      DoParserTest ("[T S a 00:00 #x 1]");
+      DoParserTest ("[T S a 00:00:00 #x 1]");
     }
 
     [Test]
     public void TestCubesWithNoTimelineHavingGETS3 ()
     {
-      DoParserTest ("[E T S a 0 00:00 #x 1]");
+      DoParserTest ("[E T S a 0 00:00:00 #x 1]");
     }
 
     [Test]
     public void TestCubesWithNoTimelineHavingGETS4 ()
     {
-      DoParserTest ("[G E T S a 0 0 00:00 #x 1]");
+      DoParserTest ("[G E T S a 0 0 00:00:00 #x 1]");
     }
 
     [Test]
