@@ -2048,18 +2048,18 @@ namespace RCL.Core
       RCCube result;
       if (left.Axis.Symbol != null)
       {
-        result = new RCCube (new RCArray<string> ("S"));
+        result = new RCCube (left.Axis.Match ());
         for (int i = 0; i < left.Axis.Count; ++i)
         {
-          result.Write (left.Axis.Symbol[i]);
+          result.Axis.Write (left.Axis, i);
         }
       }
       else if (right.Axis.Symbol != null)
       {
-        result = new RCCube (new RCArray<string> ("S"));
+        result = new RCCube (right.Axis.Match ());
         for (int i = 0; i < right.Axis.Count; ++i)
         {
-          result.Write (right.Axis.Symbol[i]);
+          result.Axis.Write (right.Axis, i);
         }
       }
       else
@@ -2282,22 +2282,50 @@ namespace RCL.Core
         RCBlock block = data.GetName (i);
         if (block.Name == "G")
         {
-          G = ((RCLong) block.Value).Data;
+          if (block.Value is RCLong)
+          {
+            G = ((RCLong) block.Value).Data;
+          }
+          else if (block.Value is RCCube)
+          {
+            G = ((RCLong) ((RCCube) block.Value).GetSimpleVector (0)).Data;
+          }
           count = G.Count;
         }
         else if (block.Name == "E")
         {
-          E = ((RCLong) block.Value).Data;
+          if (block.Value is RCLong)
+          {
+            E = ((RCLong) block.Value).Data;
+          }
+          else if (block.Value is RCCube)
+          {
+            E = ((RCLong) ((RCCube) block.Value).GetSimpleVector (0)).Data;
+          }
           count = E.Count;
         }
         else if (block.Name == "T")
         {
-          T = ((RCTime) block.Value).Data;
+          if (block.Value is RCTime)
+          {
+            T = ((RCTime) block.Value).Data;
+          }
+          else if (block.Value is RCCube)
+          {
+            T = ((RCTime) ((RCCube) block.Value).GetSimpleVector (0)).Data;
+          }
           count = T.Count;
         }
         else if (block.Name == "S")
         {
-          S = ((RCSymbol) block.Value).Data;
+          if (block.Value is RCSymbol)
+          {
+            S = ((RCSymbol) block.Value).Data;
+          }
+          else if (block.Value is RCCube)
+          {
+            S = ((RCSymbol) ((RCCube) block.Value).GetSimpleVector (0)).Data;
+          }
           count = S.Count;
         }
         else

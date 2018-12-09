@@ -522,6 +522,96 @@
     }
     bin:"x" "x" "x" "y"
   }
+  TestCube11:{
+    skip:false
+    src:cube {
+      S:[
+        x
+        #a
+        #b
+        #c
+      ]
+      x:1 2 3
+    }
+    bin:[
+      S | x
+      #a  1
+      #b  2
+      #c  3
+    ]
+  }
+  TestCube12:{
+    skip:false
+    src:cube {
+      S:[
+        x
+        #a
+        #b
+        #c
+      ]
+      T:[
+                 x
+        2018.12.09
+        2018.12.10
+        2018.12.11
+      ]
+      x:1 2 3
+    }
+    bin:[
+               T|S | x
+      2018.12.09 #a  1
+      2018.12.10 #b  2
+      2018.12.11 #c  3
+    ]
+  }
+  TestCube13:{
+    skip:false
+    src:cube {
+      S:[
+        x
+        #a
+        #b
+        #c
+      ]
+      G:[
+          x
+        100
+        200
+        300
+      ]
+      x:1 2 3
+    }
+    bin:[
+        G|S | x
+      100 #a  1
+      200 #b  2
+      300 #c  3
+    ]
+  }
+  TestCube14:{
+    skip:false
+    src:cube {
+      S:[
+        x
+        #a
+        #b
+        #c
+      ]
+      E:[
+          x
+        100
+        200
+        300
+      ]
+      x:1 2 3
+    }
+    bin:[
+        E|S | x
+      100 #a  1
+      200 #b  2
+      300 #c  3
+    ]
+  }
   TestIdentityCube:{
     skip:false
     src:cube []
