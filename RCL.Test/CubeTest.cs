@@ -206,6 +206,30 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestCube11 ()
+    {
+      DoTest ("cube {S:[x #a #b #c] x:1 2 3}", "[S|x #a 1 #b 2 #c 3]");
+    }
+
+    [Test]
+    public void TestCube12 ()
+    {
+      DoTest ("cube {S:[x #a #b #c] T:[x 2018.12.09 2018.12.10 2018.12.11] x:1 2 3}", "[T|S|x 2018.12.09 #a 1 2018.12.10 #b 2 2018.12.11 #c 3]");
+    }
+
+    [Test]
+    public void TestCube13 ()
+    {
+      DoTest ("cube {S:[x #a #b #c] G:[x 100 200 300] x:1 2 3}", "[G|S|x 100 #a 1 200 #b 2 300 #c 3]");
+    }
+
+    [Test]
+    public void TestCube14 ()
+    {
+      DoTest ("cube {S:[x #a #b #c] E:[x 100 200 300] x:1 2 3}", "[E|S|x 100 #a 1 200 #b 2 300 #c 3]");
+    }
+
+    [Test]
     public void TestIdentityCube ()
     {
       DoTest ("cube []", "[]");
