@@ -2381,7 +2381,8 @@ namespace RCL.Core
     [RCVerb ("rename")]
     public void RenameOp (RCRunner runner, RCClosure closure, RCString left, RCCube right)
     {
-      throw new Exception ("rename needs a new implementation specifically for cubes.");
+      RCCube result = new RCCube (right.Axis, left.Data, right.Columns);
+      runner.Yield (closure, result);
     }
 
     [RCVerb ("has")]

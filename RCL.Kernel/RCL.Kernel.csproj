@@ -60,6 +60,7 @@
     <Compile Include="modules\Parse.cs" />
     <Compile Include="modules\Assert.cs" />
     <Compile Include="RCArgv.cs" />
+    <Compile Include="RCAssert.cs" />
     <Compile Include="RCColmap.cs" />
     <Compile Include="RCSystem.cs" />
     <Compile Include="types\RCBlock.cs" />
