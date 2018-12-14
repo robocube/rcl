@@ -5838,7 +5838,7 @@
     }
   }
   TestRename:{
-    skip:true
+    skip:false
     src:"d" "e" "f" rename [
       S | a  b  c
       #x  1  2  3
