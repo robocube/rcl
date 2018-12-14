@@ -2858,13 +2858,8 @@ namespace RCL.Test
 
     //Rename
     [Test]
-    [Ignore ("because")]
     public void TestRename ()
     {
-      //ideally name/rename should use symbols because names in strings
-      //are not necessarily legal identifiers.  But symbols are.
-      //It is possible to create a symbol with an illegal name by coercing a string however.
-      //So it's not exactly bulletproof yet.
       DoTest ("\"d\" \"e\" \"f\" rename [S|a b c #x 1 2 3]", "[S|d e f #x 1 2 3]");
     }
 
