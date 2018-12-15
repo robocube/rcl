@@ -230,6 +230,13 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestCube15 ()
+    {
+      DoTest ("cube {a:[T|S|x 2018.12.15 #i 1 2018.12.15 #j 2] b:[T|S|y 2018.12.15 #i 1 2018.12.15 #j 2] c:[T|S|z 2018.12.15 #i 1 2018.12.15 #j 2]}",
+              "[T|S|a b c 2018.12.15 #i 1 1 1 2018.12.15 #j 2 2 2]");
+    }
+
+    [Test]
     public void TestIdentityCube ()
     {
       DoTest ("cube []", "[]");
