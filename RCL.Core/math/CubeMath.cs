@@ -2277,6 +2277,7 @@ namespace RCL.Core
       int count = -1;
       RCArray<string> names = new RCArray<string> (data.Count);
       RCArray<RCValue> vectors = new RCArray<RCValue> (data.Count);
+      bool isAllCubes = true;
       for (int i = 0; i < data.Count; ++i)
       {
         RCBlock block = data.GetName (i);
@@ -2290,6 +2291,7 @@ namespace RCL.Core
           {
             G = ((RCLong) ((RCCube) block.Value).GetSimpleVector (0)).Data;
           }
+          isAllCubes = false;
           count = G.Count;
         }
         else if (block.Name == "E")
@@ -2302,6 +2304,7 @@ namespace RCL.Core
           {
             E = ((RCLong) ((RCCube) block.Value).GetSimpleVector (0)).Data;
           }
+          isAllCubes = false;
           count = E.Count;
         }
         else if (block.Name == "T")
@@ -2314,6 +2317,7 @@ namespace RCL.Core
           {
             T = ((RCTime) ((RCCube) block.Value).GetSimpleVector (0)).Data;
           }
+          isAllCubes = false;
           count = T.Count;
         }
         else if (block.Name == "S")
@@ -2326,10 +2330,15 @@ namespace RCL.Core
           {
             S = ((RCSymbol) ((RCCube) block.Value).GetSimpleVector (0)).Data;
           }
+          isAllCubes = false;
           count = S.Count;
         }
         else
         {
+          if (!(block.Value is RCCube))
+          {
+            isAllCubes = false;
+          }
           vectors.Write (block.Value);
           names.Write (block.Name);
         }
@@ -2344,29 +2353,41 @@ namespace RCL.Core
         Timeline axis = new Timeline (G, E, T, S);
         result = new RCCube (axis);
       }
-      for (int i = 0; i < vectors.Count; ++i)
+      if (isAllCubes)
       {
-        name = names[i];
-        cube = vectors[i] as RCCube;
-        if (cube != null)
+        RCCube[] cubes = new RCCube[vectors.Count];
+        for (int i = 0; i < vectors.Count; ++i)
         {
-          string colname = null;
-          if (cube.Cols == 1 && name != "")
-          {
-            colname = name;
-          }
-          result = Bang (result, cube, colname, false, false, true, true);
-          continue;
+          cubes[i] = (RCCube) vectors[i];
         }
-        vector = vectors[i] as RCVectorBase;
-        if (vector != null)
+        result = MergeMultipleCubes (names.ToArray (), cubes);
+      }
+      else
+      {
+        for (int i = 0; i < vectors.Count; ++i)
         {
-          if (name == "")
+          name = names[i];
+          cube = vectors[i] as RCCube;
+          if (cube != null)
           {
-            throw new Exception ("vector values must have names assigned");
+            string colname = null;
+            if (cube.Cols == 1 && name != "")
+            {
+              colname = name;
+            }
+            result = Bang (result, cube, colname, false, false, true, true);
+            continue;
           }
-          result = Bang (result, vector, name, true, true);
-          continue;
+          vector = vectors[i] as RCVectorBase;
+          if (vector != null)
+          {
+            if (name == "")
+            {
+              throw new Exception ("vector values must have names assigned");
+            }
+            result = Bang (result, vector, name, true, true);
+            continue;
+          }
         }
       }
       return result;
