@@ -237,6 +237,12 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestCube16 ()
+    {
+      DoTest ("cube {x:[] y:[] z:[]}", "[]");
+    }
+
+    [Test]
     public void TestIdentityCube ()
     {
       DoTest ("cube []", "[]");
