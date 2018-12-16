@@ -2689,6 +2689,7 @@ namespace RCL.Core
       {
         return RCCube.Empty;
       }
+      int doneCubes = 0;
       //Timeline[] sortedAxes = new Timeline[cubes.Length];
       // These maps take each cube from unsorted to sorted.
       Dictionary<long, int>[] sortedMaps = new Dictionary<long, int>[cubes.Length];
@@ -2704,6 +2705,10 @@ namespace RCL.Core
         }
         sortedMaps[i] = invertedRankMap;
         mergedMaps[i] = new Dictionary<long, int> ();
+        if (cubes[i].Count == 0)
+        {
+          ++doneCubes;
+        }
       }
       // Now build the merged axis from the sorted source axes.
       Timeline resultAxis = cubes[0].Axis.Match ();
@@ -2720,7 +2725,6 @@ namespace RCL.Core
         }
       }
 
-      int doneCubes = 0;
       Queue<int> cubesWithCurrentRow = new Queue<int> ();
       while (doneCubes < cubes.Length)
       {

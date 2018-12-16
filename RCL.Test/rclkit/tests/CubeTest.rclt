@@ -637,6 +637,15 @@
       2018.12.15 #j  2  2  2
     ]
   }
+  TestCube16:{
+    skip:false
+    src:cube {
+      x:[]
+      y:[]
+      z:[]
+    }
+    bin:[]
+  }
   TestIdentityCube:{
     skip:false
     src:cube []
