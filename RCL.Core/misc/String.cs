@@ -132,7 +132,16 @@ namespace RCL.Core
       RCArray<bool> result = new RCArray<bool> (left.Count);
       for (int i = 0; i < left.Count; ++i)
       {
-        result.Write (left [i].StartsWith (right [0]));
+        bool found = false;
+        for (int j = 0; j < right.Count; ++j)
+        {
+          if (left[i].StartsWith (right[j]))
+          {
+            found = true;
+            break;
+          }
+        }
+        result.Write (found);
       }
       runner.Yield (closure, new RCBoolean (result));
     }

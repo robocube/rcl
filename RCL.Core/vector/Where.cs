@@ -84,6 +84,20 @@ namespace RCL.Core
       runner.Yield (closure, result);
     }
 
+    [RCVerb ("where")]
+    public void EvalWhere (RCRunner runner, RCClosure closure, RCBoolean right)
+    {
+      RCArray<long> result = new RCArray<long> (8);
+      for (int i = 0; i < right.Count; ++i)
+      {
+        if (right[i])
+        {
+          result.Write ((long) i);
+        }
+      }
+      runner.Yield (closure, new RCLong (result));
+    }
+
     protected RCBlock RecursiveWhere (RCBlock left, RCBlock right)
     {
       if (left.Count != right.Count)

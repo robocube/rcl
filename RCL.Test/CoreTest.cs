@@ -1377,6 +1377,8 @@ namespace RCL.Test
     public void TestWhereKK3 () { DoTest ("{a:{x:1 y:2 z:3}} where {a:{x:false y:true z:false}}", "{a:{y:2}}"); }
     [Test]
     public void TestWhereKK4 () { DoTest ("{k:{a:{x:1 y:2 z:3}} <-$k where {<-{<-($L == \"y\")} each $R} each $k}", "{a:{y:2}}"); }
+    [Test]
+    public void TestWhereB () { DoTest ("where true true false true false true", "0 1 3 5"); }
 
     [Test]
     public void TestSortAscL() { DoTest ("#asc sort 2 0 1", "0 1 2"); }
@@ -1956,6 +1958,8 @@ namespace RCL.Test
     public void TestPad () { DoTest (" \"-\" pad 1 2 3", "\"-\" \"--\" \"---\""); }
     [Test]
     public void TestStartsWith () { DoTest ("\"aaa\" \"foobar\" \"fozbaz\" \"foo\" \"fo\" startswith \"foo\"", "false true false true false"); }
+    [Test]
+    public void TestStartsWith1 () { DoTest ("\"x 1\" \"y 2\" \"z 3\" \"x 4\" \"y 5\" startswith \"x\" \"y\"", "true true false true true"); }
     [Test]
     public void TestCut () { DoTest ("0 1 2 cut \"abcdef\" \"ghijkl\" \"mnopqr\"", "\"abcdef\" \"hijkl\" \"opqr\""); }
     [Test]
