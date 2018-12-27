@@ -233,7 +233,7 @@ namespace RCL.Kernel
       {
         return new RCTimeScalar (ts);
       }
-      throw new Exception ("Unable to parse time " + text);
+      throw new Exception (string.Format ("Unable to parse time string: \"{0}\"", text));
     }
   }
 }

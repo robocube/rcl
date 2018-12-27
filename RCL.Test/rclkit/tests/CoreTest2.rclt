@@ -1186,6 +1186,11 @@
       }
     }
   }
+  TestWhereB:{
+    skip:false
+    src:where true true false true false true
+    bin:0 1 3 5
+  }
   TestSortAscL:{
     skip:false
     src:#asc sort 2 0 1
@@ -2747,6 +2752,11 @@
     skip:false
     src:"aaa" "foobar" "fozbaz" "foo" "fo" startswith "foo"
     bin:false true false true false
+  }
+  TestStartsWith1:{
+    skip:false
+    src:"x 1" "y 2" "z 3" "x 4" "y 5" startswith "x" "y"
+    bin:true true false true true
   }
   TestCut:{
     skip:false

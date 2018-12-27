@@ -2157,7 +2157,10 @@ namespace RCL.Core
           }
           return left;
         }
-        else throw new Exception ();
+        else
+        {
+          throw new Exception (string.Format ("Unable to align vector having count {0} with cube having count {1}", right.Count, left.Axis.Count));
+        }
       }
       else
       {
