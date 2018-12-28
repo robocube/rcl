@@ -1653,6 +1653,31 @@ namespace RCL.Core
       runner.Yield (closure, result);
     }
 
+    [RCVerb ("presect")]
+    public void EvalPresect (RCRunner runner, RCClosure closure, RCCube left, RCCube right)
+    {
+      // Performs prefixing of section header data onto the S col of a cube
+      // left is a cube with data in the S col and integers (x) in col 0
+      // right is a cube with data in the S col and integers (x) in col 0
+      // result is a cube with the same count as right, having symbols prefixed with one value from the left S col.
+      // for each row in result, the S col value will be prefixed with one S col value from the left cube.
+      // the symbol prefix used is the last one with a value in col 0 that is less than the value in col 0 of the right.
+      // In order to understand the use case for the presect operator, consider the following scenario:
+      // You have a csv-like file with irregular sections of data, which need to be related in a cube:
+      //   header,number
+      //   account,ABCDEFG
+      //   header,side,qty,symbol
+      //   trade,BOT,100,XYZ
+      //   trade,SLD,100,XYZ
+      //   header,number
+      //   account,HIJKLMN
+      //   header,side,qty,symbol
+      //   trade,BOT,100,ABC
+      //   trade,SLD,100,ABC
+      // You want a cube which includes the account number as a value in the symbol column
+      throw new NotImplementedException ();
+    }
+
     [RCVerb ("flatPack")]
     public void EvalFlatPack (RCRunner runner, RCClosure closure, RCCube right)
     {
