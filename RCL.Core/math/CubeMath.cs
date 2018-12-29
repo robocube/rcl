@@ -1376,6 +1376,73 @@ namespace RCL.Core
     }
 
     [RCVerb ("cube")]
+    public void EvalCube (RCRunner runner, RCClosure closure, RCString right)
+    {
+      RCCube result = VectorToCube<string> (right.Data);
+      runner.Yield (closure, result);
+    }
+
+    [RCVerb ("cube")]
+    public void EvalCube (RCRunner runner, RCClosure closure, RCSymbol right)
+    {
+      RCCube result = VectorToCube<RCSymbolScalar> (right.Data);
+      runner.Yield (closure, result);
+    }
+
+    [RCVerb ("cube")]
+    public void EvalCube (RCRunner runner, RCClosure closure, RCDouble right)
+    {
+      RCCube result = VectorToCube<double> (right.Data);
+      runner.Yield (closure, result);
+    }
+
+    [RCVerb ("cube")]
+    public void EvalCube (RCRunner runner, RCClosure closure, RCDecimal right)
+    {
+      RCCube result = VectorToCube<decimal> (right.Data);
+      runner.Yield (closure, result);
+    }
+
+    [RCVerb ("cube")]
+    public void EvalCube (RCRunner runner, RCClosure closure, RCLong right)
+    {
+      RCCube result = VectorToCube<long> (right.Data);
+      runner.Yield (closure, result);
+    }
+
+    [RCVerb ("cube")]
+    public void EvalCube (RCRunner runner, RCClosure closure, RCBoolean right)
+    {
+      RCCube result = VectorToCube<bool> (right.Data);
+      runner.Yield (closure, result);
+    }
+
+    [RCVerb ("cube")]
+    public void EvalCube (RCRunner runner, RCClosure closure, RCTime right)
+    {
+      RCCube result = VectorToCube<RCTimeScalar> (right.Data);
+      runner.Yield (closure, result);
+    }
+
+    [RCVerb ("cube")]
+    public void EvalCube (RCRunner runner, RCClosure closure, RCIncr right)
+    {
+      RCCube result = VectorToCube<RCIncrScalar> (right.Data);
+      runner.Yield (closure, result);
+    }
+
+    protected RCCube VectorToCube<T> (RCArray<T> data)
+    {
+      RCCube result = new RCCube (new RCArray<string> ());
+      for (int i = 0; i < data.Count; ++i)
+      {
+        result.WriteCell ("x", null, data[i], result.Axis.Count, parsing:true, force:false);
+        result.Axis.Write ();
+      }
+      return result;
+    }
+
+    [RCVerb ("cube")]
     public void EvalCube (RCRunner runner, RCClosure closure, RCSymbol left, RCBlock right)
     {
       RCCube result = new RCCube (new RCArray<string> ("S"));

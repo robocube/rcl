@@ -243,6 +243,54 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestCubeS ()
+    {
+      DoTest ("cube \"a\" \"b\" \"c\"", "[x \"a\" \"b\" \"c\"]");
+    }
+
+    [Test]
+    public void TestCubeY ()
+    {
+      DoTest ("cube #a #b #c", "[x #a #b #c]");
+    }
+
+    [Test]
+    public void TestCubeL ()
+    {
+      DoTest ("cube 1 2 3 4", "[x 1 2 3 4]");
+    }
+
+    [Test]
+    public void TestCubeD ()
+    {
+      DoTest ("cube 1.0 2.0 3.0 4.0", "[x 1.0 2.0 3.0 4.0]");
+    }
+
+    [Test]
+    public void TestCubeM ()
+    {
+      DoTest ("cube 1.0 2.0 3.0 4.0m", "[x 1m 2m 3m 4m]");
+    }
+
+    [Test]
+    public void TestCubeB ()
+    {
+      DoTest ("cube true false true false", "[x true false true false]");
+    }
+
+    [Test]
+    public void TestCubeT ()
+    {
+      DoTest ("cube 2018.12.28 2018.12.29 2018.12.30", "[x 2018.12.28 2018.12.29 2018.12.30]");
+    }
+
+    [Test]
+    public void TestCubeI ()
+    {
+      DoTest ("cube ++ ++ ++", "[x ++ ++ ++]");
+    }
+
+    [Test]
     public void TestIdentityCube ()
     {
       DoTest ("cube []", "[]");
