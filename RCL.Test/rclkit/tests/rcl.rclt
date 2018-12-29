@@ -777,7 +777,7 @@ http_dispose_message_hidden_by_show:{
   src:{
     script:[??
       rcl --batch --nokeys --show=print --exit << 'OUTER'
-      :httpstart "http://localhost:6234/foo/"
+      :httpstart "http://localhost:6334/foo/"
       :print "started httplistener"
       <-0
       OUTER

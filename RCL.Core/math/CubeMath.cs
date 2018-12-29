@@ -1400,6 +1400,38 @@ namespace RCL.Core
     }
 
     [RCVerb ("where")]
+    public void EvalWhere (RCRunner runner, RCClosure closure, RCCube right)
+    {
+      RCCube result = new RCCube (right.Axis.Match ());
+      Column<bool> indicator = (Column<bool>) right.GetColumn (0);
+      if (indicator.Count == right.Axis.Count)
+      {
+        for (int i = 0; i < right.Axis.Count; ++i)
+        {
+          if (indicator.Data[i])
+          {
+            result.WriteCell ("x", right.Axis.SymbolAt (i), (long) i);
+            result.Axis.Write (right.Axis, i);
+          }
+        }
+      }
+      else
+      {
+        for (int i = 0; i < right.Axis.Count; ++i)
+        {
+          bool found;
+          int index = indicator.Index.BinarySearch (i, out found);
+          if (found && indicator.Data[index])
+          {
+            result.WriteCell ("x", right.Axis.SymbolAt (i), (long) i);
+            result.Axis.Write (right.Axis, i);
+          }
+        }
+      }
+      runner.Yield (closure, result);
+    }
+
+    [RCVerb ("where")]
     public void EvalWhere (RCRunner runner, RCClosure closure, RCCube left, RCCube right)
     {
       if (right.Columns.Count == 0)
@@ -1653,31 +1685,6 @@ namespace RCL.Core
       runner.Yield (closure, result);
     }
 
-    [RCVerb ("presect")]
-    public void EvalPresect (RCRunner runner, RCClosure closure, RCCube left, RCCube right)
-    {
-      // Performs prefixing of section header data onto the S col of a cube
-      // left is a cube with data in the S col and integers (x) in col 0
-      // right is a cube with data in the S col and integers (x) in col 0
-      // result is a cube with the same count as right, having symbols prefixed with one value from the left S col.
-      // for each row in result, the S col value will be prefixed with one S col value from the left cube.
-      // the symbol prefix used is the last one with a value in col 0 that is less than the value in col 0 of the right.
-      // In order to understand the use case for the presect operator, consider the following scenario:
-      // You have a csv-like file with irregular sections of data, which need to be related in a cube:
-      //   header,number
-      //   account,ABCDEFG
-      //   header,side,qty,symbol
-      //   trade,BOT,100,XYZ
-      //   trade,SLD,100,XYZ
-      //   header,number
-      //   account,HIJKLMN
-      //   header,side,qty,symbol
-      //   trade,BOT,100,ABC
-      //   trade,SLD,100,ABC
-      // You want a cube which includes the account number as a value in the symbol column
-      throw new NotImplementedException ();
-    }
-
     [RCVerb ("flatPack")]
     public void EvalFlatPack (RCRunner runner, RCClosure closure, RCCube right)
     {
@@ -1742,8 +1749,9 @@ namespace RCL.Core
     public void Except (RCRunner runner, RCClosure closure, RCCube left, RCCube right)
     {
       if (left.Axis.Symbol == null || right.Axis.Symbol == null)
+      {
         throw new Exception ("except requires both cubes to have S");
-
+      }
       HashSet<RCSymbolScalar> rightSyms = new HashSet<RCSymbolScalar> (right.Axis.Symbol);
       RCArray<RCSymbolScalar> s = new RCArray<RCSymbolScalar> (8);
       for (int i = 0; i < left.Count; ++i)
@@ -1763,7 +1771,7 @@ namespace RCL.Core
     [RCVerb ("except")]
     public void Except (RCRunner runner, RCClosure closure, RCCube left, RCSymbol right)
     {
-      if (left.Axis.Symbol == null || right == null)
+      if (left.Axis.Symbol == null)
       {
         throw new Exception ("except requires both cubes to have S");
       }
@@ -1779,7 +1787,38 @@ namespace RCL.Core
       Timeline axis = new Timeline (s);
       RCCube result = new RCCube (axis);
       result = Bang (result, left, null, false, false, false, true);
-      //result = Bang (result, right, null, false, false, false, true);
+      runner.Yield (closure, result);
+    }
+
+    [RCVerb ("except")]
+    public void Except (RCRunner runner, RCClosure closure, RCCube left, RCLong right)
+    {
+      RCCube result = new RCCube (left.Axis.Match ());
+      HashSet<long> exceptRows = new HashSet<long> (right);
+      for (int i = 0; i < left.Axis.Count; ++i)
+      {
+        if (!exceptRows.Contains (i))
+        {
+          for (int j = 0; j < left.Cols; ++j)
+          {
+            RCSymbolScalar sym = left.Axis.SymbolAt (i);
+            ColumnBase column = left.GetColumn (j);
+            if (column == null)
+            {
+              continue;
+            }
+            bool found;
+            int index = column.Index.BinarySearch (i, out found);
+            if (found)
+            {
+              string name = left.NameAt (j);
+              object box = column.BoxCell (index);
+              result.WriteCell (name, sym, box);
+            }
+          }
+          result.Axis.Write (left.Axis, i);
+        }
+      }
       runner.Yield (closure, result);
     }
 

@@ -6625,6 +6625,57 @@
       #a  1
     ]
   }
+  TestExcept6:{
+    skip:false
+    src:[
+       x
+       1
+       2
+       3
+       4
+       5
+    ] except 1 4
+    bin:[
+       x
+       1
+       3
+       4
+    ]
+  }
+  TestExcept7:{
+    skip:false
+    src:[
+       x
+       1
+      --
+       3
+      --
+       5
+    ] except 1 4
+    bin:[
+       x
+       1
+       3
+      --
+    ]
+  }
+  TestExcept8:{
+    skip:false
+    src:[
+      S | x
+      #a  1
+      #b  2
+      #c  3
+      #d  4
+      #e  5
+    ] except 1 4
+    bin:[
+      S | x
+      #a  1
+      #c  3
+      #d  4
+    ]
+  }
   TestInter:{
     skip:false
     src:[
@@ -6842,6 +6893,48 @@
     src:[] where []
     bin:[]
   }
+  TestWhere10:{
+    skip:false
+    src:where [
+          x
+       true
+      false
+       true
+    ]
+    bin:[
+       x
+       0
+       2
+    ]
+  }
+  TestWhere11:{
+    skip:false
+    src:where [
+      S |    x
+      #a  true
+      #b false
+      #c  true
+    ]
+    bin:[
+      S | x
+      #a  0
+      #c  2
+    ]
+  }
+  TestWhere12:{
+    skip:false
+    src:where [
+               T|S |    x
+      2018.12.28 #a  true
+      2018.12.28 #b false
+      2018.12.28 #c  true
+    ]
+    bin:[
+               T|S | x
+      2018.12.28 #a  0
+      2018.12.28 #c  2
+    ]
+  }
   TestWhereEmpty1:{
     skip:false
     src:{
@@ -6976,6 +7069,21 @@
       2017.11.23 #a  1
       2017.11.26 #a  1
       2017.11.30 #a  2
+    ]
+  }
+  TestFill3:{
+    skip:false
+    src:fill [
+       a  b  c
+      --  1  2
+       3 --  4
+      -- -- --
+    ]
+    bin:[
+       a  b  c
+      --  1  2
+       3  1  4
+       3  1  4
     ]
   }
   TestObject:{
