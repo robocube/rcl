@@ -3149,6 +3149,24 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestExcept6 ()
+    {
+      DoTest ("[x 1 2 3 4 5] except 1 4", "[x 1 3 4]");
+    }
+
+    [Test]
+    public void TestExcept7 ()
+    {
+      DoTest ("[x 1 -- 3 -- 5] except 1 4", "[x 1 3 --]");
+    }
+
+    [Test]
+    public void TestExcept8 ()
+    {
+      DoTest ("[S|x #a 1 #b 2 #c 3 #d 4 #e 5] except 1 4", "[S|x #a 1 #c 3 #d 4]");
+    }
+
+    [Test]
     public void TestInter ()
     {
       DoTest ("[S|x #a 1] inter [S|x #b 2 #c 3]", "[]");
@@ -3234,6 +3252,24 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestWhere10 ()
+    {
+      DoTest ("where [x true false true]", "[x 0 2]");
+    }
+
+    [Test]
+    public void TestWhere11 ()
+    {
+      DoTest ("where [S|x #a true #b false #c true]", "[S|x #a 0 #c 2]");
+    }
+
+    [Test]
+    public void TestWhere12 ()
+    {
+      DoTest ("where [T|S|x 2018.12.28 #a true 2018.12.28 #b false 2018.12.28 #c true]", "[T|S|x 2018.12.28 #a 0 2018.12.28 #c 2]");
+    }
+
+    [Test]
     public void TestWhereEmpty1 ()
     {
       DoTest ("{u:[x y 1 -- 2 20] <-$u where $u.y == 20}", "[x y 2 20]");
@@ -3279,6 +3315,12 @@ namespace RCL.Test
     public void TestFill2 ()
     {
       DoTest (RCFormat.Default, "fill [T|S|x 2017.11.23 #a 1 2017.11.26 #a -- 2017.11.30 #a 2]", "[T|S|x 2017.11.23 #a 1 2017.11.26 #a 1 2017.11.30 #a 2]");
+    }
+
+    [Test]
+    public void TestFill3 ()
+    {
+      DoTest ("fill [a b c -- 1 2 3 -- 4 -- -- --]", "[a b c -- 1 2 3 1 4 3 1 4]");
     }
 
     [Test]
