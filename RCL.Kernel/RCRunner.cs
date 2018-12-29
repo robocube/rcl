@@ -485,6 +485,15 @@ namespace RCL.Kernel
       return result;
     }
 
+    public RCValue RepAction (string action)
+    {
+      if (m_state.Get (action) == null)
+      {
+        throw new ArgumentException (string.Format ("Unknown action name: {0}", action));
+      }
+      return Rep (string.Format ("{0} {{}}", action));
+    }
+
     protected RCBlock m_state = RCBlock.Empty;
     public RCValue Rep (string code)
     {

@@ -638,6 +638,15 @@ namespace RCL.Kernel
       }
     }
 
+    public void CheckName (string name)
+    {
+      RCValue val = Get (name);
+      if (val == null)
+      {
+        throw new Exception (string.Format ("The variable '{0}' was not found in this block.", name));
+      }
+    }
+
     public void CheckString (string name)
     {
       RCValue val = Get (name);

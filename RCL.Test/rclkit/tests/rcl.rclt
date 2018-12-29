@@ -985,3 +985,37 @@ bot_killed_on_wait_timeout:{
   ?]
 }
 
+missing_program:{
+  src:{
+    script:[?
+      set -e
+      rcl --program=missing_file.rcl --action=main
+      exit
+    ?]
+    bash:startx "bash"
+    :$bash writex script $R
+    out:try {<-waitx $bash}
+    <-template & $out.data + "\n"
+  }
+  bin:[?
+    <<Operation failed: see error for details>>
+  ?]
+}
+
+missing_action:{
+  src:{
+    script:[?
+      set -e
+      rcl --program=[! getm #hello_file !] --action=foo
+      exit
+    ?]
+    bash:startx "bash"
+    :$bash writex script $R
+    out:try {<-waitx $bash}
+    <-template & $out.data + "\n"
+  }
+  bin:[?
+    <<Operation failed: see error for details>>
+  ?]
+}
+
