@@ -138,7 +138,7 @@ namespace RCL.Kernel
       }
       else if ((!m_nokeys && m_level != RCOutput.Test) &&
                (bot == 0 && instance == 0 && type == "fiber") &&
-               (state == "reported" || state == "failed" || state == "fatal"))
+               (state == "reported" || state == "failed"))
       {
         //In interactive mode, suppress reported stack frames from Program.Main
         //The only error you should see is the "unhandled" one

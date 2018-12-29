@@ -90,7 +90,7 @@ namespace RCL.Exe
           codeResult = runner.Rep (code, restoreStateOnError:true);
           if (cmd.Action != "")
           {
-            RCValue result = runner.Rep (string.Format ("{0} #", cmd.Action));
+            RCValue result = runner.RepAction (cmd.Action);
             if (cmd.OutputEnum != RCOutput.Clean)
             {
               Console.Out.WriteLine (result.Format (RCFormat.Pretty, RCSystem.Log.GetColmap ()));
@@ -113,8 +113,22 @@ namespace RCL.Exe
           runner.Dispose ();
           Environment.Exit (status);
         }
+        catch (ArgumentException ex)
+        {
+          //This is for when the action name is not in m_state.
+          RCSystem.Log.Record (0, 0, "runner", 0, "fatal", ex);
+          Environment.Exit (1);
+        }
+        catch (FileNotFoundException ex)
+        {
+          //This for when the program file cannot be read.
+          RCSystem.Log.Record (0, 0, "runner", 0, "fatal", ex);
+          Environment.Exit (1);
+        }
         catch (Exception ex)
         {
+          // For all other exceptions keep the process open unless instructed to --exit.
+          // This is so you can hack around in the environment.
           // Does this result in duplicate exception reports on the console?
           // I don't want it to, but without this there are errors that do not show up at all.
           RCSystem.Log.Record (0, 0, "fiber", 0, "fatal", ex);
