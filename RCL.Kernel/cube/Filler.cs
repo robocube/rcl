@@ -67,7 +67,6 @@ namespace RCL.Kernel
       }
       else
       {
-        Column<T> targetColumn = (Column<T>) m_target.GetColumn (name);
         if (m_last.ContainsKey (name))
         {
           T lastVal = (T) m_last[name];
