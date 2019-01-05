@@ -3215,6 +3215,37 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestExcept9 ()
+    {
+      //With wildcard
+      DoTest ("[S|x #a,x 1 #b,x 10 #a,y 2 #b,y 20 #a,z 3 #b,z 30] except #a,*", "[S|x #b,x 10 #b,y 20 #b,z 30]");
+    }
+
+    [Test]
+    public void TestExcept10 ()
+    {
+      //With wildcard
+      DoTest ("[T|S|x 2019.01.05 #a,x 1 2019.01.05 #b,x 10 2019.01.05 #a,y 2 2019.01.05 #b,y 20 2019.01.05 #a,z 3 2019.01.05 #b,z 30] except #a,*",
+              "[T|S|x 2019.01.05 #b,x 10 2019.01.05 #b,y 20 2019.01.05 #b,z 30]");
+    }
+
+    [Test]
+    public void TestExcept11 ()
+    {
+      //Time, Symbol, Concrete
+      DoTest ("[T|S|x 2019.01.05 #a,x 1 2019.01.05 #b,x 10 2019.01.05 #a,y 2 2019.01.05 #b,y 20 2019.01.05 #a,z 3 2019.01.05 #b,z 30] except #a,x #b,y",
+              "[T|S|x 2019.01.05 #b,x 10 2019.01.05 #a,y 2 2019.01.05 #a,z 3 2019.01.05 #b,z 30]");
+    }
+
+    [Test]
+    public void TestExcept12 ()
+    {
+      //Symbol, Concrete
+      DoTest ("[S|x #a,x 1 #b,x 10 #a,y 2 #b,y 20 #a,z 3 #b,z 30] except #a,x #b,y",
+              "[S|x #b,x 10 #a,y 2 #a,z 3 #b,z 30]");
+    }
+
+    [Test]
     public void TestInter ()
     {
       DoTest ("[S|x #a 1] inter [S|x #b 2 #c 3]", "[]");
