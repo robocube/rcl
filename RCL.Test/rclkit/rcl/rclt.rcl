@@ -196,7 +196,7 @@ main:{
   :"https://blogs.msdn.microsoft.com/commandline/2017/12/22/share-environment-vars-between-wsl-and-windows/"
   :"PATH and RCL_PREFIX are still controlled by the wsl env ~/.profile"
   :"WSLENV" setenv "RCL_FLAGS/u:RCLT_DISPLAY_STATUS/u"
-  results:& {<-$R.data} each {
+  results0:{<-$R.data} each {
     test_op:eval {
       RCL_HOME:$RCL_HOME
       RCLT_DISPLAY_STATUS:"," split ("F" getenv "RCLT_DISPLAY_STATUS") option "rclt-display-status"
@@ -207,13 +207,14 @@ main:{
       run_test:$run_test
       rclt:$rclt
       :"run_file" monad $R
-      result::(#rclt,* snap -1) except #G
+      result::(#rclt,* snap -1) except "G"
       <--$result
     }
     :"RCLT_DISPLAY_STATUS" setenv "P,F,K"
     output:try {<-isolate $test_op}
     <-($output.status == 0) switch {:$output :exit $output.status}
   } each $files
+  results:& $results0
   report:eval {
     failed_tests:$results where $results.status == "F"
     try:count $results.status

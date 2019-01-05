@@ -1838,22 +1838,41 @@ namespace RCL.Core
     [RCVerb ("except")]
     public void Except (RCRunner runner, RCClosure closure, RCCube left, RCSymbol right)
     {
-      if (left.Axis.Symbol == null)
+      RCCube result = new RCCube (left.Axis.Match ());
+      for (int i = 0; i < left.Axis.Count; ++i)
       {
-        throw new Exception ("except requires both cubes to have S");
-      }
-      HashSet<RCSymbolScalar> rightSyms = new HashSet<RCSymbolScalar> (right);
-      RCArray<RCSymbolScalar> s = new RCArray<RCSymbolScalar> (8);
-      for (int i = 0; i < left.Count; ++i)
-      {
-        if (!rightSyms.Contains (left.Axis.Symbol[i]))
+        bool include = true;
+        for (int j = 0; j < right.Count; ++j)
         {
-          s.Write (left.Axis.Symbol[i]);
+          RCSymbolScalar symbol = left.Axis.Symbol[i];
+          if ((symbol.Equals (right[j])) || (symbol.IsConcreteOf (right[j])))
+          {
+            include = false;
+            break;
+          }
+        }
+        if (include)
+        {
+          for (int k = 0; k < left.Cols; ++k)
+          {
+            RCSymbolScalar sym = left.Axis.SymbolAt (i);
+            ColumnBase column = left.GetColumn (k);
+            if (column == null)
+            {
+              continue;
+            }
+            bool found;
+            int index = column.Index.BinarySearch (i, out found);
+            if (found)
+            {
+              string name = left.NameAt (k);
+              object box = column.BoxCell (index);
+              result.WriteCell (name, sym, box);
+            }
+          }
+          result.Axis.Write (left.Axis, i);
         }
       }
-      Timeline axis = new Timeline (s);
-      RCCube result = new RCCube (axis);
-      result = Bang (result, left, null, false, false, false, true);
       runner.Yield (closure, result);
     }
 
