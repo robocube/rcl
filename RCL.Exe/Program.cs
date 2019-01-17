@@ -102,6 +102,7 @@ namespace RCL.Exe
           }
           if (cmd.Batch)
           {
+            status = runner.ExitStatus ();
             runner.Dispose ();
             Environment.Exit (0);
           }
@@ -132,7 +133,7 @@ namespace RCL.Exe
           // Does this result in duplicate exception reports on the console?
           // I don't want it to, but without this there are errors that do not show up at all.
           RCSystem.Log.Record (0, 0, "fiber", 0, "fatal", ex);
-          status = 1;
+          status = runner.ExitStatus ();
           if (IsolateCode != null)
           {
             AppDomain.CurrentDomain.SetData ("IsolateException", ex);
@@ -191,8 +192,9 @@ namespace RCL.Exe
             }
             if (cmd.Exit)
             {
+              status = runner.ExitStatus ();
               runner.Dispose ();
-              Environment.Exit (0);
+              Environment.Exit (status);
             }
           }
           else
@@ -240,7 +242,7 @@ namespace RCL.Exe
         {
           //Brian! This is where the Console exception was getting hidden
           //Console.WriteLine ("Exception was caught: {0}", ex);
-          //Prevent having duplicate output in the log for these - I find it disorienting and buggish
+          //Prevent having duplicate output in the log for these - disorienting and buggish
           if (!runner.RunnerUnhandled)
           {
             RCSystem.Log.Record (0, 0, "fiber", 0, "unhandled", ex);
@@ -252,13 +254,13 @@ namespace RCL.Exe
     }
 
     /// <summary>
-    /// Remember if we have already received one SIGINT
+    /// True if we have already received one SIGINT.
     /// </summary>
     protected static volatile bool m_firstSigint;
 
     /// <summary>
-    /// Launches a background thread to listen for POSIX signals. Exit on two signal 2's
-    /// or one signal 15.
+    /// Launches a background thread to listen for POSIX signals.
+    /// Exit on two signal 2's or one signal 15.
     /// </summary>
     static void InstallSignalHandler (RCRunner runner)
     {

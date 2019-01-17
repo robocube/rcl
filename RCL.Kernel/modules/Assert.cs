@@ -2,6 +2,8 @@
 using System;
 using System.Text;
 
+using System.Collections.Generic;
+
 namespace RCL.Kernel
 {
   public class Assert
@@ -13,10 +15,51 @@ namespace RCL.Kernel
       {
         if (!right[i])
         {
-          string expression = closure.Code.ToString ();
-          throw new RCException (closure,
-                                 RCErrors.Assert,
-                                 "Failed: " + expression);
+          RCCube target = new RCCube (new RCArray<string> ("S"));
+          Stack<object> names = new Stack<object> ();
+          RCBlock block = new RCBlock ("", ":", closure.Code);
+          block.Cubify (target, names);
+          ColumnBase column = target.GetColumn ("r");
+          string expression;
+          if (column != null)
+          {
+            RCArray<string> refNames = (RCArray<string>) column.Array;
+            //Only display the variables whose values are referenced in the assert expression
+            RCBlock displayVars = RCBlock.Empty;
+            for (int j = 0; j < refNames.Count; ++j)
+            {
+              RCArray<string> nameParts = RCName.MultipartName (refNames[j], '.');
+              RCValue val = Eval.Resolve (null, closure, nameParts, null, returnNull:true);
+              if (val != null)
+              {
+                displayVars = new RCBlock (refNames[j], ":", val);
+              }
+            }
+            expression = string.Format ("{0}, {1}", closure.Code.ToString (), displayVars);
+          }
+          else
+          {
+            expression = string.Format ("{0}", closure.Code.ToString ());
+          }
+          //string expression = column.Array.ToString ();
+          //RCBlock referencedVars = closure.Code.EvalAllReferences (closure);
+          // expression = closure.ToString ();
+          //      -- test_code {}
+          //w:#0,'CDwindow-a76d15c4-7287-40d5-b5d2-b4b8a878f812'
+          //file_input:#0,'CDwindow-a76d15c4-7287-40d5-b5d2-b4b8a878f812',4
+          //:"Testing program gauntlet/0000.rcl"
+          //:#0,'CDwindow-a76d15c4-7287-40d5-b5d2-b4b8a878f812',4
+          //:#0,'CDwindow-a76d15c4-7287-40d5-b5d2-b4b8a878f812',5
+          //:"waiting for 'Loaded...'"
+          //:#0,'CDwindow-a76d15c4-7287-40d5-b5d2-b4b8a878f812',6
+          //:"checking existence of visual item"
+          //:#0,'CDwindow-a76d15c4-7287-40d5-b5d2-b4b8a878f812',7
+          //:#0,'CDwindow-a76d15c4-7287-40d5-b5d2-b4b8a878f812',8
+          //json:"\"GREEN\""
+          //page_status:{:"GREEN"}
+          //'1':false
+          //-- assert $page_status = "GREEN"
+          throw new RCException (closure, RCErrors.Assert, "Failed: " + expression);
         }
       }
       runner.Yield (closure, new RCBoolean (true));
@@ -27,9 +70,8 @@ namespace RCL.Kernel
     {
       if (!left.Equals (right))
       {
-        throw new RCException (closure, 
-                               RCErrors.Assert, "" +
-                               "Expected: " + right.ToString () +
+        throw new RCException (closure,
+                               RCErrors.Assert, "" + "Expected: " + right.ToString () +
                                   ", Actual: " + left.ToString ());
       }
       runner.Yield (closure, new RCBoolean (true));

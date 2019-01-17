@@ -203,7 +203,6 @@ namespace RCL.Kernel
 
       public override bool Write (RCSymbolScalar key, int index, object box, bool force)
       {
-        //throw new Exception ("Cannot write to an EmptyColumn");
         m_data.Write (box);
         m_index.Write (index);
         return true;

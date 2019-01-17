@@ -265,6 +265,12 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestProgrammaticSymbolBuildingEmpty ()
+    {
+      RCL.Kernel.Assert.AreEqual ("#", RCSymbolScalar.From ().ToString ());
+    }
+
+    [Test]
     public void TestProgrammaticSymbolBuildingWithIntFirst ()
     {
       RCL.Kernel.Assert.AreEqual ("#1,2,3", RCSymbolScalar.From ((int) 1, (long) 2, (long) 3).ToString ());

@@ -123,24 +123,24 @@
   }
   TestTryFail:{
     skip:false
-    src:#status #error from try {
+    src:#status #data from try {
       <-900 fail "fail with status 900"
     }
     bin:{
       status:900
-      error:[?
+      data:[?
         <<Custom,fail with status 900>>
       ?]
     }
   }
   TestTryFail1:{
     skip:false
-    src:#status #error from try {
+    src:#status #data from try {
       <-fail "rando failure message"
     }
     bin:{
       status:8
-      error:[?
+      data:[?
         <<Custom,rando failure message>>
       ?]
     }
@@ -346,12 +346,12 @@
   }
   TestTryAssert:{
     skip:false
-    src:#status #error from try {
+    src:#status #data from try {
       <-assert false
     }
     bin:{
       status:1
-      error:[?
+      data:[?
         <<Assert,Failed: assert false>>
       ?]
     }

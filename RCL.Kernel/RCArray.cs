@@ -92,9 +92,20 @@ namespace RCL.Kernel
       builder.Append ("[");
       for (int i = 0; i < Count; ++i)
       {
-        builder.Append (this[i].ToString ());
+        if (this[i] == null)
+        {
+          // The only time this should ever appear is when printing the context of a debug exception.
+          // It is not parsable. RCArrays with nulls should be caught in Lock (while running the debug build).
+          builder.Append ("null");
+        }
+        else
+        {
+          builder.Append (this[i].ToString ());
+        }
         if (i < Count - 1)
+        {
           builder.Append (" ");
+        }
       }
       builder.Append ("]");
       return builder.ToString ();
@@ -192,6 +203,7 @@ namespace RCL.Kernel
 
     public void Lock ()
     {
+      RCAssert.ArrayHasNoNulls<T> (this);
       m_lock = true;
     }
    

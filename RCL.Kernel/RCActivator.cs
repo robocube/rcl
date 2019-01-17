@@ -432,14 +432,7 @@ namespace RCL.Kernel
 
     protected string ThrowMessage (string name, Exception ex)
     {
-      if (RCSystem.Args.OutputEnum == RCOutput.Test)
-      {
-        return string.Format ("An exception was thrown by the operator {0}.", name);
-      }
-      else
-      {
-        return string.Format ("An exception was thrown by the operator {0}:\n-- {1}: {2}", name, ex.GetType ().Name, ex.Message);
-      }
+      return string.Format ("An exception was thrown by the operator {0}:\n-- {1}: {2}", name, ex.GetType ().Name, ex.Message);
     }
 
     //Seems like a kind of weird way to do this piece.

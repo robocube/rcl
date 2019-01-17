@@ -17,7 +17,7 @@ stop:{
       0     0 "fiber"         0 "caught"   "<<Timeout,Giving up after timeout.>>"  --
       0     0 "runner"        0 "exit"     "1"                                     --
       0     0 "print"         0 "out"      "not running"                           --
-      0     0 "print"         0 "out"      --                                      "{\n  status:1\n  error:[?\n    <<Timeout,Giving up after timeout.>>\n  ?]\n  data:\"<<Operation failed: see error for details>>\"\n}\n"
+      0     0 "print"         0 "out"      --                                      "{\n  status:1\n  error:\"<<Operation failed: see data for details>>\\n\"\n  data:[?\n    <<Timeout,Giving up after timeout.>>\n  ?]\n}\n"
       0     0 "fiber"         0 "reported" "<<Reported>>"                          --
   ]
 }

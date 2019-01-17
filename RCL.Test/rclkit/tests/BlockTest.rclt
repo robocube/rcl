@@ -374,6 +374,23 @@
       :Test.TestProgrammaticSymbolBuilding {}
     }
   }
+  TestProgrammaticSymbolBuildingEmpty:{
+    src:{
+      Test:& compile eval [?
+        using System;
+        using RCL.Kernel;
+        public class TestClass
+        {
+          [RCVerb ("TestProgrammaticSymbolBuildingEmpty")]
+          public void EvalTest (RCRunner runner, RCClosure closure, RCBlock right)
+          {
+            RCL.Kernel.Assert.AreEqual ("#", RCSymbolScalar.From ().ToString ());
+          }
+        }
+      ?]
+    }
+    :Test.TestProgrammaticSymbolBuildingEmpty {}
+  }
   TestProgrammaticSymbolBuildingWithIntFirst:{
     src:{
       Test:& compile eval [?

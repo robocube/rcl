@@ -53,7 +53,7 @@ namespace RCL.Kernel
     /// <summary>
     /// Exit status to be returned via Program.Main
     /// </summary>
-    protected int m_exit = -1;
+    protected int m_exit = 0;
 
     /// <summary>
     /// The final result of evaluation
@@ -204,7 +204,6 @@ namespace RCL.Kernel
       //If an exception was thrown, rethrow it on this thread.
       if (m_exception != null)
       {
-        RCSystem.Log.Record (root, "fiber", 0, "unhandled", m_exception);
         Exception exception = m_exception;
         m_exception = null;
         if (restoreStateOnError)
@@ -346,6 +345,7 @@ namespace RCL.Kernel
           }
           catch (Exception userex)
           {
+            ++m_exceptionCount;
             SafeLogRecord (next, "fiber", "unhandled", userex);
             try
             {
@@ -411,7 +411,14 @@ namespace RCL.Kernel
     {
       lock (m_botLock)
       {
-        return m_exit;
+        if (m_exceptionCount > 0)
+        {
+          return 2;
+        }
+        else
+        {
+          return m_exit;
+        }
       }
     }
 

@@ -564,6 +564,31 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestCubify7 ()
+    {
+      DoTest ("cubify {:assert 0 = \"GREEN\"}",
+              "[S|o l s #0,R,L,0 -- 0 -- #0,R,R,0 -- -- \"GREEN\" #0,R \"=\" -- -- #0 \"assert\" -- --]");
+    }
+
+    [Test]
+    public void TestCubify8 ()
+    {
+      DoTest ("cubify {:assert $page_status = \"GREEN\"}", "[S|o r s #0,R,L -- \"page_status\" -- #0,R,R,0 -- -- \"GREEN\" #0,R \"=\" -- -- #0 \"assert\" -- --]");
+    }
+
+    [Test]
+    public void TestCubify9 ()
+    {
+      DoTest ("{f::$page_status = \"GREEN\" <-cubify $f}", "[S|o r s #L -- \"page_status\" -- #R,0 -- -- \"GREEN\" # \"=\" -- --]");
+    }
+
+    [Test]
+    public void TestCubify10 ()
+    {
+      DoTest ("{f::1 + 1 <-cubify $f}", "[S|o l #L,0 -- 1 #R,0 -- 1 # \"+\" --]");
+    }
+
+    [Test]
     [Ignore ("experimental")]
     public void TestBlockCubeCorrespondence1 ()
     {

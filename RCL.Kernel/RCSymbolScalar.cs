@@ -51,12 +51,14 @@ namespace RCL.Kernel
           prev = new RCSymbolScalar (prev, key[i]);
         }
       }
+      if (prev == null)
+      {
+        prev = RCSymbolScalar.Empty;
+      }
       return prev;
     }
-    
-    public static RCSymbolScalar From (int startIndex,
-                                       RCSymbolScalar prefix,
-                                       params object[] key) 
+
+    public static RCSymbolScalar From (int startIndex, RCSymbolScalar prefix, params object[] key)
     {
       RCSymbolScalar prev = prefix;
       for (int i = startIndex; i < key.Length; ++i) 
@@ -68,10 +70,6 @@ namespace RCL.Kernel
 
     public static RCSymbolScalar From (RCLexer lexer, string part)
     {
-      //if (part.Length > 0 && part[0] == '#')
-      //{
-      //  part = part.Substring (1);
-      //}
       RCToken token = lexer.LexSingle (part);
       if (token.Text.Length > 0 && token.Type == RCTokenType.Junk)
       {

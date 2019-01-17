@@ -50,7 +50,7 @@ fail:{
     sh:startx "bash"
     :$sh writex script {}
     out:try {<-waitx $sh}
-    <-$out.error
+    <-$out.data
   }
   bin:[?
     0 0 print 0 test
@@ -85,8 +85,7 @@ skip:{
     sh:startx "bash"
     :$sh writex script {}
     out:try {<-waitx $sh}
-    :2 template & $out.data + "\n"
-    <-$out.error
+    <-$out.data
   }
   bin:[??
     0 0 print 0 test
@@ -438,7 +437,7 @@ suite_fail:{
     sh:startx "bash"
     :$sh writex script {}
     out:try {<-waitx $sh}
-    <-$out.error
+    <-$out.data
   }
   bin:[?
     0 0 print 0 test
@@ -603,7 +602,8 @@ all:{
     ?]
     sh:startx "bash"
     :$sh writex script {}
-    <-unwrap #status from try {<-waitx $sh}
+    out:try {<-waitx $sh}
+    <-$out.status
   }
   bin:1
 }
@@ -616,8 +616,12 @@ missing_file:{
     ?]
     sh:startx "bash"
     :$sh writex script {}
-    <-unwrap #status from try {<-waitx $sh}
+    out:try {<-waitx $sh}
+    <-$out.data
   }
-  bin:1
+  bin:[?
+    0 0 runner 0 exit 1
+    <<Exec,exit status 2>>
+  ?]
 }
 
