@@ -87,6 +87,15 @@ namespace RCL.Kernel
       RCL.Kernel.Format.DoFormat (this, builder, args, colmap, level);
     }
 
+    public override void Cubify (RCCube target, Stack<object> names)
+    {
+      object[] array = names.ToArray ();
+      System.Array.Reverse (array);
+      RCSymbolScalar symbol = RCSymbolScalar.From (array);
+      target.WriteCell (this.TypeCode.ToString (), symbol, Name, -1, true, false);
+      target.Write (symbol);
+    }
+
     public void SetStatic (RCBlock context)
     {
       if (IsLocked)

@@ -99,13 +99,13 @@ run_test:{
         }
         actual:($result.data.status == 0) switch {
           :$result.data.result_data
-          :$result.data.result_error
+          :$result.data.result_data
         }
         actual:(0 from #setup_incomplete #teardown_incomplete #test_incomplete #complete where
           not $result.data.setup_completed & $result.data.teardown_completed & $result.data.test_completed & not $result.data.completed) switch {
-          setup_incomplete:$result.data.setup_result.error
-          teardown_incomplete:$result.data.teardown_result.error
-          test_incomplete:$result.data.result_error
+          setup_incomplete:$result.data.setup_result.data
+          teardown_incomplete:$result.data.teardown_result.data
+          test_incomplete:$result.data.result_data
           complete:$result.data.result_data
         }
         report:eval {
@@ -196,7 +196,7 @@ main:{
   :"https://blogs.msdn.microsoft.com/commandline/2017/12/22/share-environment-vars-between-wsl-and-windows/"
   :"PATH and RCL_PREFIX are still controlled by the wsl env ~/.profile"
   :"WSLENV" setenv "RCL_FLAGS/u:RCLT_DISPLAY_STATUS/u"
-  results0:{<-$R.data} each {
+  results:& {<-$R.data} each {
     test_op:eval {
       RCL_HOME:$RCL_HOME
       RCLT_DISPLAY_STATUS:"," split ("F" getenv "RCLT_DISPLAY_STATUS") option "rclt-display-status"
@@ -214,7 +214,6 @@ main:{
     output:try {<-isolate $test_op}
     <-($output.status == 0) switch {:$output :exit $output.status}
   } each $files
-  results:& $results0
   report:eval {
     failed_tests:$results where $results.status == "F"
     try:count $results.status

@@ -154,7 +154,7 @@ namespace RCL.Test
     public void TestTryError()
     {
       RCRunner runner = RCRunner.TestRunner ();
-      RCL.Kernel.Assert.AreEqual ("{status:1 error:[?\n    <<Assert,Failed: assert false>>\n  ?]}", runner.Rep ("#status #error from try {<-assert false}").ToString ());
+      RCL.Kernel.Assert.AreEqual ("{status:1 data:[?\n    <<Assert,Failed: assert false>>\n  ?]}", runner.Rep ("#status #data from try {<-assert false}").ToString ());
     }
 
 #if __MonoCS__
@@ -227,7 +227,7 @@ namespace RCL.Test
       {
         runner.Rep ("p:startx \"rcl.exe --output=clean --show=print --nokeys --program=exit.o2\"");
       }
-      RCL.Kernel.Assert.AreEqual ("{status:1 error:[?\n    <<Exec,exit status 1>>\n  ?]}", runner.Rep ("#status #error from try {<-waitx $p}").ToString ());
+      RCL.Kernel.Assert.AreEqual ("{status:1 data:[?\n    <<Exec,exit status 1>>\n  ?]}", runner.Rep ("#status #data from try {<-waitx $p}").ToString ());
     }
 
     [Test]

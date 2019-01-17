@@ -1343,6 +1343,58 @@
       #t,b,0   --   2
     ]
   }
+  TestCubify7:{
+    skip:false
+    src:cubify {
+      :assert 0 = "GREEN"
+    }
+    bin:[
+      S       |o         l s
+      #0,R,L,0 --        0 --
+      #0,R,R,0 --       -- "GREEN"
+      #0,R     "="      -- --
+      #0       "assert" -- --
+    ]
+  }
+  TestCubify8:{
+    skip:false
+    src:cubify {
+      :assert $page_status = "GREEN"
+    }
+    bin:[
+      S       |o        r             s
+      #0,R,L   --       "page_status" --
+      #0,R,R,0 --       --            "GREEN"
+      #0,R     "="      --            --
+      #0       "assert" --            --
+    ]
+  }
+  TestCubify9:{
+    skip:false
+    src:{
+      f::$page_status = "GREEN"
+      <-cubify $f
+    }
+    bin:[
+      S   |o   r             s
+      #L   --  "page_status" --
+      #R,0 --  --            "GREEN"
+      #    "=" --            --
+    ]
+  }
+  TestCubify10:{
+    skip:false
+    src:{
+      f::1 + 1
+      <-cubify $f
+    }
+    bin:[
+      S   |o    l
+      #L,0 --   1
+      #R,0 --   1
+      #    "+" --
+    ]
+  }
   TestBlockCubeCorrespondence1:{
     skip:true
     src:cube block []

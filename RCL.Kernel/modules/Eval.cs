@@ -547,17 +547,16 @@ namespace RCL.Kernel
                                RCClosure closure, 
                                RCReference reference)
     {
-      runner.Yield (closure, 
-                    Resolve (reference.m_static, closure, reference.Parts, null));
+      runner.Yield (closure, Resolve (reference.m_static, closure, reference.Parts, null));
     }
 
     /// <summary>
     /// Find and return the value referenced by name. Throw if not found.
     /// </summary>
-    protected static RCValue Resolve (RCBlock context, 
-                                      RCClosure closure, 
-                                      RCArray<string> name, 
-                                      RCArray<RCBlock> @this)
+    public static RCValue Resolve (RCBlock context,
+                                   RCClosure closure,
+                                   RCArray<string> name,
+                                   RCArray<RCBlock> @this)
     {
       return Resolve (context, closure, name, @this, false);
     }
@@ -565,11 +564,11 @@ namespace RCL.Kernel
     /// <summary>
     /// Find and return the value referenced by name. Return null if not found.
     /// </summary>
-    protected static RCValue Resolve (RCBlock context, 
-                                      RCClosure closure, 
-                                      RCArray<string> name, 
-                                      RCArray<RCBlock> @this,
-                                      bool returnNull)
+    public static RCValue Resolve (RCBlock context,
+                                   RCClosure closure,
+                                   RCArray<string> name,
+                                   RCArray<RCBlock> @this,
+                                   bool returnNull)
     {
       if (context != null)
       {

@@ -20,6 +20,7 @@ namespace RCL.Kernel
     Session = 11, //Bad session cookie
     Range   = 12, //Bad array index
     File    = 13, //Bad file name
-    Access  = 14  //Inadequete file access
+    Access  = 14, //Inadequete file access
+    Debug   = 15  //An internal failed assertion
   }
 }

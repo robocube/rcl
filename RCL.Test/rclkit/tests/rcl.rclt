@@ -124,6 +124,64 @@ program_action_interactive_exit:{
   ?]
 }
 
+no_dup_unhandled_status_2_on_error_batch_exit_stdin:{
+  src:{
+    script:[?
+      set -e
+      rcl --batch --nokeys --output=test --show="*" --exit << 'EOF'
+      <-1 / 0
+      EOF
+      exit
+    ?]
+    sh:startx "bash"
+    :$sh writex script {}
+    result:try {<-waitx $sh}
+    :assert $result.status == 2
+    <-$result.data
+  }
+  bin:[?
+    0 0 fiber 0 unhandled
+      <<Native,An exception was thrown by the operator /:
+      -- DivideByZeroException: Attempted to divide by zero.>>
+    0 0 fiber 0 failed
+      <<Native,An exception was thrown by the operator /:
+      -- DivideByZeroException: Attempted to divide by zero.>>
+    {}
+    <<Exec,exit status 2>>
+  ?]
+}
+
+no_dup_unhandled_status_2_on_error_batch_exit_program:{
+  src:{
+    script:[?
+      set -e
+      cat << 'EOF' > code.rcl
+      <-1 / 0
+      EOF
+      rcl --program=code.rcl --batch --nokeys --output=test --show="*" --exit
+      exit
+    ?]
+    sh:startx "bash"
+    :$sh writex script {}
+    result:try {<-waitx $sh}
+    :rm "code.rcl"
+    :assert $result.status == 2
+    <-$result.data
+  }
+  bin:[?
+    0 0 fiber 0 unhandled
+      <<Native,An exception was thrown by the operator /:
+      -- DivideByZeroException: Attempted to divide by zero.>>
+    0 0 fiber 0 failed
+      <<Native,An exception was thrown by the operator /:
+      -- DivideByZeroException: Attempted to divide by zero.>>
+    0 0 fiber 0 fatal
+      <<Native,An exception was thrown by the operator /:
+      -- DivideByZeroException: Attempted to divide by zero.>>
+    <<Exec,exit status 2>>
+  ?]
+}
+
 exit_interactive:{
   src:{
     p:startx "rcl"
@@ -417,15 +475,15 @@ exec_exithang:{
     :sleep $___WAIT_FOR_INIT
     :$sh writex "exit 0"
     out:try {<-waitx $sh}
-    out_cube:#log parse $out.data + "\n"
-    <-$out_cube where not $out_cube.module in "fiber"
+    :assert $out.status == 2
+    <-$out.data
   }
-  bin:[
-    bot fiber module   instance event       message
-      0     0 "runner"        0 "signal"    "SIGINT"
-      0     0 "runner"        0 "exit"      "0"
-      0     0 "exec"          0 "closing"   "export (-1)"
-  ]
+  bin:[?
+    0 0 runner 0 signal SIGINT
+    0 0 runner 0 exit 0
+    0 0 exec 0 closing export (-1)
+    <<Exec,exit status 2>>
+  ?]
 }
 
 exec_missing_file:{
@@ -446,15 +504,14 @@ sigint:{
     :sleep $___WAIT_FOR_INIT
     :$sh writex "exit 0"
     out:try {<-waitx $sh}
-    out_cube:#log parse $out.data + "\n"
-    :"fiber entries in the log are non-deterministic in this case"
-    <-$out_cube where not $out_cube.module in "fiber"
+    :assert $out.status == 2
+    <-$out.data
   }
-  bin:[
-    bot fiber module   instance event    message
-      0     0 "runner"        0 "signal" "SIGINT"
-      0     0 "runner"        0 "exit"   "0"
-	]
+  data:[?
+    0 0 runner 0 signal SIGINT
+    0 0 runner 0 exit 0
+    <<Exec,exit status 2>>
+  ?]
 }
 
 sigint_twice:{
@@ -469,16 +526,14 @@ sigint_twice:{
     :$sh killx 2
     :sleep $___WAIT_FOR_INIT
     out:try {<-waitx $sh}
-    out_cube:#log parse out.error {}
-    :"fiber entries in the log are non-deterministic in this case"
-    <-$out_cube where not $out_cube.module in "fiber"
+    :assert $out.status == 2
+    <-$out.data
   }
-  bin:[
-    bot fiber module   instance event    message
-      0     0 "runner"        0 "signal"    "SIGINT"
-      0     0 "runner"        0 "signal"    "SIGINT (exiting)"
-     -1    -1 ""             -1 ""          "<<Exec,exit status 2>>"
-	]
+  bin:[?
+    0 0 runner 0 signal SIGINT
+    0 0 runner 0 signal SIGINT (exiting)
+    <<Exec,exit status 2>>
+  ?]
 }
 
 sigterm:{
@@ -490,7 +545,8 @@ sigterm:{
     :sleep $___WAIT_FOR_INIT
     :$sh killx 15
     out:try {<-waitx $sh}
-    <-$out.error
+    :assert $out.status == 15
+    <-$out.data
   }
   bin:[?
     0 0 runner 0 signal SIGTERM
@@ -505,7 +561,8 @@ kill_with_closex:{
     :sleep $___WAIT_FOR_INIT
     :closex $sh
     out:try {<-waitx $sh}
-    <-$out.error
+    :assert $out.status == 15
+    <-$out.data
   }
   bin:[?
     0 0 runner 0 signal SIGTERM
@@ -520,10 +577,12 @@ kill_with_closex_windows:{
     :sleep $___WAIT_FOR_INIT
     :closex $sh
     out:try {<-waitx $sh}
-    <-$out.error
+    :assert $out.status = 15
+    <-$out.data
   }
   bin:[?
-    <<Exec,exit status -1>>
+    0 0 runner 0 signal SIGTERM
+    <<Exec,exit status 15>>
   ?]
 }
 
@@ -816,12 +875,14 @@ list_home_src:{
   }
 }
 
-list_home_missing:{
-  src:{
-    result:try {<-list #home,missing}
-    <-0 40 substring result.error {}
+list_home_missing:eval {
+  src::{
+    out:try {<-list #home,missing}
+    <-$out.data
   }
-  bin:"<<File,Could not find a part of the path"
+  bin:template eval [?
+    <<File,Could not find a part of the path '[! path #home,missing !]'.>>
+  ?]
 }
 
 template_nesting_something_added:{
@@ -954,12 +1015,13 @@ systemd_fiber_killed_not_an_error:{
     bash:startx "bash"
     :$bash writex script $R
     out:try {<-waitx $bash}
-    <-template & $out.data + "\n"
+    <-$out.data
   }
   bin:[?
     <6>0 0 fiber 1 start {<-0 trace #foo}
     <6>0 1 fiber 1 killed System.Exception: fiber killed
     0
+    <<Exec,exit status 2>>
   ?]
 }
 
@@ -976,12 +1038,13 @@ bot_killed_on_wait_timeout:{
     bash:startx "bash"
     :$bash writex script $R
     out:try {<-waitx $bash}
-    <-template & $out.data + "\n"
+    <-$out.data
   }
   bin:[?
     1 0 fiber 0 start {<-0 trace #a}
     1 0 fiber 0 killed <<Reported>>
     0
+    <<Exec,exit status 2>>
   ?]
 }
 
@@ -995,10 +1058,11 @@ missing_program:{
     bash:startx "bash"
     :$bash writex script $R
     out:try {<-waitx $bash}
-    <-template & $out.data + "\n"
+    <-$out.data
   }
   bin:[?
-    <<Operation failed: see error for details>>
+    0 0 runner 0 fatal <<Reported>>
+    <<Exec,exit status 1>>
   ?]
 }
 
@@ -1012,10 +1076,11 @@ missing_action:{
     bash:startx "bash"
     :$bash writex script $R
     out:try {<-waitx $bash}
-    <-template & $out.data + "\n"
+    <-$out.data
   }
   bin:[?
-    <<Operation failed: see error for details>>
+    0 0 runner 0 fatal <<Reported>>
+    <<Exec,exit status 1>>
   ?]
 }
 

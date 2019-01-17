@@ -40,5 +40,17 @@ namespace RCL.Kernel
         throw new Exception (message);
       }
     }
+
+    [Conditional ("DEBUG")]
+    public static void ArrayHasNoNulls<T> (RCArray<T> array)
+    {
+      for (int i = 0; i < array.Count; ++i)
+      {
+        if (array[i] == null)
+        {
+          throw new RCDebugException ("The array may not contain nulls: Element {0} was null in the array {1}", i, array);
+        }
+      }
+    }
   }
 }

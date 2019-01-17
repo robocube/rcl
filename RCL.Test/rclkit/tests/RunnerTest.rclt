@@ -336,8 +336,8 @@
           public void EvalTest (RCRunner runner, RCClosure closure, RCBlock right)
           {
             RCRunner testRunner = RCRunner.TestRunner ();
-            Assert.AreEqual ("{status:1 error:[?\n    <<Assert,Failed: assert false>>\n  ?]}",
-                             testRunner.Rep ("#status #error from try {<-assert false}").ToString ());
+            Assert.AreEqual ("{status:1 data:[?\n    <<Assert,Failed: assert false>>\n  ?]}",
+                             testRunner.Rep ("#status #data from try {<-assert false}").ToString ());
             runner.Yield (closure, RCBlock.Empty);
           }
         }
@@ -467,7 +467,7 @@
             {
               testRunner.Rep ("p:startx \"[!! $rcldir !!]/rcl.exe --output=clean --show=print --nokeys --program=[!! $tmpdir !!]/exit.o2\"");
             }
-            Assert.AreEqual ("{status:1 error:[?\n    <<Exec,exit status 1>>\n  ?]}", testRunner.Rep ("#status #error from try {<-waitx $p}").ToString ());
+            Assert.AreEqual ("{status:1 data:[?\n    <<Exec,exit status 1>>\n  ?]}", testRunner.Rep ("#status #data from try {<-waitx $p}").ToString ());
             runner.Yield (closure, RCBlock.Empty);
           }
         }
