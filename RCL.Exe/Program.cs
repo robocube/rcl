@@ -104,7 +104,7 @@ namespace RCL.Exe
           {
             status = runner.ExitStatus ();
             runner.Dispose ();
-            Environment.Exit (0);
+            Environment.Exit (status);
           }
           //otherwise go on and keep listening for further commands.
         }
@@ -162,8 +162,13 @@ namespace RCL.Exe
       }
       else if (cmd.Exit && !cmd.Batch)
       {
+        int status = runner.ExitStatus ();
         runner.Dispose ();
-        Environment.Exit (0);
+        // This means there is no program and no input from stdin.
+        // The process simply starts and then stops.
+        // There is no way external way to cause an error to be generated,
+        // so there is no test for the possible non-zero status result.
+        Environment.Exit (status);
       }
 
       while (true)
