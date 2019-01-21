@@ -32,7 +32,7 @@ namespace RCL.Kernel
     {
       m_lexer = m_logLexer;
     }
-  
+
     public override RCValue Parse (RCArray<RCToken> tokens, out bool fragment, bool canonical)
     {
       fragment = false;
@@ -73,7 +73,7 @@ namespace RCL.Kernel
       }
 
       int current = 0;
-      m_time = RCTokenType.Time.TryParseToken (token.Text, current, 0, null);
+      m_time = RCTokenType.Time.TryParseToken (token.Text, current, 0, 0, null);
       if (m_time != null)
       {
         current += m_time.Text.Length;
@@ -82,35 +82,35 @@ namespace RCL.Kernel
         ++current;
       }
 
-      m_bot = RCTokenType.Number.TryParseToken (token.Text, current, 0, null);
+      m_bot = RCTokenType.Number.TryParseToken (token.Text, current, 0, 0, null);
       if (m_bot != null)
       {
         current += m_bot.Text.Length;
       }
       ++current;
 
-      m_fiber = RCTokenType.Number.TryParseToken (token.Text, current, 0, null);
+      m_fiber = RCTokenType.Number.TryParseToken (token.Text, current, 0, 0, null);
       if (m_fiber != null)
       {
         current += m_fiber.Text.Length;
       }
       ++current;
 
-      m_module = RCTokenType.Name.TryParseToken (token.Text, current, 0, null);
+      m_module = RCTokenType.Name.TryParseToken (token.Text, current, 0, 0, null);
       if (m_module != null)
       {
         current += m_module.Text.Length;
       }
       ++current;
 
-      m_instance = RCTokenType.Number.TryParseToken (token.Text, current, 0, null);
+      m_instance = RCTokenType.Number.TryParseToken (token.Text, current, 0, 0, null);
       if (m_instance != null)
       {
         current += m_instance.Text.Length;
       }
       ++current;
 
-      m_event = RCTokenType.Name.TryParseToken (token.Text, current, 0, null);
+      m_event = RCTokenType.Name.TryParseToken (token.Text, current, 0, 0, null);
       if (m_event != null)
       {
         current += m_event.Text.Length;

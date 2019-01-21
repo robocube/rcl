@@ -83,8 +83,13 @@
   }
   TestPath:{
     skip:false
-    src:(path #home,env,'env.rclb') like "*/env/env.rclb"
-    bin:true
+    src:{
+      p:path #home,env,'env.rclb'
+      :assert $p like "*env.rclb"
+      :assert (length $p) > 7
+      <-0
+    }
+    bin:0
   }
   TestFlagDefault:{
     skip:false
@@ -739,6 +744,20 @@
       b:2.0
       c:"3"
     }
+  }
+  TestParseBadSyntax1:{
+    skip:false
+    src:eval "data" get try {
+      :parse "foo"
+    }
+    bin:"<<Syntax,Invalid syntax around line 0 near the text 'foo'.\nDetails: Unfinished operator expression 'foo'>>\n"
+  }
+  TestParseBadSyntax2:{
+    skip:false
+    src:eval "data" get try {
+      :parse "foo" "bad"
+    }
+    bin:"<<Syntax,Invalid syntax around line 0 near the text 'bad'.>>\n"
   }
   TestTryParse:{
     skip:false

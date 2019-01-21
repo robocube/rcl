@@ -49,6 +49,7 @@ namespace RCL.Kernel
       RCArray<RCToken> tokens = new RCArray<RCToken> ();
       parser.Lex (code, tokens);
       RCValue result = parser.Parse (tokens, out fragment, canonical:false);
+      RCAssert.IsNotNull (result, "The result of parser.Parse() was null.");
       return result;
     }
 

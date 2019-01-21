@@ -53,7 +53,7 @@ namespace RCL.Kernel
     }
 
     /// <summary>
-    /// This is thread safe because the RCColmap instances are immutable
+    /// This is thread safe because the RCColmap instances are immutable.
     /// </summary>
     public RCColmap GetColmap ()
     {
@@ -134,14 +134,6 @@ namespace RCL.Kernel
       }
       if (m_level == RCOutput.Quiet)
       {
-        return;
-      }
-      else if ((!m_nokeys && m_level != RCOutput.Test) &&
-               (bot == 0 && instance == 0 && type == "fiber") &&
-               (state == "reported" || state == "failed"))
-      {
-        //In interactive mode, suppress reported stack frames from Program.Main
-        //The only error you should see is the "unhandled" one
         return;
       }
       else if (bot == 0 && instance == 0 && type == "fiber" &&

@@ -75,9 +75,11 @@ namespace RCL.Exe
       {
         int status = 0;
         RCValue codeResult = null;
+
         try
         {
           RCValue code = null;
+
           if (IsolateCode != null)
           {
             code = runner.Read (IsolateCode);
@@ -91,6 +93,7 @@ namespace RCL.Exe
           if (cmd.Action != "")
           {
             RCValue result = runner.RepAction (cmd.Action);
+
             if (cmd.OutputEnum != RCOutput.Clean)
             {
               Console.Out.WriteLine (result.Format (RCFormat.Pretty, RCSystem.Log.GetColmap ()));
@@ -146,16 +149,17 @@ namespace RCL.Exe
             IsolateResult = codeResult.ToString ();
             AppDomain.CurrentDomain.SetData ("IsolateResult", IsolateResult);
           }
+
           if (cmd.Exit)
           {
             runner.Dispose ();
             Environment.Exit (status);
           }
         }
+
         if (IsolateCode != null)
         {
-          // When we are running isolated, Environment.Exit would close the entire process.
-          // Don't do that.
+          // When running isolated, do not call Environment.Exit because it would close the entire process.
           runner.Dispose ();
           return;
         }
@@ -163,6 +167,7 @@ namespace RCL.Exe
       else if (cmd.Exit && !cmd.Batch)
       {
         int status = runner.ExitStatus ();
+
         runner.Dispose ();
         // This means there is no program and no input from stdin.
         // The process simply starts and then stops.
@@ -171,14 +176,18 @@ namespace RCL.Exe
         Environment.Exit (status);
       }
 
+      // Process batch (standard input) and interactive commands.
       while (true)
       {
         int status = 0;
+
         try
         {
           if (cmd.Batch)
           {
             StringBuilder text = new StringBuilder ();
+
+            // Read all commands from standard input.
             while (true)
             {
               line = Console.ReadLine ();
@@ -188,13 +197,16 @@ namespace RCL.Exe
               }
               text.AppendLine (line);
             }
+
             bool fragment;
             RCValue code = RCSystem.Parse (text.ToString (), out fragment);
             RCValue result = runner.Rep (code, restoreStateOnError:true);
+
             if (result != null)
             {
               Console.Out.WriteLine (result.Format (RCFormat.Pretty, RCSystem.Log.GetColmap ()));
             }
+
             if (cmd.Exit)
             {
               status = runner.ExitStatus ();
@@ -220,12 +232,15 @@ namespace RCL.Exe
             {
               line = editor.Edit (prompt, "");
             }
+
             m_firstSigint = false;
+
             if (line != null)
             {
               string trimmed = line.TrimStart (' ').TrimEnd (' ');
               line = Alias (trimmed, runner, cmd);
               RCValue result = runner.Rep (line);
+
               if (result != null)
               {
                 Console.Out.WriteLine (result.Format (RCFormat.Pretty, RCSystem.Log.GetColmap ()));
@@ -238,19 +253,19 @@ namespace RCL.Exe
         {
           status = runner.ExitStatus ();
           runner.Dispose ();
-          //Prevents last RCL prompt from appearing on the same line as the next bash prompt.
-          //But I want to do something so that log output *never* appears on the same line as the prompt.
+
+          // This prevents the last RCL prompt from appearing on the same line as the next bash prompt.
+          // I want to do something so that log output *never* appears on the same line as the prompt.
           Console.Out.Flush ();
           Environment.Exit (status);
         }
         catch (Exception ex)
         {
-          //Brian! This is where the Console exception was getting hidden
-          //Console.WriteLine ("Exception was caught: {0}", ex);
-          //Prevent having duplicate output in the log for these - disorienting and buggish
+          // Prevent having duplicate output in the log for these.
+          // Also allow the runner to report this exception and count it towards determination of exit status.
           if (!runner.RunnerUnhandled)
           {
-            RCSystem.Log.Record (0, 0, "fiber", 0, "unhandled", ex);
+            runner.Report (ex, "unhandled");
           }
         }
       }

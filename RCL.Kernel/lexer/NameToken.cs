@@ -9,17 +9,19 @@ namespace RCL.Kernel
 {
   public class NameToken : RCTokenType
   {
-    public override RCToken TryParseToken (
-      string text, int start, int index, RCToken previous)
+    public override RCToken TryParseToken (string text, int start, int index, int line, RCToken previous)
     {
       if (start < text.Length && text[start] >= '0' && text[start] <= '9')
       {
         return null;
       }
       int length = LengthOfDelimitedName (text, start, '.');
-      if (length < 0) return null;
+      if (length < 0)
+      {
+        return null;
+      }
       string token = text.Substring (start, length);
-      return new RCToken (token, this, start, index);
+      return new RCToken (token, this, start, index, line, 0);
     }
 
     public override void Accept (RCParser parser, RCToken token)

@@ -108,7 +108,7 @@ namespace RCL.Core
       public ListArgs (RCSymbolScalar spec, bool all, bool deep)
       {
         Spec = spec;
-        Path = Command.PathSymbolToString (spec);
+        Path = Command.PathSymbolToLocalString (spec);
         All = all;
         Deep = deep;
       }

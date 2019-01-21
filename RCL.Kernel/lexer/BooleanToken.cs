@@ -9,13 +9,15 @@ namespace RCL.Kernel
 {
   public class BooleanToken : RCTokenType
   {
-    public override RCToken TryParseToken (
-      string text, int start, int index, RCToken previous)
+    public override RCToken TryParseToken (string text, int start, int index, int line, RCToken previous)
     {
       int length = LengthOfBool (text, start);
-      if (length < 0) return null;
+      if (length < 0)
+      {
+        return null;
+      }
       string result = text.Substring (start, length);
-      return new RCToken (result, this, start, index);
+      return new RCToken (result, this, start, index, line, 0);
     }
 
     public static int LengthOfBool (string text, int start)
@@ -23,7 +25,10 @@ namespace RCL.Kernel
       for (int i = 0; i < Booleans.Length; ++i)
       {
         int length = LengthOfKeyword (text, start, Booleans[i]);
-        if (length > 0) return length;
+        if (length > 0)
+        {
+          return length;
+        }
       }
       return -1;
     }

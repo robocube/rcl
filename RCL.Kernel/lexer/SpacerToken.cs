@@ -9,13 +9,12 @@ namespace RCL.Kernel
 {
   public class SpacerToken : RCTokenType
   {
-    public override RCToken TryParseToken (
-      string text, int start, int index, RCToken previous)
+    public override RCToken TryParseToken (string text, int start, int index, int line, RCToken previous)
     {
       int current = start;
       if (text[current] == '|')
       {
-        return new RCToken ("|", this, start, 1);
+        return new RCToken ("|", this, start, 1, line, 0);
       }
       else
       {
@@ -26,7 +25,7 @@ namespace RCL.Kernel
       if (length > 1)
       {
         string result = text.Substring (start, length);
-        return new RCToken (result, this, start, index);
+        return new RCToken (result, this, start, index, line, 0);
       }
       return null;
     }

@@ -11,13 +11,15 @@ namespace RCL.Kernel
   {
     protected static readonly string[] Brackets = new string[] {"</", "/>", "<!--", "-->", "<", ">", "="};
 
-    public override RCToken TryParseToken (
-      string text, int start, int index, RCToken previous)
+    public override RCToken TryParseToken (string text, int start, int index, int line, RCToken previous)
     {
       int length = LengthOfOperator (text, start);
-      if (length < 0) return null;
+      if (length < 0)
+      {
+        return null;
+      }
       string opChar = text.Substring (start, length);
-      return new RCToken (opChar, this, start, index);
+      return new RCToken (opChar, this, start, index, line, 0);
     }
 
     public static int LengthOfOperator (string text, int start)

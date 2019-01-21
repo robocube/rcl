@@ -12,8 +12,7 @@ namespace RCL.Kernel
     protected readonly static char[] NONNUMCHARS = new char[] { '-', '.' };
     protected readonly static char[] E = new char[] {'e', 'E'};
 
-    public override RCToken TryParseToken (
-      string text, int start, int index, RCToken previous)
+    public override RCToken TryParseToken (string text, int start, int index, int line, RCToken previous)
     {
       //If the previous token is also a number, and there is no whitespace, the dash
       //should be considered an operator and not a sign on the number itself. ex "1-2"
@@ -30,9 +29,12 @@ namespace RCL.Kernel
                       previous.Text == ")");
       }
       int length = LengthOfNumber (text, start, allowDash);
-      if (length < 0) return null;
+      if (length < 0)
+      {
+        return null;
+      }
       string result = text.Substring (start, length);
-      return new RCToken (result, this, start, index);
+      return new RCToken (result, this, start, index, line, 0);
     }
 
     public static int LengthOfNumber (string text, int start, bool allowDash)

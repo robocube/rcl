@@ -11,7 +11,17 @@ namespace RCL.Kernel
     public void EvalParse (RCRunner runner, RCClosure closure, RCString right)
     {
       bool fragment;
-      runner.Yield (closure, DoParse (new RCLParser (RCSystem.Activator), right, false, out fragment));
+      RCValue result;
+      try
+      {
+        RCParser parser = new RCLParser (RCSystem.Activator);
+        result = DoParse (parser, right, false, out fragment);
+        runner.Yield (closure, result);
+      }
+      catch (RCLSyntaxException ex)
+      {
+        throw new RCException (closure, ex, RCErrors.Syntax, ex.Message);
+      }
     }
 
     [RCVerb ("parse")]
@@ -51,8 +61,16 @@ namespace RCL.Kernel
       }
       else throw new Exception ("Unknown parser: " + which);
       bool fragment;
-      RCValue result = DoParse (parser, right, canonical, out fragment);
-      runner.Yield (closure, result);
+      RCValue result;
+      try
+      {
+        result = DoParse (parser, right, canonical, out fragment);
+        runner.Yield (closure, result);
+      }
+      catch (RCLSyntaxException ex)
+      {
+        throw new RCException (closure, ex, RCErrors.Syntax, ex.Message);
+      }
     }
 
     [RCVerb ("lex")]

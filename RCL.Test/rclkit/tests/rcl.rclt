@@ -105,6 +105,111 @@ program_action:{
   bin:"8"
 }
 
+program_action_status_2:{
+  src:{
+    script:[?
+      mkdir -p $RCL_HOME/tmp
+      cat << 'EOF' > $RCL_HOME/tmp/code.rcl
+      {
+        a:3
+        b:0
+        c:$a / $b
+        f:{<-$c}
+      }
+      EOF
+      rcl -bx --program=$RCL_HOME/tmp/code.rcl --action=f --output=test --show="*"
+      exit
+    ?]
+    bash:startx "bash"
+    :$bash writex script $R
+    out:try {<-waitx $bash}
+    <-$out.data
+  }
+  bin:[?
+    0 0 fiber 0 failed
+      <<Native,An exception was thrown by the operator /:
+      -- DivideByZeroException: Attempted to divide by zero.>>
+    0 0 fiber 0 fatal
+      <<Native,An exception was thrown by the operator /:
+      -- DivideByZeroException: Attempted to divide by zero.>>
+    <<Exec,exit status 2>>
+  ?]
+}
+
+program_action_status_2_with_try:{
+  src:{
+    script:[?
+      mkdir -p $RCL_HOME/tmp
+      cat << 'EOF' > $RCL_HOME/tmp/code.rcl
+      {
+        a:3
+        b:0
+        f:{<-"data" get try {<-$a / $b}}
+      }
+      EOF
+      rcl -bx --program=$RCL_HOME/tmp/code.rcl --action=f --output=test --show="*"
+      exit
+    ?]
+    bash:startx "bash"
+    :$bash writex script $R
+    out:try {<-waitx $bash}
+    :assert $out.status == 2
+    <-$out.data
+  }
+  bin:[??
+    0 0 fiber 0 caught
+      <<Native,An exception was thrown by the operator /:
+      -- DivideByZeroException: Attempted to divide by zero.>>
+    [?
+      <<Native,An exception was thrown by the operator /:
+      -- DivideByZeroException: Attempted to divide by zero.>>
+    ?]
+    <<Exec,exit status 2>>
+  ??]
+}
+
+invalid_syntax_batch_exit:{
+  src:{
+    script:[?
+      rcl --batch --exit --nokeys --show="*" --output=test << 'EOF'
+      :iaminvalid
+      EOF
+      exit
+    ?]
+    bash:startx "bash"
+    :$bash writex script $R
+    out:try {<-waitx $bash}
+    :assert $out.status == 2
+    <-$out.data
+  }
+  bin:[?
+    0 0 fiber 0 unhandled <<Reported>>
+    {}
+    <<Exec,exit status 2>>
+  ?]
+}
+
+invalid_syntax_batch_exit_2:{
+  src:{
+    script:[?
+      rcl -bx --nokeys --show="*" --output=test << 'EOF'
+      :iaminvalid andsoami
+      EOF
+      exit
+    ?]
+    bash:startx "bash"
+    :$bash writex script $R
+    out:try {<-waitx $bash}
+    :assert $out.status == 2
+    <-$out.data
+  }
+  bin:[?
+    0 0 fiber 0 unhandled <<Reported>>
+    {}
+    <<Exec,exit status 2>>
+  ?]
+}
+
 program_action_interactive_exit:{
   src:{
     file:[?
@@ -140,9 +245,6 @@ no_dup_unhandled_status_2_on_error_batch_exit_stdin:{
     <-$result.data
   }
   bin:[?
-    0 0 fiber 0 unhandled
-      <<Native,An exception was thrown by the operator /:
-      -- DivideByZeroException: Attempted to divide by zero.>>
     0 0 fiber 0 failed
       <<Native,An exception was thrown by the operator /:
       -- DivideByZeroException: Attempted to divide by zero.>>
@@ -169,9 +271,6 @@ no_dup_unhandled_status_2_on_error_batch_exit_program:{
     <-$result.data
   }
   bin:[?
-    0 0 fiber 0 unhandled
-      <<Native,An exception was thrown by the operator /:
-      -- DivideByZeroException: Attempted to divide by zero.>>
     0 0 fiber 0 failed
       <<Native,An exception was thrown by the operator /:
       -- DivideByZeroException: Attempted to divide by zero.>>
@@ -577,12 +676,11 @@ kill_with_closex_windows:{
     :sleep $___WAIT_FOR_INIT
     :closex $sh
     out:try {<-waitx $sh}
-    :assert $out.status = 15
+    :assert $out.status = -1
     <-$out.data
   }
   bin:[?
-    0 0 runner 0 signal SIGTERM
-    <<Exec,exit status 15>>
+    <<Exec,exit status -1>>
   ?]
 }
 

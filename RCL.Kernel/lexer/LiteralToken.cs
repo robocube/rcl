@@ -5,7 +5,7 @@ namespace RCL.Kernel
 {
   public class LiteralToken : RCTokenType
   {
-    public override RCToken TryParseToken (string text, int start, int index, RCToken previous)
+    public override RCToken TryParseToken (string text, int start, int index, int line, RCToken previous)
     {
       int end = start;
       if (text[end] != '\\')
@@ -29,7 +29,7 @@ namespace RCL.Kernel
       if (length > 0)
       {
         string token = text.Substring (start, end - start);
-        return new RCToken (token, this, start, index);
+        return new RCToken (token, this, start, index, line, 0);
       }
       return null;
     }

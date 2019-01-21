@@ -9,20 +9,30 @@ namespace RCL.Kernel
 {
   public class ContentToken : RCTokenType
   {
-    public override RCToken TryParseToken (
-      string code, int start, int index, RCToken previous)
+    public override RCToken TryParseToken (string code, int start, int index, int line, RCToken previous)
     {
       if (previous == null)
+      {
         return null;
+      }
+
       //we have to count the question marks in the previous token.
       if (previous.Type != RCTokenType.Block)
+      {
         return null;
-      if (!(previous.Text.StartsWith ("[?") || previous.Text.EndsWith ("!]")))
-        return null;
+      }
 
+      if (!(previous.Text.StartsWith ("[?") || previous.Text.EndsWith ("!]")))
+      {
+        return null;
+      }
+
+      int lines = 0;
       int marks = 0;
       for (int i = 1; i < previous.Text.Length; ++i)
+      {
         ++marks;
+      }
 
       for (int end = start; end < code.Length; ++end)
       {
@@ -36,7 +46,7 @@ namespace RCL.Kernel
             if (reps == marks)
             {
               string token = code.Substring (start, end - start);
-              return new RCToken (token, this, start, index);
+              return new RCToken (token, this, start, index, line, lines);
             }
             ++look;
           }
@@ -53,8 +63,12 @@ namespace RCL.Kernel
           if (reps == marks && code[look] == ']')
           {
             string token = code.Substring (start, end - start);
-            return new RCToken (token, this, start, index);
+            return new RCToken (token, this, start, index, line, lines);
           }
+        }
+        else if (code[end] == '\n')
+        {
+          ++lines;
         }
       }
       return null;

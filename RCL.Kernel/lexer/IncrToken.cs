@@ -9,23 +9,22 @@ namespace RCL.Kernel
 {
   public class IncrToken : RCTokenType
   {
-    public override RCToken TryParseToken (
-      string text, int start, int index, RCToken previous)
+    public override RCToken TryParseToken (string text, int start, int index, int line, RCToken previous)
     {
       int length = LengthOfKeyword (text, start, "++");
       if (length > 0)
       {
-        return new RCToken ("++", this, start, index);
+        return new RCToken ("++", this, start, index, line, 0);
       }
       length = LengthOfKeyword (text, start, "+-");
       if (length > 0)
       {
-        return new RCToken ("+-", this, start, index);
+        return new RCToken ("+-", this, start, index, line, 0);
       }
       length = LengthOfKeyword (text, start, "+~");
       if (length > 0)
       {
-        return new RCToken ("+~", this, start, index);
+        return new RCToken ("+~", this, start, index, line, 0);
       }
       return null;
     }

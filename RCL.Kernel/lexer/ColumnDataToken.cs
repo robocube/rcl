@@ -15,8 +15,7 @@ namespace RCL.Kernel
       m_separator = separator;
     }
 
-    public override RCToken TryParseToken(
-      string code, int start, int index, RCToken previous)
+    public override RCToken TryParseToken (string code, int start, int index, int line, RCToken previous)
     {
       int current = start;
       bool quoted = false;
@@ -25,13 +24,15 @@ namespace RCL.Kernel
         //What if there are an uneven number of "'s?
         //I think this is a bug.
         if (code[current] == '"')
+        {
           quoted = !quoted;
+        }
         ++current;
       }
       if (current > start)
       {
         string token = code.Substring (start, current - start);
-        return new RCToken (token, this, start, index);
+        return new RCToken (token, this, start, index, line, 0);
       }
       else return null;
     }

@@ -150,29 +150,51 @@ namespace RCL.Kernel
     /// </summary>
     public abstract void Accept (RCParser parser, RCToken token);
     
-    public abstract RCToken TryParseToken (
-      string code, int startPos, int index, RCToken previous);
+    public abstract RCToken TryParseToken (string code, int startPos, int index, int line, RCToken previous);
 
     public virtual bool IsTerminalOf (RCToken token)
     {
       return false;
     }
 
+    public static int ScanForNewlines (string code, int start, int end)
+    {
+      int result = 0;
+      for (int i = start; i < end; ++i)
+      {
+        if (code[i] == '\n')
+        {
+          ++result;
+        }
+      }
+      return result;
+    }
+
     public static bool IsIn (char character, char[] allowed)
     {
       for (int i = 0; i < allowed.Length; ++i)
-        if (character == allowed[i]) return true;
+      {
+        if (character == allowed[i])
+        {
+          return true;
+        }
+      }
       return false;
     }
-    
+
     public static bool IsIdentifierChar (char character)
     {
       if ((character >= 'a' && character <= 'z') ||
           (character >= 'A' && character <= 'Z') ||
           (character >= '0' && character <= '9') ||
           (character == '_'))
-          return true;
-      else return false;
+      {
+        return true;
+      }
+      else
+      {
+        return false;
+      }
     }
 
     public static int LengthOfDelimitedName (string text, int start, char delimiter)
@@ -181,7 +203,10 @@ namespace RCL.Kernel
       for (int i = 0; i < SpecialOperators.Length; ++i)
       {
         int length = LengthOfKeyword (text, start, SpecialOperators[i]);
-        if (length > 0) return length;
+        if (length > 0)
+        {
+          return length;
+        }
       }
       int end = start;
       while (true)

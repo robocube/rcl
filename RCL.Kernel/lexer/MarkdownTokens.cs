@@ -5,16 +5,12 @@ namespace RCL.Kernel
 {
   public class MarkdownContentToken : RCTokenType
   {
-    public override RCToken TryParseToken (string code,
-                                           int start,
-                                           int index,
-                                           RCToken previous)
+    public override RCToken TryParseToken (string code, int start, int index, int line, RCToken previous)
     {
       string text;
       int current = start;
       for (; current < code.Length; ++current)
       {
-        //Console.Out.Write (code[current]);
         if (code[current] == '\r' || code[current] == '\n' ||
             code[current] == '[' || code[current] == '_' || code[current] == '*')
         {
@@ -22,14 +18,19 @@ namespace RCL.Kernel
           if (length > 0)
           {
             text = code.Substring (start, length);
-            return new RCToken (text, this, start, index);
+            int lines = 0;
+            //This token captures only 1 or 0 lines
+            if (code[current] == '\r' || code[current] == '\n')
+            {
+              lines = 1;
+            }
+            return new RCToken (text, this, start, index, line, lines);
           }
           else return null;
         }
       }
       text = code.Substring (start, current - start);
-      return new RCToken (text, this, start, index);
-      //throw new Exception ("No newline at end of content");
+      return new RCToken (text, this, start, index, line, 0);
     }
     
     public override void Accept (RCParser parser, RCToken token)
@@ -45,10 +46,7 @@ namespace RCL.Kernel
 
   public class MarkdownBeginBoldToken : RCTokenType
   {
-    public override RCToken TryParseToken (string code,
-                                           int start,
-                                           int index,
-                                           RCToken previous)
+    public override RCToken TryParseToken (string code, int start, int index, int line, RCToken previous)
     {
       int length = LengthOfKeyword (code, start, "**");
       if (length > 0)
@@ -57,7 +55,7 @@ namespace RCL.Kernel
             previous.Text.EndsWith (" ") ||
             previous.Text.EndsWith ("\n"))
         {
-          return new RCToken ("**", this, start, index);  
+          return new RCToken ("**", this, start, index, line, 0);
         }
       }
       return null;
@@ -76,10 +74,7 @@ namespace RCL.Kernel
 
   public class MarkdownEndBoldToken : RCTokenType
   {
-    public override RCToken TryParseToken (string code,
-                                           int start,
-                                           int index,
-                                           RCToken previous)
+    public override RCToken TryParseToken (string code, int start, int index, int line, RCToken previous)
     {
       int length = LengthOfKeyword (code, start, "**");
       if (length > 0)
@@ -88,7 +83,7 @@ namespace RCL.Kernel
         //and also bold, italic tokens
         if (previous != null && !previous.Text.EndsWith (" "))
         {
-          return new RCToken ("**", this, start, index);  
+          return new RCToken ("**", this, start, index, line, 0);
         }
       }
       return null;
@@ -107,10 +102,7 @@ namespace RCL.Kernel
 
   public class MarkdownBeginItalicToken : RCTokenType
   {
-    public override RCToken TryParseToken (string code,
-                                           int start,
-                                           int index,
-                                           RCToken previous)
+    public override RCToken TryParseToken (string code, int start, int index, int line, RCToken previous)
     {
       int length = LengthOfKeyword (code, start, "_");
       if (length > 0)
@@ -119,7 +111,7 @@ namespace RCL.Kernel
             previous.Text.EndsWith (" ") ||
             previous.Text.EndsWith ("\n"))
         {
-          return new RCToken ("_", this, start, index);  
+          return new RCToken ("_", this, start, index, line, 0);
         }
       }
       return null;
@@ -138,17 +130,14 @@ namespace RCL.Kernel
 
   public class MarkdownEndItalicToken : RCTokenType
   {
-    public override RCToken TryParseToken (string code,
-                                           int start,
-                                           int index,
-                                           RCToken previous)
+    public override RCToken TryParseToken (string code, int start, int index, int line, RCToken previous)
     {
       int length = LengthOfKeyword (code, start, "_");
       if (length > 0)
       {
         if (previous != null && !previous.Text.EndsWith (" "))
         {
-          return new RCToken ("_", this, start, index);  
+          return new RCToken ("_", this, start, index, line, 0);
         }
       }
       return null;
@@ -167,10 +156,7 @@ namespace RCL.Kernel
 
   public class MarkdownLinkToken : RCTokenType
   {
-    public override RCToken TryParseToken (string code,
-                                           int start,
-                                           int index,
-                                           RCToken previous)
+    public override RCToken TryParseToken (string code, int start, int index, int line, RCToken previous)
     {
       int current = start;
       if (code[current] == '!') ++current;
@@ -187,7 +173,7 @@ namespace RCL.Kernel
             {
               ++current;
               string text = code.Substring (start, current - start);
-              return new RCToken (text, this, start, index);
+              return new RCToken (text, this, start, index, line, 0);
             }
           }
           return null;
@@ -209,20 +195,20 @@ namespace RCL.Kernel
 
   public class MarkdownLiteralLinkToken : RCTokenType
   {
-    public override RCToken TryParseToken (string code,
-                                           int start,
-                                           int index,
-                                           RCToken previous)
+    public override RCToken TryParseToken (string code, int start, int index, int line, RCToken previous)
     {
       int current = start;
-      if (code[current] != '<') return null;
+      if (code[current] != '<')
+      {
+        return null;
+      }
       for (; current < code.Length; ++current)
       {
         if (code[current] == '>')
         {
           ++current;
           string text = code.Substring (start, current - start);
-          return new RCToken (text, this, start, index);
+          return new RCToken (text, this, start, index, line, 0);
         }
       }
       return null;
@@ -241,10 +227,7 @@ namespace RCL.Kernel
 
   public class MarkdownHeaderToken : RCTokenType
   {
-    public override RCToken TryParseToken (string code,
-                                           int start,
-                                           int index,
-                                           RCToken previous)
+    public override RCToken TryParseToken (string code, int start, int index, int line, RCToken previous)
     {
       int current = start;
       int hcount = 0;
@@ -253,8 +236,14 @@ namespace RCL.Kernel
         ++hcount;
         ++current;
       }
-      if (hcount == 0) return null;
-      if (hcount > 6) return null;
+      if (hcount == 0)
+      {
+        return null;
+      }
+      if (hcount > 6)
+      {
+        return null;
+      }
       if (current < code.Length && code[current] == ' ')
       {
         for (; current < code.Length; ++current)
@@ -262,7 +251,7 @@ namespace RCL.Kernel
           if (code[current] == '\r' || code[current] == '\n')
           {
             string text = code.Substring (start, current - start);
-            return new RCToken (text, this, start, index);
+            return new RCToken (text, this, start, index, line, 1);
           }
         }
       }
@@ -282,10 +271,7 @@ namespace RCL.Kernel
 
   public class MarkdownBlockquoteToken : RCTokenType
   {
-    public override RCToken TryParseToken (string code,
-                                           int start,
-                                           int index,
-                                           RCToken previous)
+    public override RCToken TryParseToken (string code, int start, int index, int line, RCToken previous)
     {
       //A single line of a markdown blockquote
       int current = start;
@@ -304,7 +290,7 @@ namespace RCL.Kernel
         if (code[current] == '\r' || code[current] == '\n')
         {
           string text = code.Substring (start, current - start);
-          return new RCToken (text, this, start, index);
+          return new RCToken (text, this, start, index, line, 0);
         }
       }
       return null;
@@ -323,23 +309,23 @@ namespace RCL.Kernel
 
   public class MarkdownULItemToken : RCTokenType
   {
-    public override RCToken TryParseToken (string code,
-                                           int start,
-                                           int index,
-                                           RCToken previous)
+    public override RCToken TryParseToken (string code, int start, int index, int line, RCToken previous)
     {
       int length = LengthOfKeyword (code, start, "* ");
-      if (length < 0) return null;
+      if (length < 0)
+      {
+        return null;
+      }
       int current = start + length;
       string text = code.Substring (start, current - start);
-      return new RCToken (text, this, start, index);
+      return new RCToken (text, this, start, index, line, 0);
     }
-    
+
     public override void Accept (RCParser parser, RCToken token)
     {
       parser.AcceptMarkdownULItem (token);
     }
-    
+
     public override string TypeName
     {
       get { return "MarkdownULItem"; }
@@ -348,10 +334,7 @@ namespace RCL.Kernel
 
   public class MarkdownOLItemToken : RCTokenType
   {
-    public override RCToken TryParseToken (string code,
-                                           int start,
-                                           int index,
-                                           RCToken previous)
+    public override RCToken TryParseToken (string code, int start, int index, int line, RCToken previous)
     {
       int current = start;
       while (current < code.Length && code[current] >= '0' && code[current] <= '9')
@@ -362,12 +345,15 @@ namespace RCL.Kernel
       {
         ++current;
       }
-      else return null;
+      else
+      {
+        return null;
+      }
       if (current < code.Length && code[current] == ' ')
       {
         ++current;
         string text = code.Substring (start, current - start);
-        return new RCToken (text, this, start, index);
+        return new RCToken (text, this, start, index, line, 0);
       }
       return null;
     }
@@ -385,10 +371,7 @@ namespace RCL.Kernel
 
   public class MarkdownLIIndentToken : RCTokenType
   {
-    public override RCToken TryParseToken (string code,
-                                           int start,
-                                           int index,
-                                           RCToken previous)
+    public override RCToken TryParseToken (string code, int start, int index, int line, RCToken previous)
     {
       if (previous != null && previous.Type != RCTokenType.EndOfLine)
       {
@@ -402,7 +385,7 @@ namespace RCL.Kernel
       if (current > start)
       {
         string text = code.Substring (start, current - start);
-        return new RCToken (text, this, start, index);
+        return new RCToken (text, this, start, index, line, 0);
       }
       return null;
     }

@@ -296,8 +296,13 @@ namespace RCL.Kernel
       public override string ToString ()
       {
         if (Left == null)
+        {
           return Name + "(" + Right + ")";
-        else return Name + "(" + Left + ", " + Right + ")";
+        }
+        else
+        {
+          return Name + "(" + Left + ", " + Right + ")";
+        }
       }
     }
 
@@ -355,10 +360,9 @@ namespace RCL.Kernel
       catch (TargetInvocationException tiex)
       {
         Exception ex = tiex.GetBaseException ();
-        RCException rcex = ex as RCException;
-        if (rcex != null)
+        if (ex is RCException)
         {
-          throw rcex;
+          throw ex;
         }
         else
         {
@@ -417,10 +421,9 @@ namespace RCL.Kernel
       catch (TargetInvocationException tiex)
       {
         Exception ex = tiex.GetBaseException ();
-        RCException rcex = ex as RCException;
-        if (rcex != null)
+        if (ex is RCException)
         {
-          throw rcex;
+          throw ex;
         }
         else
         {

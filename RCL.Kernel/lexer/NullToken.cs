@@ -9,13 +9,15 @@ namespace RCL.Kernel
 {
   public class NullToken : RCTokenType
   {
-    public override RCToken TryParseToken (
-      string text, int start, int index, RCToken previous)
+    public override RCToken TryParseToken (string text, int start, int index, int line, RCToken previous)
     {
       int length = LengthOfKeyword (text, start, "null");
-      if (length < 0) return null;
+      if (length < 0)
+      {
+        return null;
+      }
       string result = text.Substring (start, length);
-      return new RCToken (result, this, start, index);
+      return new RCToken (result, this, start, index, line, 0);
     }
 
     public override void Accept (RCParser parser, RCToken token)
