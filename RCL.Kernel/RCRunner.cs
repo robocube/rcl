@@ -346,7 +346,6 @@ namespace RCL.Kernel
           catch (Exception userex)
           {
             ++m_exceptionCount;
-            SafeLogRecord (next, "fiber", "unhandled", userex);
             try
             {
               Kill (next.Bot, next.Fiber, userex, 1);
@@ -1199,7 +1198,12 @@ namespace RCL.Kernel
 
     public void Report (Exception ex)
     {
-      RCSystem.Log.Record (0, 0, "fiber", 0, "reported", ex);
+      this.Report (ex, "reported");
+    }
+
+    public void Report (Exception ex, string status)
+    {
+      RCSystem.Log.Record (0, 0, "fiber", 0, status, ex);
       ++m_exceptionCount;
     }
 

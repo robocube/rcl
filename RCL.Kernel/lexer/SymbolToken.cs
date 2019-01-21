@@ -9,8 +9,7 @@ namespace RCL.Kernel
 {
   public class SymbolToken : RCTokenType
   {
-    public override RCToken TryParseToken (
-      string code, int start, int index, RCToken previous)
+    public override RCToken TryParseToken (string code, int start, int index, int line, RCToken previous)
     {
       if (start < code.Length && code[start] == '#')
       {
@@ -18,10 +17,13 @@ namespace RCL.Kernel
         if (end < code.Length)
         {
           int length = LengthOfDelimitedValue (code, end, ',');
-          if (length > 0) end += length;
+          if (length > 0)
+          {
+            end += length;
+          }
         }
         string token = code.Substring (start, end - start);
-        return new RCToken (token, this, start, index);
+        return new RCToken (token, this, start, index, line, 0);
       }
       else return null;
     }

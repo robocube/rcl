@@ -42,6 +42,24 @@ namespace RCL.Kernel
     }
 
     [Conditional ("DEBUG")]
+    public static void ArgumentIsNotNull (object obj, string name)
+    {
+      if (obj == null)
+      {
+        throw new ArgumentNullException (name);
+      }
+    }
+
+    [Conditional ("DEBUG")]
+    public static void IsNotNull (object obj, string message)
+    {
+      if (obj == null)
+      {
+        throw new Exception (message);
+      }
+    }
+
+    [Conditional ("DEBUG")]
     public static void ArrayHasNoNulls<T> (RCArray<T> array)
     {
       for (int i = 0; i < array.Count; ++i)

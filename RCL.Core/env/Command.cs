@@ -19,7 +19,7 @@ namespace RCL.Core
       RCArray<string> result = new RCArray<string> (right.Count);
       for (int i = 0; i < right.Count; ++i)
       {
-        result.Write (PathSymbolToString (right[i]));
+        result.Write (PathSymbolToLocalString (right[i]));
       }
       runner.Yield (closure, new RCString (result));
     }
@@ -31,11 +31,6 @@ namespace RCL.Core
       //string root = Path.GetPathRoot (path);
       //return root + path;
       return path;
-    }
-
-    public static string PathSymbolToString (RCSymbolScalar symbol)
-    {
-      return PathSymbolToString ('/', symbol);
     }
 
     public static string PathSymbolToString (char separator, RCSymbolScalar symbol)
@@ -101,7 +96,7 @@ namespace RCL.Core
       RCArray<bool> result = new RCArray<bool> (right.Count);
       for (int i = 0; i < right.Count; ++i)
       {
-        result.Write (File.Exists (PathSymbolToString (right[i])));
+        result.Write (File.Exists (PathSymbolToLocalString (right[i])));
       }
       runner.Yield (closure, new RCBoolean (result));
     }
@@ -123,7 +118,7 @@ namespace RCL.Core
       RCArray<bool> result = new RCArray<bool> (right.Count);
       for (int i = 0; i < right.Count; ++i)
       {
-        result.Write (Directory.Exists (PathSymbolToString (right[i])));
+        result.Write (Directory.Exists (PathSymbolToLocalString (right[i])));
       }
       runner.Yield (closure, new RCBoolean (result));
     }
@@ -171,7 +166,7 @@ namespace RCL.Core
     public void EvalLoad (RCRunner runner, RCClosure closure, RCSymbol right)
     {
       //Need check for windows drive letter
-      string path = PathSymbolToString (right[0]);
+      string path = PathSymbolToLocalString (right[0]);
       string code = File.ReadAllText (path, Encoding.UTF8);
       code = code.Replace ("\r", "");
       runner.Yield (closure, new RCString (code));
@@ -200,7 +195,7 @@ namespace RCL.Core
     [RCVerb ("save")]
     public void EvalSave (RCRunner runner, RCClosure closure, RCSymbol left, RCString right)
     {
-      Save (runner, closure, PathSymbolToString (left[0]), right.ToArray ());
+      Save (runner, closure, PathSymbolToLocalString (left[0]), right.ToArray ());
     }
       
     [RCVerb ("save")]
@@ -322,7 +317,7 @@ namespace RCL.Core
     {
       for (int i = 0; i < right.Count; ++i)
       {
-        File.Delete (PathSymbolToString (right[i]));
+        File.Delete (PathSymbolToLocalString (right[i]));
       }
       runner.Yield (closure, right);
     }

@@ -9,12 +9,15 @@ namespace RCL.Kernel
 {
   public class StringToken : RCTokenType
   {
-    public override RCToken TryParseToken (string text, int startPos, int index, RCToken previous)
+    public override RCToken TryParseToken (string text, int startPos, int index, int line, RCToken previous)
     {
       int length = LengthOfEnclosedLiteral (text, startPos, '"');
-      if (length < 0) return null;
+      if (length < 0)
+      {
+        return null;
+      }
       string result = text.Substring (startPos, length);
-      return new RCToken (result, this, startPos, index);
+      return new RCToken (result, this, startPos, index, line, 0);
     }
 
     public override bool IsEnclosedLiteral { get { return true; } }

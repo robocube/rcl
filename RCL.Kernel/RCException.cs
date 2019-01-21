@@ -187,6 +187,79 @@ namespace RCL.Kernel
   }
 
   /// <summary>
+  /// An exception caused by malformed RCL syntax.
+  /// </summary>
+  [Serializable]
+  public class RCLSyntaxException : Exception
+  {
+    public readonly RCToken Token;
+    public readonly Exception Exception;
+
+    protected static string MakeMessage (RCToken token, string details)
+    {
+      if (details != null && details != "")
+      {
+        return string.Format ("Invalid syntax around line {0} near the text '{1}'.\nDetails: {2}",
+                              token.Line, RCTokenType.EscapeControlChars (token.Text, '"'), details);
+      }
+      else
+      {
+        return string.Format ("Invalid syntax around line {0} near the text '{1}'.",
+                              token.Line, RCTokenType.EscapeControlChars (token.Text, '"'));
+      }
+    }
+
+    public RCLSyntaxException (RCToken token, string details)
+      :base (MakeMessage (token, details))
+    {
+      RCAssert.ArgumentIsNotNull (token, "token");
+      Token = token;
+    }
+
+    public RCLSyntaxException (RCToken token, Exception exception)
+      :base (MakeMessage (token, null))
+    {
+      RCAssert.ArgumentIsNotNull (token, "token");
+      RCAssert.ArgumentIsNotNull (exception, "exception");
+      Token = token;
+      Exception = exception;
+    }
+
+    public override string ToString ()
+    {
+      StringBuilder builder = new StringBuilder ();
+      builder.Append (Message);
+      if (RCSystem.Args.OutputEnum != RCOutput.Test)
+      {
+        string br = new String ('-', 80);
+        builder.AppendLine ();
+        if (Exception != null)
+        {
+          builder.AppendLine (Exception.ToString ());
+        }
+        builder.AppendLine (br);
+      }
+      return builder.ToString ();
+    }
+
+    /// <summary>
+    /// Deserialization constructor.
+    /// </summary>
+    protected RCLSyntaxException (SerializationInfo info, StreamingContext context)
+      :base (info, context)
+    {
+    }
+
+    /// <summary>
+    /// Serialization method.
+    /// </summary>
+    [SecurityPermissionAttribute (SecurityAction.Demand, SerializationFormatter = true)]
+    public override void GetObjectData (SerializationInfo info, StreamingContext context)
+    {
+    }
+  }
+
+  /// <summary>
   /// An exception resulting from a failed assertion in the RCL runtime.
   /// RCDebugExceptions only occur in debug builds.
   /// </summary>

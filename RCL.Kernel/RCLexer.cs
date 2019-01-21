@@ -20,22 +20,25 @@ namespace RCL.Kernel
     {
       int i = 0;
       int tokenIndex = 0;
+      int line = 0;
       //The only scenario requiring a lookback is for disambiguating
       //negative numbers from a minus (-) operator.
       RCToken previous = null;
+      RCToken token = null;
       try
       {
         while (i < input.Length)
         {
-          RCToken token = null;
+          token = null;
           foreach (RCTokenType tokenType in m_types)
           {
-            token = tokenType.TryParseToken (input, i, tokenIndex, previous);
+            token = tokenType.TryParseToken (input, i, tokenIndex, line, previous);
             if (token != null)
             {
               output.Write (token);
               previous = token;
-              tokenIndex++;
+              ++tokenIndex;
+              line += token.Lines;
               i += token.Text.Length;
               break;
             }
@@ -48,7 +51,7 @@ namespace RCL.Kernel
       }
       catch (Exception ex)
       {
-        throw new Exception (string.Format ("Lex error at char: {0}@{1} previous token: {2}@{3}", input[i], i, previous.Text, tokenIndex), ex);
+        throw new RCLSyntaxException (previous, ex);
       }
     }
 
@@ -59,13 +62,13 @@ namespace RCL.Kernel
     {
       foreach (RCTokenType tokenType in m_types)
       {
-        RCToken token = tokenType.TryParseToken (code, 0, 0, null);
+        RCToken token = tokenType.TryParseToken (code, 0, 0, 0, null);
         if (token != null && token.Text.Length == code.Length)
         {
           return token;
         }
       }
-      return new RCToken (code, RCTokenType.Junk, 0, code.Length);
+      return new RCToken (code, RCTokenType.Junk, 0, code.Length, 0, 0);
     }
   }
 }

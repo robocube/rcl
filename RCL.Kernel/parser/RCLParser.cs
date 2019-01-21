@@ -1,6 +1,6 @@
+
 using System;
 using System.Text;
-using System.Diagnostics;
 using System.Collections.Generic;
 
 namespace RCL.Kernel
@@ -52,7 +52,7 @@ namespace RCL.Kernel
     }
 
     /// <summary>
-    /// Parse a given set of tokens, generally aquired using RCLexer.
+    /// Parse a given set of tokens, generally acquired using RCLexer.
     /// </summary>
     public override RCValue Parse (RCArray<RCToken> tokens, out bool fragment, bool canonical)
     {
@@ -73,11 +73,12 @@ namespace RCL.Kernel
         {
           FinishValue (false);
         }
-        if (m_operators.Count > 0)
+        if (m_operators.Peek ().Count > 0)
         {
           MakeExpression ();
         }
         fragment = FinishBlock ();
+        CheckForUnfinishedWork (tokens[tokens.Count - 1]);
         if (m_block != null)
         {
           return m_block;
@@ -87,15 +88,25 @@ namespace RCL.Kernel
           return m_result;
         }
       }
+      catch (RCLSyntaxException)
+      {
+        // The code issue is handled manually within Parse.
+        throw;
+      }
       catch (Exception ex)
       {
         if (i < tokens.Count)
         {
-          throw new Exception (string.Format ("Parse error at token: {0} value: {1}", i, tokens[i].Text), ex);
+          throw new RCLSyntaxException (tokens[i], ex);
+        }
+        else if (tokens.Count > 0 && i >= tokens.Count)
+        {
+          throw new RCLSyntaxException (tokens[tokens.Count - 1], ex);
         }
         else
         {
-          throw new Exception (string.Format ("Parse error at token: {0} value: {1}", i, "UNKNOWN"), ex);
+          //If for some reason we cannot obtain the token that broke the parsing process.
+          throw;
         }
       }
     }
@@ -104,12 +115,12 @@ namespace RCL.Kernel
     /// The expression currently being appended to.
     /// </summary>
     protected RCValue m_result;
-  
+
     /// <summary>
     /// Activator is used to create operator instances.
     /// </summary>
     protected RCActivator m_activator;
-  
+
     /// <summary>
     /// The block currently under construction.
     /// </summary>
@@ -146,7 +157,7 @@ namespace RCL.Kernel
     /// The vector currently being read, if any.
     /// </summary>
     protected RCArray<RCToken> m_vector;
-  
+
     /// <summary>
     /// The reference currently being read, if any.
     /// </summary>
@@ -156,12 +167,12 @@ namespace RCL.Kernel
     /// The text of a symbol that could either be an operator or a variable.
     /// </summary>
     protected string m_maybeOperator;
-  
+
     /// <summary>
     /// The left argument of an expression being processed.
     /// </summary>
     protected RCValue m_left;
-  
+
     /// <summary>
     /// Similar to the way blocks are parsed, we need two stacks to 
     /// store the left arguments and the names of the operators as we are 
@@ -288,7 +299,7 @@ namespace RCL.Kernel
         m_left = null;
       }
     }
-  
+
     /// <summary>
     /// Vectors and references cannot be created until we know the parenting
     /// structure of surrounding operators.  You only know this once you see if 
@@ -319,7 +330,7 @@ namespace RCL.Kernel
         }
       }
     }
-  
+
     protected bool FinishBlock ()
     {
       //instantiate blocks
@@ -332,7 +343,15 @@ namespace RCL.Kernel
       }
       return false;
     }
-  
+
+    protected void CheckForUnfinishedWork (RCToken token)
+    {
+      if (m_maybeOperator != null)
+      {
+        throw new RCLSyntaxException (token, "Unfinished operator expression '" + m_maybeOperator + "'");
+      }
+    }
+
     public override void AcceptEvaluator (RCToken token)
     {
       FinishValue (true);
@@ -361,10 +380,9 @@ namespace RCL.Kernel
       m_result = null;
       m_evaluator = RCEvaluator.For (token.Text);
     }
-  
+
     public override void AcceptWhitespace (RCToken token)
     {
-  
     }
 
     public override void AcceptCube (RCToken token)

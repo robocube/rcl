@@ -2183,7 +2183,7 @@ namespace RCL.Test
     [Test]
     public void TestPath ()
     {
-      DoTest ("(path #home,env,env.rclb) like \"*/env/env.rclb\"", "true");
+      DoTest ("{p:path #home,env,env.rclb :assert $p like \"*env.rclb\" :assert (length $p) > 7 <-0}", "0");
     }
 
     [Test]
@@ -2463,6 +2463,18 @@ namespace RCL.Test
     public void TestParseDefault1 ()
     {
       DoTest ("#rcl parse \"{a:1 b:2.0 c:\\\"3\\\"}\"", "{a:1 b:2.0 c:\"3\"}");
+    }
+
+    [Test]
+    public void TestParseBadSyntax1 ()
+    {
+      DoTest ("eval \"data\" get try {:parse \"foo\"}", "\"<<Syntax,Invalid syntax around line 0 near the text 'foo'.\\nDetails: Unfinished operator expression 'foo'>>\\n\"");
+    }
+
+    [Test]
+    public void TestParseBadSyntax2 ()
+    {
+      DoTest ("eval \"data\" get try {:parse \"foo\" \"bad\"}", "\"<<Syntax,Invalid syntax around line 0 near the text 'bad'.>>\\n\"");
     }
 
     [Test]

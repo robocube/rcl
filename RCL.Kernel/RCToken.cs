@@ -7,19 +7,50 @@ using System.Globalization;
 
 namespace RCL.Kernel
 {
+
+  /// <summary>
+  /// Represents a single token within an RCL source document.
+  /// </summary>
   public class RCToken
   {
+    /// <summary>
+    /// The text of this token.
+    /// </summary>
     public readonly string Text;
-    public readonly RCTokenType Type;
-    public readonly long Start;
-    public readonly long Index;
 
-    public RCToken (string text, RCTokenType type, long start, long index)
+    /// <summary>
+    /// The recognizer which instantiated this token.
+    /// </summary>
+    public readonly RCTokenType Type;
+
+    /// <summary>
+    /// The index of the first character in the source document.
+    /// </summary>
+    public readonly int Start;
+
+    /// <summary>
+    /// The index of this token in the source document.
+    /// </summary>
+    public readonly int Index;
+
+    /// <summary>
+    /// The line number in the source document where this token begins.
+    /// </summary>
+    public readonly int Line;
+
+    /// <summary>
+    /// The number of newline characters found within this token.
+    /// </summary>
+    public readonly int Lines;
+
+    public RCToken (string text, RCTokenType type, int start, int index, int line, int lines)
     {
       Text = text;
       Type = type;
       Start = start;
       Index = index;
+      Line = line;
+      Lines = lines;
     }
 
     public string ParseString (RCLexer lexer)

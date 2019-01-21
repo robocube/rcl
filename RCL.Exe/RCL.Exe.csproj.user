@@ -28,7 +28,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Test|AnyCPU'">
     <StartWorkingDirectory>Y:\dev\src\rcl\RCL.Test\rclkit\</StartWorkingDirectory>
-    <StartArguments>--program=rcl/rclt.rcl tests/CoreTest1.rclt tests/CoreTest2.rclt tests/CoreTest3.rclt tests/EvalTest.rclt tests/CubeTest.rclt tests/LexerTest.rclt tests/BlockTest.rclt tests/RunnerTest.rclt tests/ParserTest.rclt tests/rcl.log_parse.rclt tests/rcl.md_parse.rclt tests/rcl.rclt tests/rclt.rclt tests/rcld.rclt --action=main</StartArguments>
+    <StartArguments>--program=rcl/rclt.rcl tests/CoreTest1.rclt tests/CoreTest2.rclt tests/CoreTest3.rclt tests/EvalTest.rclt tests/CubeTest.rclt tests/LexerTest.rclt tests/BlockTest.rclt tests/RunnerTest.rclt tests/ParserTest.rclt tests/rcl.log_parse.rclt tests/rcl.md_parse.rclt tests/rcl.rclt tests/rclt.rclt tests/rcld.rclt --action=main --rclt-display-status=F</StartArguments>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugTest|AnyCPU'">
     <StartWorkingDirectory>Y:\dev\src\rcl\RCL.Test\rclkit\</StartWorkingDirectory>

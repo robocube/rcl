@@ -9,15 +9,17 @@ namespace RCL.Kernel
 {
   public class TimeToken : RCTokenType
   {
-    public override RCToken TryParseToken (
-      string text, int start, int index, RCToken previous)
+    public override RCToken TryParseToken (string text, int start, int index, int line, RCToken previous)
     {
       //If the previous token is also a number, and there is no whitespace, the dash
       //should be considered an operator and not a sign on the number itself. ex "1-2"
       int length = LengthOfTime (text, start, false);
-      if (length < 0) return null;
+      if (length < 0)
+      {
+        return null;
+      }
       string result = text.Substring (start, length);
-      return new RCToken (result, this, start, index);
+      return new RCToken (result, this, start, index, line, 0);
     }
 
     public static int LengthOfTime (string text, int start, bool allowDash)
