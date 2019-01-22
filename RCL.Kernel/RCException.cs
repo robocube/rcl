@@ -182,6 +182,7 @@ namespace RCL.Kernel
         builder.Append (br);
         builder.Append ("\n");
       }
+      builder.Remove (builder.Length - 1, 1);
       return builder.ToString ();
     }
   }
@@ -199,7 +200,7 @@ namespace RCL.Kernel
     {
       if (details != null && details != "")
       {
-        return string.Format ("Invalid syntax around line {0} near the text '{1}'.\nDetails: {2}",
+        return string.Format ("Invalid syntax around line {0} near the text '{1}'. {2}",
                               token.Line, RCTokenType.EscapeControlChars (token.Text, '"'), details);
       }
       else
@@ -228,16 +229,17 @@ namespace RCL.Kernel
     public override string ToString ()
     {
       StringBuilder builder = new StringBuilder ();
-      builder.Append (Message);
+      builder.AppendLine (Message);
+      string br = new String ('-', 80);
+      builder.Append (StackTrace);
       if (RCSystem.Args.OutputEnum != RCOutput.Test)
       {
-        string br = new String ('-', 80);
-        builder.AppendLine ();
         if (Exception != null)
         {
+          builder.AppendLine ();
           builder.AppendLine (Exception.ToString ());
+          builder.Append (br);
         }
-        builder.AppendLine (br);
       }
       return builder.ToString ();
     }

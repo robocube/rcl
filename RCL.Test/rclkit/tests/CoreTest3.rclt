@@ -750,7 +750,7 @@
     src:eval "data" get try {
       :parse "foo"
     }
-    bin:"<<Syntax,Invalid syntax around line 0 near the text 'foo'.\nDetails: Unfinished operator expression 'foo'>>\n"
+    bin:"<<Syntax,Invalid syntax around line 0 near the text 'foo'. Unfinished operator expression.>>\n"
   }
   TestParseBadSyntax2:{
     skip:false
