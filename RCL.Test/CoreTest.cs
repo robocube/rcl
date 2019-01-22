@@ -2468,7 +2468,7 @@ namespace RCL.Test
     [Test]
     public void TestParseBadSyntax1 ()
     {
-      DoTest ("eval \"data\" get try {:parse \"foo\"}", "\"<<Syntax,Invalid syntax around line 0 near the text 'foo'.\\nDetails: Unfinished operator expression 'foo'>>\\n\"");
+      DoTest ("eval \"data\" get try {:parse \"foo\"}", "\"<<Syntax,Invalid syntax around line 0 near the text 'foo'. Unfinished operator expression.>>\\n\"");
     }
 
     [Test]

@@ -348,7 +348,7 @@ namespace RCL.Kernel
     {
       if (m_maybeOperator != null)
       {
-        throw new RCLSyntaxException (token, "Unfinished operator expression '" + m_maybeOperator + "'");
+        throw new RCLSyntaxException (token, "Unfinished operator expression.");
       }
     }
 
