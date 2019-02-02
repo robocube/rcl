@@ -120,6 +120,27 @@
     src:2015.05.22 & 2015.05.23
     bin:2015.05.22 2015.05.23
   }
+  TestAppendKMixed:{
+    skip:false
+    src:& {
+      :{
+        :#this_is_a_symbol
+      }
+      :"this is a string"
+      :{
+        a:1
+        b:2
+      }
+      z:4
+    }
+    bin:{
+      :#this_is_a_symbol
+      :"this is a string"
+      a:1
+      b:2
+      z:4
+    }
+  }
   TestPartY0:{
     skip:false
     src:0 part #a,b,c #d,e,f #g,h,i

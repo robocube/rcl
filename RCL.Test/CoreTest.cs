@@ -1013,7 +1013,9 @@ namespace RCL.Test
     public void TestAppendS () { DoTest ("& \"a\" \"b\" \"c\"", "\"abc\""); }
     [Test]
     public void TestAppendT () { DoTest ("2015.05.22 & 2015.05.23", "2015.05.22 2015.05.23"); } 
-    
+    [Test]
+    public void TestAppendKMixed () { DoTest ("& {:{:#this_is_a_symbol} :\"this is a string\" :{a:1 b:2} z:4}", "{:#this_is_a_symbol :\"this is a string\" a:1 b:2 z:4}"); }
+
     [Test]
     public void TestPartY0 () { DoTest ("0 part #a,b,c #d,e,f #g,h,i", "#a #d #g"); }
     [Test]
