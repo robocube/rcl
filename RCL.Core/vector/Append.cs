@@ -136,16 +136,24 @@ namespace RCL.Core
         runner.Yield (closure, result);
         return;
       }
-      //The children must all be blocks in this case.
+      // Individual values are now appended to the result just like the children of blocks.
       {
         RCBlock result = RCBlock.Empty;
         for (int i = 0; i < right.Count; ++i)
         {
-          RCBlock list = (RCBlock)right.Get (i);
-          for (int j = 0; j < list.Count; ++j)
+          RCBlock top = right.GetName (i);
+          if (top.Value is RCBlock)
           {
-            RCBlock item = list.GetName (j);
-            result = new RCBlock (result, item.Name, ":", item.Value);
+            RCBlock list = (RCBlock) right.Get (i);
+            for (int j = 0; j < list.Count; ++j)
+            {
+              RCBlock item = list.GetName (j);
+              result = new RCBlock (result, item.Name, ":", item.Value);
+            }
+          }
+          else
+          {
+            result = new RCBlock (result, top.Name, ":", top.Value);
           }
         }
         runner.Yield (closure, result);
