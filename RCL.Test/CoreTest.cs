@@ -2555,6 +2555,12 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestParseJSONSingleToken ()
+    {
+      DoTest ("eval \"data\" get try {<-#json parse \"foo\\n\"}", "\"<<Syntax,Invalid syntax around line 0 near the text 'foo\\\\n'.>>\\n\"");
+    }
+
+    [Test]
     public void TestParseJSONStringArray ()
     {
       //Array of strings
