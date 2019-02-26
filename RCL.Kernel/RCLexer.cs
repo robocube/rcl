@@ -51,6 +51,10 @@ namespace RCL.Kernel
       }
       catch (Exception ex)
       {
+        if (previous == null)
+        {
+          previous = new RCToken (input, RCTokenType.Junk, 0, 0, 0, 0);
+        }
         throw new RCLSyntaxException (previous, ex);
       }
     }

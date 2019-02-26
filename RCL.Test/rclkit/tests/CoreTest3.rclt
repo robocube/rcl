@@ -839,6 +839,13 @@
     src:#json parse "[]"
     bin:{}
   }
+  TestParseJSONSingleToken:{
+    skip:false
+    src:eval "data" get try {
+      <-#json parse "foo\n"
+    }
+    bin:"<<Syntax,Invalid syntax around line 0 near the text 'foo\\n'.>>\n"
+  }
   TestParseJSONStringArray:{
     skip:false
     src:#json parse "[\"a\",\"b\",\"c\"]"
