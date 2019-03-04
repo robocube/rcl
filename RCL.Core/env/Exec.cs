@@ -431,6 +431,7 @@ namespace RCL.Core
         RCSystem.Log.Record (null, "exec", Handle, "closing", message);
         lock (this)
         {
+          m_timer.Dispose ();
           if (m_pid >= 0 && !m_finished)
           {
 #if __MonoCS__
