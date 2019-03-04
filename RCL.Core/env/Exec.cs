@@ -431,7 +431,6 @@ namespace RCL.Core
         RCSystem.Log.Record (null, "exec", Handle, "closing", message);
         lock (this)
         {
-          m_timer.Dispose ();
           if (m_pid >= 0 && !m_finished)
           {
 #if __MonoCS__
@@ -630,7 +629,11 @@ namespace RCL.Core
           {
             RCSystem.Log.Record (m_state.Closure, "exec", Handle, "line", output, forceDoc:true);
           }
-          m_timer.Change (200, Timeout.Infinite);
+          try
+          {
+            m_timer.Change (200, Timeout.Infinite);
+          }
+          catch (ObjectDisposedException) { }
         }
         catch (Exception ex)
         {
