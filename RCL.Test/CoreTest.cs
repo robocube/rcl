@@ -2207,6 +2207,20 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestWait ()
+    {
+      //repro
+      //{:print "before wait" :wait fiber {sh:startx "bash" :$sh writex "set -e\ncat foo\nexit\n" :waitx $sh} :print "after wait"}
+      NUnit.Framework.Assert.Throws<RCException> (delegate () { DoTest ("{:0 :wait fiber {:assert false} :1}", ""); });
+    }
+
+    [Test]
+    public void TestWait1 ()
+    {
+      DoTest ("#status get try {<-eval {:0 :wait fiber {:assert false} :1}}", "1");
+    }
+
+    [Test]
     public void TestTryFail ()
     {
       DoTest ("#status #data from try {<-900 fail \"fail with status 900\"}", "{status:900 data:[?\n    <<Custom,fail with status 900>>\n  ?]}");
@@ -2412,14 +2426,14 @@ namespace RCL.Test
     {
       DoTest ("{f1:fiber {:read #a} f2:fiber {:try {<-200 wait $f1} :try {<-kill $f1}} :wait $f2 <-0}", "0");
       // The single exception is for the killed fiber
-      NUnit.Framework.Assert.AreEqual (1, runner.ExceptionCount);
+      NUnit.Framework.Assert.AreEqual (2, runner.ExceptionCount);
     }
 
     [Test]
     public void TestWaitWithConflictingResult2 ()
     {
       DoTest ("{p:{f1:fiber {:read #a} f2:fiber {:try {<-200 wait $f1} :try {<-kill $f1}} :wait $f2} :p {} :p {} <-0}", "0");
-      NUnit.Framework.Assert.AreEqual (2, runner.ExceptionCount);
+      NUnit.Framework.Assert.AreEqual (4, runner.ExceptionCount);
     }
 
     [Test]
@@ -2432,7 +2446,7 @@ namespace RCL.Test
     [Test]
     public void TestWaitWithConflictingResult4 ()
     {
-      DoTest ("{f:fiber {:#a read 0 :#m putm 1} :200 wait $f :kill $f :#a write {x:1} :wait $f :assert not hasm #m <-0}", "0");
+      DoTest ("{f:fiber {:#a read 0 :#m putm 1} :try {<-200 wait $f} :kill $f :#a write {x:1} :wait $f :assert not hasm #m <-0}", "0");
     }
 
     //These three tests are still important but the module operator itself

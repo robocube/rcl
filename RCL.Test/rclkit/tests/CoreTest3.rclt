@@ -126,6 +126,19 @@
     }
     bin:false true
   }
+  TestWait1:{
+    skip:false
+    src:#status get try {
+      <-eval {
+        :0
+        :wait fiber {
+          :assert false
+        }
+        :1
+      }
+    }
+    bin:1
+  }
   TestTryFail:{
     skip:false
     src:#status #data from try {
@@ -671,7 +684,9 @@
         :#a read 0
         :#m putm 1
       }
-      :200 wait $f
+      :try {
+        <-200 wait $f
+      }
       :kill $f
       :#a write {
         x:1
@@ -1786,6 +1801,19 @@
       data:~s
     }
   }
+  TestWait:{
+    skip:false
+    src:unwrap "status" from try {
+      <-eval {
+        :0
+        :wait fiber {
+          :assert false
+        }
+        :1
+      }
+    }
+    bin:1
+  }
   TestGetm:{
     skip:false
     src:unwrap "status" from try {
@@ -1811,7 +1839,7 @@
         :wait $f2
         <-0
       }
-      :assert 1 == excount {}
+      :assert 2 == excount {}
     }
   }
   TestWaitWithConflictingResult2:{
@@ -1836,7 +1864,7 @@
         :p {}
         <-0
       }
-      :assert 2 == excount {}
+      :assert 4 == excount {}
     }
   }
   TestWaitWithConflictingResult3:{

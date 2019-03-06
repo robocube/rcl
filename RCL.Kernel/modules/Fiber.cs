@@ -215,9 +215,20 @@ public class Fiber : RCOperator
     }
     if (waiters != null)
     {
-      foreach (RCClosure waiter in waiters)
+      RCNative exValue = result as RCNative;
+      if (exValue != null && exValue.Value is Exception)
       {
-        runner.Yield (waiter, result);
+        foreach (RCClosure waiter in waiters)
+        {
+          runner.Finish (waiter, (Exception) exValue.Value, 1);
+        }
+      }
+      else
+      {
+        foreach (RCClosure waiter in waiters)
+        {
+          runner.Yield (waiter, result);
+        }
       }
     }
     if (botResult != null)
