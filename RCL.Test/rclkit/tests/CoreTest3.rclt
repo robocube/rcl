@@ -606,7 +606,9 @@
       f2:fiber {
         <-assert false
       }
-      :wait $f2
+      :try {
+        <-wait $f2
+      }
       :#x dispatch 0
       :#x dispatch 10
       :kill $f0
@@ -621,7 +623,9 @@
       b:bot {
         :assert false
       }
-      :wait $b
+      :try {
+        :wait $b
+      }
       :kill $b
       <-0
     }
@@ -691,7 +695,9 @@
       :#a write {
         x:1
       }
-      :wait $f
+      :try {
+        <-wait $f
+      }
       :assert not hasm #m
       <-0
     }
@@ -1814,6 +1820,98 @@
     }
     bin:1
   }
+  TestWaitExceptionsWithFibers:{
+    skip:false
+    src:unwrap "status" from try {
+      <-eval {
+        inz:fiber {
+          :sleep 250
+          :assert false
+        }
+        ind:fiber {
+          :sleep 1000
+          :assert true
+        }
+        ing:fiber {
+          :sleep 500
+          :assert true
+        }
+        :wait $ing
+        :wait $ind
+        :wait $inz
+      }
+    }
+    bin:1
+  }
+  TestWaitExceptionsWithBots:{
+    skip:false
+    src:unwrap "status" from try {
+      <-eval {
+        inz:bot {
+          :sleep 250
+          :assert false
+        }
+        ind:bot {
+          :sleep 1000
+          :assert true
+        }
+        ing:bot {
+          :sleep 500
+          :assert true
+        }
+        :wait $ing
+        :wait $ind
+        :wait $inz
+      }
+    }
+    bin:1
+  }
+  TestWaitExceptionsWithFibersAndTimeouts:{
+    skip:false
+    src:unwrap "status" from try {
+      <-eval {
+        inz:fiber {
+          :sleep 250
+          :assert false
+        }
+        ind:fiber {
+          :sleep 1000
+          :assert true
+        }
+        ing:fiber {
+          :sleep 500
+          :assert true
+        }
+        :1500 wait $ing
+        :1500 wait $ind
+        :1500 wait $inz
+      }
+    }
+    bin:1
+  }
+  TestWaitExceptionsWithBotsAndTimeouts:{
+    skip:false
+    src:unwrap "status" from try {
+      <-eval {
+        inz:bot {
+          :sleep 250
+          :assert false
+        }
+        ind:bot {
+          :sleep 1000
+          :assert true
+        }
+        ing:bot {
+          :sleep 500
+          :assert true
+        }
+        :1500 wait $ing
+        :1500 wait $ind
+        :1500 wait $inz
+      }
+    }
+    bin:1
+  }
   TestGetm:{
     skip:false
     src:unwrap "status" from try {
@@ -1878,7 +1976,9 @@
           }
           f2:fiber {
             :kill $f1
-            :wait $f1
+            :try {
+              :wait $f1
+            }
             :#a write {
               x:0
             }
@@ -1891,7 +1991,7 @@
         :p {}
         <-0
       }
-      :assert 2 == excount {}
+      :assert 4 == excount {}
     }
   }
 }

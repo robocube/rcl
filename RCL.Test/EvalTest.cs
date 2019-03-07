@@ -892,7 +892,7 @@ namespace RCL.Test
     public void TestRecursionTailCallInfinite()
     {
       //This is not really what the return value of a fiber that throws and exception should be.
-      DoEvalTest ("{loop:{s:stack {} :1 assert $s.fiber :#x write {i:++} <-loop $R + 1} f:fiber {<-loop 0} :#x dispatch 100 :kill $f :wait $f <-0}", "0");
+      DoEvalTest ("{loop:{s:stack {} :1 assert $s.fiber :#x write {i:++} <-loop $R + 1} f:fiber {<-loop 0} :#x dispatch 100 :kill $f :try {:wait $f} <-0}", "0");
     }
 
     [Test]

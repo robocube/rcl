@@ -847,7 +847,7 @@ namespace RCL.Kernel
         }
         else
         {
-          Yield (closure, result);
+          SafeYieldFromWait (closure, result);
         }
       }
       else if (fibers.Count == 2)
@@ -877,7 +877,7 @@ namespace RCL.Kernel
         }
         if (result != null)
         {
-          Yield (closure, result);
+          SafeYieldFromWait (closure, result);
         }
       }
       else
@@ -1014,7 +1014,7 @@ namespace RCL.Kernel
         }
         else
         {
-          Yield (closure, result);
+          SafeYieldFromWait (closure, result);
         }
       }
       else if (fibers.Count == 2)
@@ -1048,12 +1048,25 @@ namespace RCL.Kernel
         }
         if (result != null)
         {
-          Yield (closure, result);
+          SafeYieldFromWait (closure, result);
         }
       }
       else
       {
         throw new Exception ();
+      }
+    }
+
+    protected void SafeYieldFromWait (RCClosure closure, RCValue result)
+    {
+      RCNative exValue = result as RCNative;
+      if (exValue != null && exValue.Value is Exception)
+      {
+        Finish (closure, (Exception) exValue.Value, 1);
+      }
+      else
+      {
+        Yield (closure, result);
       }
     }
 
@@ -1072,6 +1085,8 @@ namespace RCL.Kernel
       {
         foreach (RCClosure waiter in waiters)
         {
+          // I think this might be another where place where we need SafeYieldFromWait
+          // but I need a repro to prove that. Should be an easy fix then.
           Yield (waiter, result);
         }
       }

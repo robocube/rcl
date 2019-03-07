@@ -2221,6 +2221,33 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestWaitExceptionsWithFibers ()
+    {
+      NUnit.Framework.Assert.Throws<RCException> (delegate () { DoTest ("{inz:fiber {:sleep 250 :assert false} ind:fiber {:sleep 1000 :assert true} ing:fiber {:sleep 500 :assert true} :wait $ing :wait $ind :wait $inz}", ""); });
+    }
+
+    [Test]
+    public void TestWaitExceptionsWithBots ()
+    {
+      //Same as TestWait2 but wait for bots instead.
+      NUnit.Framework.Assert.Throws<RCException> (delegate () { DoTest ("{inz:bot {:sleep 250 :assert false} ind:bot {:sleep 1000 :assert true} ing:bot {:sleep 500 :assert true} :wait $ing :wait $ind :wait $inz}", ""); });
+    }
+
+    [Test]
+    public void TestWaitExceptionsWithFibersAndTimeouts ()
+    {
+      // Wait with timeouts is a totally different implementation so this same thing needs to be tested again with timeouts.
+      NUnit.Framework.Assert.Throws<RCException> (delegate () { DoTest ("{inz:fiber {:sleep 250 :assert false} ind:fiber {:sleep 1000 :assert true} ing:fiber {:sleep 500 :assert true} :1500 wait $ing :1500 wait $ind :1500 wait $inz}", ""); });
+    }
+
+    [Test]
+    public void TestWaitExceptionsWithBotsAndTimeouts ()
+    {
+      // Wait with timeouts is a totally different implementation so this same thing needs to be tested again with timeouts.
+      NUnit.Framework.Assert.Throws<RCException> (delegate () { DoTest ("{inz:bot {:sleep 250 :assert false} ind:bot {:sleep 1000 :assert true} ing:bot {:sleep 500 :assert true} :1500 wait $ing :1500 wait $ind :1500 wait $inz}", ""); });
+    }
+
+    [Test]
     public void TestTryFail ()
     {
       DoTest ("#status #data from try {<-900 fail \"fail with status 900\"}", "{status:900 data:[?\n    <<Custom,fail with status 900>>\n  ?]}");
@@ -2388,13 +2415,13 @@ namespace RCL.Test
     public void TestTryWaitKill6 ()
     {
       //Much like test 5 except that f2 throws an exception rather than f0 getting killed.
-      DoTest ("{w:{:#x write {i:++} <-w $R} f0:fiber {<-w 0} f1:fiber {<-w 0} f2:fiber {<-assert false} :wait $f2 :#x dispatch 0 :#x dispatch 10 :kill $f0 :kill $f1 <-0}", "0");
+      DoTest ("{w:{:#x write {i:++} <-w $R} f0:fiber {<-w 0} f1:fiber {<-w 0} f2:fiber {<-assert false} :try {<-wait $f2} :#x dispatch 0 :#x dispatch 10 :kill $f0 :kill $f1 <-0}", "0");
     }
 
     [Test]
     public void TestKillAfterThrow ()
     {
-      DoTest ("{b:bot {:assert false} :wait $b :kill $b <-0}", "0");
+      DoTest ("{b:bot {:assert false} :try {:wait $b} :kill $b <-0}", "0");
     }
 
     [Test]
@@ -2439,14 +2466,14 @@ namespace RCL.Test
     [Test]
     public void TestWaitWithConflictingResult3 ()
     {
-      DoTest ("{p:{f1:fiber {out:#a read 0 <-$out} f2:fiber {:kill $f1 :wait $f1 :#a write {x:0}} :wait $f2 <-0} :p {} :clear #a :p {} <-0}", "0");
-      NUnit.Framework.Assert.AreEqual (2, runner.ExceptionCount);
+      DoTest ("{p:{f1:fiber {out:#a read 0 <-$out} f2:fiber {:kill $f1 :try {:wait $f1} :#a write {x:0}} :wait $f2 <-0} :p {} :clear #a :p {} <-0}", "0");
+      NUnit.Framework.Assert.AreEqual (4, runner.ExceptionCount);
     }
 
     [Test]
     public void TestWaitWithConflictingResult4 ()
     {
-      DoTest ("{f:fiber {:#a read 0 :#m putm 1} :try {<-200 wait $f} :kill $f :#a write {x:1} :wait $f :assert not hasm #m <-0}", "0");
+      DoTest ("{f:fiber {:#a read 0 :#m putm 1} :try {<-200 wait $f} :kill $f :#a write {x:1} :try {<-wait $f} :assert not hasm #m <-0}", "0");
     }
 
     //These three tests are still important but the module operator itself
