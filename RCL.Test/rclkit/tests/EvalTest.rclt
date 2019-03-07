@@ -1625,7 +1625,9 @@
       }
       :#x dispatch 100
       :kill $f
-      :wait $f
+      :try {
+        :wait $f
+      }
       <-0
     }
     bin:0
