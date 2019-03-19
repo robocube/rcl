@@ -1,6 +1,4 @@
 
-RCL_HOME:getenv "RCL_HOME"
-
 rclt:eval {
   bash_path:((info #platform) like "Win*") switch {
     :"wsl"
@@ -44,7 +42,7 @@ run_test:{
     }
     :{
       results:{
-        result:($VARS & eval {rclt:$rclt test:$test FILE:$FILE RCL_HOME:$RCL_HOME}) eval {
+        result:($VARS & eval {rclt:$rclt test:$test FILE:$FILE RCL_HOME:$RCL_HOME RCLT_USER:$RCLT_USER RCLT_DOMAIN:$RCLT_DOMAIN}) eval {
           <-try {
             b:bot {
               setup_result:try {
@@ -174,7 +172,7 @@ run_file:{
   }
   test_syms:symbol {<-symbol "#" + "," delimit "." split $R} each $tests
   name:($path like "*.rclt") switch {:$path :$path + ".rclt"}
-  FILE:(eval {rclt:$rclt}) eval #canonical parse load $name
+  FILE:(eval {rclt:$rclt RCLT_HOME:$RCL_HOME RCLT_USER:$RCLT_USER RCLT_DOMAIN:$RCLT_DOMAIN}) eval #canonical parse load $name
   variable_names:names $FILE
   non_tests:$variable_names where $variable_names startswith "_"
   VARS:$non_tests from $FILE
@@ -200,7 +198,15 @@ main:{
   :"WSLENV" setenv "RCL_FLAGS/u:RCLT_DISPLAY_STATUS/u"
   results:& {<-$R.data} each {
     test_op:eval {
-      RCL_HOME:$RCL_HOME
+      RCL_HOME:(getenv "RCL_HOME") option "rclt-home"
+      RCLT_USER:(getenv "RCL_USER") option "rclt-user"
+      RCLT_DOMAIN:eval {
+        result:(getenv "RCL_DOMAIN") option "rclt-domain"
+        <-($result != "local") switch {
+          :$result
+          :"notarealdomain.com"
+        }
+      }
       RCLT_DISPLAY_STATUS:"," split ("F" getenv "RCLT_DISPLAY_STATUS") option "rclt-display-status"
       RCLT_FAIL_FAST:(boolean "false" getenv "RCLT_FAIL_FAST") flag "rclt-fail-fast"
       run_either:$run_either
