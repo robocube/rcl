@@ -195,13 +195,13 @@ main:{
   :"This variable will cause wsl to pass RCL_FLAGS through"
   :"https://blogs.msdn.microsoft.com/commandline/2017/12/22/share-environment-vars-between-wsl-and-windows/"
   :"PATH and RCL_PREFIX are still controlled by the wsl env ~/.profile"
-  :"WSLENV" setenv "RCL_FLAGS/u:RCLT_DISPLAY_STATUS/u"
+  :"WSLENV" setenv "RCL_FLAGS/u:RCL_USER/u:RCLT_DISPLAY_STATUS/u"
   results:& {<-$R.data} each {
     test_op:eval {
-      RCL_HOME:(getenv "RCL_HOME") option "rclt-home"
-      RCLT_USER:(getenv "RCL_USER") option "rclt-user"
+      RCL_HOME:("" getenv "RCL_HOME") option "rclt-home"
+      RCLT_USER:("" getenv "RCL_USER") option "rclt-user"
       RCLT_DOMAIN:eval {
-        result:(getenv "RCL_DOMAIN") option "rclt-domain"
+        result:("" getenv "RCL_DOMAIN") option "rclt-domain"
         <-($result != "local") switch {
           :$result
           :"notarealdomain.com"
