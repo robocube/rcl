@@ -2431,6 +2431,13 @@
     }
     bin:1
   }
+  TestEqWithBlock:{
+    skip:false
+    src:unwrap "status" from try {
+      <-0 == {}
+    }
+    bin:1
+  }
   TestNeqDM:{
     skip:false
     src:unwrap "status" from try {

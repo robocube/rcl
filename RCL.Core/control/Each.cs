@@ -152,12 +152,12 @@ namespace RCL.Core
       if (previous.Index == 2)
       {
         RCBlock output = new RCBlock (null, name, ":", result);
-        RCClosure parent = new RCClosure (previous.Parent, 
-                                          previous.Bot,
+        RCClosure parent = new RCClosure (previous.Bot, previous.Fiber, previous.Locks, previous.Parent,
                                           previous.Code, 
                                           previous.Left,
                                           output, 
-                                          previous.Index + 1);
+                                          previous.Index + 1,
+                                          null, null, noClimb:false, noResolve:true);
         return new RCClosure (parent, 
                               previous.Bot,
                               previous.Code, 
@@ -169,13 +169,13 @@ namespace RCL.Core
       {
         RCBlock output = new RCBlock (previous.Parent.Result, 
                                       name, ":", result);
-        RCClosure parent = new RCClosure (previous.Parent.Parent, 
-                                          previous.Bot,
-                                          previous.Code, 
+        RCClosure parent = new RCClosure (previous.Bot, previous.Fiber, previous.Locks, previous.Parent.Parent,
+                                          previous.Code,
                                           previous.Left,
                                           output, 
-                                          previous.Index + 1);
-        return new RCClosure (parent, 
+                                          previous.Index + 1,
+                                          null, null, noClimb:false, noResolve:true);
+        return new RCClosure (parent,
                               previous.Bot,
                               previous.Code, 
                               previous.Left,
