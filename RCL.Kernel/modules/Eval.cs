@@ -583,7 +583,7 @@ namespace RCL.Kernel
       while (parent != null)
       {
         IRefable result = parent.Result;
-        if (result != null)
+        if (result != null && !parent.NoResolve)
         {
           val = result.Get (name, @this);
         }
@@ -709,7 +709,7 @@ namespace RCL.Kernel
                                              previous.Code,
                                              previous.Left,
                                              result,
-                                             previous.Index, code, @this, noClimb);
+                                             previous.Index, code, @this, noClimb, noResolve:false);
       RCClosure child = new RCClosure (replacement,
                                        previous.Bot,
                                        code,
@@ -805,7 +805,7 @@ namespace RCL.Kernel
                               previous.Parent, block, previous.Left,
                               NextBlock (runner, block, previous, result),
                               previous.Index + 1,
-                              previous.UserOp, previous.UserOpContext, noClimb:false);
+                              previous.UserOp, previous.UserOpContext, noClimb:false, noResolve:false);
       }
       else if (previous.Parent != null)
       {

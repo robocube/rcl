@@ -280,8 +280,13 @@ namespace RCL.Core
     {
       //Brian! come back here to prevent the native exception
       RCOperator op = (RCOperator) closure.Code;
-      runner.Yield (closure, VectorMath.InvokeDyadic (
-        closure, op.Name, (RCVectorBase) left, (RCVectorBase) right));
+      RCVectorBase leftVector = left as RCVectorBase;
+      RCVectorBase rightVector = right as RCVectorBase;
+      if (leftVector == null || rightVector == null)
+      {
+        throw RCException.Overload (closure, op.Name, left, right);
+      }
+      runner.Yield (closure, VectorMath.InvokeDyadic (closure, op.Name, leftVector, rightVector));
     }
 
     [RCVerb ("+")] [RCVerb ("-")]

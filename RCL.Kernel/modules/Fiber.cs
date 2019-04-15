@@ -82,7 +82,8 @@ public class Fiber : RCOperator
                                      closure.Index,
                                      closure.UserOp,
                                      closure.UserOpContext,
-                                     noClimb:false);
+                                     noClimb:false,
+                                     noResolve:false);
 
     RCClosure next = new RCClosure (clone, bot.Id, code, clone.Left, RCBlock.Empty, 0);
     return next;

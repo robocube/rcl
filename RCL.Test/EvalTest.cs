@@ -810,6 +810,12 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestEachNamesNotVisibleInLoop ()
+    {
+      DoEvalTest ("{<-R {}} each {a:{<-1 + 2} count:{<-3 + 4} b:{<-count {}}}", "{a:3 count:7 b:0}");
+    }
+
+    [Test]
     public void TestEachIndices ()
     {
       DoEvalTest ("{<-$I} each {:1 :2 :3}", "{:0 :1 :2}");

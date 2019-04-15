@@ -479,6 +479,8 @@ namespace RCL.Test
     public void TestEqTT() { DoTest ("2018.05.04 == 2018.05.04", "true"); }
     [Test]
     public void TestEqTTWithTime() { DoTest ("2018.05.04 11:21 == 2018.05.04", "false"); }
+    [Test]
+    public void TestEqWithBlock() { NUnit.Framework.Assert.Throws<RCException> (delegate () { DoTest ("0 == {}", ""); }); }
 
     //Vector Not Equals
     [Test]

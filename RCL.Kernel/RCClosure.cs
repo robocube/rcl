@@ -74,8 +74,14 @@ namespace RCL.Kernel
     /// </summary>
     public readonly bool NoClimb;
 
+    /// <summary>
+    /// If true, variables in the closure will be skipped over when doing resolve.
+    /// NoResolve is set to true in the case of each, so that results of prior iterations do not become visible.
+    /// </summary>
+    public readonly bool NoResolve;
+
     public RCClosure (long bot, RCValue code)
-      :this (bot, 0, null, null, code, null, null, 0, null, null, false) {}
+      :this (bot, 0, null, null, code, null, null, 0, null, null, false, false) {}
 
     public RCClosure (RCClosure parent,
                       long bot,
@@ -132,7 +138,8 @@ namespace RCL.Kernel
                       int index,
                       RCValue userOp,
                       RCArray<RCBlock> userOpContext,
-                      bool noClimb)
+                      bool noClimb,
+                      bool noResolve)
     {
       if (parent != null)
       {
@@ -163,6 +170,7 @@ namespace RCL.Kernel
       {
         Depth = 0;
       }
+      NoResolve = noResolve;
     }
 
     public override string ToString ()
@@ -251,6 +259,7 @@ namespace RCL.Kernel
         //result = new RCBlock (result, "userOpContext", ":", this.Parent.Serialize ());
       }
       result = new RCBlock (result, "noClimb", ":", this.NoClimb);
+      result = new RCBlock (result, "noResolve", ":", this.NoResolve);
       return result;
     }
 
@@ -281,7 +290,8 @@ namespace RCL.Kernel
         }
       }
       bool noClimb = right.GetBoolean ("noClimb");
-      return new RCClosure (botId, fiber, locks, parent, code, left, result, index, userOp, userOpContext, noClimb);
+      bool noResolve = right.GetBoolean ("noResolve");
+      return new RCClosure (botId, fiber, locks, parent, code, left, result, index, userOp, userOpContext, noClimb, noResolve);
     }
   }
 }
