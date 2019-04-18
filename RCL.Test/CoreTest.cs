@@ -2001,6 +2001,10 @@ namespace RCL.Test
     public void TestUtf8SX () { DoTest ("utf8 utf8 \"foobarbaz\"", "\"foobarbaz\""); }
     [Test]
     public void TestAsciiSX () { DoTest ("ascii ascii \"foobarbaz\"", "\"foobarbaz\""); }
+    [Test]
+    public void TestMatch1 () { DoTest ("\"^[a-zA-Z\\\\'\\\\-\\\\s]{1,55}$\" match \"Brian M. Andersen\"", "false"); }
+    [Test]
+    public void TestMatch2 () { DoTest ("\"^[a-zA-Z\\\\'\\\\-\\\\s]{1,55}$\" match \"Brian M Andersen\"", "true"); }
 
     //Block
     [Test]
