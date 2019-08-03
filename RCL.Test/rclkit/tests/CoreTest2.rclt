@@ -2905,6 +2905,16 @@
     src:ascii ascii "foobarbaz"
     bin:"foobarbaz"
   }
+  TestMatch1:{
+    skip:false
+    src:"^[a-zA-Z\\'\\-\\s]{1,55}$" match "Brian M. Andersen"
+    bin:false
+  }
+  TestMatch2:{
+    skip:false
+    src:"^[a-zA-Z\\'\\-\\s]{1,55}$" match "Brian M Andersen"
+    bin:true
+  }
   TestNamesK1:{
     skip:false
     src:names {
