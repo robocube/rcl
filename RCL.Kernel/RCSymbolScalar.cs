@@ -210,6 +210,10 @@ namespace RCL.Kernel
     {
       RCSymbolScalar concrete = this;
       RCSymbolScalar @abstract = scalar;
+      if (scalar.Equals (RCSymbolScalar.Empty))
+      {
+        return false;
+      }
       while (concrete.Length > @abstract.Length)
       {
         concrete = concrete.Previous;
