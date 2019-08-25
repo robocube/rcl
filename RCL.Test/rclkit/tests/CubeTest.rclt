@@ -6886,6 +6886,18 @@
       #b,z 30
     ]
   }
+  TestExcept13:{
+    skip:false
+    src:[
+      S | x
+      #   1
+      #0  1
+    ] except #
+    bin:[
+      S | x
+      #0  1
+    ]
+  }
   TestInter:{
     skip:false
     src:[

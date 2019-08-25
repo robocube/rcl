@@ -3271,6 +3271,12 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestExcept13 ()
+    {
+      DoTest ("[S|x # 1 #0 1] except #", "[S|x #0 1]");
+    }
+
+    [Test]
     public void TestInter ()
     {
       DoTest ("[S|x #a 1] inter [S|x #b 2 #c 3]", "[]");

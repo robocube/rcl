@@ -184,7 +184,6 @@ namespace RCL.Kernel
           RCSymbolScalar scalar = symbol[i];
           if (scalar.Key.Equals ("'*'") || symbol[i].Key.Equals ("*"))
           {
-            scalar = scalar.Previous;
             if (count.Concrete && !result.Contains (count.symbol))
             {
               if (count.symbol.IsConcreteOf (scalar))
@@ -207,7 +206,6 @@ namespace RCL.Kernel
           result.Write (symbol[i]);
         }
       }
-      //Console.Out.WriteLine ("ConcreteSymbols: " + new RCSymbol (result));
       return new RCSymbol (result);
     }
 

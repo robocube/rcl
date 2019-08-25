@@ -556,7 +556,7 @@ namespace RCL.Core
         int j = right[i];
         if (j < 0 || j >= left.Count)
         {
-          throw RCException.Range (closure, right[i], right.Count);
+          throw RCException.Range (closure, right[i], left.Count);
         }
         result[i] = left[j];
       }
@@ -573,7 +573,7 @@ namespace RCL.Core
           int j = (int) (left.Count + right[i]);
           if (j < 0 || j >= left.Count)
           {
-            throw RCException.Range (closure, right[i], right.Count);
+            throw RCException.Range (closure, right[i], left.Count);
           }
           result[i] = left[j];
         }
@@ -582,7 +582,7 @@ namespace RCL.Core
           int j = (int) right[i];
           if (j < 0 || j >= left.Count)
           {
-            throw RCException.Range (closure, right[i], right.Count);
+            throw RCException.Range (closure, right[i], left.Count);
           }
           result[i] = left[j];
         }
@@ -600,7 +600,7 @@ namespace RCL.Core
           int j = (int) (left.Count + right[i]);
           if (j < 0 || j >= left.Count)
           {
-            throw RCException.Range (closure, (long) right[i], right.Count);
+            throw RCException.Range (closure, (long) right[i], left.Count);
           }
           result[i] = left[j];
         }
@@ -609,7 +609,7 @@ namespace RCL.Core
           int j = (int) right[i];
           if (j < 0 || j >= left.Count)
           {
-            throw RCException.Range (closure, (long) right[i], right.Count);
+            throw RCException.Range (closure, (long) right[i], left.Count);
           }
           result[i] = left[j];
         }
@@ -627,7 +627,7 @@ namespace RCL.Core
           int j = (int) (left.Count + right[i]);
           if (j < 0 || j >= left.Count)
           {
-            throw RCException.Range (closure, (long) right[i], right.Count);
+            throw RCException.Range (closure, (long) right[i], left.Count);
           }
           result[i] = left[j];
         }
@@ -636,7 +636,7 @@ namespace RCL.Core
           int j = (int) right[i];
           if (j < 0 || j >= left.Count)
           {
-            throw RCException.Range (closure, (long) right[i], right.Count);
+            throw RCException.Range (closure, (long) right[i], left.Count);
           }
           result[i] = left[j];
         }
