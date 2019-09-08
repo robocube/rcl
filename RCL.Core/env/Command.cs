@@ -191,7 +191,33 @@ namespace RCL.Core
       runner.Yield (closure, right);
     }
 
+    [RCVerb ("rmdir")]
+    public void EvalRmDir (RCRunner runner, RCClosure closure, RCString right)
+    {
+      Directory.Delete (right[0]);
+      runner.Yield (closure, right);
+    }
+
+    [RCVerb ("mkdir")]
+    public void EvalMkdir (RCRunner runner, RCClosure closure, RCSymbol right)
+    {
+      //All of this stuff HASTA HASTA HASTA be ASYNC!
+      string path = PathSymbolToLocalString (right[0]);
+      Directory.CreateDirectory (path);
+      runner.Yield (closure, right);
+    }
+
+    [RCVerb ("rmdir")]
+    public void EvalRmdir (RCRunner runner, RCClosure closure, RCSymbol right)
+    {
+      //All of this stuff HASTA HASTA HASTA be ASYNC!
+      string path = PathSymbolToLocalString (right[0]);
+      Directory.Delete (path);
+      runner.Yield (closure, right);
+    }
+
     protected long m_handle = -1;
+
     [RCVerb ("save")]
     public void EvalSave (RCRunner runner, RCClosure closure, RCSymbol left, RCString right)
     {

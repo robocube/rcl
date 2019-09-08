@@ -125,6 +125,8 @@ namespace RCL.Test
     public void TestPlusX0 () { DoTest ("+ ~x", "~x"); }
     [Test]
     public void TestPlusX1 () { DoTest ("+ \\x01 \\x02 \\x03", "\\x01 \\x03 \\x06"); }
+    [Test]
+    public void TestPlusY0 () { DoTest ("+ #1 #2 #3", "#1,2,3"); }
 
     //Minus
     [Test]
@@ -2210,6 +2212,18 @@ namespace RCL.Test
     public void TestFileAndPath ()
     {
       DoTest ("{before:file #work,file :#work,file save #pretty format {a:1 b:2 c:3} after:file #work,file :delete #work,file <-$before & $after}", "false true"); 
+    }
+
+    [Test]
+    public void TestMkdirS ()
+    {
+      DoTest ("{:mkdir \"mydir\" :rmdir \"mydir\" <-0}", "0");
+    }
+
+    [Test]
+    public void TestMkdirY ()
+    {
+      DoTest ("{:mkdir #work,mysymdir :rmdir #work,mysymdir <-0}", "0");
     }
 
     [Test]

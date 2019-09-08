@@ -126,6 +126,24 @@
     }
     bin:false true
   }
+  TestMkdirS:{
+    skip:false
+    src:{
+      :mkdir "mydir"
+      :rmdir "mydir"
+      <-0
+    }
+    bin:0
+  }
+  TestMkdirY:{
+    skip:false
+    src:{
+      :mkdir #work,mysymdir
+      :rmdir #work,mysymdir
+      <-0
+    }
+    bin:0
+  }
   TestWait1:{
     skip:false
     src:#status get try {

@@ -432,6 +432,17 @@ namespace RCL.Core
       runner.Yield (closure, result);
     }
 
+    [RCVerb ("+")]
+    public void EvalSymbolMonadicPlus (RCRunner runner, RCClosure closure, RCSymbol right)
+    {
+      RCSymbolScalar result = RCSymbolScalar.Empty;
+      for (int i = 0; i < right.Count; ++i)
+      {
+        result = ScalarMath.Plus (result, right[i]);
+      }
+      runner.Yield (closure, new RCSymbol (result));
+    }
+
     [RCVerb ("in")] [RCVerb ("like")] [RCVerb ("within")]
     public void EvalRightContextual (RCRunner runner, RCClosure closure, object left, object right)
     {
