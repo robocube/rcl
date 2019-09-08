@@ -139,6 +139,11 @@
     src:+ \x01 \x02 \x03
     bin:\x01 \x03 \x06
   }
+  TestPlusY0:{
+    skip:false
+    src:+ #1 #2 #3
+    bin:#1,2,3
+  }
   TestMinusXX:{
     skip:false
     src:\x03 - \x02

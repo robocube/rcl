@@ -6,7 +6,6 @@ rclt:eval {
   }
   sh:{
     :"In Windows, when you try to look in System32 you do not really see what is in there unless you access sysnative"
-    :"This is criminal."
     :"https://superuser.com/questions/330941/some-files-in-system32-not-accessible-outside-explorer-on-windows-7"
     sh:startx "bash"
     :$sh writex R {}
@@ -60,7 +59,12 @@ run_test:{
               start_time:now {}
               result:try {
                 :"Do not use eval directly, as in test.src {}, because vars in the test (like repeat) would be visible"
-                test_code:$test.src
+                test_code:$setup_result.data & eval {
+                  <--((typename $test.src) == "block") switch {
+                    :"eval" monad $test.src
+                    :$test.src
+                  }
+                }
                 op_result:test_code {}
                 <-$op_result
               }
