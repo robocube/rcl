@@ -497,7 +497,17 @@ namespace RCL.Kernel
       {
         throw new ArgumentException (string.Format ("Unknown action name: {0}", action));
       }
-      return Rep (string.Format ("{0} {{}}", action));
+      RCValue result = Rep (string.Format ("{0} {{}}", action));
+      RCBlock variables = result as RCBlock;
+      if (variables != null)
+      {
+        for (int i = 0; i < variables.Count; ++i)
+        {
+          RCBlock variable = variables.GetName (i);
+          m_state = new RCBlock (m_state, variable.Name, variable.Evaluator, variable.Value);
+        }
+      }
+      return result;
     }
 
     protected RCBlock m_state = RCBlock.Empty;
