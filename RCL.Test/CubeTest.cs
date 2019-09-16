@@ -3404,6 +3404,12 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestEmpty4 ()
+    {
+      DoTest ("empty []", "[]");
+    }
+
+    [Test]
     public void TestIn ()
     {
       DoTest ("[S|x #a 0 #b 0 #c 1 #d 1 #e 2 #f 2] in 0 2", "[S|x #a true #b true #c false #d false #e true #f true]");

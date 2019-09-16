@@ -2669,6 +2669,12 @@ namespace RCL.Core
     [RCVerb ("empty")]
     public void EvalEmpty (RCRunner runner, RCClosure closure, RCCube right)
     {
+      if (right.Axis.Count == 0)
+      {
+        runner.Yield (closure, right);
+        return;
+      }
+
       RCCube result = new RCCube (right.Axis.Match ());
       ColumnBase column = right.GetColumn (0);
       RCArray<int> index = column.Index;
