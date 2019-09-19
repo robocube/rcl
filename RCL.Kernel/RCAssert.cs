@@ -70,5 +70,14 @@ namespace RCL.Kernel
         }
       }
     }
+
+    [Conditional ("DEBUG")]
+    public static void ArrayHasOneElement<T> (RCArray<T> array)
+    {
+      if (array.Count != 1)
+      {
+        throw new RCDebugException ("The array must contain exactly one element. Array was {0}", array);
+      }
+    }
   }
 }
