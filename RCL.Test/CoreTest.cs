@@ -1281,6 +1281,29 @@ namespace RCL.Test
     public void TestFirstT() { DoTest ("first 2018.09.04 2018.09.05 2018.09.06", "2018.09.04"); }
 
     [Test]
+    public void TestRestK() { DoTest ("rest {:0 :1 :2}", "{:1 :2}"); }
+    [Test]
+    public void TestRestX() { DoTest ("rest \\x00 \\x01 \\x02", "\\x01 \\x02"); }
+    [Test]
+    public void TestRestL() { DoTest ("rest 0 1 2", "1 2"); }
+    [Test]
+    public void TestRestD() { DoTest ("rest 0.0 1.0 2.0", "1.0 2.0"); }
+    [Test]
+    public void TestRestM() { DoTest ("rest 0 1 2m", "1 2m"); }
+    [Test]
+    public void TestRestB() { DoTest ("rest true false true", "false true"); }
+    [Test]
+    public void TestRestY() { DoTest ("rest #a #b #c", "#b #c"); }
+    [Test]
+    public void TestRestS() { DoTest ("rest \"a\" \"b\" \"c\"", "\"b\" \"c\""); }
+    [Test]
+    public void TestRestI() { DoTest ("rest ++ ++ ++", "++ ++"); }
+    [Test]
+    public void TestRestT() { DoTest ("rest 2018.09.04 2018.09.05 2018.09.06", "2018.09.05 2018.09.06"); }
+
+    [Test]
+    public void TestLast() { DoTest ("last {:0 :1 :2}", "{:2}"); }
+    [Test]
     public void TestLastX() { DoTest ("last \\x00 \\x01 \\x02", "\\x02"); }
     [Test]
     public void TestLastL() { DoTest ("last 0 1 2", "2"); }
@@ -1300,7 +1323,26 @@ namespace RCL.Test
     public void TestLastT() { DoTest ("last 2018.09.04 2018.09.05 2018.09.06", "2018.09.06"); }
 
     [Test]
-    public void TestLast() { DoTest ("last {:0 :1 :2}", "2"); }
+    public void TestPop() { DoTest ("pop {:0 :1 :2}", "{:0 :1}"); }
+    [Test]
+    public void TestPopX() { DoTest ("pop \\x00 \\x01 \\x02", "\\x00 \\x01"); }
+    [Test]
+    public void TestPopL() { DoTest ("pop 0 1 2", "0 1"); }
+    [Test]
+    public void TestPopD() { DoTest ("pop 0.0 1.0 2.0", "0.0 1.0"); }
+    [Test]
+    public void TestPopM() { DoTest ("pop 0m 1m 2m", "0 1m"); }
+    [Test]
+    public void TestPopB() { DoTest ("pop true false false", "true false"); }
+    [Test]
+    public void TestPopY() { DoTest ("pop #a #b #c", "#a #b"); }
+    [Test]
+    public void TestPopS() { DoTest ("pop \"a\" \"b\" \"c\"", "\"a\" \"b\""); }
+    [Test]
+    public void TestPopI() { DoTest ("pop ++ ++ +-", "++ ++"); }
+    [Test]
+    public void TestPopT() { DoTest ("pop 2018.09.04 2018.09.05 2018.09.06", "2018.09.04 2018.09.05"); }
+
     [Test]
     public void TestUnwrap() { DoTest ("unwrap {:0}", "0"); }
     [Test]
