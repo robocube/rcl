@@ -7229,6 +7229,11 @@
       false
     ]
   }
+  TestEmpty4:{
+    skip:false
+    src:empty []
+    bin:[]
+  }
   TestIn:{
     skip:false
     src:[
