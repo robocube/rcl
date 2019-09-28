@@ -72,6 +72,72 @@ namespace RCL.Core
       runner.Yield (closure, new RCByte (right[0]));
     }
 
+    [RCVerb ("rest")]
+    public void EvalRest (RCRunner runner, RCClosure closure, RCBlock right)
+    {
+      RCBlock result = RCBlock.Empty;
+      for (int i = 1; i < right.Count; ++i)
+      {
+        RCBlock variable = right.GetName (i);
+        result = new RCBlock (result, variable.Name, variable.Evaluator, variable.Value);
+      }
+      runner.Yield (closure, result);
+    }
+
+    [RCVerb ("rest")]
+    public void EvalRest (RCRunner runner, RCClosure closure, RCLong right)
+    {
+      runner.Yield (closure, new RCLong (DoRest<long> (right.Data)));
+    }
+
+    [RCVerb ("rest")]
+    public void EvalRest (RCRunner runner, RCClosure closure, RCDouble right)
+    {
+      runner.Yield (closure, new RCDouble (DoRest<double> (right.Data)));
+    }
+
+    [RCVerb ("rest")]
+    public void EvalRest (RCRunner runner, RCClosure closure, RCDecimal right)
+    {
+      runner.Yield (closure, new RCDecimal (DoRest<decimal> (right.Data)));
+    }
+
+    [RCVerb ("rest")]
+    public void EvalRest (RCRunner runner, RCClosure closure, RCString right)
+    {
+      runner.Yield (closure, new RCString (DoRest<string> (right.Data)));
+    }
+
+    [RCVerb ("rest")]
+    public void EvalRest (RCRunner runner, RCClosure closure, RCBoolean right)
+    {
+      runner.Yield (closure, new RCBoolean (DoRest<bool> (right.Data)));
+    }
+
+    [RCVerb ("rest")]
+    public void EvalRest (RCRunner runner, RCClosure closure, RCSymbol right)
+    {
+      runner.Yield (closure, new RCSymbol (DoRest<RCSymbolScalar> (right.Data)));
+    }
+
+    [RCVerb ("rest")]
+    public void EvalRest (RCRunner runner, RCClosure closure, RCIncr right)
+    {
+      runner.Yield (closure, new RCIncr (DoRest<RCIncrScalar> (right.Data)));
+    }
+
+    [RCVerb ("rest")]
+    public void EvalRest (RCRunner runner, RCClosure closure, RCTime right)
+    {
+      runner.Yield (closure, new RCTime (DoRest<RCTimeScalar> (right.Data)));
+    }
+
+    [RCVerb ("rest")]
+    public void EvalRest (RCRunner runner, RCClosure closure, RCByte right)
+    {
+      runner.Yield (closure, new RCByte (DoRest<byte> (right.Data)));
+    }
+
     [RCVerb ("last")]
     public void EvalLast (RCRunner runner, RCClosure closure, RCLong right)
     {
@@ -129,7 +195,69 @@ namespace RCL.Core
     [RCVerb ("last")]
     public void EvalLast (RCRunner runner, RCClosure closure, RCBlock right)
     {
-      runner.Yield (closure, right.Get (right.Count - 1));
+      RCBlock last = right.GetName (right.Count - 1);
+      RCBlock result = new RCBlock (last.Name, last.Evaluator.Symbol, last.Value);
+      runner.Yield (closure, result);
+    }
+
+    [RCVerb ("pop")]
+    public void EvalPop (RCRunner runner, RCClosure closure, RCBlock right)
+    {
+      runner.Yield (closure, right.Previous);
+    }
+
+    [RCVerb ("pop")]
+    public void EvalPop (RCRunner runner, RCClosure closure, RCLong right)
+    {
+      runner.Yield (closure, new RCLong (DoPop<long> (right.Data)));
+    }
+
+    [RCVerb ("pop")]
+    public void EvalPop (RCRunner runner, RCClosure closure, RCDouble right)
+    {
+      runner.Yield (closure, new RCDouble (DoPop<double> (right.Data)));
+    }
+
+    [RCVerb ("pop")]
+    public void EvalPop (RCRunner runner, RCClosure closure, RCDecimal right)
+    {
+      runner.Yield (closure, new RCDecimal (DoPop<decimal> (right.Data)));
+    }
+
+    [RCVerb ("pop")]
+    public void EvalPop (RCRunner runner, RCClosure closure, RCString right)
+    {
+      runner.Yield (closure, new RCString (DoPop<string> (right.Data)));
+    }
+
+    [RCVerb ("pop")]
+    public void EvalPop (RCRunner runner, RCClosure closure, RCBoolean right)
+    {
+      runner.Yield (closure, new RCBoolean (DoPop<bool> (right.Data)));
+    }
+
+    [RCVerb ("pop")]
+    public void EvalPop (RCRunner runner, RCClosure closure, RCSymbol right)
+    {
+      runner.Yield (closure, new RCSymbol (DoPop<RCSymbolScalar> (right.Data)));
+    }
+
+    [RCVerb ("pop")]
+    public void EvalPop (RCRunner runner, RCClosure closure, RCIncr right)
+    {
+      runner.Yield (closure, new RCIncr (DoPop<RCIncrScalar> (right.Data)));
+    }
+
+    [RCVerb ("pop")]
+    public void EvalPop (RCRunner runner, RCClosure closure, RCTime right)
+    {
+      runner.Yield (closure, new RCTime (DoPop<RCTimeScalar> (right.Data)));
+    }
+
+    [RCVerb ("pop")]
+    public void EvalPop (RCRunner runner, RCClosure closure, RCByte right)
+    {
+      runner.Yield (closure, new RCByte (DoPop<byte> (right.Data)));
     }
 
     [RCVerb ("unwrap")]
@@ -228,6 +356,26 @@ namespace RCL.Core
     public void EvalGet (RCRunner runner, RCClosure closure, RCSymbol left, RCBlock right)
     {
       EvalGet (runner, closure, right, left);
+    }
+
+    protected RCArray<T> DoRest<T> (RCArray<T> right)
+    {
+      RCArray<T> results = new RCArray<T> (right.Count);
+      for (int i = 1; i < right.Count; ++i)
+      {
+        results.Write (right[i]);  
+      }
+      return results;
+    }
+
+    protected RCArray<T> DoPop<T> (RCArray<T> right)
+    {
+      RCArray<T> results = new RCArray<T> (right.Count);
+      for (int i = 0; i < right.Count - 1; ++i)
+      {
+        results.Write (right[i]);
+      }
+      return results;
     }
   }
 }
