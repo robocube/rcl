@@ -876,6 +876,74 @@
     src:first 2018.09.04 2018.09.05 2018.09.06
     bin:2018.09.04
   }
+  TestRestK:{
+    skip:false
+    src:rest {
+      :0
+      :1
+      :2
+    }
+    bin:{
+      :1
+      :2
+    }
+  }
+  TestRestX:{
+    skip:false
+    src:rest \x00 \x01 \x02
+    bin:\x01 \x02
+  }
+  TestRestL:{
+    skip:false
+    src:rest 0 1 2
+    bin:1 2
+  }
+  TestRestD:{
+    skip:false
+    src:rest 0.0 1.0 2.0
+    bin:1.0 2.0
+  }
+  TestRestM:{
+    skip:false
+    src:rest 0 1 2m
+    bin:1 2m
+  }
+  TestRestB:{
+    skip:false
+    src:rest true false true
+    bin:false true
+  }
+  TestRestY:{
+    skip:false
+    src:rest #a #b #c
+    bin:#b #c
+  }
+  TestRestS:{
+    skip:false
+    src:rest "a" "b" "c"
+    bin:"b" "c"
+  }
+  TestRestI:{
+    skip:false
+    src:rest ++ ++ ++
+    bin:++ ++
+  }
+  TestRestT:{
+    skip:false
+    src:rest 2018.09.04 2018.09.05 2018.09.06
+    bin:2018.09.05 2018.09.06
+  }
+  TestLast:{
+    skip:false
+    src:last {
+      :0
+      :1
+      :2
+    }
+    bin:{
+      :2
+    }
+  }
   TestLastX:{
     skip:false
     src:last \x00 \x01 \x02
@@ -921,14 +989,62 @@
     src:last 2018.09.04 2018.09.05 2018.09.06
     bin:2018.09.06
   }
-  TestLast:{
+  TestPop:{
     skip:false
-    src:last {
+    src:pop {
       :0
       :1
       :2
     }
-    bin:2
+    bin:{
+      :0
+      :1
+    }
+  }
+  TestPopX:{
+    skip:false
+    src:pop \x00 \x01 \x02
+    bin:\x00 \x01
+  }
+  TestPopL:{
+    skip:false
+    src:pop 0 1 2
+    bin:0 1
+  }
+  TestPopD:{
+    skip:false
+    src:pop 0.0 1.0 2.0
+    bin:0.0 1.0
+  }
+  TestPopM:{
+    skip:false
+    src:pop 0 1 2m
+    bin:0 1m
+  }
+  TestPopB:{
+    skip:false
+    src:pop true false false
+    bin:true false
+  }
+  TestPopY:{
+    skip:false
+    src:pop #a #b #c
+    bin:#a #b
+  }
+  TestPopS:{
+    skip:false
+    src:pop "a" "b" "c"
+    bin:"a" "b"
+  }
+  TestPopI:{
+    skip:false
+    src:pop ++ ++ +-
+    bin:++ ++
+  }
+  TestPopT:{
+    skip:false
+    src:pop 2018.09.04 2018.09.05 2018.09.06
+    bin:2018.09.04 2018.09.05
   }
   TestUnwrap:{
     skip:false
