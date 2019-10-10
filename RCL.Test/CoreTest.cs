@@ -2091,6 +2091,10 @@ namespace RCL.Test
     [Test]
     public void TestSetK2 () { DoTest ("{:~s :~s :~s} set {}", "{:~s :~s :~s}"); }
     [Test]
+    public void TestSetK3 () { DoTest ("{x:1 y:2 :3} set {z:4}", "{x:1 y:2 :3 z:4}"); }
+    [Test]
+    public void TestSetK4 () { DoTest ("{x:1 y:2 :3} set {:4}", "{x:1 y:2 :4}"); }
+    [Test]
     public void TestGetLK () { DoTest ("1 get {:#x :#y :#z}", "#y"); }
     [Test]
     public void TestGetKL () { DoTest ("{:#x :#y :#z} get 1", "#y"); }

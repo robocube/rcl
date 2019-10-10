@@ -3272,6 +3272,37 @@
       :~s
     }
   }
+  TestSetK3:{
+    skip:false
+    src:{
+      x:1
+      y:2
+      :3
+    } set {
+      z:4
+    }
+    bin:{
+      x:1
+      y:2
+      :3
+      z:4
+    }
+  }
+  TestSetK4:{
+    skip:false
+    src:{
+      x:1
+      y:2
+      :3
+    } set {
+      :4
+    }
+    bin:{
+      x:1
+      y:2
+      :4
+    }
+  }
   TestGetLK:{
     skip:false
     src:1 get {

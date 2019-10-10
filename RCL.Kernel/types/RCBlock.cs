@@ -520,6 +520,20 @@ namespace RCL.Kernel
       else throw new Exception ("GetType (index) assumes a vector");
     }
 
+    public bool HasNamedVariables ()
+    {
+      RCBlock current = this;
+      while (current != null)
+      {
+        if (current.Name != "" && current.Name != null)
+        {
+          return true;
+        }
+        current = current.Previous;
+      }
+      return false;
+    }
+
     public override RCValue Edit (RCRunner runner, RCValueDelegate editor)
     {
       RCValue val = base.Edit (runner, editor);
