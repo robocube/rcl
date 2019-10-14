@@ -94,6 +94,25 @@ namespace RCL.Kernel
       //Console.Out.WriteLine ("m_liLength: {0}", m_liLength);
       //Console.Out.WriteLine ("m_blankLine: {0}", m_blankLine);
       string text = token.Text;
+      if (m_state == MarkdownState.ListItem)
+      {
+        WrapLITextIfNeeded (m_state);
+      }
+      if (m_liLength > -1)
+      {
+        bool indentedlip = true;
+        for (int i = 0; i < m_liLength; ++i)
+        {
+          if (text[i] != ' ')
+          {
+            indentedlip = false;
+          }
+        }
+        if (indentedlip)
+        {
+          WrapLITextIfNeeded (m_state);
+        }
+      }
       FinishList ();
       if (m_parsingList && m_parsingParagraph &&
           m_blankLine && m_state == MarkdownState.None)
@@ -134,7 +153,7 @@ namespace RCL.Kernel
         {
           EndBlock ();
           string tag = m_names.Peek ();
-          if (tag == "ol" || tag == "ul") //|| tag == "li")
+          if (tag == "ol" || tag == "ul")
           {
             EndBlock ();
             break;
@@ -196,13 +215,15 @@ namespace RCL.Kernel
       }
       if (m_state == MarkdownState.Newline1)
       {
+        //Console.WriteLine("m_state: {0}, m_value: {1}, m_run: {2}", m_state, m_value, m_run);
         if (m_parsingList)
         {
           //fall through to the end...
           //m_parsingParagraph = false;
-          m_blankLine = true;
           AppendRun ();
-          WrapLITextIfNeeded (m_state);
+          //Brian! Experiment more with moving this above m_blankLine - currently the breaks ul_p and others because of blank_line.
+          m_blankLine = true;
+          //WrapLITextIfNeeded (m_state);
           m_state = MarkdownState.None;
         }
         else if (m_quoteRun.Length > 0)
@@ -236,6 +257,13 @@ namespace RCL.Kernel
           m_run.Append ("\n");
         }
       }
+      // else if (m_state == MarkdownState.Paragraph)
+      // {
+      //   Console.WriteLine("m_state: {0}, m_value: {1}, m_run: {2}", m_state, m_value, m_run);
+      //   AppendRun ();
+      //   WrapLITextIfNeeded (m_state);
+      //   m_state = MarkdownState.Newline1;
+      // }
       else
       {
         m_state = MarkdownState.Newline1;
@@ -471,20 +499,23 @@ namespace RCL.Kernel
       if (m_parsingList)
       {
         m_liLength = token.Text.Length;
+        WrapLITextIfNeeded (m_state);
       }
     }
 
     protected void WrapLITextIfNeeded (MarkdownState oldState)
     {
+      //Console.WriteLine("WrapLITextIfNeeded ({0})", oldState);
       //Console.Out.WriteLine ("m_parsingParagraph: {0}", m_parsingParagraph);
       //Console.Out.WriteLine ("m_parsingList: {0}", m_parsingList);
       //Console.Out.WriteLine ("m_blankLine: {0}", m_blankLine);
+      //Console.Out.WriteLine ("m_value: {0}", m_value);
       if (m_parsingList && m_blankLine && !m_parsingParagraph)
       {
         //insert a new item
-        //Console.Out.WriteLine ("INSERTING P TAG!");
         if (m_value.Name == "" || m_value.Name == "em" || m_value.Name == "strong")
         {
+          //Console.Out.WriteLine ("WrapLITextIfNeeded: INSERTING P TAG! (m_value.Name:{0})", m_value.Name);
           m_value = new RCBlock (RCBlock.Empty, "p", ":", m_value);
         }
       }
