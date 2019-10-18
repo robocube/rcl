@@ -1029,6 +1029,17 @@ namespace RCL.Test
     [Test]
     public void TestPartY3 () { DoTest ("-2 part #a,b,c #d,e,f #g,h,i", "#b #e #h"); }
 
+    [Test]
+    public void TestPartsUntil1 () { DoTest ("#a,b,c #d,e,f #g,h,i partsUntil 1", "#a,b #d,e #g,h"); }
+    [Test]
+    public void TestPartsUntil2 () { DoTest ("#a,b,c #d,e,f #g,h,i partsUntil 0 1 2", "#a #d,e #g,h,i"); }
+    [Test]
+    public void TestPartsUntil3 () { DoTest ("#a,b,c #d,e,f #g,h,i partsUntil -1", "# # #"); }
+    [Test]
+    public void TestPartsAfter1 () { DoTest ("#a,b,c #d,e,f #g,h,i partsAfter 1", "#c #f #i"); }
+    [Test]
+    public void TestPartsAfter2 () { DoTest ("#a,b,c #d,e,f #g,h,i partsAfter 0 1 2", "#b,c #f #"); }
+
     //Thru
     [Test]
     public void TestToX() { DoTest("\\x00 to \\x02", "\\x00 \\x01 \\x02"); }
@@ -2917,6 +2928,26 @@ namespace RCL.Test
     public void TestParseXml24 ()
     {
       DoTest ("#xml parse \"<a f=\\\"i\\\"><b><c g=\\\"j\\\">x</c><d>y</d></b><e h=\\\"k\\\"/></a>\"", "{a:{f:\"i\" :{b:{:{c:{g:\"j\" :\"x\"} d:{:\"y\"}}} e:{h:\"k\" :\"\"}}}}");
+    }
+
+    //Skip over xml declarations (shouldn't we really incorporate the header info into the output though?)
+    [Test]
+    public void TestParseXml25 ()
+    {
+      DoTest ("#xml parse \"<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\" standalone=\\\"no\\\" ?><a f=\\\"i\\\"><b><c g=\\\"j\\\">x</c><d>y</d></b><e h=\\\"k\\\"/></a>\"", "{a:{f:\"i\" :{b:{:{c:{g:\"j\" :\"x\"} d:{:\"y\"}}} e:{h:\"k\" :\"\"}}}}");
+    }
+
+    //Colons allowed in xml attribute names
+    [Test]
+    public void TestParseXml26 ()
+    {
+      DoTest ("#xml parse \"<a f:x=\\\"i\\\"></a>\"", "{a:{'f:x':\"i\" :\"\"}}");
+    }
+
+    [Test]
+    public void TestParseXml27 ()
+    {
+      DoTest ("#xml parse \"<q url=\\\"N:\\\\foo\\\\bar\\\\\\\" r:s=\\\"baz\\\"/>\\n\"", "{q:{url:\"N:\\\\foo\\\\bar\\\\\" 'r:s':\"baz\" :\"\"}}");
     }
 
     [Test]

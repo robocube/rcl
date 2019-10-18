@@ -122,8 +122,10 @@ namespace RCL.Kernel
 
     //For XML Files only.
     public static readonly RCTokenType XmlBracket = new XMLBracketToken ();
-    
     public static readonly RCTokenType XmlContent = new XMLContentToken ();
+    public static readonly RCTokenType XmlDeclaration = new XMLDeclarationToken ();
+    public static readonly RCTokenType XmlName = new XMLNameToken ();
+    public static readonly RCTokenType XmlString = new XMLStringToken ();
 
     //For RCL log files only.
     public static readonly RCTokenType EndOfLine = new EndOfLine ();
