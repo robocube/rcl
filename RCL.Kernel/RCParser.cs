@@ -47,6 +47,7 @@ namespace RCL.Kernel
     public virtual void AcceptNull (RCToken token) {}
     public virtual void AcceptXmlBracket (RCToken token) {}
     public virtual void AcceptXmlContent (RCToken token) {}
+    public virtual void AcceptXmlDeclaration (RCToken token) {}
 
     //For RCL log files
     public virtual void AcceptLogContent (RCToken token) {}

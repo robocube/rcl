@@ -344,6 +344,56 @@ namespace RCL.Core
         closure, op.Name, (RCVectorBase) left, (RCVectorBase) right));
     }
 
+    [RCVerb ("partsUntil")]
+    public void EvalPartsUntil (RCRunner runner, RCClosure closure, RCSymbol left, RCLong right)
+    {
+      RCArray<RCSymbolScalar> result = new RCArray<RCSymbolScalar> (left.Count);
+      if (right.Count == 1)
+      {
+        for (int i = 0; i < left.Count; ++i)
+        {
+          result.Write (left[i].PartsUntil (right[0]));
+        }
+      }
+      else if (right.Count == left.Count)
+      {
+        for (int i = 0; i < left.Count; ++i)
+        {
+          result.Write (left[i].PartsUntil (right[i]));
+        }
+      }
+      else
+      {
+        throw new RCException (closure, RCErrors.Count, "partsBefore requires a single part index or an array having the same count as the left argument");
+      }
+      runner.Yield (closure, new RCSymbol (result));
+    }
+
+    [RCVerb ("partsAfter")]
+    public void EvalPartsAfter (RCRunner runner, RCClosure closure, RCSymbol left, RCLong right)
+    {
+      RCArray<RCSymbolScalar> result = new RCArray<RCSymbolScalar> (left.Count);
+      if (right.Count == 1)
+      {
+        for (int i = 0; i < left.Count; ++i)
+        {
+          result.Write (left[i].PartsAfter (right[0]));
+        }
+      }
+      else if (right.Count == left.Count)
+      {
+        for (int i = 0; i < left.Count; ++i)
+        {
+          result.Write (left[i].PartsAfter (right[i]));
+        }
+      }
+      else
+      {
+        throw new RCException (closure, RCErrors.Count, "partsBefore requires a single part index or an array having the same count as the left argument");
+      }
+      runner.Yield (closure, new RCSymbol (result));
+    }
+
     [RCVerb ("time")]
     public void EvalTime (RCRunner runner, RCClosure closure, RCSymbol left, RCLong right)
     {

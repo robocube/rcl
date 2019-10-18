@@ -206,6 +206,30 @@ namespace RCL.Kernel
       return From (parts);
     }
 
+    public RCSymbolScalar PartsAfter (long p)
+    {
+      object[] parts = new object[(Length - p) - 1];
+      for (long i = p + 1; i < Length; ++i)
+      {
+        parts[i - (p + 1)] = Part (i);
+      }
+      return From (parts);
+    }
+
+    public RCSymbolScalar PartsUntil (long p)
+    {
+      RCSymbolScalar result = this;
+      long currentPart = Length - 1;
+      Console.WriteLine("PartsUntil result:{0}, currentPart:{1}", result, currentPart);
+      while (currentPart > p)
+      {
+        --currentPart;
+        result = result.Previous;
+        Console.WriteLine("Loop result:{0}, currentPart:{1}", result, currentPart);
+      }
+      return result;
+    }
+
     public bool IsConcreteOf (RCSymbolScalar scalar)
     {
       RCSymbolScalar concrete = this;

@@ -11,21 +11,22 @@ namespace RCL.Kernel
     static XMLParser ()
     {
       RCArray<RCTokenType> types = new RCArray<RCTokenType> ();
+      types.Write (RCTokenType.XmlDeclaration);
       types.Write (RCTokenType.XmlContent);
       types.Write (RCTokenType.WhiteSpace);
       //We need a "XmlString" to support single quoted strings.
       //Also escape chars in xml.
-      types.Write (RCTokenType.String);
+      types.Write (RCTokenType.XmlString);
       types.Write (RCTokenType.XmlBracket);
-      types.Write (RCTokenType.Name);
+      types.Write (RCTokenType.XmlName);
       m_xmlLexer = new RCLexer (types);
     }
-  
+
     public XMLParser ()
     {
       m_lexer = m_xmlLexer;
     }
-  
+
     public override RCValue Parse (RCArray<RCToken> tokens, out bool fragment, bool canonical)
     {
       //There is always a root element in the stack.
@@ -48,7 +49,7 @@ namespace RCL.Kernel
       Content,
       CloseTag
     }
-  
+
     protected XmlState m_state = XmlState.None;
     protected Stack<string> m_tags = new Stack<string> ();
     protected Stack<RCBlock> m_contents = new Stack<RCBlock> ();
@@ -56,7 +57,7 @@ namespace RCL.Kernel
     protected RCValue m_default = new RCString ("");
     protected RCValue m_text = new RCString ("");
     protected string m_attribute = null;
-  
+
     public override void AcceptXmlBracket (RCToken token)
     {
       if (token.Text.Equals ("<"))
@@ -87,7 +88,7 @@ namespace RCL.Kernel
       }
       else if (token.Text.Equals ("=")) {}
     }
-  
+
     public override void AcceptName (RCToken token)
     {
       if (m_state == XmlState.OpenTag)
@@ -100,16 +101,19 @@ namespace RCL.Kernel
         m_attribute = token.Text;
       }
     }
-  
+
     public override void AcceptString (RCToken token)
     {
-      m_attributes.Push (new RCBlock (
-                                      m_attributes.Pop (), m_attribute, ":", new RCString (token.ParseString (m_lexer))));
+      m_attributes.Push (new RCBlock (m_attributes.Pop (), m_attribute, ":", new RCString (token.ParseString (m_lexer))));
     }
 
     public override void AcceptXmlContent (RCToken token)
     {
       m_text = new RCString (token.Text);
+    }
+
+    public override void AcceptXmlDeclaration (RCToken token)
+    {
     }
   }
 }
