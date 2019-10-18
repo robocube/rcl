@@ -161,6 +161,31 @@
     src:-2 part #a,b,c #d,e,f #g,h,i
     bin:#b #e #h
   }
+  TestPartsUntil1:{
+    skip:false
+    src:#a,b,c #d,e,f #g,h,i partsUntil 1
+    bin:#a,b #d,e #g,h
+  }
+  TestPartsUntil2:{
+    skip:false
+    src:#a,b,c #d,e,f #g,h,i partsUntil 0 1 2
+    bin:#a #d,e #g,h,i
+  }
+  TestPartsUntil3:{
+    skip:false
+    src:#a,b,c #d,e,f #g,h,i partsUntil -1
+    bin:# # #
+  }
+  TestPartsAfter1:{
+    skip:false
+    src:#a,b,c #d,e,f #g,h,i partsAfter 1
+    bin:#c #f #i
+  }
+  TestPartsAfter2:{
+    skip:false
+    src:#a,b,c #d,e,f #g,h,i partsAfter 0 1 2
+    bin:#b,c #f #
+  }
   TestToX:{
     skip:false
     src:\x00 to \x02

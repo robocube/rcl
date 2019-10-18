@@ -1354,6 +1354,53 @@
       }
     }
   }
+  TestParseXml25:{
+    skip:false
+    src:#xml parse "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?><a f=\"i\"><b><c g=\"j\">x</c><d>y</d></b><e h=\"k\"/></a>"
+    bin:{
+      a:{
+        f:"i"
+        :{
+          b:{
+            :{
+              c:{
+                g:"j"
+                :"x"
+              }
+              d:{
+                :"y"
+              }
+            }
+          }
+          e:{
+            h:"k"
+            :""
+          }
+        }
+      }
+    }
+  }
+  TestParseXml26:{
+    skip:false
+    src:#xml parse "<a f:x=\"i\"></a>"
+    bin:{
+      a:{
+        'f:x':"i"
+        :""
+      }
+    }
+  }
+  TestParseXml27:{
+    skip:false
+    src:#xml parse "<q url=\"N:\\foo\\bar\\\" r:s=\"baz\"/>\n"
+    bin:{
+      q:{
+        url:"N:\\foo\\bar\\"
+        'r:s':"baz"
+        :""
+      }
+    }
+  }
   TestFormatPretty1:{
     skip:false
     src:#pretty format {}

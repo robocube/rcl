@@ -1223,6 +1223,24 @@ ol_before_p:{
   }
 }
 
+ol_before_p_break:{
+  src:#md parse eval [?
+    1. li1
+    2. li2
+    3. li3
+    
+    p outside of li after blank line
+  ?]
+  bin:{
+    ol:{
+      li:{:"li1"}
+      li:{:"li2"}
+      li:{:"li3"}
+    }
+    p:{:"p outside of li after blank line"}
+  }
+}
+
 ol_h_li_p:{
   src:#md parse eval [?
     1. li1 p1
