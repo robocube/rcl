@@ -507,7 +507,7 @@ cd_quotes:{
     after:parse "\n" readx $p
     :$p writex "exit"
     :waitx $p
-    :assert $before startswith $after
+    :assert $before startsWith $after
   }
 }
 

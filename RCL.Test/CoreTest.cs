@@ -2016,9 +2016,15 @@ namespace RCL.Test
     [Test]
     public void TestPad () { DoTest (" \"-\" pad 1 2 3", "\"-\" \"--\" \"---\""); }
     [Test]
-    public void TestStartsWith () { DoTest ("\"aaa\" \"foobar\" \"fozbaz\" \"foo\" \"fo\" startswith \"foo\"", "false true false true false"); }
+    public void TestStartsWith () { DoTest ("\"aaa\" \"foobar\" \"fozbaz\" \"foo\" \"fo\" startsWith \"foo\"", "false true false true false"); }
     [Test]
-    public void TestStartsWith1 () { DoTest ("\"x 1\" \"y 2\" \"z 3\" \"x 4\" \"y 5\" startswith \"x\" \"y\"", "true true false true true"); }
+    public void TestStartsWith1 () { DoTest ("\"x 1\" \"y 2\" \"z 3\" \"x 4\" \"y 5\" startsWith \"x\" \"y\"", "true true false true true"); }
+    [Test]
+    public void TestStartsWithUS () { DoTest ("[x \"x 1\" \"y 2\" \"z 3\" \"x 4\" \"y 5\"] startsWith \"x\" \"y\"", "[x true true false true true]"); }
+    [Test]
+    public void TestEndsWith () { DoTest ("\"x...\" \"y\" \"z..\" \"...\" endsWith \"...\"", "true false false true"); }
+    [Test]
+    public void TestEndsWithUS () { DoTest ("[x \"x...\" \"y\" \"z..\" \"...\"] endsWith \"...\"", "[x true false false true]"); }
     [Test]
     public void TestCut () { DoTest ("0 1 2 cut \"abcdef\" \"ghijkl\" \"mnopqr\"", "\"abcdef\" \"hijkl\" \"opqr\""); }
     [Test]
@@ -2057,9 +2063,13 @@ namespace RCL.Test
     [Test]
     public void TestAsciiSX () { DoTest ("ascii ascii \"foobarbaz\"", "\"foobarbaz\""); }
     [Test]
-    public void TestMatch1 () { DoTest ("\"^[a-zA-Z\\\\'\\\\-\\\\s]{1,55}$\" match \"Brian M. Andersen\"", "false"); }
+    public void TestMatch1 () { DoTest ("\"Brian M. Andersen\" match \"^[a-zA-Z\\\\'\\\\-\\\\s]{1,55}$\"", "false"); }
     [Test]
-    public void TestMatch2 () { DoTest ("\"^[a-zA-Z\\\\'\\\\-\\\\s]{1,55}$\" match \"Brian M Andersen\"", "true"); }
+    public void TestMatch2 () { DoTest ("\"Brian M Andersen\" match \"^[a-zA-Z\\\\'\\\\-\\\\s]{1,55}$\"", "true"); }
+    [Test]
+    public void TestMatch3 () { DoTest ("\"1\" \"12\" \"123\" \"1234\" \"12345\" match \"^\\\\d{4}$\"", "false false false true false"); }
+    [Test]
+    public void TestMatch4 () { DoTest ("[x \"1\" \"12\" \"123\" -- \"1234\" \"12345\"] match \"^\\\\d{4}$\"", "[x false false false -- true false]"); }
 
     //Block
     [Test]

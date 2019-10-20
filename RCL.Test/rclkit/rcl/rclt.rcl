@@ -178,7 +178,7 @@ run_file:{
   name:($path like "*.rclt") switch {:$path :$path + ".rclt"}
   FILE:(eval {rclt:$rclt RCLT_HOME:$RCL_HOME RCLT_USER:$RCLT_USER RCLT_DOMAIN:$RCLT_DOMAIN}) eval #canonical parse load $name
   variable_names:names $FILE
-  non_tests:$variable_names where $variable_names startswith "_"
+  non_tests:$variable_names where $variable_names startsWith "_"
   VARS:$non_tests from $FILE
   test_code:$FILE except $non_tests
   result:(0 < count $test_syms) switch {
