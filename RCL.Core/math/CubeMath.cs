@@ -1182,7 +1182,7 @@ namespace RCL.Core
         closure, InvokeSequential (closure, op.Name, right));
     }
 
-    [RCVerb ("in")] [RCVerb ("like")]
+    [RCVerb ("in")] [RCVerb ("like")] [RCVerb ("match")] [RCVerb ("startsWith")] [RCVerb ("endsWith")]
     public void EvalRightContextual (RCRunner runner, RCClosure closure, RCCube left, object right)
     {
       RCOperator op = (RCOperator) closure.Code;

@@ -397,33 +397,5 @@ namespace RCL.Core
       byte[] result = Encoding.ASCII.GetBytes (right[0]);
       runner.Yield (closure, new RCByte (result));
     }
-
-    [RCVerb ("match")]
-    public void EvalMatch (RCRunner runner, RCClosure closure, RCString left, RCString right)
-    {
-      Regex[] regexes = new Regex[left.Count];
-      RCArray<bool> result = new RCArray<bool> (right.Count);
-
-      for (int i = 0; i < regexes.Length; ++i)
-      {
-        regexes[i] = new Regex (left[i], RegexOptions.Multiline);
-      }
-
-      for (int i = 0; i < right.Count; ++i)
-      {
-        bool resulti = false;
-        for (int j = 0; j < regexes.Length; ++j)
-        {
-          if (regexes[j].IsMatch (right[i]))
-          {
-            resulti = true;
-            break;
-          }
-        }
-        result.Write (resulti);
-      }
-
-      runner.Yield (closure, new RCBoolean (result));
-    }
   }
 }

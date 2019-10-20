@@ -2912,13 +2912,54 @@
   }
   TestStartsWith:{
     skip:false
-    src:"aaa" "foobar" "fozbaz" "foo" "fo" startswith "foo"
+    src:"aaa" "foobar" "fozbaz" "foo" "fo" startsWith "foo"
     bin:false true false true false
   }
   TestStartsWith1:{
     skip:false
-    src:"x 1" "y 2" "z 3" "x 4" "y 5" startswith "x" "y"
+    src:"x 1" "y 2" "z 3" "x 4" "y 5" startsWith "x" "y"
     bin:true true false true true
+  }
+  TestStartsWithUS:{
+    skip:false
+    src:[
+      x
+      "x 1"
+      "y 2"
+      "z 3"
+      "x 4"
+      "y 5"
+    ] startsWith "x" "y"
+    bin:[
+          x
+       true
+       true
+      false
+       true
+       true
+    ]
+  }
+  TestEndsWith:{
+    skip:false
+    src:"x..." "y" "z.." "..." endsWith "..."
+    bin:true false false true
+  }
+  TestEndsWithUS:{
+    skip:false
+    src:[
+      x
+      "x..."
+      "y"
+      "z.."
+      "..."
+    ] endsWith "..."
+    bin:[
+          x
+       true
+      false
+      false
+       true
+    ]
   }
   TestCut:{
     skip:false
@@ -3048,13 +3089,39 @@
   }
   TestMatch1:{
     skip:false
-    src:"^[a-zA-Z\\'\\-\\s]{1,55}$" match "Brian M. Andersen"
+    src:"Brian M. Andersen" match "^[a-zA-Z\\'\\-\\s]{1,55}$"
     bin:false
   }
   TestMatch2:{
     skip:false
-    src:"^[a-zA-Z\\'\\-\\s]{1,55}$" match "Brian M Andersen"
+    src:"Brian M Andersen" match "^[a-zA-Z\\'\\-\\s]{1,55}$"
     bin:true
+  }
+  TestMatch3:{
+    skip:false
+    src:"1" "12" "123" "1234" "12345" match "^\\d{4}$"
+    bin:false false false true false
+  }
+  TestMatch4:{
+    skip:false
+    src:[
+      x
+      "1"
+      "12"
+      "123"
+      --
+      "1234"
+      "12345"
+    ] match "^\\d{4}$"
+    bin:[
+          x
+      false
+      false
+      false
+         --
+       true
+      false
+    ]
   }
   TestNamesK1:{
     skip:false

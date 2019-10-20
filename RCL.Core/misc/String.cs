@@ -126,26 +126,6 @@ namespace RCL.Core
       runner.Yield (closure, new RCString (result));
     }
 
-    [RCVerb ("startswith")]
-    public void EvalStartsWith (RCRunner runner, RCClosure closure, RCString left, RCString right)
-    {
-      RCArray<bool> result = new RCArray<bool> (left.Count);
-      for (int i = 0; i < left.Count; ++i)
-      {
-        bool found = false;
-        for (int j = 0; j < right.Count; ++j)
-        {
-          if (left[i].StartsWith (right[j]))
-          {
-            found = true;
-            break;
-          }
-        }
-        result.Write (found);
-      }
-      runner.Yield (closure, new RCBoolean (result));
-    }
-
     [RCVerb ("split")]
     public void EvalSplit (RCRunner runner, RCClosure closure, RCString left, RCString right)
     {

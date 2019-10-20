@@ -2,6 +2,7 @@
 using System;
 using System.Reflection;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using RCL.Kernel;
 
 namespace RCL.Core
@@ -1078,6 +1079,68 @@ namespace RCL.Core
 
     [Primitive ("abs", Profile.Monadic)]
     public static decimal Abs (decimal r) { return Math.Abs (r); }
+
+    public class StartsEndsWithContext<T> : Context<T>
+    {
+      public T[] withStrings;
+      public override void Init (RCArray<T> l)
+      {
+        withStrings = l.ToArray ();
+      }
+    }
+
+    [Primitive ("startsWith", Profile.Contextual)]
+    public static bool StartsWith (StartsEndsWithContext<string> context, string r)
+    {
+      for (int i = 0; i < context.withStrings.Length; ++i)
+      {
+        if (r.StartsWith (context.withStrings[i]))
+        {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    [Primitive ("endsWith", Profile.Contextual)]
+    public static bool EndsWith (StartsEndsWithContext<string> context, string r)
+    {
+      for (int i = 0; i < context.withStrings.Length; ++i)
+      {
+        if (r.EndsWith (context.withStrings[i]))
+        {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    public class MatchContext<T> : Context<T>
+    {
+      public Regex[] regexes;
+      public override void Init (RCArray<T> l)
+      {
+        //T must be string and will be
+        regexes = new Regex[l.Count];
+        for (int i = 0; i < l.Count; ++i)
+        {
+          regexes[i] = new Regex (l[i].ToString (), RegexOptions.Multiline);
+        }
+      }
+    }
+
+    [Primitive ("match", Profile.Contextual)]
+    public static bool Match (MatchContext<string> context, string r)
+    {
+      for (int j = 0; j < context.regexes.Length; ++j)
+      {
+        if (context.regexes[j].IsMatch (r))
+        {
+          return true;
+        }
+      }
+      return false;
+    }
 
     public class MapContext<T> : Context<T>
     {
