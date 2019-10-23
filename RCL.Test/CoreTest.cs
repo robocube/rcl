@@ -1451,8 +1451,10 @@ namespace RCL.Test
     public void TestSortAscB() { DoTest ("#asc sort true false true", "false true true"); }
     [Test]
     public void TestSortAscS() { DoTest ("#asc sort \"c\" \"b\" \"a\"", "\"a\" \"b\" \"c\""); }
-    [Test][Ignore ("because")]
+    [Test]
     public void TestSortAscY() { DoTest ("#asc sort #b #c #a", "#a #b #c"); }
+    [Test]
+    public void TestSortAscY1() { DoTest ("#asc sort #1,a #0,y #1,c #0,x #1,b", "#0,x #0,y #1,a #1,b #1,c"); }
     [Test]
     public void TestSortAscT() { DoTest ("#asc sort 2015.05.25 2015.05.24 2015.05.26", "2015.05.24 2015.05.25 2015.05.26"); }
     [Test]
@@ -1472,7 +1474,7 @@ namespace RCL.Test
     public void TestSortAbsAscB() { DoTest ("#absasc sort true false true", "false true true"); }
     [Test]
     public void TestSortAbsAscS() { DoTest ("#absasc sort \"c\" \"b\" \"a\"", "\"a\" \"b\" \"c\""); }
-    [Test][Ignore ("because")]
+    [Test]
     public void TestSortAbsAscY() { DoTest ("#absasc sort #b #c #a", "#a #b #c"); }
     [Test]
     public void TestSortAbsAscT() { DoTest ("#absasc sort 2015.05.25 2015.05.24 2015.05.26", "2015.05.24 2015.05.25 2015.05.26"); }
@@ -1493,7 +1495,7 @@ namespace RCL.Test
     public void TestSortDescB() { DoTest ("#desc sort true false true", "true true false"); }
     [Test]
     public void TestSortDescS() { DoTest ("#desc sort \"c\" \"b\" \"a\"", "\"c\" \"b\" \"a\""); }
-    [Test] [Ignore ("because")]
+    [Test]
     public void TestSortDescY() { DoTest ("#desc sort #b #c #a", "#c #b #a"); }
     [Test]
     public void TestSortDescT() { DoTest ("#desc sort 2015.05.25 2015.05.24 2015.05.26", "2015.05.26 2015.05.25 2015.05.24"); }
@@ -1516,8 +1518,8 @@ namespace RCL.Test
     public void TestSortAbsDescB() { DoTest ("#absdesc sort true false true", "true true false"); }
     [Test]
     public void TestSortAbsDescS() { DoTest ("#absdesc sort \"c\" \"b\" \"a\"", "\"c\" \"b\" \"a\""); }
-    [Test][Ignore ("because")]
-    public void TestSortAbsDescY() { DoTest ("#absdesc sort #b #c #a", "#a #b #c"); }
+    [Test]
+    public void TestSortAbsDescY() { DoTest ("#absdesc sort #b #c #a", "#c #b #a"); }
     [Test]
     public void TestSortAbsDescT() { DoTest ("#absdesc sort 2015.05.25 2015.05.24 2015.05.26", "2015.05.26 2015.05.25 2015.05.24"); }
     [Test]

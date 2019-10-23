@@ -1384,9 +1384,14 @@
     bin:"a" "b" "c"
   }
   TestSortAscY:{
-    skip:true
+    skip:false
     src:#asc sort #b #c #a
     bin:#a #b #c
+  }
+  TestSortAscY1:{
+    skip:false
+    src:#asc sort #1,a #0,y #1,c #0,x #1,b
+    bin:#0,x #0,y #1,a #1,b #1,c
   }
   TestSortAscT:{
     skip:false
@@ -1446,7 +1451,7 @@
     bin:"a" "b" "c"
   }
   TestSortAbsAscY:{
-    skip:true
+    skip:false
     src:#absasc sort #b #c #a
     bin:#a #b #c
   }
@@ -1508,7 +1513,7 @@
     bin:"c" "b" "a"
   }
   TestSortDescY:{
-    skip:true
+    skip:false
     src:#desc sort #b #c #a
     bin:#c #b #a
   }
@@ -1581,9 +1586,9 @@
     bin:"c" "b" "a"
   }
   TestSortAbsDescY:{
-    skip:true
+    skip:false
     src:#absdesc sort #b #c #a
-    bin:#a #b #c
+    bin:#c #b #a
   }
   TestSortAbsDescT:{
     skip:false
