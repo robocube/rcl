@@ -69,7 +69,6 @@ namespace RCL.Kernel
 
       //Console.Out.WriteLine ("Done parsing. Doing cleanup ({0})", m_state);
       FinishQuote (true);
-      WrapLITextIfNeeded (m_state);
       while (m_values.Count > 0)
       {
         EndBlock ();
@@ -103,7 +102,7 @@ namespace RCL.Kernel
         bool indentedlip = true;
         for (int i = 0; i < m_liLength; ++i)
         {
-          if (text[i] != ' ')
+          if (i < text.Length && text[i] != ' ')
           {
             indentedlip = false;
           }
@@ -192,10 +191,8 @@ namespace RCL.Kernel
       {
         run.Append (text);
       }
-      
       if (text.EndsWith ("  "))
       {
-        //Console.Out.WriteLine ("Two spaces... MaybeBR?");
         m_state = MarkdownState.MaybeBR;
       }
       else
@@ -207,23 +204,18 @@ namespace RCL.Kernel
     public override void AcceptEndOfLine (RCToken token)
     {
       //Console.Out.WriteLine ("AcceptEndOfLine({0})", m_state);
-      //Console.Out.WriteLine ("m_parsingParagraph: {0}", m_parsingParagraph);
-      //Console.Out.WriteLine ("m_parsingList: {0}", m_parsingList);
+      //Console.Out.WriteLine ("  m_parsingParagraph: {0}", m_parsingParagraph);
+      //Console.Out.WriteLine ("  m_parsingList: {0}", m_parsingList);
       if (token.Index == 0)
       {
         return;
       }
       if (m_state == MarkdownState.Newline1)
       {
-        //Console.WriteLine("m_state: {0}, m_value: {1}, m_run: {2}", m_state, m_value, m_run);
         if (m_parsingList)
         {
-          //fall through to the end...
-          //m_parsingParagraph = false;
           AppendRun ();
-          //Brian! Experiment more with moving this above m_blankLine - currently the breaks ul_p and others because of blank_line.
           m_blankLine = true;
-          //WrapLITextIfNeeded (m_state);
           m_state = MarkdownState.None;
         }
         else if (m_quoteRun.Length > 0)
@@ -245,21 +237,18 @@ namespace RCL.Kernel
       {
         if (m_quoteRun.Length > 0)
         {
-          //Console.Out.WriteLine ("Inserting a newline");
           m_quoteRun.Append ("\n");
         }
         if (m_run.Length >= 2)
         {
           if (m_run[m_run.Length - 1] != ' ') return;
           if (m_run[m_run.Length - 2] != ' ') return;
-          //Console.Out.WriteLine ("Removing last two spaces");
           m_run.Remove (m_run.Length - 2, 2);
           m_run.Append ("\n");
         }
       }
       // else if (m_state == MarkdownState.Paragraph)
       // {
-      //   Console.WriteLine("m_state: {0}, m_value: {1}, m_run: {2}", m_state, m_value, m_run);
       //   AppendRun ();
       //   WrapLITextIfNeeded (m_state);
       //   m_state = MarkdownState.Newline1;
@@ -276,6 +265,12 @@ namespace RCL.Kernel
       //Console.Out.WriteLine ("AcceptMarkdownBeginBold: '{0}'", token.Text);
       UpdateTextRun (m_run, "");
       AppendRun ();
+      if (m_parsingList && m_blankLine)
+      {
+        m_name = "p";
+        StartBlock ();
+        m_parsingParagraph = true;
+      }
       m_name = "strong";
       StartBlock ();
       m_name = "";
@@ -294,6 +289,12 @@ namespace RCL.Kernel
       //Console.Out.WriteLine ("AcceptMarkdownBeginItalic({0}): '{1}'", m_state, token.Text);
       UpdateTextRun (m_run, "");
       AppendRun ();
+      if (m_parsingList && m_blankLine)
+      {
+        m_name = "p";
+        StartBlock ();
+        m_parsingParagraph = true;
+      }
       m_name = "em";
       StartBlock ();
       m_name = "";
@@ -325,12 +326,10 @@ namespace RCL.Kernel
       int linkTextStart = openBracket + 1;
       int linkTextLength = closingBracket - linkTextStart;
       string linkText = token.Text.Substring (linkTextStart, linkTextLength);
-      //Console.Out.WriteLine ("Link Text: '{0}'", linkText);
       int openingParen = closingBracket + 1;
       int closingParen = token.Text.IndexOf (')', openingParen);
       int firstChar = openingParen + 1;
       string href = token.Text.Substring (firstChar, closingParen - firstChar);
-      //Console.Out.WriteLine ("Href Text: '{0}'", href);
       AppendRun ();
       bool reentered;
       RCBlock text = ParseEmbeddedRun (linkText, MarkdownState.Link, out reentered);
@@ -428,11 +427,9 @@ namespace RCL.Kernel
       }
       int contentLength = token.Text.Length - firstContent;
       string text = token.Text.Substring (firstContent, contentLength);
-      //Console.Out.WriteLine ("text: '{0}'", text);
 
       if (quoteLevel > m_quoteLevel)
       {
-        //Console.Out.WriteLine ("quoteLevel increased to " + quoteLevel);
         FinishQuote (false);
         int levels = quoteLevel - m_quoteLevel;
         for (int level = 0; level < levels; ++level)
@@ -444,7 +441,6 @@ namespace RCL.Kernel
       }
       else if (quoteLevel < m_quoteLevel)
       {
-        //Console.Out.WriteLine ("quoteLevel decreased to " + quoteLevel);
         FinishQuote (true);
       }
       m_state = MarkdownState.Paragraph;
@@ -505,17 +501,17 @@ namespace RCL.Kernel
 
     protected void WrapLITextIfNeeded (MarkdownState oldState)
     {
-      //Console.WriteLine("WrapLITextIfNeeded ({0})", oldState);
-      //Console.Out.WriteLine ("m_parsingParagraph: {0}", m_parsingParagraph);
-      //Console.Out.WriteLine ("m_parsingList: {0}", m_parsingList);
-      //Console.Out.WriteLine ("m_blankLine: {0}", m_blankLine);
-      //Console.Out.WriteLine ("m_value: {0}", m_value);
+      //Console.WriteLine("  WrapLITextIfNeeded ({0})", oldState);
+      //Console.Out.WriteLine ("    m_parsingParagraph: {0}", m_parsingParagraph);
+      //Console.Out.WriteLine ("    m_parsingList: {0}", m_parsingList);
+      //Console.Out.WriteLine ("    m_blankLine: {0}", m_blankLine);
       if (m_parsingList && m_blankLine && !m_parsingParagraph)
       {
         //insert a new item
-        if (m_value.Name == "" || m_value.Name == "em" || m_value.Name == "strong")
+        //Console.WriteLine("    WrapLITextIfNeeded ITS NEEDED! m_value.Name: {0}", m_value.Name);
+        if (m_value.Name == "") //|| m_value.Name == "em" || m_value.Name == "strong")
         {
-          //Console.Out.WriteLine ("WrapLITextIfNeeded: INSERTING P TAG! (m_value.Name:{0})", m_value.Name);
+          //Console.Out.WriteLine ("    INSERTING A P");
           m_value = new RCBlock (RCBlock.Empty, "p", ":", m_value);
         }
       }
@@ -570,8 +566,6 @@ namespace RCL.Kernel
           m_value = embedded;
         }
         m_quoteRun.Clear ();
-        //Console.Out.WriteLine ("New Blockquote Value: {0}",
-        //                       m_value.Format (RCFormat.Pretty));
       }
     }
 
@@ -580,7 +574,6 @@ namespace RCL.Kernel
                                         out bool reentered)
     {
       m_reentered = true;
-      //Console.Out.WriteLine ("Reentry text: '{0}'", text.ToString ());
       RCArray<RCToken> tokens = new RCArray<RCToken> ();
       m_lexer.Lex (text, tokens);
       MarkdownParser parser = new MarkdownParser ();
@@ -588,27 +581,24 @@ namespace RCL.Kernel
       bool fragment;
       RCBlock result = (RCBlock) parser.Parse (tokens, out fragment, canonical:false);
       reentered = parser.m_reentered;
-      //Console.Out.WriteLine ("Reentry result: '{0}'" + result.ToString ());
       return result;
     }
 
-    protected void ShowStack ()
+    protected void ShowStack (string location)
     {
       string[] names = m_names.ToArray ();
-      //Console.Out.Write ("names: ");
+      Console.Out.Write ("  {0}: names: ", location);
       for (int i = 0; i < names.Length; ++i)
       {
-        //Console.Out.Write ("{0} ", names[i]);
+        Console.Out.Write ("{0} ", names[i]);
       }
-      //Console.Out.WriteLine ();
-      /*
       RCBlock[] values = m_values.ToArray ();
-      Console.Out.WriteLine ("values: ");
+      Console.Out.Write ("values: ");
       for (int i = 0; i < names.Length; ++i)
       {
-        Console.Out.WriteLine ("{0} ", values[i]);
+        Console.Out.Write ("  {0} ", values[i]);
       }
-      */
+      Console.WriteLine ();
     }
 
     protected void StartBlock ()
@@ -621,11 +611,10 @@ namespace RCL.Kernel
       {
         m_name = "";
       }
-      //Console.Out.WriteLine ("PUSH: m_name:{0} m_state:{1}", m_name, m_state);
       m_values.Push (m_value);
       m_names.Push (m_name);
       m_states.Push (m_state);
-      ShowStack ();
+      //ShowStack ("StartBlock");
       m_value = RCBlock.Empty;
       m_name = "";
       AppendRun ();
@@ -636,22 +625,15 @@ namespace RCL.Kernel
       AppendRun ();
       if (m_values.Count > 0)
       {
-        ShowStack ();
-        //Console.Out.WriteLine ("POP: m_name:{0} m_state:{1}", m_name, m_state);
+        //ShowStack ("EndBlock");
         RCBlock child = m_value;
         m_name = m_names.Pop ();
         m_value = m_values.Pop ();
         m_state = m_states.Pop ();
         m_value = new RCBlock (m_value, m_name, ":", child);
         m_name = "";
-        //Console.Out.WriteLine ("EndBlock: m_value: {0}", m_value.Format (RCFormat.Pretty));
+        //Console.Out.WriteLine ("  EndBlock: m_value: {0}", m_value);
       }
-      //else
-      //{
-      //  m_name = "";
-      //  m_value = RCBlock.Empty;
-      //  m_state = MarkdownState.None;
-      //}
     }
 
     protected void AppendRun ()
@@ -661,7 +643,6 @@ namespace RCL.Kernel
         return;
       }
       RCString text = new RCString (m_run.ToString ());
-      //Console.Out.WriteLine ("Adding run: '{0}'", m_run.ToString ());
       m_run.Clear ();
       m_value = new RCBlock (m_value, m_name, ":", text);
       m_name = "";
