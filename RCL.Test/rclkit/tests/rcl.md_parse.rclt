@@ -1325,3 +1325,80 @@ p_with_strong_on_line_2:{
   }
 }
 
+em_in_li_1:{
+  src:#md parse eval [?
+    1. _a_c
+  ?]
+  bin:{
+    ol:{
+      li:{
+        em:{:"a"}
+        :"c"
+      }
+    }
+  }
+}
+
+em_in_li_2:{
+  src:#md parse eval [?
+    1. p1
+    
+       _p2em_p2
+  ?]
+  bin:{
+    ol:{
+      li:{
+        p:{
+          :"p1"
+        }
+        p:{
+          em:{:"p2em"}
+          :"p2"
+        }
+      }
+    }
+  }
+}
+
+strong_in_li_1:{
+  src:#md parse eval [?
+    1. p1
+    
+       **p2strong**p2
+  ?]
+  bin:{
+    ol:{
+      li:{
+        p:{
+          :"p1"
+        }
+        p:{
+          strong:{:"p2strong"}
+          :"p2"
+        }
+      }
+    }
+  }
+}
+
+strong_in_li_2:{
+  src:#md parse eval [?
+    1. p1
+    
+       **p2strong**p2
+  ?]
+  bin:{
+    ol:{
+      li:{
+        p:{
+          :"p1"
+        }
+        p:{
+          strong:{:"p2strong"}
+          :"p2"
+        }
+      }
+    }
+  }
+}
+
