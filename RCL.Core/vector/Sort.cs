@@ -61,6 +61,13 @@ namespace RCL.Core
       comparers[SortDirection.absasc] = new Comparison<RCTimeScalar>(delegate(RCTimeScalar x, RCTimeScalar y){return x.CompareTo (y);});
       comparers[SortDirection.absdesc] = new Comparison<RCTimeScalar>(delegate(RCTimeScalar x, RCTimeScalar y){return 0-x.CompareTo (y);});
       m_comparers.Add ('t', comparers);
+
+      comparers = new Dictionary<SortDirection, object>();
+      comparers[SortDirection.asc] = new Comparison<RCSymbolScalar>(delegate(RCSymbolScalar x, RCSymbolScalar y){return x.CompareTo (y);});
+      comparers[SortDirection.desc] = new Comparison<RCSymbolScalar>(delegate(RCSymbolScalar x, RCSymbolScalar y){return 0-x.CompareTo (y);});
+      comparers[SortDirection.absasc] = new Comparison<RCSymbolScalar>(delegate(RCSymbolScalar x, RCSymbolScalar y){return x.CompareTo (y);});
+      comparers[SortDirection.absdesc] = new Comparison<RCSymbolScalar>(delegate(RCSymbolScalar x, RCSymbolScalar y){return 0-x.CompareTo (y);});
+      m_comparers.Add ('y', comparers);
     }
 
     [RCVerb ("sort")]
@@ -133,6 +140,18 @@ namespace RCL.Core
     public void EvalSort (RCRunner runner, RCClosure closure, RCSymbol left, RCString right)
     {
       runner.Yield (closure, new RCString (DoSort<string> (ToDir (left), right)));
+    }
+
+    [RCVerb ("sort")]
+    public void EvalSort (RCRunner runner, RCClosure closure, RCSymbol right)
+    {
+      runner.Yield (closure, new RCSymbol (DoSort<RCSymbolScalar> (SortDirection.asc, right)));
+    }
+
+    [RCVerb ("sort")]
+    public void EvalSort (RCRunner runner, RCClosure closure, RCSymbol left, RCSymbol right)
+    {
+      runner.Yield (closure, new RCSymbol (DoSort<RCSymbolScalar> (ToDir (left), right)));
     }
 
     [RCVerb ("sort")]

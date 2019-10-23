@@ -360,7 +360,8 @@ namespace RCL.Kernel
       {
         return 1;
       }
-      return m_string.CompareTo (other.m_string);
+      return MultiCompareSymbolParts (this.ToArray (), other.ToArray ());
+      //return m_string.CompareTo (other.m_string);
     }
 
     public int CompareTo (RCSymbolScalar other)
@@ -369,7 +370,56 @@ namespace RCL.Kernel
       {
         return 1;
       }
-      return m_string.CompareTo (other.m_string);
+      return MultiCompareSymbolParts (this.ToArray (), other.ToArray ());
+      //return m_string.CompareTo (other.m_string);
+    }
+
+    public static int MultiCompareSymbolParts (object[] left, object[] right)
+    {
+      if (left.Length == right.Length)
+      {
+        for (int i = 0; i < left.Length; ++i)
+        {
+          IComparable leftValue = (IComparable) left[i];
+          IComparable rightValue = (IComparable) right[i];
+          int result = leftValue.CompareTo (rightValue);
+          if (result != 0)
+          {
+            return result;
+          }
+        }
+        return 0;
+      }
+      else if (left.Length > right.Length)
+      {
+        for (int i = 0; i < right.Length; ++i)
+        {
+          IComparable leftValue = (IComparable) left[i];
+          IComparable rightValue = (IComparable) right[i];
+          int result = leftValue.CompareTo (rightValue);
+          if (result != 0)
+          {
+            return result;
+          }
+        }
+        // the (shorter) right argument is greater
+        return 1;
+      }
+      else //if (left.Length < right.Length)
+      {
+        for (int i = 0; i < left.Length; ++i)
+        {
+          IComparable leftValue = (IComparable) left[i];
+          IComparable rightValue = (IComparable) right[i];
+          int result = leftValue.CompareTo (rightValue);
+          if (result != 0)
+          {
+            return result;
+          }
+        }
+        // the (shorter) right argument is greater
+        return -1;
+      }
     }
   }
 }
