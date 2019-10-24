@@ -311,6 +311,12 @@ namespace RCL.Core
       runner.Yield (closure, SortCubeByDirectionAndColumn (left, right));
     }
 
+    [RCVerb ("sort")]
+    public void EvalSort (RCRunner runner, RCClosure closure, RCCube right)
+    {
+      runner.Yield (closure, SortCubeByDirectionAndColumn (new RCSymbol (RCSymbolScalar.From ("asc", "S")), right));
+    }
+
     protected RCValue ReorderColumn<T> (RCLong rank, RCVector<T> column) where T: IComparable<T>
     {
       return RCVectorBase.FromArray (

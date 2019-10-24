@@ -31,7 +31,6 @@ namespace RCL.Kernel
         m_data = (RCArray<T>) data;
         m_index = index;
       }
-
       if (timeline.Has ("S"))
       {
         m_last = new Dictionary<RCSymbolScalar, T> ();
@@ -40,7 +39,9 @@ namespace RCL.Kernel
           RCSymbolScalar key = timeline.Symbol[index[i]];
           T val = m_data[i];
           if (m_last != null)
+          {
             m_last[key] = val;
+          }
         }
       }
     }

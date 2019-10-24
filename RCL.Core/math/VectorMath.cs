@@ -310,11 +310,10 @@ namespace RCL.Core
     [RCVerb ("long")] [RCVerb ("double")] [RCVerb ("decimal")]
     [RCVerb ("byte")] [RCVerb ("string")] [RCVerb ("symbol")]
     [RCVerb ("boolean")] [RCVerb ("time")]
+    [RCVerb ("isnan")]
     [RCVerb ("upper")] [RCVerb ("lower")] [RCVerb ("length")]
-    [RCVerb ("day")] [RCVerb ("hour")] [RCVerb ("minute")]
-    [RCVerb ("second")] [RCVerb ("nano")]
-    [RCVerb ("date")] [RCVerb ("daytime")] [RCVerb ("datetime")]
-    [RCVerb ("timestamp")] [RCVerb ("timespan")]
+    [RCVerb ("year")] [RCVerb ("month")] [RCVerb ("day")] [RCVerb ("hour")] [RCVerb ("minute")] [RCVerb ("second")] [RCVerb ("nano")]
+    [RCVerb ("date")] [RCVerb ("daytime")] [RCVerb ("datetime")] [RCVerb ("timestamp")] [RCVerb ("timespan")]
     public void EvalMonadic (RCRunner runner, RCClosure closure, object right)
     {
       RCOperator op = (RCOperator) closure.Code;

@@ -664,6 +664,8 @@ namespace RCL.Test
     public void TestDoubleS2() { DoTest ("0.0 double \"\" \"1\" \"2.34\"", "0.0 1.0 2.34"); }
     [Test]
     public void TestDoubleK() { DoTest("double {x:0.0 y:1.0 z:2.0}", "0.0 1.0 2.0"); }
+    [Test]
+    public void TestIsNaN () { DoTest ("isnan 1.0 NaN 0.1", "false true false"); }
 
     [Test]
     public void TestBooleanX() { DoTest("boolean \\x00 \\x01 \\x02", "false true true"); }
@@ -748,6 +750,35 @@ namespace RCL.Test
     public void TestNanoT () { DoTest ("nano 0.12:34:56.789123", "789123000"); }
     [Test]
     public void TestNanoTU () { DoTest ("nano [x 0.12:34:56.789123]", "[x 789123000]"); }
+
+    [Test]
+    public void TestYearDT () { DoTest ("year 2019.10.24 21:13:40.439622", "2019"); }
+    [Test]
+    public void TestYearDTU () { DoTest ("year [x 2019.10.24 21:13:40.439622]", "[x 2019]"); }
+    [Test]
+    public void TestMonthDT () { DoTest ("month 2019.10.24 21:13:40.439622", "10"); }
+    [Test]
+    public void TestMonthDTU () { DoTest ("month [x 2019.10.24 21:13:40.439622]", "[x 10]"); }
+    [Test]
+    public void TestDayDT () { DoTest ("day 2019.10.24 21:13:40.439622", "24"); }
+    [Test]
+    public void TestDayDTU () { DoTest ("day [x 2019.10.24 21:13:40.439622]", "[x 24]"); }
+    [Test]
+    public void TestHourDT () { DoTest ("hour 2019.10.24 21:13:40.439622", "21"); }
+    [Test]
+    public void TestHourDTU () { DoTest ("hour [x 2019.10.24 21:13:40.439622]", "[x 21]"); }
+    [Test]
+    public void TestMinuteDT () { DoTest ("minute 2019.10.24 21:13:40.439622", "13"); }
+    [Test]
+    public void TestMinuteDTU () { DoTest ("minute [x 2019.10.24 21:13:40.439622]", "[x 13]"); }
+    [Test]
+    public void TestSecondDT () { DoTest ("second 2019.10.24 21:13:40.439622", "40"); }
+    [Test]
+    public void TestSecondDTU () { DoTest ("second [x 2019.10.24 21:13:40.439622]", "[x 40]"); }
+    [Test]
+    public void TestNanoDT () { DoTest ("nano 2019.10.24 21:13:40.439622", "439622000"); }
+    [Test]
+    public void TestNanoDTU () { DoTest ("nano [x 2019.10.24 21:13:40.439622]", "[x 439622000]"); }
 
     [Test]
     public void TestDayL () { DoTest ("day 0", "0.00:00:00.000000"); }

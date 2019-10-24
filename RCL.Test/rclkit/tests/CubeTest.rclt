@@ -3027,6 +3027,26 @@
     src:#asc,x sort []
     bin:[]
   }
+  TestSortEmptyDefault:{
+    skip:false
+    src:sort []
+    bin:[]
+  }
+  TestSortDefault:{
+    skip:false
+    src:sort [
+      S | x
+      #c  1
+      #b  2
+      #a  3
+    ]
+    bin:[
+      S | x
+      #a  3
+      #b  2
+      #c  1
+    ]
+  }
   TestSortByTime:{
     skip:false
     src:#asc,t sort [
@@ -4290,6 +4310,36 @@
       #a 0.0
       #a 1.0
       #a 2.0
+    ]
+  }
+  TestIsNaNU:{
+    skip:false
+    src:isnan [
+        x
+      0.0
+      0.1
+      NaN
+    ]
+    bin:[
+          x
+      false
+      false
+       true
+    ]
+  }
+  TestIsNaNUS:{
+    skip:false
+    src:isnan [
+      S |  x
+      #a 0.0
+      #b 0.1
+      #c NaN
+    ]
+    bin:[
+      S |    x
+      #a false
+      #b false
+      #c  true
     ]
   }
   TestBoolean:{
@@ -7931,6 +7981,26 @@
     skip:false
     src:"S" retimeline []
     bin:[]
+  }
+  TestBangAfterRetl:{
+    skip:false
+    src:[
+      S | y
+      #a 10
+      #b 20
+      #c 30
+    ] ! retl fill untl [
+      S | x
+      #a  1
+      #b  2
+      #c  3
+    ]
+    bin:[
+      S | y  x
+      #a 10  1
+      #b 20  2
+      #c 30  3
+    ]
   }
   TestRetimeline2:{
     skip:true

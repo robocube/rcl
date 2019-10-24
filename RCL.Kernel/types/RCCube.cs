@@ -931,13 +931,18 @@ namespace RCL.Kernel
         {
           S = (RCArray<RCSymbolScalar>) m_columns[i].Array;
         }
-        else
-        {
-          names.Write (m_names[i]);
-          columns.Write (m_columns[i]);
-        }
       }
       Timeline axis = new Timeline (G, E, T, S);
+      for (int i = 0; i < m_columns.Count; ++i)
+      {
+        if (!tlcols.Contains (m_names[i]))
+        {
+          ColumnBase oldcol = m_columns[i];
+          ColumnBase newcol = ColumnBase.FromArray (axis, oldcol.Index, oldcol.Array);
+          columns.Write (newcol);
+          names.Write (m_names[i]);
+        }
+      }
       return new RCCube (axis, names, columns);
     }
 
