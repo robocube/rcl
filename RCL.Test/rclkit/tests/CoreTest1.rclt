@@ -1366,6 +1366,11 @@
     }
     bin:0.0 1.0 2.0
   }
+  TestIsNaN:{
+    skip:false
+    src:isnan 1.0 NaN 0.1
+    bin:false true false
+  }
   TestBooleanX:{
     skip:false
     src:boolean \x00 \x01 \x02
@@ -1620,6 +1625,118 @@
     bin:[
               x
       789123000
+    ]
+  }
+  TestYearDT:{
+    skip:false
+    src:year 2019.10.24 21:13:40.439622
+    bin:2019
+  }
+  TestYearDTU:{
+    skip:false
+    src:year [
+                               x
+      2019.10.24 21:13:40.439622
+    ]
+    bin:[
+         x
+      2019
+    ]
+  }
+  TestMonthDT:{
+    skip:false
+    src:month 2019.10.24 21:13:40.439622
+    bin:10
+  }
+  TestMonthDTU:{
+    skip:false
+    src:month [
+                               x
+      2019.10.24 21:13:40.439622
+    ]
+    bin:[
+       x
+      10
+    ]
+  }
+  TestDayDT:{
+    skip:false
+    src:day 2019.10.24 21:13:40.439622
+    bin:24
+  }
+  TestDayDTU:{
+    skip:false
+    src:day [
+                               x
+      2019.10.24 21:13:40.439622
+    ]
+    bin:[
+       x
+      24
+    ]
+  }
+  TestHourDT:{
+    skip:false
+    src:hour 2019.10.24 21:13:40.439622
+    bin:21
+  }
+  TestHourDTU:{
+    skip:false
+    src:hour [
+                               x
+      2019.10.24 21:13:40.439622
+    ]
+    bin:[
+       x
+      21
+    ]
+  }
+  TestMinuteDT:{
+    skip:false
+    src:minute 2019.10.24 21:13:40.439622
+    bin:13
+  }
+  TestMinuteDTU:{
+    skip:false
+    src:minute [
+                               x
+      2019.10.24 21:13:40.439622
+    ]
+    bin:[
+       x
+      13
+    ]
+  }
+  TestSecondDT:{
+    skip:false
+    src:second 2019.10.24 21:13:40.439622
+    bin:40
+  }
+  TestSecondDTU:{
+    skip:false
+    src:second [
+                               x
+      2019.10.24 21:13:40.439622
+    ]
+    bin:[
+       x
+      40
+    ]
+  }
+  TestNanoDT:{
+    skip:false
+    src:nano 2019.10.24 21:13:40.439622
+    bin:439622000
+  }
+  TestNanoDTU:{
+    skip:false
+    src:nano [
+                               x
+      2019.10.24 21:13:40.439622
+    ]
+    bin:[
+              x
+      439622000
     ]
   }
   TestDayL:{

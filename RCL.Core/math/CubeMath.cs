@@ -1123,11 +1123,10 @@ namespace RCL.Core
     [RCVerb ("sqrt")] [RCVerb ("abs")] [RCVerb ("sums")]
     [RCVerb ("long")] [RCVerb ("double")] [RCVerb ("decimal")]
     [RCVerb ("byte")] [RCVerb ("string")] [RCVerb ("symbol")]
-    [RCVerb ("boolean")] [RCVerb ("not")] [RCVerb ("upper")]
-    [RCVerb ("lower")] [RCVerb ("length")] [RCVerb ("day")]
-    [RCVerb ("hour")] [RCVerb ("minute")] [RCVerb ("second")]
-    [RCVerb ("nano")] [RCVerb ("date")] [RCVerb ("daytime")]
-    [RCVerb ("datetime")] [RCVerb ("timestamp")] [RCVerb ("timespan")]
+    [RCVerb ("boolean")] [RCVerb ("not")] [RCVerb ("isnan")]
+    [RCVerb ("upper")] [RCVerb ("lower")] [RCVerb ("length")]
+    [RCVerb ("year")] [RCVerb ("month")] [RCVerb ("day")] [RCVerb ("hour")] [RCVerb ("minute")] [RCVerb ("second")] [RCVerb ("nano")]
+    [RCVerb ("date")] [RCVerb ("daytime")] [RCVerb ("datetime")] [RCVerb ("timestamp")] [RCVerb ("timespan")]
     //[RCVerb ("high")] [RCVerb ("low")] [RCVerb ("sum")] [RCVerb ("avg")]
     //[RCVerb ("any")] [RCVerb ("all")] [RCVerb ("none")]
     public void EvalMonadic (RCRunner runner, RCClosure closure, RCCube right)
@@ -2728,16 +2727,36 @@ namespace RCL.Core
       runner.Yield (closure, new RCLong (0));
     }
 
+    //Deprecated - use untl instead
     [RCVerb ("untimeline")]
     public void EvalUntimeline (RCRunner runner, RCClosure closure, RCCube cube)
     {
       runner.Yield (closure, cube.Untimeline ());
     }
 
+    //Deprecated - use retl instead
     [RCVerb ("retimeline")]
     public void EvalRetimeline (RCRunner runner, RCClosure closure, RCString tlcols, RCCube cube)
     {
       runner.Yield (closure, cube.Retimeline (tlcols.Data));
+    }
+
+    [RCVerb ("retl")]
+    public void EvalRetl (RCRunner runner, RCClosure closure, RCString tlcols, RCCube cube)
+    {
+      runner.Yield (closure, cube.Retimeline (tlcols.Data));
+    }
+
+    [RCVerb ("retl")]
+    public void EvalRetl (RCRunner runner, RCClosure closure, RCCube cube)
+    {
+      runner.Yield (closure, cube.Retimeline (new RCArray<string> ("G", "E", "T", "S")));
+    }
+
+    [RCVerb ("untl")]
+    public void EvalUntl (RCRunner runner, RCClosure closure, RCCube cube)
+    {
+      runner.Yield (closure, cube.Untimeline ());
     }
 
     [RCVerb ("rows")]

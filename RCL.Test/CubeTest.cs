@@ -1552,6 +1552,18 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestSortEmptyDefault ()
+    {
+      DoTest ("sort []", "[]");
+    }
+
+    [Test]
+    public void TestSortDefault ()
+    {
+      DoTest ("sort [S|x #c 1 #b 2 #a 3]", "[S|x #a 3 #b 2 #c 1]");
+    }
+
+    [Test]
     public void TestSortByTime ()
     {
       DoTest ("#asc,t sort [t 0.03:00:00.000000 0.02:00:00.000000 0.01:00:00.000000]", "[t 0.01:00:00.000000 0.02:00:00.000000 0.03:00:00.000000]");
@@ -1985,6 +1997,18 @@ namespace RCL.Test
     public void TestDouble ()
     {
       DoTest ("double [S|x #a 0 #a 1 #a 2]", "[S|x #a 0.0 #a 1.0 #a 2.0]");
+    }
+
+    [Test]
+    public void TestIsNaNU ()
+    {
+      DoTest ("isnan [x 0.0 0.1 NaN]", "[x false false true]");
+    }
+
+    [Test]
+    public void TestIsNaNUS ()
+    {
+      DoTest ("isnan [S|x #a 0.0 #b 0.1 #c NaN]", "[S|x #a false #b false #c true]");
     }
 
     [Test]
@@ -3692,6 +3716,12 @@ namespace RCL.Test
     public void TestRetimeline1 ()
     {
       DoTest ("\"S\" retimeline []", "[]");
+    }
+
+    [Test]
+    public void TestBangAfterRetl ()
+    {
+      DoTest ("[S|y #a 10 #b 20 #c 30] ! retl fill untl [S|x #a 1 #b 2 #c 3]", "[S|y x #a 10 1 #b 20 2 #c 30 3]");
     }
 
     [Test]

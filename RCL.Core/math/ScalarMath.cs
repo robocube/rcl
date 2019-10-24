@@ -825,6 +825,9 @@ namespace RCL.Core
       }
     }
 
+    [Primitive ("isnan", Profile.Monadic)]
+    public static bool IsNan (double r) { return double.IsNaN (r); }
+
     [Primitive ("double", Profile.Contextual)]
     public static double Double (ParseContext<double> c, string r) { return r.Length == 0 ? c.Def : double.Parse (r); }
 
@@ -941,6 +944,26 @@ namespace RCL.Core
     [Primitive ("time", Profile.Monadic)]
     public static RCTimeScalar Time (RCTimeScalar r) { return r; }
 
+    [Primitive ("year", Profile.Monadic)]
+    public static long Year (RCTimeScalar t)
+    {
+      if (t.Type == RCTimeType.Timespan)
+      {
+        throw new Exception ("year operator requires a DateTime not a Timespan");
+      }
+      return new DateTime (t.Ticks).Year;
+    }
+
+    [Primitive ("month", Profile.Monadic)]
+    public static long Month (RCTimeScalar t)
+    {
+      if (t.Type == RCTimeType.Timespan)
+      {
+        throw new Exception ("month operator requires a DateTime not a Timespan");
+      }
+      return new DateTime (t.Ticks).Month;
+    }
+
     [Primitive ("day", Profile.Monadic)]
     public static long Day (RCTimeScalar t)
     {
@@ -1018,7 +1041,7 @@ namespace RCL.Core
       {
         long nanos = t.Ticks;
         DateTime time = new DateTime (t.Ticks);
-        nanos -= time.Day * TimeSpan.TicksPerDay;
+        nanos -= new DateTime (time.Year, time.Month, time.Day).Ticks;
         nanos -= time.Hour * TimeSpan.TicksPerHour;
         nanos -= time.Minute * TimeSpan.TicksPerMinute;
         nanos -= time.Second * TimeSpan.TicksPerSecond;
