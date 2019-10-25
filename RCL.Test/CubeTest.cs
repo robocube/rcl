@@ -2957,7 +2957,7 @@ namespace RCL.Test
       //   G E T S |a
       //   0 0 0 #x 1
       //]
-      DoTest ("untimeline [G E T S|a 0 0 00:00 #x 1]", "[G E T S a 0 0 00:00:00 #x 1]");
+      DoTest ("untl [G E T S|a 0 0 00:00 #x 1]", "[G E T S a 0 0 00:00:00 #x 1]");
     }
 
     [Test]
@@ -3705,17 +3705,17 @@ namespace RCL.Test
     //}
 
     [Test]
-    public void TestRetimeline0 ()
+    public void TestRetl0 ()
     {
       //you still have to include T to get S to show up.
       //This is a bug.
-      DoTest ("\"T\" \"S\" retimeline [S x #a 0 #b 1]", "[S|x #a 0 #b 1]");
+      DoTest ("\"T\" \"S\" retl [S x #a 0 #b 1]", "[S|x #a 0 #b 1]");
     }
 
     [Test]
-    public void TestRetimeline1 ()
+    public void TestRetl1 ()
     {
-      DoTest ("\"S\" retimeline []", "[]");
+      DoTest ("\"S\" retl []", "[]");
     }
 
     [Test]
@@ -3726,31 +3726,31 @@ namespace RCL.Test
 
     [Test]
     [Ignore ("don't work quite right because of the weird behavoir with S and T")]
-    public void TestRetimeline2 ()
+    public void TestRetl2 ()
     {
       //These don't work quite right because of the weird behavoir with S and T.
-      DoTest ("\"G\" retimeline [G|E|S|x 0 0 #a 0]", "[G|x 0 0]");
+      DoTest ("\"G\" retl [G|E|S|x 0 0 #a 0]", "[G|x 0 0]");
     }
 
     [Test]
     [Ignore ("don't work quite right because of the weird behavior with S and T")]
-    public void TestRetimeline3 ()
+    public void TestRetl3 ()
     {
-      DoTest ("\"S\" retimeline [G|E|S|x 0 0 #a 0]", "[S|x #a 0]");
+      DoTest ("\"S\" retl [G|E|S|x 0 0 #a 0]", "[S|x #a 0]");
     }
 
     [Test]
     [Ignore ("don't work quite right because of the weird behavior with S and T")]
-    public void TestRetimeline4 ()
+    public void TestRetl4 ()
     {
-      DoTest ("\"T\" retimeline [G|E|S|x 0 0 #a 0]", "[E|x 0 0]");
+      DoTest ("\"T\" retl [G|E|S|x 0 0 #a 0]", "[E|x 0 0]");
     }
 
     [Test]
     [Ignore ("don't work quite right because of the weird behavior with S and T")]
-    public void TestRetimeline5 ()
+    public void TestRetl5 ()
     {
-      DoTest ("\"G\" \"S\" retimeline [G|E|S|x 0 0 #a 0]", "[G|S|x 0 #a 0]");
+      DoTest ("\"G\" \"S\" retl [G|E|S|x 0 0 #a 0]", "[G|S|x 0 #a 0]");
     }
 
     protected RCRunner runner = RCRunner.TestRunner ();
