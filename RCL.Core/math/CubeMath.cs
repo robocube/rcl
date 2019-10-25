@@ -2727,36 +2727,28 @@ namespace RCL.Core
       runner.Yield (closure, new RCLong (0));
     }
 
-    //Deprecated - use untl instead
-    [RCVerb ("untimeline")]
-    public void EvalUntimeline (RCRunner runner, RCClosure closure, RCCube cube)
-    {
-      runner.Yield (closure, cube.Untimeline ());
-    }
-
-    //Deprecated - use retl instead
-    [RCVerb ("retimeline")]
-    public void EvalRetimeline (RCRunner runner, RCClosure closure, RCString tlcols, RCCube cube)
-    {
-      runner.Yield (closure, cube.Retimeline (tlcols.Data));
-    }
-
     [RCVerb ("retl")]
     public void EvalRetl (RCRunner runner, RCClosure closure, RCString tlcols, RCCube cube)
     {
       runner.Yield (closure, cube.Retimeline (tlcols.Data));
     }
 
+    /// <summary>
+    /// Convert regular G, E, T and S cols into timeline cols on the resulting cube.
+    /// </summary>
     [RCVerb ("retl")]
     public void EvalRetl (RCRunner runner, RCClosure closure, RCCube cube)
     {
       runner.Yield (closure, cube.Retimeline (new RCArray<string> ("G", "E", "T", "S")));
     }
 
+    /// <summary>
+    /// Removes the timeline from a given cube, converting timeline cols into regular columns.
+    /// </summary>
     [RCVerb ("untl")]
     public void EvalUntl (RCRunner runner, RCClosure closure, RCCube cube)
     {
-      runner.Yield (closure, cube.Untimeline ());
+      runner.Yield (closure, cube.Untl ());
     }
 
     [RCVerb ("rows")]

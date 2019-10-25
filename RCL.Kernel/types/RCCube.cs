@@ -866,7 +866,7 @@ namespace RCL.Kernel
       get { return m_columns; }
     }
 
-    public RCCube Untimeline ()
+    public RCCube Untl ()
     {
       RCArray<string> names = new RCArray<string> ();
       RCArray<ColumnBase> columns = new RCArray<ColumnBase> ();

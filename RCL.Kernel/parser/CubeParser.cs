@@ -69,7 +69,7 @@ namespace RCL.Kernel
       }
       if (!s.m_hasTimeline && s.m_cube.Axis.Exists)
       {
-        return s.m_cube.Untimeline ();
+        return s.m_cube.Untl ();
       }
       else
       {
