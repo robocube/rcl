@@ -607,12 +607,12 @@
   TestCubeWithNullInFirstRow:{
     skip:false
     src:format parse "[S|x #a -- #a -- #a 10.0]"
-    bin:"[S|x #a 10.0]"
+    bin:"[S|x #a -- #a -- #a 10.0]"
   }
   TestCubeWithNullInLastRow:{
     skip:false
     src:format parse "[S|x #a 10 #a --]"
-    bin:"[S|x #a 10]"
+    bin:"[S|x #a 10 #a --]"
   }
   TestCubeDupsAreNotIgnored:{
     skip:false

@@ -870,7 +870,7 @@ namespace RCL.Kernel
     {
       RCArray<string> names = new RCArray<string> ();
       RCArray<ColumnBase> columns = new RCArray<ColumnBase> ();
-      Timeline timeline = new Timeline (Count);
+      Timeline timeline = new Timeline (Axis.Count);
       if (Axis.Has ("G"))
       {
         names.Write ("G");
@@ -1328,7 +1328,7 @@ namespace RCL.Kernel
       //Basic merge sort code.
       //Normally you use a heap with log(k) lookups.
       //But I don't want the overhead of a heap given that I expect
-      //k to be small, so its O(n*k) instead of O(n*log(k)).
+      //k to be small, so it's O(n*k) instead of O(n*log(k)).
       //Someday I would like to experiment with data structures whose
       //implementations change based on size.
       //So for k < 10 it would use an array and after that a heap for example.
@@ -1404,14 +1404,20 @@ namespace RCL.Kernel
       }
 
       visitor.BeforeRow (mintime, time, symbol, tlrow);
-      //VisitAxisColumns (visitor, timeline, tlrow);
       if (timeline.Has ("G"))
       {
         visitor.GlobalCol (timeline.Global[tlrow]);
       }
       if (timeline.Has ("E"))
       {
-        visitor.EventCol (mintime);
+        if (canonical && timeline.Event != null)
+        {
+          visitor.EventCol (timeline.Event[tlrow]);
+        }
+        else
+        {
+          visitor.EventCol (mintime);
+        }
       }
       if (timeline.Has ("T"))
       {
@@ -1589,7 +1595,7 @@ namespace RCL.Kernel
                                            //that the global, mutable cube is never shared between fibers.
                                            int end)
     {
-      //Row number in the source data grid.C:\dev3\RC.Test\TestMain.cs
+      //Row number in the source data grid
       int row = end - 1;
       if (columns.Count == 0)
       {

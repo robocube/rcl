@@ -751,14 +751,14 @@ namespace RCL.Test
     [Test]
     public void TestCubeWithNullInFirstRow ()
     {
-      DoParserTest ("[S|x #a -- #a -- #a 10.0]", "[S|x #a 10.0]");
+      DoParserTest ("[S|x #a -- #a -- #a 10.0]");
     }
 
     [Test]
     public void TestCubeWithNullInLastRow ()
     {
       //Parser assumed that the type would always be on the last value in the column.
-      DoParserTest ("[S|x #a 10 #a --]", "[S|x #a 10]");
+      DoParserTest ("[S|x #a 10 #a --]");
     }
 
     [Test]
