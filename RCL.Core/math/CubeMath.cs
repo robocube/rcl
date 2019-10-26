@@ -1751,7 +1751,7 @@ namespace RCL.Core
       runner.Yield (closure, result);
     }
 
-    [RCVerb ("flatPack")]
+    [RCVerb ("flatpack")]
     public void EvalFlatPack (RCRunner runner, RCClosure closure, RCCube right)
     {
       runner.Yield (closure, right.FlatPack ());

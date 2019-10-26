@@ -44,7 +44,9 @@ namespace RCL.Kernel
       Align = align;
       Showt = showt;
       ParsableScalars = parsableScalars;
-      CanonicalCubes = canonicalCubes;
+      //CanonicalCubes = canonicalCubes;
+      //TODO Remove the argument which is no longer honored.
+      CanonicalCubes = true;
       Fragment = fragment;
     }
   }

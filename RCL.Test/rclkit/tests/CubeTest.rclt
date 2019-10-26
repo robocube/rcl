@@ -21,8 +21,14 @@
        E|S | x
        0 #x  2
        1 #y  2
+       2 #y --
+       3 #x --
        4 #y  1
        5 #x  1
+       6 #x --
+       7 #y --
+       8 #y --
+       9 #x --
     ]
   }
   TestCubeMathWithSymbol1:{
@@ -47,8 +53,14 @@
        E|S | x
        0 #x  2
        1 #y  2
+       2 #y --
+       3 #x --
        4 #y  1
        5 #x  1
+       6 #x --
+       7 #y --
+       8 #y --
+       9 #x --
     ]
   }
   TestCubeMathOneSymbolNoNulls:{
@@ -82,6 +94,7 @@
     }
     bin:[
        E|S | x
+       0 #x --
        1 #x  4
        2 #x  3
     ]
@@ -99,6 +112,7 @@
     }
     bin:[
        E|S | x
+       0 #x --
        1 #x  4
        2 #x  3
     ]
@@ -119,6 +133,8 @@
     }
     bin:[
        E|S | x
+       0 #x --
+       1 #y --
        2 #x  4
        3 #y  8
        4 #x  3
@@ -166,6 +182,8 @@
     }
     bin:[
        E|S | x
+       0 #x --
+       1 #y --
        2 #x -4
        3 #y -8
        4 #x -3
@@ -190,30 +208,37 @@
     }
     bin:[
        E|S      | x
+       0 #x,1002 --
+       1 #x,1003 --
+       2 #x,1001 --
        3 #x,1002  1
+       4 #x,1001 --
        5 #x,1003  1
+       6 #x,1002 --
+       7 #x,1001 --
     ]
   }
   TestCubeMathWithMultipleKeys1:{
     skip:false
     src:{
       book:[
-         E|S      |bs as
-         0 #x,1002 --  1
-         1 #x,1003 --  2
-         2 #x,1001  1 --
-         3 #x,1002  1 --
-         4 #x,1001  2 --
-         5 #x,1003  1 --
-         6 #x,1002  2 --
-         7 #x,1001  3 --
+        S      |bs as
+        #x,1002 --  1
+        #x,1003 --  2
+        #x,1001  1 --
+        #x,1002  1 --
+        #x,1001  2 --
+        #x,1003  1 --
+        #x,1002  2 --
+        #x,1001  3 --
       ]
       <-$book.as min $book.bs
     }
     bin:[
-       E|S      | x
-       3 #x,1002  1
-       5 #x,1003  1
+      S      | x
+      #x,1002  1
+      #x,1003  1
+      #x,1001 --
     ]
   }
   TestCubeMathSequential:{
@@ -259,6 +284,7 @@
        E|S |    x
        0 #y false
        1 #x false
+       2 #x    --
        3 #y  true
     ]
   }
@@ -278,6 +304,7 @@
        E|S | x
        0 #y  1
        1 #x  2
+       2 #x --
        3 #y  2
     ]
   }
@@ -305,6 +332,7 @@
     bin:[
       S | x
       #a  2
+      #b --
     ]
   }
   TestCubeMathObject2:{
@@ -319,6 +347,7 @@
     ]
     bin:[
       S | x
+      #a --
       #b  2
     ]
   }
@@ -4354,6 +4383,7 @@
       S |    x
       #a false
       #a  true
+      #a    --
     ]
   }
   TestDecimal:{
@@ -4419,7 +4449,9 @@
     bin:[
        E|S |    x
        0 #a  true
+       1 #a    --
        2 #a false
+       3 #a    --
     ]
   }
   TestAnd3:{
@@ -4434,7 +4466,9 @@
     bin:[
        E|S |    x
        0 #a  true
+       1 #a    --
        2 #a false
+       3 #a    --
     ]
   }
   TestOr1:{
@@ -4468,7 +4502,9 @@
     bin:[
        E|S |    x
        0 #a  true
+       1 #a    --
        2 #a false
+       3 #a    --
     ]
   }
   TestOr3:{
@@ -4483,7 +4519,9 @@
     bin:[
        E|S |    x
        0 #a  true
+       1 #a    --
        2 #a false
+       3 #a    --
     ]
   }
   TestNot:{
@@ -4529,6 +4567,7 @@
     bin:[
        E|S |    x
        0 #a false
+       1 #a    --
        2 #a  true
     ]
   }
@@ -4544,6 +4583,7 @@
        E|S |    x
        0 #a  true
        1 #a false
+       2 #a    --
     ]
   }
   TestGreaterThanOrEqual:{
@@ -4577,6 +4617,7 @@
        E|S |    x
        0 #a false
        1 #a  true
+       2 #a    --
     ]
   }
   TestGreaterThanOrEqual3:{
@@ -4590,6 +4631,7 @@
     bin:[
        E|S |    x
        0 #a  true
+       1 #a    --
        2 #a false
     ]
   }
@@ -4624,6 +4666,7 @@
        E|S |    x
        0 #a  true
        1 #a false
+       2 #a    --
     ]
   }
   TestLessThan3:{
@@ -4637,6 +4680,7 @@
     bin:[
        E|S |    x
        0 #a false
+       1 #a    --
        2 #a  true
     ]
   }
@@ -4670,6 +4714,7 @@
     bin:[
        E|S |    x
        0 #a  true
+       1 #a    --
        2 #a false
     ]
   }
@@ -4685,6 +4730,7 @@
        E|S |    x
        0 #a false
        1 #a  true
+       2 #a    --
     ]
   }
   TestVectorEquals:{
@@ -7962,6 +8008,21 @@
        E|S | x
        0 #x  0
        1 #x  0
+    ]
+  }
+  TestUntl0:{
+    skip:false
+    src:untl [
+      S | x
+      #a  0
+      #b  1
+      #c --
+    ]
+    bin:[
+      S   x
+      #a  0
+      #b  1
+      #c --
     ]
   }
   TestRetl0:{

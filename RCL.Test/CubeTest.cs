@@ -20,7 +20,7 @@ namespace RCL.Test
     {
       DoTest (
         "{bbo:[E|S|bp ap 0 #x 1000 1002 1 #y 2000 2002 2 #y 2001 2003 3 #x 1001 1003 4 #y 2002 2003 5 #x 1002 1003 6 #x 1001 1002 7 #y 2001 2002 8 #y 2000 2001 9 #x 1000 1001] <-$bbo.ap-$bbo.bp}",
-        "[E|S|x 0 #x 2 1 #y 2 4 #y 1 5 #x 1]");
+        "[E|S|x 0 #x 2 1 #y 2 2 #y -- 3 #x -- 4 #y 1 5 #x 1 6 #x -- 7 #y -- 8 #y -- 9 #x --]");
     }
 
     [Test]
@@ -28,7 +28,7 @@ namespace RCL.Test
     {
       DoTest (
         "{bbo:[E|S|bp ap 0 #x 1000 1002 1 #y 2000 2002 2 #y 2001 2003 3 #x 1001 1003 4 #y 2002 -- 5 #x 1002 -- 6 #x 1001 1002 7 #y 2001 2002 8 #y 2000 2001 9 #x 1000 1001] <-$bbo.ap-$bbo.bp}",
-        "[E|S|x 0 #x 2 1 #y 2 4 #y 1 5 #x 1]");
+        "[E|S|x 0 #x 2 1 #y 2 2 #y -- 3 #x -- 4 #y 1 5 #x 1 6 #x -- 7 #y -- 8 #y -- 9 #x --]");
     }
 
     [Test]
@@ -44,7 +44,7 @@ namespace RCL.Test
     {
       DoTest (
         "{bbo:[E|S|bp ap 0 #x 1000 -- 1 #x -- 1004 2 #x -- 1003] <-$bbo.ap-$bbo.bp}",
-        "[E|S|x 1 #x 4 2 #x 3]");
+        "[E|S|x 0 #x -- 1 #x 4 2 #x 3]");
     }
 
     [Test]
@@ -52,7 +52,7 @@ namespace RCL.Test
     {
       DoTest (
         "{bbo:[E|S|bp ap 0 #x -- 1004 1 #x 1000 -- 2 #x 1001 --] <-$bbo.ap-$bbo.bp}",
-        "[E|S|x 1 #x 4 2 #x 3]");
+        "[E|S|x 0 #x -- 1 #x 4 2 #x 3]");
     }
 
     [Test]
@@ -60,7 +60,7 @@ namespace RCL.Test
     {
       DoTest (
         "{bbo:[E|S|bp ap 0 #x 1000 -- 1 #y -- 2008 2 #x -- 1004 3 #y 2000 -- 4 #x -- 1003 5 #y -- 2006] <-$bbo.ap-$bbo.bp}",
-        "[E|S|x 2 #x 4 3 #y 8 4 #x 3 5 #y 6]");
+        "[E|S|x 0 #x -- 1 #y -- 2 #x 4 3 #y 8 4 #x 3 5 #y 6]");
     }
 
     [Test]
@@ -76,7 +76,7 @@ namespace RCL.Test
     {
       DoTest (
         "{bbo:[E|S|bp ap 0 #x -- 1000 1 #y 2008 -- 2 #x 1004 -- 3 #y -- 2000 4 #x 1003 -- 5 #y 2006 --] <-$bbo.ap-$bbo.bp}",
-        "[E|S|x 2 #x -4 3 #y -8 4 #x -3 5 #y -6]");
+        "[E|S|x 0 #x -- 1 #y -- 2 #x -4 3 #y -8 4 #x -3 5 #y -6]");
     }
 
     [Test]
@@ -84,15 +84,15 @@ namespace RCL.Test
     {
       DoTest (
         "{book:[E|S|bs as 0 #x,1002 -- 1 1 #x,1003 -- 2 2 #x,1001 1 -- 3 #x,1002 1 -- 4 #x,1001 2 -- 5 #x,1003 1 -- 6 #x,1002 2 -- 7 #x,1001 3 --] <-$book.as min $book.bs}",
-        "[E|S|x 3 #x,1002 1 5 #x,1003 1]");
+        "[E|S|x 0 #x,1002 -- 1 #x,1003 -- 2 #x,1001 -- 3 #x,1002 1 4 #x,1001 -- 5 #x,1003 1 6 #x,1002 -- 7 #x,1001 --]");
     }
 
     [Test]
     public void TestCubeMathWithMultipleKeys1 ()
     {
       DoTest (
-        "{book:[E|S|bs as 0 #x,1002 -- 1 1 #x,1003 -- 2 2 #x,1001 1 -- 3 #x,1002 1 -- 4 #x,1001 2 -- 5 #x,1003 1 -- 6 #x,1002 2 -- 7 #x,1001 3 --] <-$book.as min $book.bs}",
-        "[E|S|x 3 #x,1002 1 5 #x,1003 1]");
+        "{book:[S|bs as #x,1002 -- 1 #x,1003 -- 2 #x,1001 1 -- #x,1002 1 -- #x,1001 2 -- #x,1003 1 -- #x,1002 2 -- #x,1001 3 --] <-$book.as min $book.bs}",
+        "[S|x #x,1002 1 #x,1003 1 #x,1001 --]");
     }
 
     [Test]
@@ -108,7 +108,7 @@ namespace RCL.Test
     {
       DoTest (
         "{u:[E|S|signal 0 #y true 1 #x true 2 #x true 3 #y false] <-not $u.signal}",
-        "[E|S|x 0 #y false 1 #x false 3 #y true]");
+        "[E|S|x 0 #y false 1 #x false 2 #x -- 3 #y true]");
     }
 
     [Test]
@@ -116,7 +116,7 @@ namespace RCL.Test
     {
       DoTest (
         "{t:[E|S|signal 0 #y 1.1 1 #x 2.1 2 #x 2.2 3 #y 2.1] <-long $t.signal}",
-        "[E|S|x 0 #y 1 1 #x 2 3 #y 2]");
+        "[E|S|x 0 #y 1 1 #x 2 2 #x -- 3 #y 2]");
     }
 
     [Test]
@@ -128,13 +128,13 @@ namespace RCL.Test
     [Test]
     public void TestCubeMathObject1 ()
     {
-      DoTest ("[S|x #a 1] + [S|x #b 1 #a 1]", "[S|x #a 2]");
+      DoTest ("[S|x #a 1] + [S|x #b 1 #a 1]", "[S|x #a 2 #b --]");
     }
 
     [Test]
     public void TestCubeMathObject2 ()
     {
-      DoTest ("[S|x #a 1 #b 1] + [S|x #b 1]", "[S|x #b 2]");
+      DoTest ("[S|x #a 1 #b 1] + [S|x #b 1]", "[S|x #a -- #b 2]");
     }
 
     [Test]
@@ -2014,7 +2014,7 @@ namespace RCL.Test
     [Test]
     public void TestBoolean ()
     {
-      DoTest ("boolean [S|x #a 0 #a 1 #a 2]", "[S|x #a false #a true]");
+      DoTest ("boolean [S|x #a 0 #a 1 #a 2]", "[S|x #a false #a true #a --]");
     }
 
     [Test]
@@ -2038,13 +2038,13 @@ namespace RCL.Test
     [Test]
     public void TestAnd2 ()
     {
-      DoTest ("[E|S|x 0 #a true 1 #a true 2 #a false 3 #a false] and true", "[E|S|x 0 #a true 2 #a false]");
+      DoTest ("[E|S|x 0 #a true 1 #a true 2 #a false 3 #a false] and true", "[E|S|x 0 #a true 1 #a -- 2 #a false 3 #a --]");
     }
 
     [Test]
     public void TestAnd3 ()
     {
-      DoTest ("true and [E|S|x 0 #a true 1 #a true 2 #a false 3 #a false]", "[E|S|x 0 #a true 2 #a false]");
+      DoTest ("true and [E|S|x 0 #a true 1 #a true 2 #a false 3 #a false]", "[E|S|x 0 #a true 1 #a -- 2 #a false 3 #a --]");
     }
 
     [Test]
@@ -2056,13 +2056,13 @@ namespace RCL.Test
     [Test]
     public void TestOr2 ()
     {
-      DoTest ("[E|S|x 0 #a true 1 #a true 2 #a false 3 #a false] or false", "[E|S|x 0 #a true 2 #a false]");
+      DoTest ("[E|S|x 0 #a true 1 #a true 2 #a false 3 #a false] or false", "[E|S|x 0 #a true 1 #a -- 2 #a false 3 #a --]");
     }
 
     [Test]
     public void TestOr3 ()
     {
-      DoTest ("false or [E|S|x 0 #a true 1 #a true 2 #a false 3 #a false]", "[E|S|x 0 #a true 2 #a false]");
+      DoTest ("false or [E|S|x 0 #a true 1 #a true 2 #a false 3 #a false]", "[E|S|x 0 #a true 1 #a -- 2 #a false 3 #a --]");
     }
 
     [Test]
@@ -2080,13 +2080,13 @@ namespace RCL.Test
     [Test]
     public void TestGreaterThan2 ()
     {
-      DoTest ("0 > [E|S|x 0 #a 1 1 #a 0 2 #a -1]", "[E|S|x 0 #a false 2 #a true]");
+      DoTest ("0 > [E|S|x 0 #a 1 1 #a 0 2 #a -1]", "[E|S|x 0 #a false 1 #a -- 2 #a true]");
     }
 
     [Test]
     public void TestGreaterThan3 ()
     {
-      DoTest ("[E|S|x 0 #a 1 1 #a 0 2 #a -1] > 0", "[E|S|x 0 #a true 1 #a false]");
+      DoTest ("[E|S|x 0 #a 1 1 #a 0 2 #a -1] > 0", "[E|S|x 0 #a true 1 #a false 2 #a --]");
     }
 
     [Test]
@@ -2098,13 +2098,13 @@ namespace RCL.Test
     [Test]
     public void TestGreaterThanOrEqual2 ()
     {
-      DoTest ("0 >= [E|S|x 0 #a 1 1 #a 0 2 #a -1]", "[E|S|x 0 #a false 1 #a true]");
+      DoTest ("0 >= [E|S|x 0 #a 1 1 #a 0 2 #a -1]", "[E|S|x 0 #a false 1 #a true 2 #a --]");
     }
 
     [Test]
     public void TestGreaterThanOrEqual3 ()
     {
-      DoTest ("[E|S|x 0 #a 1 1 #a 0 2 #a -1] >= 0", "[E|S|x 0 #a true 2 #a false]");
+      DoTest ("[E|S|x 0 #a 1 1 #a 0 2 #a -1] >= 0", "[E|S|x 0 #a true 1 #a -- 2 #a false]");
     }
 
     [Test]
@@ -2116,13 +2116,13 @@ namespace RCL.Test
     [Test]
     public void TestLessThan2 ()
     {
-      DoTest ("0 < [E|S|x 0 #a 1 1 #a 0 2 #a -1]", "[E|S|x 0 #a true 1 #a false]");
+      DoTest ("0 < [E|S|x 0 #a 1 1 #a 0 2 #a -1]", "[E|S|x 0 #a true 1 #a false 2 #a --]");
     }
 
     [Test]
     public void TestLessThan3 ()
     {
-      DoTest ("[E|S|x 0 #a 1 1 #a 0 2 #a -1] < 0", "[E|S|x 0 #a false 2 #a true]");
+      DoTest ("[E|S|x 0 #a 1 1 #a 0 2 #a -1] < 0", "[E|S|x 0 #a false 1 #a -- 2 #a true]");
     }
 
     [Test]
@@ -2134,13 +2134,13 @@ namespace RCL.Test
     [Test]
     public void TestLessThanOrEqual2 ()
     {
-      DoTest ("0 <= [E|S|x 0 #a 1 1 #a 0 2 #a -1]", "[E|S|x 0 #a true 2 #a false]");
+      DoTest ("0 <= [E|S|x 0 #a 1 1 #a 0 2 #a -1]", "[E|S|x 0 #a true 1 #a -- 2 #a false]");
     }
 
     [Test]
     public void TestLessThanOrEqual3 ()
     {
-      DoTest ("[E|S|x 0 #a 1 1 #a 0 2 #a -1] <= 0", "[E|S|x 0 #a false 1 #a true]");
+      DoTest ("[E|S|x 0 #a 1 1 #a 0 2 #a -1] <= 0", "[E|S|x 0 #a false 1 #a true 2 #a --]");
     }
 
     [Test]
@@ -3703,6 +3703,12 @@ namespace RCL.Test
     //{
     //  DoTest ("! {:[x y #a 0l #b 1l #c 2l]}", "[x y #a 0l #b 1l #c 2l]");
     //}
+
+    [Test]
+    public void TestUntl0 ()
+    {
+      DoTest ("untl [S|x #a 0 #b 1 #c --]", "[S x #a 0 #b 1 #c --]");
+    }
 
     [Test]
     public void TestRetl0 ()
