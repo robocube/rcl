@@ -2976,6 +2976,46 @@
     src:0 -1 -2 cut "abcdef" "ghijkl" "mnopqr"
     bin:"abcdef" "l" "qr"
   }
+  TestCut2:{
+    skip:false
+    src:[
+       x
+       0
+      -1
+      -2
+    ] cut [
+      x
+      "abcdef"
+      "ghijkl"
+      "mnopqr"
+    ]
+    bin:[
+      x
+      "abcdef"
+      "l"
+      "qr"
+    ]
+  }
+  TestCut3:{
+    skip:false
+    src:[
+      S | x
+      #a  0
+      #b -1
+      #c -2
+    ] cut [
+      S |x
+      #a "abcdef"
+      #b "ghijkl"
+      #c "mnopqr"
+    ]
+    bin:[
+      S |x
+      #a "abcdef"
+      #b "l"
+      #c "qr"
+    ]
+  }
   TestCutleft:{
     skip:false
     src:0 1 2 cutleft "abcdef" "ghijkl" "mnopqr"
@@ -2985,6 +3025,46 @@
     skip:false
     src:0 -1 -2 cutleft "abcdef" "ghijkl" "mnopqr"
     bin:"" "ghijk" "mnop"
+  }
+  TestCutLeft2:{
+    skip:false
+    src:[
+       x
+       0
+      -1
+      -2
+    ] cutleft [
+      x
+      "abcdef"
+      "ghijkl"
+      "mnopqr"
+    ]
+    bin:[
+      x
+      ""
+      "ghijk"
+      "mnop"
+    ]
+  }
+  TestCutLeft3:{
+    skip:false
+    src:[
+      S | x
+      #a  0
+      #b -1
+      #c -2
+    ] cutleft [
+      S |x
+      #a "abcdef"
+      #b "ghijkl"
+      #c "mnopqr"
+    ]
+    bin:[
+      S |x
+      #a ""
+      #b "ghijk"
+      #c "mnop"
+    ]
   }
   TestLike1:{
     skip:false

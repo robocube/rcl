@@ -209,7 +209,9 @@ namespace RCL.Core
       c.Init (left);
       RCArray<O> output = new RCArray<O> ();
       for (int i = 0; i < right.Count; ++i)
+      {
         output.Write (op (c, right[i]));
+      }
       return output;
     }
 
@@ -276,6 +278,7 @@ namespace RCL.Core
     [RCVerb ("min")] [RCVerb ("max")]
     [RCVerb ("long")] [RCVerb ("double")] [RCVerb ("decimal")] [RCVerb ("byte")]
     [RCVerb ("string")] [RCVerb ("symbol")] [RCVerb ("boolean")] [RCVerb ("time")]
+    [RCVerb ("cut")] [RCVerb ("cutleft")]
     public void EvalDyadic (RCRunner runner, RCClosure closure, object left, object right)
     {
       //Brian! come back here to prevent the native exception
