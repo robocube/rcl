@@ -2063,9 +2063,17 @@ namespace RCL.Test
     [Test]
     public void TestCut1 () { DoTest ("0 -1 -2 cut \"abcdef\" \"ghijkl\" \"mnopqr\"", "\"abcdef\" \"l\" \"qr\""); }
     [Test]
+    public void TestCut2 () { DoTest ("[x 0 -1 -2] cut [x \"abcdef\" \"ghijkl\" \"mnopqr\"]", "[x \"abcdef\" \"l\" \"qr\"]"); }
+    [Test]
+    public void TestCut3 () { DoTest ("[S|x #a 0 #b -1 #c -2] cut [S|x #a \"abcdef\" #b \"ghijkl\" #c \"mnopqr\"]", "[S|x #a \"abcdef\" #b \"l\" #c \"qr\"]"); }
+    [Test]
     public void TestCutleft () { DoTest ("0 1 2 cutleft \"abcdef\" \"ghijkl\" \"mnopqr\"", "\"\" \"g\" \"mn\""); }
     [Test]
     public void TestCutleft1 () { DoTest ("0 -1 -2 cutleft \"abcdef\" \"ghijkl\" \"mnopqr\"", "\"\" \"ghijk\" \"mnop\""); }
+    [Test]
+    public void TestCutLeft2 () { DoTest ("[x 0 -1 -2] cutleft [x \"abcdef\" \"ghijkl\" \"mnopqr\"]", "[x \"\" \"ghijk\" \"mnop\"]"); }
+    [Test]
+    public void TestCutLeft3 () { DoTest ("[S|x #a 0 #b -1 #c -2] cutleft [S|x #a \"abcdef\" #b \"ghijkl\" #c \"mnopqr\"]", "[S|x #a \"\" #b \"ghijk\" #c \"mnop\"]"); }
     [Test]
     public void TestLike1 () { DoTest ("\"foobar\" \"foobaz\" \"foo\" \"fazbar\" like \"foo*\"", "true true true false"); }
     [Test]

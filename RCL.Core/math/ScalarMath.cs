@@ -1,4 +1,3 @@
-
 using System;
 using System.Reflection;
 using System.Collections.Generic;
@@ -556,6 +555,12 @@ namespace RCL.Core
 
     [Primitive (">=")]
     public static bool GreaterThanOrEqual (RCTimeScalar l, RCTimeScalar r) { return l.Ticks >= r.Ticks; }
+
+    [Primitive ("cut")]
+    public static string Cut (long point, string r) { return point >= 0 ? r.Substring ((int) point) : r.Substring (r.Length - (int) Math.Abs (point)); }
+
+    [Primitive ("cutleft")]
+    public static string CutLeft (long point, string r) { return point >= 0 ? r.Substring (0, (int) point) : r.Substring (0, r.Length - (int) Math.Abs (point)); }
 
     //Hello we need these for other data types as well.
     [Primitive ("min")]
@@ -1366,16 +1371,16 @@ namespace RCL.Core
     public class PartContext<T> : Context<T>
     {
       //i index
-      public RCArray<T> i;
-      public override void Init (RCArray<T> index) { i = index; }
+      public RCArray<T> p;
+      public override void Init (RCArray<T> index) { p = index; }
     }
 
     [Primitive ("part", Profile.Contextual)]
     public static RCSymbolScalar Part (PartContext<long> c, RCSymbolScalar r)
     {
       RCSymbolScalar o = null;
-      for (int i = 0; i < c.i.Count; ++i)
-        o = new RCSymbolScalar (o, r.Part (c.i[i]));
+      for (int i = 0; i < c.p.Count; ++i)
+        o = new RCSymbolScalar (o, r.Part (c.p[i]));
       return o;
     }
 

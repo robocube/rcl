@@ -1065,6 +1065,7 @@ namespace RCL.Core
     [RCVerb ("and")] [RCVerb ("or")]
     [RCVerb ("==")] [RCVerb ("!=")] [RCVerb ("<")] [RCVerb (">")] [RCVerb ("<=")] [RCVerb (">=")]
     [RCVerb ("min")] [RCVerb ("max")]
+    [RCVerb ("cut")] [RCVerb ("cutleft")]
     public void EvalDyadic (RCRunner runner, RCClosure closure, RCCube left, RCCube right)
     {
       RCOperator op = (RCOperator) closure.Code;
@@ -1098,6 +1099,7 @@ namespace RCL.Core
     [RCVerb ("and")] [RCVerb ("or")]
     [RCVerb ("==")] [RCVerb ("!=")] [RCVerb ("<")] [RCVerb (">")] [RCVerb ("<=")] [RCVerb (">=")]
     [RCVerb ("min")] [RCVerb ("max")]
+    [RCVerb ("cut")] [RCVerb ("cutleft")]
     public void EvalDyadic (RCRunner runner, RCClosure closure, object left, RCCube right)
     {
       RCOperator op = (RCOperator) closure.Code;
@@ -1111,6 +1113,7 @@ namespace RCL.Core
     [RCVerb ("and")] [RCVerb ("or")]
     [RCVerb ("==")] [RCVerb ("!=")] [RCVerb ("<")] [RCVerb (">")] [RCVerb ("<=")] [RCVerb (">=")]
     [RCVerb ("min")] [RCVerb ("max")]
+    [RCVerb ("cut")] [RCVerb ("cutleft")]
     public void EvalDyadic (RCRunner runner, RCClosure closure, RCCube left, object right)
     {
       RCOperator op = (RCOperator) closure.Code;
@@ -1127,8 +1130,6 @@ namespace RCL.Core
     [RCVerb ("upper")] [RCVerb ("lower")] [RCVerb ("length")]
     [RCVerb ("year")] [RCVerb ("month")] [RCVerb ("day")] [RCVerb ("hour")] [RCVerb ("minute")] [RCVerb ("second")] [RCVerb ("nano")]
     [RCVerb ("date")] [RCVerb ("daytime")] [RCVerb ("datetime")] [RCVerb ("timestamp")] [RCVerb ("timespan")]
-    //[RCVerb ("high")] [RCVerb ("low")] [RCVerb ("sum")] [RCVerb ("avg")]
-    //[RCVerb ("any")] [RCVerb ("all")] [RCVerb ("none")]
     public void EvalMonadic (RCRunner runner, RCClosure closure, RCCube right)
     {
       RCOperator op = (RCOperator) closure.Code;
@@ -1149,7 +1150,6 @@ namespace RCL.Core
     }
 
     [RCVerb ("sum")] [RCVerb ("avg")] [RCVerb ("high")] [RCVerb ("low")]
-    //[RCVerb ("any")] [RCVerb ("all")] [RCVerb ("none")]
     public void EvalAggregate (RCRunner runner, RCClosure closure, RCLong left, RCCube right)
     {
       RCOperator op = (RCOperator) closure.Code;

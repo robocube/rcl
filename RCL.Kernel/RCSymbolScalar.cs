@@ -220,12 +220,10 @@ namespace RCL.Kernel
     {
       RCSymbolScalar result = this;
       long currentPart = Length - 1;
-      Console.WriteLine("PartsUntil result:{0}, currentPart:{1}", result, currentPart);
       while (currentPart > p)
       {
         --currentPart;
         result = result.Previous;
-        Console.WriteLine("Loop result:{0}, currentPart:{1}", result, currentPart);
       }
       return result;
     }
