@@ -787,14 +787,14 @@ namespace RCL.Core
 
     public class ParseContext<T> : Context<T>
     {
-      public T Def;
+      public T Default;
       public override void Init (RCArray<T> def)
       {
-        Def = def[0];
+        Default = def[0];
       }
     }
     [Primitive ("long", Profile.Contextual)]
-    public static long Long (ParseContext<long> c, string r) { return r.Length == 0 ? c.Def : long.Parse (r); }
+    public static long Long (ParseContext<long> c, string r) { return r.Length == 0 ? c.Default : long.Parse (r); }
 
     [Primitive ("long", Profile.Monadic)]
     public static long Long (RCSymbolScalar r) { return (long) r.Part (0); }
@@ -834,7 +834,7 @@ namespace RCL.Core
     public static bool IsNan (double r) { return double.IsNaN (r); }
 
     [Primitive ("double", Profile.Contextual)]
-    public static double Double (ParseContext<double> c, string r) { return r.Length == 0 ? c.Def : double.Parse (r); }
+    public static double Double (ParseContext<double> c, string r) { return r.Length == 0 ? c.Default : double.Parse (r); }
 
     [Primitive ("byte", Profile.Monadic)]
     public static byte Byte (byte r) { return r; }
@@ -873,7 +873,7 @@ namespace RCL.Core
     public static bool Boolean (string r) { return bool.Parse (r); }
 
     [Primitive ("boolean", Profile.Contextual)]
-    public static bool Boolean (ParseContext<bool> c, string r) { return r.Length == 0 ? c.Def : bool.Parse (r); }
+    public static bool Boolean (ParseContext<bool> c, string r) { return r.Length == 0 ? c.Default : bool.Parse (r); }
 
     [Primitive ("decimal", Profile.Monadic)]
     public static decimal Decimal (decimal r) { return r; }
@@ -894,37 +894,43 @@ namespace RCL.Core
     public static decimal Decimal (string r) { return decimal.Parse (r); }
 
     [Primitive ("decimal", Profile.Contextual)]
-    public static decimal Decimal (ParseContext<decimal> c, string r) { return r.Length == 0 ? c.Def : decimal.Parse (r); }
+    public static decimal Decimal (ParseContext<decimal> c, string r) { return r.Length == 0 ? c.Default : decimal.Parse (r); }
 
     [Primitive ("symbol", Profile.Monadic)]
     public static RCSymbolScalar Symbol (RCSymbolScalar r) { return r; }
 
     [Primitive ("symbol", Profile.Monadic)]
-    public static RCSymbolScalar Symbol (byte r) { return new RCSymbolScalar(null, r); }
+    public static RCSymbolScalar Symbol (byte r) { return new RCSymbolScalar (null, r); }
 
     [Primitive ("symbol", Profile.Monadic)]
-    public static RCSymbolScalar Symbol (long r) { return new RCSymbolScalar(null, r); }
+    public static RCSymbolScalar Symbol (long r) { return new RCSymbolScalar (null, r); }
 
     [Primitive ("symbol", Profile.Monadic)]
-    public static RCSymbolScalar Symbol (double r) { return new RCSymbolScalar(null, r); }
+    public static RCSymbolScalar Symbol (double r) { return new RCSymbolScalar (null, r); }
 
     [Primitive ("symbol", Profile.Monadic)]
-    public static RCSymbolScalar Symbol (decimal r) { return new RCSymbolScalar(null, r); }
+    public static RCSymbolScalar Symbol (decimal r) { return new RCSymbolScalar (null, r); }
 
     [Primitive ("symbol", Profile.Monadic)]
-    public static RCSymbolScalar Symbol (bool r) { return new RCSymbolScalar(null, r); }
+    public static RCSymbolScalar Symbol (bool r) { return new RCSymbolScalar (null, r); }
 
     [Primitive ("symbol", Profile.Monadic)]
-    public static RCSymbolScalar Symbol (string r) {
-      if (r.Length > 0 && r[0] == '#') {
+    public static RCSymbolScalar Symbol (string r)
+    {
+      if (r.Length > 0 && r[0] == '#')
+      {
         r = r.Substring (1);
       }
       return new RCSymbolScalar (null, r);
     }
 
     [Primitive ("symbol", Profile.Contextual)]
-    public static RCSymbolScalar Symbol (ParseContext<RCSymbolScalar> c, string r) { 
-      if (r.Length == 0) return c.Def;
+    public static RCSymbolScalar Symbol (ParseContext<RCSymbolScalar> c, string r)
+    {
+      if (r.Length == 0)
+      {
+        return c.Default;
+      }
       return Symbol (r);
     }
 
@@ -941,8 +947,12 @@ namespace RCL.Core
     }
 
     [Primitive ("time", Profile.Contextual)]
-    public static RCTimeScalar Time (ParseContext<RCTimeScalar> c, string r) { 
-      if (r.Length == 0) return c.Def;
+    public static RCTimeScalar Time (ParseContext<RCTimeScalar> c, string r)
+    {
+      if (r.Length == 0)
+      {
+        return c.Default;
+      }
       return TimeToken.ParseTime (r);
     }
 
