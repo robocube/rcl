@@ -320,5 +320,116 @@ namespace RCL.Core
       }
       runner.Yield (closure, new RCBoolean (result));
     }
+
+    /// <summary>
+    /// Apply a .net format string to the the right-hand data values.
+    /// Given multiple format strings on the left,
+    /// this variant of netformat will return multiple formatted result strings.
+    /// </summary>
+    [RCVerb ("netformat")]
+    public void EvalNetformat (RCRunner runner, RCClosure closure, RCString left, RCString right)
+    {
+      runner.Yield (closure, new RCString (DoNetFormat<string> (left, right.Data)));
+    }
+
+    [RCVerb ("netformat")]
+    public void EvalNetformat (RCRunner runner, RCClosure closure, RCString left, RCLong right)
+    {
+      runner.Yield (closure, new RCString (DoNetFormat<long> (left, right.Data)));
+    }
+
+    [RCVerb ("netformat")]
+    public void EvalNetformat (RCRunner runner, RCClosure closure, RCString left, RCDouble right)
+    {
+      runner.Yield (closure, new RCString (DoNetFormat<double> (left, right.Data)));
+    }
+
+    [RCVerb ("netformat")]
+    public void EvalNetformat (RCRunner runner, RCClosure closure, RCString left, RCDecimal right)
+    {
+      runner.Yield (closure, new RCString (DoNetFormat<decimal> (left, right.Data)));
+    }
+
+    [RCVerb ("netformat")]
+    public void EvalNetformat (RCRunner runner, RCClosure closure, RCString left, RCSymbol right)
+    {
+      runner.Yield (closure, new RCString (DoNetFormat<RCSymbolScalar> (left, right.Data)));
+    }
+
+    [RCVerb ("netformat")]
+    public void EvalNetformat (RCRunner runner, RCClosure closure, RCString left, RCBlock right)
+    {
+      RCVectorBase[] columns = new RCVectorBase[right.Count];
+      for (int i = 0; i < right.Count; ++i)
+      {
+        columns[i] = (RCVectorBase) right.Get (i);
+        if (columns[i].Count != columns[0].Count)
+        {
+          throw new Exception (string.Format ("All columns must have the same count. Expected: {0}, Actual: {1}", columns[0].Count, columns[i].Count));
+        }
+      }
+      RCArray<object[]> formatParams = new RCArray<object[]> (columns[0].Count);
+      RCArray<string> result = new RCArray<string> (columns[0].Count);
+      for (int i = 0; i < columns[0].Count; ++i)
+      {
+        formatParams.Write (new object[right.Count]);
+        for (int j = 0; j < right.Count; ++j)
+        {
+          formatParams[i][j] = columns[j].Child (i);
+          RCTimeScalar? time = formatParams[i][j] as RCTimeScalar?;
+          if (time.HasValue)
+          {
+            if (time.Value.Type == RCTimeType.Timespan)
+            {
+              throw new Exception ("netformat does not handle Timespans, please pass a specific date and time.");
+            }
+            formatParams[i][j] = new DateTime (time.Value.Ticks);
+          }
+        }
+      }
+      for (int i = 0; i < formatParams.Count; ++i)
+      {
+        result.Write (string.Format (left[0], formatParams[i]));
+      }
+      runner.Yield (closure, new RCString (result));
+    }
+
+    [RCVerb ("netformat")]
+    public void EvalNetformat (RCRunner runner, RCClosure closure, RCString left, RCTime right)
+    {
+      RCArray<DateTime> source = new RCArray<DateTime> (right.Count);
+      for (int i = 0; i < right.Count; ++i)
+      {
+        if (right[i].Type == RCTimeType.Timespan)
+        {
+          throw new Exception ("netformat does not handle Timespans, please pass a specific date and time.");
+        }
+        source.Write (new DateTime (right[i].Ticks));
+      }
+      runner.Yield (closure, new RCString (DoNetFormat<DateTime> (left, source)));
+    }
+
+    protected RCArray<string> DoNetFormat<T> (RCString left, RCArray<T> right)
+    {
+      RCArray<string> result = new RCArray<string> (left.Count);
+      T[] data = right.ToArray ();
+      //So fucken tiresome...
+      object[] boxed = new object[data.Length];
+      for (int i = 0; i < data.Length; ++i)
+      {
+        boxed[i] = data[i];
+      }
+      for (int i = 0; i < left.Count; ++i)
+      {
+        result.Write (string.Format (left[i], boxed));
+      }
+      return result;
+    }
+
+    [RCVerb ("netformat")]
+    public void EvalNetformat (RCRunner runner, RCClosure closure, RCString left, RCCube right)
+    {
+      // Output is a cube with a single column
+    }
   }
 }

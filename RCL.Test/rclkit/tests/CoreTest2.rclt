@@ -3162,6 +3162,56 @@
     src:isname "aaa" "a a" "'foo'" "1foo" "foo1" "foo_bar"
     bin:true false false false true true
   }
+  TestNetformatSS:{
+    skip:false
+    src:"{0} {1} {2}" "{2} {1} {0}" netformat "a" "b" "c"
+    bin:"a b c" "c b a"
+  }
+  TestNetformatSL:{
+    skip:false
+    src:"{0} {1} {2}" "{2} {1} {0}" netformat 1 2 3
+    bin:"1 2 3" "3 2 1"
+  }
+  TestNetformatSD:{
+    skip:false
+    src:"{0:N1} {1:N1} {2:N1}" "{2:N2} {1:N2} {0:N2}" netformat 1.0 2.0 3.0
+    bin:"1.0 2.0 3.0" "3.00 2.00 1.00"
+  }
+  TestNetformatST:{
+    skip:false
+    src:"{0:s}" "{0:t}" "{0:r}" netformat 2019.10.28
+    bin:"2019-10-28T00:00:00" "12:00 AM" "Mon, 28 Oct 2019 00:00:00 GMT"
+  }
+  TestNetformatSM:{
+    skip:false
+    src:"{0:N1} {1:N1} {2:N1}" "{2:N2} {1:N2} {0:N2}" netformat 1 2 3m
+    bin:"1.0 2.0 3.0" "3.00 2.00 1.00"
+  }
+  TestNetformatSY:{
+    skip:false
+    src:"{0} {1} {2}" "{2} {1} {0}" netformat #a #b #c
+    bin:"#a #b #c" "#c #b #a"
+  }
+  TestNetFormatSK:{
+    skip:false
+    src:"{0} {1} {2} {3}" netformat eval {
+      a:1 2 3
+      b:"4" "5" "6"
+      c:string 2019.10.28 2019.10.29 2019.10.30
+      d:#a #b #c
+    }
+    bin:"1 4 2019.10.28 #a" "2 5 2019.10.29 #b" "3 6 2019.10.30 #c"
+  }
+  TestNetFormatSKTime:{
+    skip:false
+    src:"{0} {1} {2:s} {3}" netformat {
+      a:1 2 3
+      b:"4" "5" "6"
+      c:2019.10.28 2019.10.29 2019.10.30
+      d:#a #b #c
+    }
+    bin:"1 4 2019-10-28T00:00:00 #a" "2 5 2019-10-29T00:00:00 #b" "3 6 2019-10-30T00:00:00 #c"
+  }
   TestUtf8SX:{
     skip:false
     src:utf8 utf8 "foobarbaz"

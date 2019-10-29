@@ -1938,6 +1938,21 @@
     src:reference #x,y,z
     bin:$x.y.z
   }
+  TestDaysInMonth:{
+    skip:false
+    src:daysInMonth 2019 2 2020 2
+    bin:28 29
+  }
+  TestAddDays:{
+    skip:false
+    src:2019.10.29 addDays 7
+    bin:2019.11.05
+  }
+  TestDayOfWeek:{
+    skip:false
+    src:dayOfWeek 2019.10.29
+    bin:"Tuesday"
+  }
   TestCountK0:{
     skip:false
     src:count {}

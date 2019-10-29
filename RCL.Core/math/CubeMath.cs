@@ -1295,6 +1295,33 @@ namespace RCL.Core
     }
 
     [RCVerb ("key")]
+    public void EvalName (RCRunner runner, RCClosure closure, RCString left, RCCube cube)
+    {
+      RCArray<RCSymbolScalar> newKey = new RCArray<RCSymbolScalar> ();
+      RCArray<ColumnBase> sourceColumns = new RCArray<ColumnBase> (left.Count);
+      for (int i = 0; i < left.Count; ++i)
+      {
+        sourceColumns.Write (cube.GetColumn (left[i]));
+      }
+      for (int i = 0; i < cube.Axis.Count; ++i)
+      {
+        RCSymbolScalar S = RCSymbolScalar.Empty;
+        for (int j = 0; j < sourceColumns.Count; ++j)
+        {
+          bool found;
+          int index = sourceColumns[j].Index.BinarySearch (i, out found);
+          if (found)
+          {
+            object box = sourceColumns[j].BoxCell (index);
+            S = new RCSymbolScalar (S, box);
+          }
+        }
+        newKey.Write (S);
+      }
+      runner.Yield (closure, Key (newKey, cube));
+    }
+
+    [RCVerb ("key")]
     public void EvalKey (RCRunner runner, RCClosure closure, RCSymbol key, RCCube cube)
     {
       runner.Yield (closure, Key (key.Data, cube));
