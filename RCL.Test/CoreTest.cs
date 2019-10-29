@@ -834,6 +834,12 @@ namespace RCL.Test
     public void TestReferenceS () { DoTest ("reference \"x\" \"y\" \"z\"", "$x.y.z"); }
     [Test]
     public void TestReferenceY () { DoTest ("reference #x,y,z", "$x.y.z"); }
+    [Test]
+    public void TestDaysInMonth () { DoTest ("daysInMonth 2019 2 2020 2", "28 29"); }
+    [Test]
+    public void TestAddDays () { DoTest ("2019.10.29 addDays 7", "2019.11.05"); }
+    [Test]
+    public void TestDayOfWeek () { DoTest ("dayOfWeek 2019.10.29", "\"Tuesday\""); }
 
     //Count for blocks and vectors
     [Test]
@@ -2098,6 +2104,25 @@ namespace RCL.Test
     public void TestLike3U () { DoTest ("[x \"foozbar\" \"foolsbar\" \"foobar\" \"foobaz\"] like \"foo*bar\"", "[x true true true false]"); }
     [Test]
     public void TestIsName () { DoTest ("isname \"aaa\" \"a a\" \"'foo'\" \"1foo\" \"foo1\" \"foo_bar\"", "true false false false true true"); }
+
+    [Test]
+    public void TestNetformatSS () { DoTest ("\"{0} {1} {2}\" \"{2} {1} {0}\" netformat \"a\" \"b\" \"c\"", "\"a b c\" \"c b a\""); }
+    [Test]
+    public void TestNetformatSL () { DoTest ("\"{0} {1} {2}\" \"{2} {1} {0}\" netformat 1 2 3", "\"1 2 3\" \"3 2 1\""); }
+    [Test]
+    public void TestNetformatSD () { DoTest ("\"{0:N1} {1:N1} {2:N1}\" \"{2:N2} {1:N2} {0:N2}\" netformat 1.0 2.0 3.0", "\"1.0 2.0 3.0\" \"3.00 2.00 1.00\""); }
+    [Test]
+    public void TestNetformatST () { DoTest ("\"{0:s}\" \"{0:t}\" \"{0:r}\" netformat 2019.10.28", "\"2019-10-28T00:00:00\" \"12:00 AM\" \"Mon, 28 Oct 2019 00:00:00 GMT\""); }
+    [Test]
+    public void TestNetformatSM () { DoTest ("\"{0:N1} {1:N1} {2:N1}\" \"{2:N2} {1:N2} {0:N2}\" netformat 1.0 2.0 3.0m", "\"1.0 2.0 3.0\" \"3.00 2.00 1.00\""); }
+    [Test]
+    public void TestNetformatSY () { DoTest ("\"{0} {1} {2}\" \"{2} {1} {0}\" netformat #a #b #c", "\"#a #b #c\" \"#c #b #a\""); }
+    [Test]
+    public void TestNetFormatSK () { DoTest ("\"{0} {1} {2} {3}\" netformat eval {a:1 2 3 b:\"4\" \"5\" \"6\" c:string 2019.10.28 2019.10.29 2019.10.30 d:#a #b #c}",
+                                             "\"1 4 2019.10.28 #a\" \"2 5 2019.10.29 #b\" \"3 6 2019.10.30 #c\""); }
+    [Test]
+    public void TestNetFormatSKTime () { DoTest ("\"{0} {1} {2:s} {3}\" netformat {a:1 2 3 b:\"4\" \"5\" \"6\" c:2019.10.28 2019.10.29 2019.10.30 d:#a #b #c}",
+                                             "\"1 4 2019-10-28T00:00:00 #a\" \"2 5 2019-10-29T00:00:00 #b\" \"3 6 2019-10-30T00:00:00 #c\""); }
 
     [Test]
     public void TestUtf8SX () { DoTest ("utf8 utf8 \"foobarbaz\"", "\"foobarbaz\""); }

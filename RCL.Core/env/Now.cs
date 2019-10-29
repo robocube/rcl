@@ -111,10 +111,29 @@ namespace RCL.Core
       RCArray<RCTimeScalar> result = new RCArray<RCTimeScalar> (left.Count);
       for (int i = 0; i < left.Count; ++i)
       {
-        DateTime date = new DateTime (left[i].Ticks).AddDays (1);
+        DateTime date = new DateTime (left[i].Ticks).AddDays (right[0]);
         result.Write (new RCTimeScalar (date, left[i].Type));
       }
       runner.Yield (closure, new RCTime (result));
     }
+
+    /// <summary>
+    /// Given a series of year/month pairs, return a series of days in the corresponding month.
+    /// </summary>
+    [RCVerb ("daysInMonth")]
+    public void EvalDaysInMonth (RCRunner runner, RCClosure closure, RCLong right)
+    {
+      if (right.Count % 2 != 0)
+      {
+        throw new Exception ("daysInMonth accepts a series of year/month pairs. The years are required on each pair.");
+      }
+      RCArray<long> result = new RCArray<long> (right.Count);
+      for (int i = 0; i < right.Count; ++i,++i)
+      {
+        result.Write (DateTime.DaysInMonth ((int) right[i], (int) right[i + 1]));
+      }
+      runner.Yield (closure, new RCLong (result));
+    }
   }
 }
+
