@@ -23,7 +23,9 @@ namespace RCL.Kernel
     {
       RCColmap result = new RCColmap ();
       result.m_displayCols = this.m_displayCols;
-      foreach (string key in m_displayCols.Keys)
+      string[] keys = new string[this.m_displayCols.Count];
+      m_displayCols.Keys.CopyTo (keys, 0);
+      foreach (string key in keys)
       {
         result.m_displayCols[key] = m_displayCols[key];
       }
