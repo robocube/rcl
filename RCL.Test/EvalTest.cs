@@ -1572,6 +1572,12 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestStarReadNotPresent ()
+    {
+      DoEvalTest ("{:write [S|x #page,a 1 #page,b 2 #page,c 3] f:fiber {<-#page,d,* read 0 1} :sleep 20 :write [S|x #page,d,x 4] :wait $f <-0}", "0");
+    }
+
+    [Test]
     public void TestSelect1 ()
     {
       string ustring = "[S|x y z #a 1 10 100 #b 2 20 200 #c 3 30 300]";
