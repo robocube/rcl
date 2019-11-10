@@ -42,5 +42,19 @@ namespace RCL.Kernel
     public int start = 0;
     //Number of rows to return per symbol.
     public int limit = 0;
+
+    public RCBlock ToBlock ()
+    {
+      RCBlock result = RCBlock.Empty;
+      result = new RCBlock (result, "Concrete", ":", Concrete);
+      result = new RCBlock (result, "LeadingStar", ":", LeadingStar);
+      result = new RCBlock (result, "symbol", ":", symbol);
+      result = new RCBlock (result, "original", ":", original);
+      result = new RCBlock (result, "ignoreDispatchedRows", ":", ignoreDispatchedRows);
+      result = new RCBlock (result, "count", ":", count);
+      result = new RCBlock (result, "start", ":", start);
+      result = new RCBlock (result, "limit", ":", limit);
+      return result;
+    }
   }
 }

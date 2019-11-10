@@ -3510,6 +3510,28 @@
        1  1 #a  1
     ]
   }
+  TestStarReadNotPresent:{
+    skip:false
+    src:{
+      :write [
+        S      | x
+        #page,a  1
+        #page,b  2
+        #page,c  3
+      ]
+      f:fiber {
+        <-#page,d,'*' read 0 1
+      }
+      :sleep 20
+      :write [
+        S        | x
+        #page,d,x  4
+      ]
+      :wait $f
+      <-0
+    }
+    bin:0
+  }
   TestLeadingStars1:{
     skip:false
     src:#1,'*',0 select [

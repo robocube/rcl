@@ -293,34 +293,41 @@ namespace RCL.Kernel
         }
         else
         {
-          foreach (SpecRecord specRecord in spec)
+          if (spec.RecordCount > 0)
           {
-            CountRecord countRecord = Get (specRecord);
-            //The symbol is missing entirely.
-            if (countRecord == null)
+            foreach (SpecRecord specRecord in spec)
             {
-              return Satisfy.No;
-            }
-            //Check there are enough records to satisfy the spec for this symbol.
-            if (specRecord.start == 0)
-            {
-              //We will accept any number of them.
-              if (specRecord.limit == int.MaxValue)
-              {
-                continue;
-              }
-              if (countRecord.total < specRecord.limit)
+              CountRecord countRecord = Get (specRecord);
+              //The symbol is missing entirely.
+              if (countRecord == null)
               {
                 return Satisfy.No;
               }
+              //Check there are enough records to satisfy the spec for this symbol.
+              if (specRecord.start == 0)
+              {
+                //We will accept any number of them.
+                if (specRecord.limit == int.MaxValue)
+                {
+                  continue;
+                }
+                if (countRecord.total < specRecord.limit)
+                {
+                  return Satisfy.No;
+                }
+              }
+              else
+              {
+                //This is for the case where you use read or last from an arbitrary start point.
+                //Since we don't track where the symbols are in this counter, we won't know whether
+                //The query would be satisfied.  We just have to do it and see.
+                return Satisfy.Maybe;
+              }
             }
-            else
-            {
-              //This is for the case where you use read or last from an arbitrary start point.
-              //Since we don't track where the symbols are in this counter, we won't know whether
-              //The query would be satisfied.  We just have to do it and see.
-              return Satisfy.Maybe;
-            }
+          }
+          else
+          {
+            return Satisfy.No;
           }
         }
       }

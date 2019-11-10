@@ -62,7 +62,7 @@ namespace RCL.Kernel
       m_fill = fill;
       if (right.Count == 1)
       {
-        //Its the start point.
+        //It's the start point.
         m_forward = defaultLimit >= 0;
         m_unlimited = defaultLimit == 0;
         m_symbolLimit = Math.Abs (m_unlimited ? int.MaxValue : defaultLimit);
@@ -74,7 +74,7 @@ namespace RCL.Kernel
       }
       else if (right.Count == 2)
       {
-        //Its the start point and the limit.
+        //It's the start point and the limit.
         m_forward = right[1] >= 0;
         m_unlimited = right[1] == 0;
         m_symbolLimit = Math.Abs (m_unlimited ? int.MaxValue : (int) right[1]);
@@ -135,6 +135,38 @@ namespace RCL.Kernel
     public bool Fill
     {
       get { return m_fill; }
+    }
+
+    public int RecordCount
+    {
+      get { return m_records.Count; }
+    }
+
+    public RCBlock ToBlock ()
+    {
+      RCBlock result = RCBlock.Empty;
+      result = new RCBlock (result, "SymbolLimit", ":", SymbolLimit);
+      result = new RCBlock (result, "SymbolUnlimited", ":", SymbolUnlimited);
+      result = new RCBlock (result, "Forward", ":", Forward);
+      result = new RCBlock (result, "Start", ":", (long) Start);
+      result = new RCBlock (result, "IgnoreDispatchedRows", ":", IgnoreDispatchedRows);
+      result = new RCBlock (result, "SkipFirst", ":", (long) SkipFirst);
+      result = new RCBlock (result, "TotalLimit", ":", (long) TotalLimit);
+      result = new RCBlock (result, "Force", ":", Force);
+      result = new RCBlock (result, "Fill", ":", Fill);
+      result = new RCBlock (result, "RecordCount", ":", RecordCount);
+      RCBlock records = RCBlock.Empty;
+      foreach (KeyValuePair<RCSymbolScalar, SpecRecord> specRecord in m_records)
+      {
+        records = new RCBlock (records, specRecord.Key.ToString (), ":", specRecord.Value.ToBlock ());
+      }
+      result = new RCBlock (result, "Records", ":", records);
+      return result;
+    }
+
+    public override string ToString ()
+    {
+      return ToBlock ().Format (RCFormat.Canonical);
     }
 
     public void Add (RCSymbolScalar scalar, int start, int limit)

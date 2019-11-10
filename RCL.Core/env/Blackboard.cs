@@ -62,7 +62,6 @@ namespace RCL.Core
       try
       {
         Section section = GetSection (left);
-        //ReadSpec spec = new ReadSpec (s.m_counter, left, right, -1, false, false, true, false);
         Read (runner, closure, left, new ReadSpec (section.m_counter, left, right, 0, false, false, true, false));
       }
       catch (Exception)
