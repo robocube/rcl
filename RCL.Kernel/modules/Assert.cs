@@ -20,6 +20,7 @@ namespace RCL.Kernel
           RCBlock block = new RCBlock ("", ":", closure.Code);
           block.Cubify (target, names);
           ColumnBase column = target.GetColumn ("r");
+
           string expression;
           if (column != null)
           {
@@ -32,7 +33,7 @@ namespace RCL.Kernel
               RCValue val = Eval.Resolve (null, closure, nameParts, null, returnNull:true);
               if (val != null)
               {
-                displayVars = new RCBlock (refNames[j], ":", val);
+                displayVars = new RCBlock (displayVars, refNames[j], ":", val);
               }
             }
             expression = string.Format ("{0}, {1}", closure.Code.ToString (), displayVars);
