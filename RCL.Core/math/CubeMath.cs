@@ -1139,7 +1139,7 @@ namespace RCL.Core
         closure, InvokeMonadic (closure, op.Name, right));
     }
 
-    [RCVerb ("map")] [RCVerb ("replace")] [RCVerb ("part")]
+    [RCVerb ("map")] [RCVerb ("replace")] [RCVerb ("part")] [RCVerb ("ismatch")]
     public void EvalContextual (RCRunner runner, RCClosure closure, object left, RCCube right)
     {
       RCOperator op = (RCOperator) closure.Code;
@@ -1181,7 +1181,7 @@ namespace RCL.Core
         closure, InvokeSequential (closure, op.Name, right));
     }
 
-    [RCVerb ("in")] [RCVerb ("like")] [RCVerb ("match")] [RCVerb ("startsWith")] [RCVerb ("endsWith")]
+    [RCVerb ("in")] [RCVerb ("like")] [RCVerb ("startsWith")] [RCVerb ("endsWith")]
     public void EvalRightContextual (RCRunner runner, RCClosure closure, RCCube left, object right)
     {
       RCOperator op = (RCOperator) closure.Code;

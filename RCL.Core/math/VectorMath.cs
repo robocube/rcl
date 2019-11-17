@@ -338,7 +338,7 @@ namespace RCL.Core
       runner.Yield (closure, new RCString (val.TypeName.ToString ()));
     }
 
-    [RCVerb ("map")] [RCVerb ("replace")] [RCVerb ("part")] [RCVerb ("fill")]
+    [RCVerb ("map")] [RCVerb ("replace")] [RCVerb ("part")] [RCVerb ("fill")] [RCVerb ("ismatch")]
     public void EvalContextual (RCRunner runner, RCClosure closure, object left, object right)
     {
       RCOperator op = (RCOperator) closure.Code;
@@ -495,7 +495,7 @@ namespace RCL.Core
       runner.Yield (closure, new RCSymbol (result));
     }
 
-    [RCVerb ("in")] [RCVerb ("like")] [RCVerb ("within")] [RCVerb ("match")] [RCVerb ("startsWith")] [RCVerb ("endsWith")]
+    [RCVerb ("in")] [RCVerb ("like")] [RCVerb ("within")] [RCVerb ("startsWith")] [RCVerb ("endsWith")]
     public void EvalRightContextual (RCRunner runner, RCClosure closure, object left, object right)
     {
       RCOperator op = (RCOperator) closure.Code;

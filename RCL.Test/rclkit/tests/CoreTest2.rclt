@@ -3224,22 +3224,22 @@
   }
   TestMatch1:{
     skip:false
-    src:"Brian M. Andersen" match "^[a-zA-Z\\'\\-\\s]{1,55}$"
+    src:"^[a-zA-Z\\'\\-\\s]{1,55}$" ismatch "Brian M. Andersen"
     bin:false
   }
   TestMatch2:{
     skip:false
-    src:"Brian M Andersen" match "^[a-zA-Z\\'\\-\\s]{1,55}$"
+    src:"^[a-zA-Z\\'\\-\\s]{1,55}$" ismatch "Brian M Andersen"
     bin:true
   }
   TestMatch3:{
     skip:false
-    src:"1" "12" "123" "1234" "12345" match "^\\d{4}$"
+    src:"^\\d{4}$" ismatch "1" "12" "123" "1234" "12345"
     bin:false false false true false
   }
   TestMatch4:{
     skip:false
-    src:[
+    src:"^\\d{4}$" ismatch [
       x
       "1"
       "12"
@@ -3247,7 +3247,7 @@
       --
       "1234"
       "12345"
-    ] match "^\\d{4}$"
+    ]
     bin:[
           x
       false
@@ -3257,6 +3257,22 @@
        true
       false
     ]
+  }
+  TestResplit:{
+    skip:false
+    src:{
+      number_regex:"[+-]?(?:(?:\\d+(?:\\.\\d*)?)|(?:\\.\\d+))"
+      <-unwrap $number_regex resplit "translate(202,33.625)"
+    }
+    bin:"translate(" "," ")"
+  }
+  TestMatches:{
+    skip:false
+    src:{
+      number_regex:"[+-]?(?:(?:\\d+(?:\\.\\d*)?)|(?:\\.\\d+))"
+      <-unwrap $number_regex matches "translate(202,33.625)"
+    }
+    bin:"202" "33.625"
   }
   TestNamesK1:{
     skip:false
