@@ -1167,8 +1167,8 @@ namespace RCL.Core
       }
     }
 
-    [Primitive ("match", Profile.Contextual)]
-    public static bool Match (MatchContext<string> context, string r)
+    [Primitive ("ismatch", Profile.Contextual)]
+    public static bool IsMatch (MatchContext<string> context, string r)
     {
       for (int j = 0; j < context.regexes.Length; ++j)
       {
@@ -1187,7 +1187,9 @@ namespace RCL.Core
       {
         m = new Dictionary<T, T> ();
         for (int i = 0; i < map.Count; i += 2)
+        {
           m[map[i]] = map[i + 1];
+        }
       }
     }
 

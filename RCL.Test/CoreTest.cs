@@ -2129,13 +2129,19 @@ namespace RCL.Test
     [Test]
     public void TestAsciiSX () { DoTest ("ascii ascii \"foobarbaz\"", "\"foobarbaz\""); }
     [Test]
-    public void TestMatch1 () { DoTest ("\"Brian M. Andersen\" match \"^[a-zA-Z\\\\'\\\\-\\\\s]{1,55}$\"", "false"); }
+    public void TestMatch1 () { DoTest ("\"^[a-zA-Z\\\\'\\\\-\\\\s]{1,55}$\" ismatch \"Brian M. Andersen\"", "false"); }
     [Test]
-    public void TestMatch2 () { DoTest ("\"Brian M Andersen\" match \"^[a-zA-Z\\\\'\\\\-\\\\s]{1,55}$\"", "true"); }
+    public void TestMatch2 () { DoTest ("\"^[a-zA-Z\\\\'\\\\-\\\\s]{1,55}$\" ismatch \"Brian M Andersen\"", "true"); }
     [Test]
-    public void TestMatch3 () { DoTest ("\"1\" \"12\" \"123\" \"1234\" \"12345\" match \"^\\\\d{4}$\"", "false false false true false"); }
+    public void TestMatch3 () { DoTest ("\"^\\\\d{4}$\" ismatch \"1\" \"12\" \"123\" \"1234\" \"12345\"", "false false false true false"); }
     [Test]
-    public void TestMatch4 () { DoTest ("[x \"1\" \"12\" \"123\" -- \"1234\" \"12345\"] match \"^\\\\d{4}$\"", "[x false false false -- true false]"); }
+    public void TestMatch4 () { DoTest ("\"^\\\\d{4}$\" ismatch [x \"1\" \"12\" \"123\" -- \"1234\" \"12345\"]", "[x false false false -- true false]"); }
+    [Test]
+    public void TestResplit () { DoTest ("{number_regex:\"[+-]?(?:(?:\\\\d+(?:\\\\.\\\\d*)?)|(?:\\\\.\\\\d+))\" <-unwrap $number_regex resplit \"translate(202,33.625)\"}",
+                                         "\"translate(\" \",\" \")\""); }
+    [Test]
+    public void TestMatches () { DoTest ("{number_regex:\"[+-]?(?:(?:\\\\d+(?:\\\\.\\\\d*)?)|(?:\\\\.\\\\d+))\" <-unwrap $number_regex matches \"translate(202,33.625)\"}",
+                                         "\"202\" \"33.625\""); }
 
     //Block
     [Test]

@@ -397,5 +397,58 @@ namespace RCL.Core
       byte[] result = Encoding.ASCII.GetBytes (right[0]);
       runner.Yield (closure, new RCByte (result));
     }
+
+    [RCVerb ("resplit")]
+    public void EvalResplit (RCRunner runner, RCClosure closure, RCString left, RCString right)
+    {
+      if (left.Count != 1)
+      {
+        throw new RCException (closure, RCErrors.Count, "resplit requires a single string on the left");
+      }
+      RCBlock result = RCBlock.Empty;
+      Regex regex = new Regex (left[0].ToString (), RegexOptions.Multiline);
+      for (int i = 0; i < right.Count; ++i)
+      {
+        string[] resulti = regex.Split (right[i]);
+        result = new RCBlock (result, "", ":", new RCString (resulti));
+      }
+      runner.Yield (closure, result);
+    }
+
+    [RCVerb ("matches")]
+    public void EvalMatches (RCRunner runner, RCClosure closure, RCString left, RCString right)
+    {
+      RCBlock result = RCBlock.Empty;
+      Regex[] regexes = new Regex[left.Count];
+      for (int i = 0; i < left.Count; ++i)
+      {
+        regexes[i] = new Regex (left[i].ToString (), RegexOptions.Multiline);
+      }
+      for (int i = 0; i < right.Count; ++i)
+      {
+        RCArray<string> resulti = null;
+        for (int j = 0; j < regexes.Length; ++j)
+        {
+          MatchCollection matchesij = regexes[j].Matches (right[i]);
+          if (matchesij.Count > 0)
+          {
+            if (resulti == null)
+            {
+              resulti = new RCArray<string> (matchesij.Count + 1);
+            }
+            for (int k = 0; k < matchesij.Count; ++k)
+            {
+              resulti.Write (matchesij[k].Value);
+            }
+          }
+        }
+        if (resulti == null)
+        {
+          resulti = new RCArray<string> (0);
+        }
+        result = new RCBlock (result, "", ":", new RCString (resulti));
+      }
+      runner.Yield (closure, result);
+    }
   }
 }
