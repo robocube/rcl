@@ -1059,6 +1059,20 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestTree19 ()
+    {
+      DoTest ("#n #v from tree [S|x y z #a \"1\" \"2\" \"3\"]",
+              "[S|n v # 3.0 \"\" #0 1.0 \"x\" #0,0 1.0 \"1\" #1 1.0 \"y\" #1,0 1.0 \"2\" #2 1.0 \"z\" #2,0 1.0 \"3\"]");
+    }
+
+    [Test]
+    public void TestTree20 ()
+    {
+      DoTest ("#n #v from tree [x y z \"1\" \"2\" \"3\"]",
+              "[S|n v # 3.0 \"\" #0 1.0 \"x\" #0,0 1.0 \"1\" #1 1.0 \"y\" #1,0 1.0 \"2\" #2 1.0 \"z\" #2,0 1.0 \"3\"]");
+    }
+
+    [Test]
     public void TestChartL ()
     {
       DoTest ("#k #v from chart 1 2 3", "[S|k v #0,0,0 #0 \"1\" #0,1,0 #1 \"2\" #0,2,0 #2 \"3\"]");
