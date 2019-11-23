@@ -2342,6 +2342,40 @@
       #0,1 -1.0 1.0
     ]
   }
+  TestTree19:{
+    skip:false
+    src:#n #v from tree [
+      S |x   y   z
+      #a "1" "2" "3"
+    ]
+    bin:[
+      S   |  n v
+      #    3.0 ""
+      #0   1.0 "x"
+      #0,0 1.0 "1"
+      #1   1.0 "y"
+      #1,0 1.0 "2"
+      #2   1.0 "z"
+      #2,0 1.0 "3"
+    ]
+  }
+  TestTree20:{
+    skip:false
+    src:#n #v from tree [
+      x   y   z
+      "1" "2" "3"
+    ]
+    bin:[
+      S   |  n v
+      #    3.0 ""
+      #0   1.0 "x"
+      #0,0 1.0 "1"
+      #1   1.0 "y"
+      #1,0 1.0 "2"
+      #2   1.0 "z"
+      #2,0 1.0 "3"
+    ]
+  }
   TestChartL:{
     skip:false
     src:#k #v from chart 1 2 3

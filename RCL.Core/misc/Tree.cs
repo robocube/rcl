@@ -330,8 +330,7 @@ namespace RCL.Core
       }
       if (right.Axis.Symbol != null)
       {
-        Dictionary<RCSymbolScalar, TreeNode> map =
-          new Dictionary<RCSymbolScalar, TreeNode> ();
+        Dictionary<RCSymbolScalar, TreeNode> map = new Dictionary<RCSymbolScalar, TreeNode> ();
         for (int i = 0; i < right.Cols; ++i)
         {
           string colName = right.ColumnAt (i);
@@ -339,15 +338,24 @@ namespace RCL.Core
           colNode.v = colName;
           colNode.n = 0;
           ColumnBase col = right.GetColumn (i);
+          bool numeric = typeof (long).IsAssignableFrom (col.GetElementType());
           for (int j = 0; j < col.Count; ++j)
           {
             RCSymbolScalar symbol = right.Axis.SymbolAt (col.Index[j]);
-            TreeNode rowNode = new TreeNode (
-              colNode, symbol.Key.ToString (), col.Index[j]);
+            TreeNode rowNode = new TreeNode (colNode, symbol.Key.ToString (), col.Index[j]);
             object box = col.BoxCell (j);
-            rowNode.n = (long) box;
-            rowNode.m = (long) box;
-            rowNode.g = Math.Abs ((long) box);
+            if (numeric)
+            {
+              rowNode.n = (long) box;
+              rowNode.m = (long) box;
+              rowNode.g = Math.Abs ((long) box);
+            }
+            else
+            {
+              rowNode.n = 1;
+              rowNode.m = 1;
+              rowNode.g = 1;
+            }
             rowNode.v = box.ToString ();
             colNode.n += rowNode.n;
             colNode.g += Math.Abs (rowNode.n);
@@ -366,13 +374,23 @@ namespace RCL.Core
           colNode.v = colName;
           colNode.n = 0;
           ColumnBase col = right.GetColumn (i);
+          bool numeric = typeof (long).IsAssignableFrom (col.GetElementType());
           for (int j = 0; j < right.Count; ++j)
           {
             TreeNode rowNode = new TreeNode (colNode, null, col.Index[j]);
             object box = col.BoxCell (j);
-            rowNode.n = (long) box;
-            rowNode.m = (long) box;
-            rowNode.g = Math.Abs ((long) box);
+            if (numeric)
+            {
+              rowNode.n = (long) box;
+              rowNode.m = (long) box;
+              rowNode.g = Math.Abs ((long) box);
+            }
+            else
+            {
+              rowNode.n = 1;
+              rowNode.m = 1;
+              rowNode.g = 1;
+            }
             rowNode.v = box.ToString ();
             colNode.n += rowNode.n;
             colNode.g += Math.Abs (rowNode.n);
