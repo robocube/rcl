@@ -485,6 +485,12 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestKey4 ()
+    {
+      DoTest ("{u:[S|x #a 1 #b 2 #c 3] <-key $u}", "#a #b #c");
+    }
+
+    [Test]
     public void TestBlockCubeConversions1 ()
     {
       DoTest ("cube block []", "[]");
@@ -2257,6 +2263,12 @@ namespace RCL.Test
     public void TestCount3 ()
     {
       DoTest ("count []", "0");
+    }
+
+    [Test]
+    public void TestCount4 ()
+    {
+      DoTest ("count [S|x #a -- #b 1 #c --]", "3");
     }
 
     [Test]

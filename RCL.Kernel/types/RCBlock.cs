@@ -297,13 +297,23 @@ namespace RCL.Kernel
       m_count = 0;
     }
 
+    public static RCBlock Append (RCBlock left, RCBlock right)
+    {
+      RCBlock result = left;
+      for (int i = 0; i < right.Count; ++i)
+      {
+        RCBlock current = right.GetName (i);
+        result = new RCBlock (result, current.Name, current.Evaluator, current.Value);
+      }
+      return result;
+    }
+
     public RCBlock (RCBlock previous, string name, RCEvaluator evaluator, RCValue val)
     {
       if (val == null)
       {
         throw new ArgumentNullException ("value");
       }
-
       Previous = previous != null ? previous : Empty;
       RCName nameInfo = RCName.GetName (name);
       Name = nameInfo.Text;

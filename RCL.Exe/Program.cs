@@ -239,7 +239,7 @@ namespace RCL.Exe
             {
               string trimmed = line.TrimStart (' ').TrimEnd (' ');
               line = Alias (trimmed, runner, cmd);
-              RCValue result = runner.Rep (line);
+              RCValue result = runner.Rep (line, restoreStateOnError:false);
 
               if (result != null)
               {

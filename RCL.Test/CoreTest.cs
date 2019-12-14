@@ -597,6 +597,8 @@ namespace RCL.Test
     public void TestSymbolY1 () { DoTest ("{u:[E|S|x 0 #a #symbol] <-symbol $u.x}", "[E|S|x 0 #a #symbol]"); }
     [Test]
     public void TestSymbolK () { DoTest ("symbol {x:#a y:#b z:#c}", "#a #b #c"); }
+    [Test]
+    public void TestSymbolT () { DoTest ("symbol 2019.12.20", "#2019.12.20"); }
 
     [Test]
     public void TestLongX() { DoTest("long \\xFF", "255"); }
@@ -865,7 +867,7 @@ namespace RCL.Test
     [Test]
     public void TestCountN () { DoTest ("count ++", "1"); }
     [Test]
-    public void TestCountU() { DoTest ("{u:[S|x #a 0] <-count #b cube $u}", "0"); }
+    public void TestCountU() { DoTest ("{u:[S|x #a 0] <-count #b cube $u}", "1"); }
     [Test]
     public void TestCountR() { DoTest ("count reference \"x.y.z\"", "1"); }
     [Test]
