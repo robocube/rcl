@@ -18,7 +18,7 @@ namespace RCL.Kernel
     {
       Args = RCLArgv.Instance;
       //Setup the logger first in case the Activator throws an exception
-      Log = new RCLogger (Args.Nokeys, Args.Show);
+      Log = new RCLogger (Args.Nokeys, Args.Show, Args.Hide);
       Log.SetVerbosity (Args.OutputEnum);
       Activator = RCActivator.CreateDefault ();
     }
@@ -56,7 +56,7 @@ namespace RCL.Kernel
     public static void Reconfigure (RCLArgv args)
     {
       Args = args;
-      Log = new RCLogger (Args.Nokeys, Args.Show);
+      Log = new RCLogger (Args.Nokeys, Args.Show, Args.Hide);
       Log.SetVerbosity (Args.OutputEnum);
     }
 

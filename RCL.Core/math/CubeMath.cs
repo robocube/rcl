@@ -1280,6 +1280,16 @@ namespace RCL.Core
       runner.Yield (closure, result);
     }
 
+    [RCVerb ("key")]
+    public void EvalKey (RCRunner runner, RCClosure closure, RCCube cube)
+    {
+      if (!cube.Axis.Has ("S"))
+      {
+        throw new Exception ("cube is missing the axis column S");
+      }
+      runner.Yield (closure, new RCSymbol (cube.Axis.Symbol));
+    }
+
     /// <summary>
     /// Given a long in the left argument, key will rearrange parts of the S column using the same behavior as the part operator.
     /// </summary>
@@ -1354,7 +1364,7 @@ namespace RCL.Core
       if (key.Count != cube.Axis.Count)
       {
         throw new Exception (string.Format ("New symbol column must have the same count as the old one. New count: {0}, old count: {1}",
-                                            key.Count, cube.Count));
+                                            key.Count, cube.Axis.Count));
       }
       Timeline axis = new Timeline (cube.Axis.Global, cube.Axis.Event, cube.Axis.Time, key);
       axis.Count = cube.Axis.Count;
@@ -2575,7 +2585,7 @@ namespace RCL.Core
     [RCVerb ("count")]
     public void CountOp (RCRunner runner, RCClosure closure, RCCube right)
     {
-      runner.Yield (closure, new RCLong (right.Count));
+      runner.Yield (closure, new RCLong (right.Axis.Count));
     }
 
     [RCVerb ("rename")]

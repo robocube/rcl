@@ -210,11 +210,17 @@ namespace RCL.Kernel
         {
           //Make the successfully computed values into the effective state of the environment
           RCClosure top = m_exceptionClosure;
+          RCClosure underTop = null;
           while (top.Parent != null && top.Parent.Parent != null)
           {
+            underTop = top;
             top = top.Parent;
           }
-          m_state = top.Result;
+          if (underTop != null && top.Code.IsOperator)
+          {
+            top = underTop;
+          }
+          m_state = RCBlock.Append (m_state, top.Result);
         }
         m_runnerUnhandled = true;
         throw exception;
@@ -497,7 +503,7 @@ namespace RCL.Kernel
       {
         throw new ArgumentException (string.Format ("Unknown action name: {0}", action));
       }
-      RCValue result = Rep (string.Format ("{0} {{}}", action));
+      RCValue result = Rep (string.Format ("{0} {{}}", action), restoreStateOnError:true);
       RCBlock variables = result as RCBlock;
       if (variables != null)
       {
@@ -511,7 +517,13 @@ namespace RCL.Kernel
     }
 
     protected RCBlock m_state = RCBlock.Empty;
+
     public RCValue Rep (string code)
+    {
+      return Rep (code, restoreStateOnError:false);
+    }
+
+    public RCValue Rep (string code, bool restoreStateOnError)
     {
       bool fragment = false;
       RCValue peek = RCSystem.Parse (code, out fragment);
@@ -533,7 +545,7 @@ namespace RCL.Kernel
                                             m_state, m_state.Count, null, null, noClimb:false, noResolve:false);
           RCClosure child = new RCClosure (parent, m_bots[0].Id, variable.Value, null,
                                            RCBlock.Empty, 0, null, null);
-          RCValue result = Run (child, restoreStateOnError:false);
+          RCValue result = Run (child, restoreStateOnError);
           m_state = new RCBlock (m_state, variable.Name, ":", result);
         }
         else
@@ -549,14 +561,14 @@ namespace RCL.Kernel
         RCClosure parent = new RCClosure (m_bots[0].Id, 0, null, null, program, null,
                                           m_state, m_state.Count, null, null, noClimb:false, noResolve:false);
         RCClosure child = new RCClosure (parent, m_bots[0].Id, peek, null, RCBlock.Empty, 0);
-        RCValue result = Run (child, restoreStateOnError:false);
+        RCValue result = Run (child, restoreStateOnError);
         return result;
       }
     }
    
     public string RepString (string code)
     {
-      RCValue result = Rep (code);
+      RCValue result = Rep (code, restoreStateOnError:false);
       if (result == null)
       {
         return "";

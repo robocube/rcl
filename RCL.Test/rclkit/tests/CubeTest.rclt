@@ -1234,6 +1234,19 @@
       #6  6  7  8
     ]
   }
+  TestKey4:{
+    skip:false
+    src:{
+      u:[
+        S | x
+        #a  1
+        #b  2
+        #c  3
+      ]
+      <-key $u
+    }
+    bin:#a #b #c
+  }
   TestBlockCubeConversions1:{
     skip:false
     src:cube block []
@@ -5001,6 +5014,16 @@
     skip:false
     src:count []
     bin:0
+  }
+  TestCount4:{
+    skip:false
+    src:count [
+      S | x
+      #a --
+      #b  1
+      #c --
+    ]
+    bin:3
   }
   TestLength0:{
     skip:false

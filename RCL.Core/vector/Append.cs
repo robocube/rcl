@@ -60,12 +60,7 @@ namespace RCL.Core
     [RCVerb ("&")]
     public void EvalAppend (RCRunner runner, RCClosure closure, RCBlock left, RCBlock right)
     {
-      RCBlock result = left;
-      for (int i = 0; i < right.Count; ++i)
-      {
-        RCBlock current = right.GetName (i);
-        result = new RCBlock (result, current.Name, current.Evaluator, current.Value);
-      }
+      RCBlock result = RCBlock.Append (left, right);
       runner.Yield (closure, result);
     }
 

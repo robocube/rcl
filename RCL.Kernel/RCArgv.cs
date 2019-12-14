@@ -84,6 +84,11 @@ namespace RCL.Kernel
     public readonly string[] Show;
 
     /// <summary>
+    /// Blacklist of modules and events to hide from the console.
+    /// </summary>
+    public readonly string[] Hide;
+
+    /// <summary>
     /// Show all available stack trace info, even when --output=test
     /// </summary>
     public readonly bool FullStack;
@@ -99,6 +104,7 @@ namespace RCL.Kernel
       Action = "";
       Output = "full";
       Show = new string[] { "*" };
+      Hide = new string[] { };
       RCBlock custom = RCBlock.Empty;
       List<string> arguments = new List<string> ();
       for (int i = 0; i < argv.Length; ++i)
@@ -196,6 +202,10 @@ namespace RCL.Kernel
             {
               Show = kv[1].Split (',');
             }
+            else if (option.Equals ("hide"))
+            {
+              Hide = kv[1].Split (',');
+            }
             else
             {
               custom = new RCBlock (custom, option, ":", new RCString (kv[1]));
@@ -210,6 +220,7 @@ namespace RCL.Kernel
       Options = new RCBlock (Options, "action", ":", new RCString (Action));
       Options = new RCBlock (Options, "output", ":", new RCString (Output));
       Options = new RCBlock (Options, "show", ":", new RCString (Show));
+      Options = new RCBlock (Options, "hide", ":", new RCString (Hide));
       Options = new RCBlock (Options, "batch", ":", new RCBoolean (Batch));
       Options = new RCBlock (Options, "nokeys", ":", new RCBoolean (Nokeys));
       Options = new RCBlock (Options, "noread", ":", new RCBoolean (Noread));

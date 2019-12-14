@@ -1167,6 +1167,11 @@
     }
     bin:#a #b #c
   }
+  TestSymbolT:{
+    skip:false
+    src:symbol 2019.12.20
+    bin:#2019.12.20
+  }
   TestLongX:{
     skip:false
     src:long \xFF
@@ -2020,7 +2025,7 @@
       ]
       <-count #b cube $u
     }
-    bin:0
+    bin:1
   }
   TestCountR:{
     skip:false

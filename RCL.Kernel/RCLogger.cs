@@ -8,22 +8,23 @@ namespace RCL.Kernel
 {
   public class RCLogger
   {
+
     protected static object m_lock = new object ();
     protected static bool m_nokeys;
     protected static TextWriter m_output;
-    protected static RCArray<string> m_types;
     protected static RCOutput m_level = RCOutput.Full;
     protected readonly static string TimeFormat = "yyyy.MM.dd HH:mm:ss.ffffff";
     protected static HashSet<string> m_show;
+    protected static HashSet<string> m_hide;
     protected static RCColmap m_colmap = new RCColmap ();
 
-    public RCLogger () : this (true, "*") {}
+    public RCLogger () : this (true, new string[] {"*"}, new string[] {}) {}
 
-    public RCLogger (bool nokeys, params string[] whiteList)
+    public RCLogger (bool nokeys, string[] whiteList, string[] blacklist)
     {
       m_nokeys = nokeys;
       m_show = new HashSet<string> (whiteList);
-      m_types = new RCArray<string> (whiteList);
+      m_hide = new HashSet<string> (blacklist);
       if (!m_nokeys)
       {
         m_output = Console.Error;
@@ -32,11 +33,6 @@ namespace RCL.Kernel
       {
         m_output = Console.Out;
       }
-    }
-
-    public RCArray<string> Types ()
-    {
-      return m_types;
     }
 
     public void SetVerbosity (RCOutput level)
@@ -64,7 +60,15 @@ namespace RCL.Kernel
     {
       lock (m_lock)
       {
-        if (m_show.Contains ("*"))
+        if (m_hide.Contains (type + ":" + state))
+        {
+          return false;
+        }
+        else if (m_hide.Contains (type))
+        {
+          return false;
+        }
+        else if (m_show.Contains ("*"))
         {
           return true;
         }

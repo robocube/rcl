@@ -915,6 +915,9 @@ namespace RCL.Core
     public static RCSymbolScalar Symbol (bool r) { return new RCSymbolScalar (null, r); }
 
     [Primitive ("symbol", Profile.Monadic)]
+    public static RCSymbolScalar Symbol (RCTimeScalar r) { return new RCSymbolScalar (null, r); }
+
+    [Primitive ("symbol", Profile.Monadic)]
     public static RCSymbolScalar Symbol (string r)
     {
       if (r.Length > 0 && r[0] == '#')
