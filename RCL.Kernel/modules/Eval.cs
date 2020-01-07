@@ -678,7 +678,7 @@ namespace RCL.Kernel
       RCBlock result = null;
       if (@this != null && @this.Count > 0)
       {
-        result = @this [0];
+        result = @this[0];
         //This is only for when the this context contains more than one object.
         //I'm not even sure whether to support this, I guess I should.
         //But this is not going to be the fastest solution possible.
@@ -934,7 +934,7 @@ namespace RCL.Kernel
       //Why is switch magical, why not each, take, fiber, etc...
       //Am I just missing tests for those? 
       userop = null;
-      useropContext = null;
+      useropContext = previous.UserOpContext;
       RCClosure argument0, argument1;
       bool recursion = false;
       if (previous.Parent == null)
@@ -946,15 +946,6 @@ namespace RCL.Kernel
       {
         return previous.Parent;
       }
-      /*
-      else if (!previous.Parent.Code.IsLastCall (previous.Parent, previous))
-      {
-        if (!recursion)
-        {
-          return previous.Parent;
-        }
-      }
-      */
       RCClosure parent0 = OwnerOpOf (op, previous, out argument0);
       if (parent0 == null)
       {

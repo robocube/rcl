@@ -928,6 +928,12 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestRecursionWithThisContext()
+    {
+      DoEvalTest ("{o:{f:{<-#i} g:{<-$R switch {rec:g #base base:#k + f $R}}} <-o.g #rec}", "#k,i");
+    }
+
+    [Test]
     public void TestFiberUnparented0()
     {
       DoEvalTest ("1 from fiber {<-1 + 2}", "1");
