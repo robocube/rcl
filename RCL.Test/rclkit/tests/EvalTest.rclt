@@ -1719,6 +1719,24 @@
     }
     bin:0
   }
+  TestRecursionWithThisContext:{
+    skip:false
+    src:{
+      o:{
+        f:{
+          <-#i
+        }
+        g:{
+          <-$R switch {
+            rec:g #base
+            base:#k + f $R
+          }
+        }
+      }
+      <-o.g #rec
+    }
+    bin:#k,i
+  }
   TestFiberUnparented0:{
     skip:false
     src:1 from fiber {

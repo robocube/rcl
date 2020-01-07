@@ -1182,3 +1182,25 @@ missing_action:{
   ?]
 }
 
+hide_option:{
+  src:{
+    script:[?
+      set -e
+      rcl --batch --nokeys --show="*" --hide=print:hidden --exit << 'EOF'
+      :"shown" print "See me?"
+      :"hidden" print "I hope you don't see me."
+      <-0
+      EOF
+      exit
+    ?]
+    bash:startx "bash"
+    :$bash writex script $R
+    out:try {<-waitx $bash}
+    <-template & $out.data + "\n"
+  }
+  bin:[?
+    0 0 print 0 shown See me?
+    0
+  ?]
+}
+
