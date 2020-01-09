@@ -8214,11 +8214,11 @@
          3 30 300 3000    --
          4 --  --   --    --
       ]
-      :(#desc,a sort $t) assert $tbya
-      :(#desc,b sort $t) assert $tbyb
-      :(#desc,c sort $t) assert $tbyc
-      :(#desc,d sort $t) assert $tbyd
-      :(#desc,e sort $t) assert $tbye
+      :assert (#desc,a sort $t) = $tbya
+      :assert (#desc,b sort $t) = $tbyb
+      :assert (#desc,c sort $t) = $tbyc
+      :assert (#desc,d sort $t) = $tbyd
+      :assert (#desc,e sort $t) = $tbye
       <-0
     }
     bin:0
@@ -8249,13 +8249,13 @@
          2 20m 200.0 "2000" false \x02 #b
          3 30m 300.0 "3000" false \x03 #c
       ]
-      :(#desc,l sort $t) assert $t_reversed
-      :(#desc,m sort $t) assert $t_reversed
-      :(#desc,d sort $t) assert $t_reversed
-      :(#desc,s sort $t) assert $t_reversed
-      :(#desc,b sort $t) assert $t_by_b
-      :(#desc,x sort $t) assert $t_reversed
-      :(#desc,y sort $t) assert $t_reversed
+      :assert (#desc,l sort $t) = $t_reversed
+      :assert (#desc,m sort $t) = $t_reversed
+      :assert (#desc,d sort $t) = $t_reversed
+      :assert (#desc,s sort $t) = $t_reversed
+      :assert (#desc,b sort $t) = $t_by_b
+      :assert (#desc,x sort $t) = $t_reversed
+      :assert (#desc,y sort $t) = $t_reversed
       <-0
     }
     bin:0

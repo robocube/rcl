@@ -1635,7 +1635,7 @@
     src:{
       loop:{
         s:stack {}
-        :1 assert $s.fiber
+        :assert 1 = $s.fiber
         :#x write {
           i:++
         }
@@ -1713,8 +1713,8 @@
           :$R - f m $R - 1
         }
       }
-      :(long $f each 0 to 10) assert 1 1 2 2 3 3 4 5 5 6 6
-      :(long $m each 0 to 10) assert 0 0 1 2 2 3 4 4 5 6 6
+      :assert (long $f each 0 to 10) = 1 1 2 2 3 3 4 5 5 6 6
+      :assert (long $m each 0 to 10) = 0 0 1 2 2 3 4 4 5 6 6
       <-0
     }
     bin:0
@@ -1877,7 +1877,7 @@
         b:2
         c:3
       }
-      :(#x read 0) assert [
+      :assert (#x read 0) = [
         S | a  b  c
         #x  1  2  3
       ]
@@ -1893,7 +1893,7 @@
         b:\x01
         c:\x02
       }
-      :(#x read 0) assert [
+      :assert (#x read 0) = [
         S |   a    b    c
         #x \x00 \x01 \x02
       ]
@@ -1908,7 +1908,7 @@
         S |   a    b    c
         #x \x00 \x01 \x02
       ]
-      :(#x read 0) assert [
+      :assert (#x read 0) = [
         S |   a    b    c
         #x \x00 \x01 \x02
       ]
@@ -1930,7 +1930,7 @@
       :#x write {
         i:++
       }
-      :(#x #x read 0) assert [
+      :assert (#x #x read 0) = [
         S | i
         #x  0
       ]
@@ -2071,7 +2071,7 @@
         b:2
         c:3
       }
-      :(#x read 0) assert [
+      :assert (#x read 0) = [
         S | a  b  c
         #x  1  2  3
       ]
@@ -2080,7 +2080,7 @@
         b:20
         c:30
       }
-      :(#x read 1) assert [
+      :assert (#x read 1) = [
         S | a  b  c
         #x 10 20 30
       ]
@@ -2097,12 +2097,12 @@
       :#s,0 #s,1 write {
         x:2 20
       }
-      :(#s,0 read 0) assert [
+      :assert (#s,0 read 0) = [
         S   | x
         #s,0  1
         #s,0  2
       ]
-      :(#s,1 read 0) assert [
+      :assert (#s,1 read 0) = [
         S   | x
         #s,1 10
         #s,1 20
@@ -2120,7 +2120,7 @@
       :#s,2 #s,3 #s,1 write {
         x:20 35 10
       }
-      :(#s,1 #s,2 #s,3 read 0) assert [
+      :assert (#s,1 #s,2 #s,3 read 0) = [
         S   | x
         #s,1 10
         #s,2 20
@@ -2146,7 +2146,7 @@
         #s,3 35
         #s,1 10
       ]
-      :(#s,1 #s,2 #s,3 read 0) assert [
+      :assert (#s,1 #s,2 #s,3 read 0) = [
         S   | x
         #s,1 10
         #s,2 20
@@ -2165,7 +2165,7 @@
         #1 10
         #1 20
       ]
-      :(#1 read 0 1) assert [
+      :assert (#1 read 0 1) = [
         S | x
         #1 10
       ]
@@ -2181,7 +2181,7 @@
         #1 10
         #1 20
       ]
-      :(#1 read 0 -1) assert [
+      :assert (#1 read 0 -1) = [
         S | x
         #1 20
       ]
@@ -2197,7 +2197,7 @@
         #1 10
       ]
       :#1 dispatch 1
-      :(#1 read 0) assert [
+      :assert (#1 read 0) = [
         S | x
         #1 10
       ]
@@ -2216,7 +2216,7 @@
         y:2
         z:3
       }
-      :(trace #a) assert [
+      :assert (trace #a) = [
         S | x  y  z
         #a  1  2 --
         #a -- --  3
@@ -2236,7 +2236,7 @@
         y:2
         z:3
       }
-      :(trace #a) assert [
+      :assert (trace #a) = [
         S | x  y  z
         #a  1  2 --
         #a --  2  3
@@ -2256,7 +2256,7 @@
         y:2
         z:3
       }
-      :(1 0 trace #a) assert [
+      :assert (1 0 trace #a) = [
         S | y  z
         #a  2  3
       ]
@@ -2275,7 +2275,7 @@
         S | y  z
         #a  2  3
       ]
-      :(1 0 trace #a) assert [
+      :assert (1 0 trace #a) = [
         S | y  z
         #a  2  3
       ]
@@ -2294,7 +2294,7 @@
         S | y  z
         #a  2  3
       ]
-      :(trace #a) assert [
+      :assert (trace #a) = [
         S | x  y  z
         #a  1  2 --
         #a --  2  3
@@ -2314,7 +2314,7 @@
         b:2 20
         c:3 30
       }
-      :(wait $reader) assert [
+      :assert (wait $reader) = [
         S | a  b  c
         #x  1  2  3
         #x 10 20 30
@@ -2334,7 +2334,7 @@
         b:2 20
         c:3 30
       }
-      :(wait $reader) assert [
+      :assert (wait $reader) = [
         S   | a  b  c
         #x,0  1  2  3
         #x,1 10 20 30
@@ -2359,7 +2359,7 @@
         b:200
         c:300
       }
-      :(wait $reader) assert [
+      :assert (wait $reader) = [
         S |  a   b   c
         #x   1   2   3
         #x  10  20  30
@@ -2378,11 +2378,11 @@
          1 #a  2
          2 #a  3
       ]
-      :(#a dispatch 1) assert [
+      :assert (#a dispatch 1) = [
          G| E|S | x
          0  0 #a  1
       ]
-      :(#a dispatch 2) assert [
+      :assert (#a dispatch 2) = [
          G| E|S | x
          1  1 #a  2
          2  2 #a  3
@@ -2402,7 +2402,7 @@
         b:2 20
         c:3 30
       }
-      :(wait $reader) assert [
+      :assert (wait $reader) = [
         S | a  b  c
         #x  1  2  3
       ]
@@ -2427,7 +2427,7 @@
         b:20
         c:30
       }
-      :(wait $r1) assert [
+      :assert (wait $r1) = [
         S | a  b  c
         #x 10 20 30
       ]
@@ -2452,7 +2452,7 @@
         b:20
         c:30
       }
-      :(wait $reader) assert [
+      :assert (wait $reader) = [
         S   | a  b  c
         #s,x  0  1  2
         #s,y 10 20 30
@@ -2471,7 +2471,7 @@
         b:21
         c:31
       }
-      :(wait $reader) assert [
+      :assert (wait $reader) = [
         S   | a  b  c
         #s,x  1  2  3
         #s,y 11 21 31
@@ -2491,7 +2491,7 @@
         b:2 20
         c:3 30
       }
-      :(wait $reader) assert [
+      :assert (wait $reader) = [
         S   | a  b  c
         #x,0  1  2  3
       ]
@@ -2510,7 +2510,7 @@
         b:2 20 200
         c:3 30 300
       }
-      :(wait $reader) assert [
+      :assert (wait $reader) = [
         S |  a   b   c
         #x 100 200 300
       ]
@@ -2532,7 +2532,7 @@
       :#x write {
         d:4
       }
-      :(wait $reader) assert [
+      :assert (wait $reader) = [
         S | d
         #x  4
       ]
@@ -2550,7 +2550,7 @@
         x:2 3 5
         y:4 5 9
       }
-      :(wait $reader) assert [
+      :assert (wait $reader) = [
         S     | x  y
         #p,s,a  2  4
         #p,s,b  3  5
@@ -2566,11 +2566,11 @@
       :#x,0 #x,1 write {
         a:1 10
       }
-      :(#x,'*' dispatch 1) assert [
+      :assert (#x,'*' dispatch 1) = [
         S   | a
         #x,0  1
       ]
-      :(#x,'*' dispatch 1) assert [
+      :assert (#x,'*' dispatch 1) = [
         S   | a
         #x,1 10
       ]
@@ -2653,7 +2653,7 @@
       :#x #x #x write {
         i:++ ++ ++
       }
-      :(wait $f) assert [
+      :assert (wait $f) = [
         S | i
         #x  0
         #x  1
@@ -2666,7 +2666,7 @@
       :#x write {
         i:++
       }
-      :(wait $f1) assert [
+      :assert (wait $f1) = [
         S | i
         #x  3
       ]
@@ -2682,7 +2682,7 @@
         #x 10
         #x 10
       ]
-      :(#x dispatch 0) assert [
+      :assert (#x dispatch 0) = [
         S | a
         #x 10
       ]
@@ -2697,11 +2697,11 @@
         S:#x #x
         a:10 10
       }
-      :(#x dispatch 0) assert [
+      :assert (#x dispatch 0) = [
         S | a
         #x 10
       ]
-      :(#x peek 0) assert false
+      :assert (#x peek 0) = false
       <-0
     }
     bin:0
@@ -2749,7 +2749,7 @@
       :#x write {
         i:++
       }
-      :(wait $f) assert [
+      :assert (wait $f) = [
         S | i
         #x  0
       ]
@@ -2769,7 +2769,7 @@
       :#x write {
         i:++
       }
-      :(wait $f) assert [
+      :assert (wait $f) = [
         S | i
         #x  0
       ]
@@ -2785,7 +2785,7 @@
         #x  1 --
         #y 10  2
       ]
-      :(#x dispatch 1) assert [
+      :assert (#x dispatch 1) = [
         S | a
         #x  1
       ]
@@ -2799,14 +2799,14 @@
       :#x write {
         i:++
       }
-      :(#x dispatch 1) assert [
+      :assert (#x dispatch 1) = [
         S | i
         #x  0
       ]
       :#x write {
         i:++
       }
-      :(#x dispatch 1) assert [
+      :assert (#x dispatch 1) = [
         S | i
         #x  1
       ]
@@ -2823,18 +2823,18 @@
         #s,b  1
         #s,c  2
       ]
-      :(#s,'*' read 0) assert [
+      :assert (#s,'*' read 0) = [
         S   | x
         #s,a  0
         #s,b  1
         #s,c  2
       ]
-      :(#s,'*' read 1) assert [
+      :assert (#s,'*' read 1) = [
         S   | x
         #s,b  1
         #s,c  2
       ]
-      :(#s,'*' read 2) assert [
+      :assert (#s,'*' read 2) = [
         S   | x
         #s,c  2
       ]
@@ -2848,7 +2848,7 @@
       :#x,a write {
         i:++
       }
-      :(#x,a #x,b read 0 0) assert [
+      :assert (#x,a #x,b read 0 0) = [
         S   | i
         #x,a  0
       ]
@@ -2971,7 +2971,7 @@
         <-#a,0 throttle 1
       }
       :#a,'*' dispatch 1
-      :(wait $f) assert 1
+      :assert (wait $f) = 1
       <-0
     }
     bin:0
@@ -2987,7 +2987,7 @@
         <-#a,'*' throttle 1
       }
       :#a,b,'*' dispatch 1
-      :(wait $f) assert 1
+      :assert (wait $f) = 1
       <-0
     }
     bin:0
@@ -2999,12 +2999,12 @@
         S | x
         #a  0
       ]
-      :(#a peek 2) assert false
+      :assert (#a peek 2) = false
       :write [
         S | x
         #a  1
       ]
-      :(#a peek 2) assert true
+      :assert (#a peek 2) = true
       <-0
     }
     bin:0
@@ -3060,11 +3060,11 @@
       :#x write {
         i:++
       }
-      :(#x gawk 1) assert [
+      :assert (#x gawk 1) = [
         S | i
         #x  0
       ]
-      :(#x dispatch 1) assert [
+      :assert (#x dispatch 1) = [
         S | i
         #x  0
       ]
@@ -3075,26 +3075,26 @@
   TestWritePoll:{
     skip:false
     src:{
-      :(#x poll 0) assert []
+      :assert (#x poll 0) = []
       :#x #x #x write {
         i:++ ++ ++
       }
-      :(#x poll 0) assert [
+      :assert (#x poll 0) = [
         S | i
         #x  0
         #x  1
         #x  2
       ]
-      :(#x poll 1) assert [
+      :assert (#x poll 1) = [
         S | i
         #x  1
         #x  2
       ]
-      :(#x poll 2) assert [
+      :assert (#x poll 2) = [
         S | i
         #x  2
       ]
-      :(#x poll 3) assert []
+      :assert (#x poll 3) = []
       <-0
     }
     bin:0
@@ -3109,7 +3109,7 @@
       :#x,z write {
         c:3
       }
-      :(#x,'*' snap 1) assert [
+      :assert (#x,'*' snap 1) = [
         S   | c
         #x,z  3
       ]
@@ -3123,7 +3123,7 @@
       :#x,y write {
         i:++
       }
-      :(#x,y snap -1) assert [
+      :assert (#x,y snap -1) = [
         S   | i
         #x,y  0
       ]
@@ -3232,21 +3232,21 @@
   TestPage:{
     skip:false
     src:{
-      :(#x page 0 2) assert []
+      :assert (#x page 0 2) = []
       :#x #x #x #x #x write {
         i:++ ++ ++ ++ ++
       }
-      :(#x page 0 2) assert [
+      :assert (#x page 0 2) = [
         S | i
         #x  0
         #x  1
       ]
-      :(#x page 1 2) assert [
+      :assert (#x page 1 2) = [
         S | i
         #x  2
         #x  3
       ]
-      :(#x page 2 2) assert [
+      :assert (#x page 2 2) = [
         S | i
         #x  4
       ]
@@ -3257,21 +3257,21 @@
   TestPageBackwards:{
     skip:false
     src:{
-      :(#x page 0 -2) assert []
+      :assert (#x page 0 -2) = []
       :#x #x #x #x #x write {
         i:++ ++ ++ ++ ++
       }
-      :(#x page 0 -2) assert [
+      :assert (#x page 0 -2) = [
         S | i
         #x  3
         #x  4
       ]
-      :(#x page 1 -2) assert [
+      :assert (#x page 1 -2) = [
         S | i
         #x  1
         #x  2
       ]
-      :(#x page 2 -2) assert [
+      :assert (#x page 2 -2) = [
         S | i
         #x  0
       ]
@@ -3282,18 +3282,18 @@
   TestSnap:{
     skip:false
     src:{
-      :(#s,'*' snap 0 -1) assert []
+      :assert (#s,'*' snap 0 -1) = []
       :#s,a write {
         i:++
       }
-      :(#s,'*' snap 0 -1) assert [
+      :assert (#s,'*' snap 0 -1) = [
         S   | i
         #s,a  0
       ]
       :#s,a #s,b write {
         i:++ ++
       }
-      :(#s,'*' snap 0 -1) assert [
+      :assert (#s,'*' snap 0 -1) = [
         S   | i
         #s,a  1
         #s,b  0
@@ -3320,7 +3320,7 @@
       :#s,d write {
         x:1000
       }
-      :(#s,'*' snap 0 -1) assert [
+      :assert (#s,'*' snap 0 -1) = [
         S   |   x
         #s,a    1
         #s,b   10
@@ -3343,7 +3343,7 @@
       :#s,a write {
         x:2
       }
-      :(#s,'*' snap 0 -1) assert [
+      :assert (#s,'*' snap 0 -1) = [
         S   | x
         #s,b 10
         #s,a  2
@@ -3364,7 +3364,7 @@
       :#s,a,0 write {
         x:2
       }
-      :(#s,'*' snap 0 -1) assert [
+      :assert (#s,'*' snap 0 -1) = [
         S     | x
         #s,b,0 10
         #s,a,0  2
@@ -3443,7 +3443,7 @@
       :#a write {
         x:1
       }
-      :(wait $f) assert [
+      :assert (wait $f) = [
         S | x
         #a  1
       ]
@@ -3466,7 +3466,7 @@
         S | x
         #a  1
       ]
-      :(wait $f) assert [
+      :assert (wait $f) = [
         S | x
         #a  1
       ]
@@ -3484,7 +3484,7 @@
       :#a write {
         x:1
       }
-      :(#a read 1) assert [
+      :assert (#a read 1) = [
         S | x
         #a  1
       ]
@@ -3504,7 +3504,7 @@
         S | x
         #a  1
       ]
-      :(#a read 1) assert [
+      :assert (#a read 1) = [
         S | x
         #a  1
       ]
@@ -3608,11 +3608,11 @@
         }
         <-wait 0
       }
-      :(first #x from dump $b0) assert [
+      :assert (first #x from dump $b0) = [
         S | i
         #x  0
       ]
-      :(first #y from dump $b1) assert [
+      :assert (first #y from dump $b1) = [
         S | i
         #y  0
       ]
@@ -4530,30 +4530,30 @@
         #b  2 20 200
         #c  3 30 300
       ]
-      :(#a select $u) assert [
+      :assert (#a select $u) = [
          G|S | x  y   z
          0 #a  1 10 100
       ]
-      :(#b select $u) assert [
+      :assert (#b select $u) = [
          G|S | x  y   z
          1 #b  2 20 200
       ]
-      :(#c select $u) assert [
+      :assert (#c select $u) = [
          G|S | x  y   z
          2 #c  3 30 300
       ]
-      :(#'*' select $u) assert [
+      :assert (#'*' select $u) = [
          G|S | x  y   z
          0 #a  1 10 100
          1 #b  2 20 200
          2 #c  3 30 300
       ]
-      :(#a #b select $u) assert [
+      :assert (#a #b select $u) = [
          G|S | x  y   z
          0 #a  1 10 100
          1 #b  2 20 200
       ]
-      :(#c #b select $u) assert [
+      :assert (#c #b select $u) = [
          G|S | x  y   z
          1 #b  2 20 200
          2 #c  3 30 300
@@ -4570,45 +4570,45 @@
         #a,y  2 20 200
         #b,z  3 30 300
       ]
-      :(#a select $u) assert []
-      :(#a,'*' select $u) assert [
+      :assert (#a select $u) = []
+      :assert (#a,'*' select $u) = [
          G|S   | x  y   z
          0 #a,x  1 10 100
          1 #a,y  2 20 200
       ]
-      :(#b,'*' select $u) assert [
+      :assert (#b,'*' select $u) = [
          G|S   | x  y   z
          2 #b,z  3 30 300
       ]
-      :(#b,z select $u) assert [
+      :assert (#b,z select $u) = [
          G|S   | x  y   z
          2 #b,z  3 30 300
       ]
-      :(#a,x select $u) assert [
+      :assert (#a,x select $u) = [
          G|S   | x  y   z
          0 #a,x  1 10 100
       ]
-      :(#a,x #b,z select $u) assert [
+      :assert (#a,x #b,z select $u) = [
          G|S   | x  y   z
          0 #a,x  1 10 100
          2 #b,z  3 30 300
       ]
-      :(#a,'*' #b,z select $u) assert [
+      :assert (#a,'*' #b,z select $u) = [
          G|S   | x  y   z
          0 #a,x  1 10 100
          1 #a,y  2 20 200
          2 #b,z  3 30 300
       ]
-      :(#b,z select $u) assert [
+      :assert (#b,z select $u) = [
          G|S   | x  y   z
          2 #b,z  3 30 300
       ]
-      :(#b,'*' select $u) assert [
+      :assert (#b,'*' select $u) = [
          G|S   | x  y   z
          2 #b,z  3 30 300
       ]
-      :(#b select $u) assert []
-      :(#b,'*' select $u) assert [
+      :assert (#b select $u) = []
+      :assert (#b,'*' select $u) = [
          G|S   | x  y   z
          2 #b,z  3 30 300
       ]
@@ -4624,24 +4624,24 @@
         #1,b  2 20 200
         #2,c  3 30 300
       ]
-      :(#1,a select $u) assert [
+      :assert (#1,a select $u) = [
          G|S   | x  y   z
          0 #1,a  1 10 100
       ]
-      :(#1,b select $u) assert [
+      :assert (#1,b select $u) = [
          G|S   | x  y   z
          1 #1,b  2 20 200
       ]
-      :(#2,c select $u) assert [
+      :assert (#2,c select $u) = [
          G|S   | x  y   z
          2 #2,c  3 30 300
       ]
-      :(#1,c select $u) assert []
-      :(#2,'*' select $u) assert [
+      :assert (#1,c select $u) = []
+      :assert (#2,'*' select $u) = [
          G|S   | x  y   z
          2 #2,c  3 30 300
       ]
-      :(#3,'*' select $u) assert []
+      :assert (#3,'*' select $u) = []
       <-0
     }
     bin:0
@@ -4654,22 +4654,22 @@
         #1,b,0  2 20 200
         #2,c,0  3 30 300
       ]
-      :(#3,'*' select $u) assert []
-      :(#2,'*' select $u) assert [
+      :assert (#3,'*' select $u) = []
+      :assert (#2,'*' select $u) = [
          G|S     | x  y   z
          2 #2,c,0  3 30 300
       ]
-      :(#1,'*' select $u) assert [
+      :assert (#1,'*' select $u) = [
          G|S     | x  y   z
          0 #1,a,0  1 10 100
          1 #1,b,0  2 20 200
       ]
-      :(#1,a,'*' select $u) assert [
+      :assert (#1,a,'*' select $u) = [
          G|S     | x  y   z
          0 #1,a,0  1 10 100
       ]
-      :(#2,b,'*' select $u) assert []
-      :(#1,b,'*' select $u) assert [
+      :assert (#2,b,'*' select $u) = []
+      :assert (#1,b,'*' select $u) = [
          G|S     | x  y   z
          1 #1,b,0  2 20 200
       ]
