@@ -24,7 +24,7 @@ namespace RCL.Test
     {
       DoEvalTest("not not true", "true");
     }
-    
+
     [Test]
     public void TestMinusProblem ()
     {
@@ -33,7 +33,7 @@ namespace RCL.Test
       //this purpose since this will confuse some people right off the bat.
       DoEvalTest("1-2", "-1");
     }
-    
+
     [Test]
     public void TestMeaninglessParensWithMultipleLiterals ()
     {
@@ -897,8 +897,7 @@ namespace RCL.Test
     [Test]
     public void TestRecursionTailCallInfinite()
     {
-      //This is not really what the return value of a fiber that throws and exception should be.
-      DoEvalTest ("{loop:{s:stack {} :1 assert $s.fiber :#x write {i:++} <-loop $R + 1} f:fiber {<-loop 0} :#x dispatch 100 :kill $f :try {:wait $f} <-0}", "0");
+      DoEvalTest ("{loop:{s:stack {} :assert 1 = $s.fiber :#x write {i:++} <-loop $R + 1} f:fiber {<-loop 0} :#x dispatch 100 :kill $f :try {:wait $f} <-0}", "0");
     }
 
     [Test]
@@ -924,7 +923,7 @@ namespace RCL.Test
     {
       //Hofstadter Female and Male sequences.
       //http://en.wikipedia.org/wiki/Hofstadter_sequence#Hofstadter_Female_and_Male_sequences
-      DoEvalTest ("{f:{<-($R == 0) switch {:1 :$R - m f $R - 1}} m:{<-($R == 0) switch {:0 :$R - f m $R - 1}} :(long $f each 0 to 10) assert 1 1 2 2 3 3 4 5 5 6 6 :(long $m each 0 to 10) assert 0 0 1 2 2 3 4 4 5 6 6 <-0}", "0");
+      DoEvalTest ("{f:{<-($R == 0) switch {:1 :$R - m f $R - 1}} m:{<-($R == 0) switch {:0 :$R - f m $R - 1}} :assert (long $f each 0 to 10) = 1 1 2 2 3 3 4 5 5 6 6 :assert (long $m each 0 to 10) = 0 0 1 2 2 3 4 4 5 6 6 <-0}", "0");
     }
 
     [Test]
@@ -1023,7 +1022,7 @@ namespace RCL.Test
     [Test]
     public void TestWriteRead ()
     {
-      DoEvalTest("{:#x write {a:1 b:2 c:3} :(#x read 0) assert [S|a b c #x 1 2 3] <-0}", "0");
+      DoEvalTest("{:#x write {a:1 b:2 c:3} :assert (#x read 0) = [S|a b c #x 1 2 3] <-0}", "0");
     }
 
     [Test]
@@ -1031,13 +1030,13 @@ namespace RCL.Test
     {
       //I added these tests because I found after adding bytes vectors they didn't work correctly
       //With read and write.
-      DoEvalTest ("{:#x write {a:\\x00 b:\\x01 c:\\x02} :(#x read 0) assert [S|a b c #x \\x00 \\x01 \\x02] <-0}", "0");
+      DoEvalTest ("{:#x write {a:\\x00 b:\\x01 c:\\x02} :assert (#x read 0) = [S|a b c #x \\x00 \\x01 \\x02] <-0}", "0");
     }
 
     [Test]
     public void TestWriteReadX2 ()
     {
-      DoEvalTest ("{:write [S|a b c #x \\x00 \\x01 \\x02] :(#x read 0) assert [S|a b c #x \\x00 \\x01 \\x02] <-0}", "0");
+      DoEvalTest ("{:write [S|a b c #x \\x00 \\x01 \\x02] :assert (#x read 0) = [S|a b c #x \\x00 \\x01 \\x02] <-0}", "0");
     }
 
     [Test]
@@ -1049,7 +1048,7 @@ namespace RCL.Test
     [Test]
     public void TestWriteReadDupSymbol()
     {
-      DoEvalTest ("{:#x write {i:++} :(#x #x read 0) assert [S|i #x 0] <-0}", "0");
+      DoEvalTest ("{:#x write {i:++} :assert (#x #x read 0) = [S|i #x 0] <-0}", "0");
     }
 
     [Test]
@@ -1128,103 +1127,103 @@ namespace RCL.Test
     [Test]
     public void TestWriteReadMultipleTimes()
     {
-      DoEvalTest("{:#x write {a:1 b:2 c:3} :(#x read 0) assert [S|a b c #x 1 2 3] :#x write {a:10 b:20 c:30} :(#x read 1) assert [S|a b c #x 10 20 30] <-0}", "0");
+      DoEvalTest("{:#x write {a:1 b:2 c:3} :assert (#x read 0) = [S|a b c #x 1 2 3] :#x write {a:10 b:20 c:30} :assert (#x read 1) = [S|a b c #x 10 20 30] <-0}", "0");
     }
 
     [Test]
     public void TestWriteReadMultipleSymbols()
     {
-      DoEvalTest("{:#s,0 #s,1 write {x:1 10} :#s,0 #s,1 write {x:2 20} :(#s,0 read 0) assert [S|x #s,0 1 #s,0 2] :(#s,1 read 0) assert [S|x #s,1 10 #s,1 20] <-0}", "0");
+      DoEvalTest("{:#s,0 #s,1 write {x:1 10} :#s,0 #s,1 write {x:2 20} :assert (#s,0 read 0) = [S|x #s,0 1 #s,0 2] :assert (#s,1 read 0) = [S|x #s,1 10 #s,1 20] <-0}", "0");
     }
 
     [Test]
     public void TestWriteReadDuplicates()
     {
-      DoEvalTest ("{:#s,1 #s,2 #s,3 write {x:10 20 30} :#s,2 #s,3 #s,1 write {x:20 35 10} :(#s,1 #s,2 #s,3 read 0) assert [S|x #s,1 10 #s,2 20 #s,3 30 #s,3 35] <-0}", "0");
+      DoEvalTest ("{:#s,1 #s,2 #s,3 write {x:10 20 30} :#s,2 #s,3 #s,1 write {x:20 35 10} :assert (#s,1 #s,2 #s,3 read 0) = [S|x #s,1 10 #s,2 20 #s,3 30 #s,3 35] <-0}", "0");
     }
 
     [Test]
     public void TestWriteReadCube()
     {
-      DoEvalTest ("{:write [S|x #s,1 10 #s,2 20 #s,3 30] :write [S|x #s,2 20 #s,3 35 #s,1 10] :(#s,1 #s,2 #s,3 read 0) assert [S|x #s,1 10l #s,2 20 #s,3 30 #s,3 35] <-0}", "0");
+      DoEvalTest ("{:write [S|x #s,1 10 #s,2 20 #s,3 30] :write [S|x #s,2 20 #s,3 35 #s,1 10] :assert (#s,1 #s,2 #s,3 read 0) = [S|x #s,1 10l #s,2 20 #s,3 30 #s,3 35] <-0}", "0");
     }
 
     [Test]
     public void TestWriteReadLimit()
     {
-      DoEvalTest ("{:write [S|x #1 10 #1 20] :(#1 read 0 1) assert [S|x #1 10] <-0}", "0");
+      DoEvalTest ("{:write [S|x #1 10 #1 20] :assert (#1 read 0 1) = [S|x #1 10] <-0}", "0");
     }
 
     [Test]
     public void TestWriteReadNegLimit()
     {
-      DoEvalTest ("{:write [S|x #1 10 #1 20] :(#1 read 0 -1) assert [S|x #1 20] <-0}", "0");
+      DoEvalTest ("{:write [S|x #1 10 #1 20] :assert (#1 read 0 -1) = [S|x #1 20] <-0}", "0");
     }
 
     [Test]
     public void TestWriteReadSeesDispatchedRows()
     {
-      DoEvalTest ("{:write [S|x #1 10] :#1 dispatch 1 :(#1 read 0) assert [S|x #1 10] <-0}", "0");
+      DoEvalTest ("{:write [S|x #1 10] :#1 dispatch 1 :assert (#1 read 0) = [S|x #1 10] <-0}", "0");
     }
 
     [Test]
     public void TestWriteWithMonadicTrace()
     {
-      DoEvalTest("{:#a write {x:1 y:2} :#a write {y:2 z:3} :(trace #a) assert [S|x y z #a 1 2 -- #a -- -- 3] <-0}", "0");
+      DoEvalTest("{:#a write {x:1 y:2} :#a write {y:2 z:3} :assert (trace #a) = [S|x y z #a 1 2 -- #a -- -- 3] <-0}", "0");
     }
 
     [Test]
     public void TestForceWithMonadicTrace ()
     {
-      DoEvalTest ("{:#a force {x:1 y:2} :#a force {y:2 z:3} :(trace #a) assert [S|x y z #a 1 2 -- #a -- 2 3] <-0}", "0");
+      DoEvalTest ("{:#a force {x:1 y:2} :#a force {y:2 z:3} :assert (trace #a) = [S|x y z #a 1 2 -- #a -- 2 3] <-0}", "0");
     }
 
     [Test]
     public void TestForceWithDyadicTrace ()
     {
-      DoEvalTest ("{:#a force {x:1 y:2} :#a force {y:2 z:3} :(1 0 trace #a) assert [S|y z #a 2 3] <-0}", "0");
+      DoEvalTest ("{:#a force {x:1 y:2} :#a force {y:2 z:3} :assert (1 0 trace #a) = [S|y z #a 2 3] <-0}", "0");
     }
 
     [Test]
     public void TestForceCubeDyadicTrace ()
     {
-      DoEvalTest ("{:force [S|x y #a 1 2] :force [S|y z #a 2 3] :(1 0 trace #a) assert [S|y z #a 2 3] <-0}", "0");
+      DoEvalTest ("{:force [S|x y #a 1 2] :force [S|y z #a 2 3] :assert (1 0 trace #a) = [S|y z #a 2 3] <-0}", "0");
     }
 
     [Test]
     public void TestForceCubeMonadicTrace ()
     {
-      DoEvalTest ("{:force [S|x y #a 1 2] :force [S|y z #a 2 3] :(trace #a) assert [S|x y z #a 1 2 -- #a -- 2 3] <-0}", "0");
+      DoEvalTest ("{:force [S|x y #a 1 2] :force [S|y z #a 2 3] :assert (trace #a) = [S|x y z #a 1 2 -- #a -- 2 3] <-0}", "0");
     }
 
     [Test]
     public void TestWriteReadSuspended()
     {
-      DoEvalTest ("{reader:fiber {<-#x read 0} :#x #x write {a:1 10 b:2 20 c:3 30} :(wait $reader) assert [S|a b c #x 1 2 3 #x 10 20 30] <-0}", "0");
+      DoEvalTest ("{reader:fiber {<-#x read 0} :#x #x write {a:1 10 b:2 20 c:3 30} :assert (wait $reader) = [S|a b c #x 1 2 3 #x 10 20 30] <-0}", "0");
     }
 
     [Test]
     public void TestWriteReadSuspendedWildcard()
     {
-      DoEvalTest ("{reader:fiber {<-#x,* read 0} :#x,0 #x,1 write {a:1 10 b:2 20 c:3 30} :(wait $reader) assert [S|a b c #x,0 1 2 3 #x,1 10 20 30] <-0}", "0");
+      DoEvalTest ("{reader:fiber {<-#x,* read 0} :#x,0 #x,1 write {a:1 10 b:2 20 c:3 30} :assert (wait $reader) = [S|a b c #x,0 1 2 3 #x,1 10 20 30] <-0}", "0");
     }
 
     [Test]
     public void TestWriteReadSuspendedLimit()
     {
-      DoEvalTest ("{reader:fiber {<-#x read 0 3} :#x #x write {a:1 10 b:2 20 c:3 30} :#x write {a:100 b:200 c:300} :(wait $reader) assert [S|a b c #x 1 2 3 #x 10 20 30 #x 100 200 300] <-0}", "0");
+      DoEvalTest ("{reader:fiber {<-#x read 0 3} :#x #x write {a:1 10 b:2 20 c:3 30} :#x write {a:100 b:200 c:300} :assert (wait $reader) = [S|a b c #x 1 2 3 #x 10 20 30 #x 100 200 300] <-0}", "0");
     }
 
     [Test]
     public void TestWriteDispatchSingleSymbol()
     {
-      DoEvalTest ("{:write [E|S|x 0 #a 1 1 #a 2 2 #a 3] :(#a dispatch 1) assert [G|E|S|x 0 0 #a 1] :(#a dispatch 2) assert [G|E|S|x 1 1 #a 2 2 2 #a 3] <-0}", "0");
+      DoEvalTest ("{:write [E|S|x 0 #a 1 1 #a 2 2 #a 3] :assert (#a dispatch 1) = [G|E|S|x 0 0 #a 1] :assert (#a dispatch 2) = [G|E|S|x 1 1 #a 2 2 2 #a 3] <-0}", "0");
     }
 
     [Test]
     public void TestWriteDispatchSingleSymbolSuspended()
     {
-      DoEvalTest ("{reader:fiber {<-#x dispatch 1} :#x #x write {a:1 10 b:2 20 c:3 30} :(wait $reader) assert [S|a b c #x 1 2 3] <-0}", "0");
+      DoEvalTest ("{reader:fiber {<-#x dispatch 1} :#x #x write {a:1 10 b:2 20 c:3 30} :assert (wait $reader) = [S|a b c #x 1 2 3] <-0}", "0");
     }
 
     [Test]
@@ -1232,7 +1231,7 @@ namespace RCL.Test
     {
       //This test could pass by accident if the second dispatch doesn't happen until after the second write.
       //This could be fixed with a gate operator that would let you wait on a signal from another fiber.
-      DoEvalTest ("{:#x write {a:1 b:2 c:3} r0:#x dispatch 1 r1:fiber {<-#x dispatch 1} :#x write {a:10 b:20 c:30} :(wait $r1) assert [S|a b c #x 10 20 30] <-0}", "0");
+      DoEvalTest ("{:#x write {a:1 b:2 c:3} r0:#x dispatch 1 r1:fiber {<-#x dispatch 1} :#x write {a:10 b:20 c:30} :assert (wait $r1) = [S|a b c #x 10 20 30] <-0}", "0");
     }
 
     [Test]
@@ -1240,37 +1239,37 @@ namespace RCL.Test
     {
       //dispatch should not yield until the second write.
       //It has to run twice to expose the flaw in the program.
-      DoEvalTest ("{:#s,x write {a:0 b:1 c:2} reader:fiber {<-#s,x #s,y dispatch 1} :sleep 50 :#s,y write {a:10 b:20 c:30} :(wait $reader) assert [S|a b c #s,x 0 1 2 #s,y 10 20 30] :#s,x write {a:1 b:2 c:3} reader:fiber {<-#s,x #s,y dispatch 1} :sleep 50 :#s,y write {a:11 b:21 c:31} :(wait $reader) assert [S|a b c #s,x 1 2 3 #s,y 11 21 31] <-0}", "0");
+      DoEvalTest ("{:#s,x write {a:0 b:1 c:2} reader:fiber {<-#s,x #s,y dispatch 1} :sleep 50 :#s,y write {a:10 b:20 c:30} :assert (wait $reader) = [S|a b c #s,x 0 1 2 #s,y 10 20 30] :#s,x write {a:1 b:2 c:3} reader:fiber {<-#s,x #s,y dispatch 1} :sleep 50 :#s,y write {a:11 b:21 c:31} :assert (wait $reader) = [S|a b c #s,x 1 2 3 #s,y 11 21 31] <-0}", "0");
     }
 
     [Test]
     public void TestWriteDispatchWildcard()
     {
-      DoEvalTest ("{reader:fiber {<-#x,* dispatch 1} :#x,0 #x,1 write {a:1 10 b:2 20 c:3 30} :(wait $reader) assert [S|a b c #x,0 1 2 3] <-0}", "0");
+      DoEvalTest ("{reader:fiber {<-#x,* dispatch 1} :#x,0 #x,1 write {a:1 10 b:2 20 c:3 30} :assert (wait $reader) = [S|a b c #x,0 1 2 3] <-0}", "0");
     }
 
     [Test]
     public void TestWriteDispatchWildcard1 ()
     {
-      DoEvalTest ("{reader:fiber {<-#x dispatch 1} :#x,0 #x,1 #x write {a:1 10 100 b:2 20 200 c:3 30 300} :(wait $reader) assert [S|a b c #x 100 200 300] <-0}", "0");
+      DoEvalTest ("{reader:fiber {<-#x dispatch 1} :#x,0 #x,1 #x write {a:1 10 100 b:2 20 200 c:3 30 300} :assert (wait $reader) = [S|a b c #x 100 200 300] <-0}", "0");
     }
 
     [Test]
     public void TestWriteDispatchWildcard2()
     {
-      DoEvalTest ("{reader:fiber {<-#x dispatch 1} :#x,0 #x,1 write {a:1 10 b:2 20 c:3 30} :#x write {d:4} :(wait $reader) assert [S|d #x 4] <-0}", "0");
+      DoEvalTest ("{reader:fiber {<-#x dispatch 1} :#x,0 #x,1 write {a:1 10 b:2 20 c:3 30} :#x write {d:4} :assert (wait $reader) = [S|d #x 4] <-0}", "0");
     }
 
     [Test]
     public void TestWriteDispatchAggregateSymbols ()
     {
-      DoEvalTest ("{reader:fiber {<-#p,* dispatch 3} :#p,s,a #p,s,b #p,s write {x:2 3 5 y:4 5 9} :(wait $reader) assert [S|x y #p,s,a 2 4 #p,s,b 3 5 #p,s 5 9] <-0}", "0");
+      DoEvalTest ("{reader:fiber {<-#p,* dispatch 3} :#p,s,a #p,s,b #p,s write {x:2 3 5 y:4 5 9} :assert (wait $reader) = [S|x y #p,s,a 2 4 #p,s,b 3 5 #p,s 5 9] <-0}", "0");
     }
 
     [Test]
     public void TestWriteDispatchWildcardMultipleTimes()
     {
-      DoEvalTest ("{:#x,0 #x,1 write {a:1 10} :(#x,* dispatch 1) assert [S|a #x,0 1] :(#x,* dispatch 1) assert [S|a #x,1 10] <-0}", "0");
+      DoEvalTest ("{:#x,0 #x,1 write {a:1 10} :assert (#x,* dispatch 1) = [S|a #x,0 1] :assert (#x,* dispatch 1) = [S|a #x,1 10] <-0}", "0");
     }
 
     [Test]
@@ -1294,13 +1293,13 @@ namespace RCL.Test
     [Test]
     public void TestWriteDispatchZero()
     {
-      DoEvalTest ("{f:fiber {<-#x dispatch 0} :sleep 20 :assert not done $f :#x #x #x write {i:++ ++ ++} :(wait $f) assert [S|i #x 0 #x 1 #x 2] f1:fiber {<-#x #y dispatch 0} :assert not done $f1 :#x write {i:++} :(wait $f1) assert [S|i #x 3] <-0}", "0");
+      DoEvalTest ("{f:fiber {<-#x dispatch 0} :sleep 20 :assert not done $f :#x #x #x write {i:++ ++ ++} :assert (wait $f) = [S|i #x 0 #x 1 #x 2] f1:fiber {<-#x #y dispatch 0} :assert not done $f1 :#x write {i:++} :assert (wait $f1) = [S|i #x 3] <-0}", "0");
     }
 
     [Test]
     public void TestWriteDispatchZeroWithDups0()
     {
-      DoEvalTest ("{:write [S|a #x 10 #x 10] :(#x dispatch 0) assert [S|a #x 10] <-0}", "0");
+      DoEvalTest ("{:write [S|a #x 10 #x 10] :assert (#x dispatch 0) = [S|a #x 10] <-0}", "0");
     }
 
     [Test]
@@ -1308,7 +1307,7 @@ namespace RCL.Test
     {
       //When writing cubes to the timeline, axis lines were being created even for complete dups, and this was
       //interfering with the counts for dispatch.
-      DoEvalTest ("{:write cube {S:#x #x a:10 10} :(#x dispatch 0) assert [S|a #x 10] :(#x peek 0) assert false <-0}", "0");
+      DoEvalTest ("{:write cube {S:#x #x a:10 10} :assert (#x dispatch 0) = [S|a #x 10] :assert (#x peek 0) = false <-0}", "0");
     }
 
     [Test]
@@ -1326,37 +1325,37 @@ namespace RCL.Test
     [Test]
     public void TestWriteGawkZero()
     {
-      DoEvalTest ("{f:fiber {<-#x #y gawk 0} :assert not done $f :#x write {i:++} :(wait $f) assert [S|i #x 0] <-0}", "0");
+      DoEvalTest ("{f:fiber {<-#x #y gawk 0} :assert not done $f :#x write {i:++} :assert (wait $f) = [S|i #x 0] <-0}", "0");
     }
 
     [Test]
     public void TestWriteGawkConcrete()
     {
-      DoEvalTest ("{f:fiber {<-#x gawk 0} :#x,y write {i:++} :#x write {i:++} :(wait $f) assert [S|i #x 0] <-0}", "0");
+      DoEvalTest ("{f:fiber {<-#x gawk 0} :#x,y write {i:++} :#x write {i:++} :assert (wait $f) = [S|i #x 0] <-0}", "0");
     }
 
     [Test]
     public void TestWriteReadFirstNull()
     {
-      DoEvalTest ("{:write [S|a b #x 1 -- #y 10 2] :(#x dispatch 1) assert [S|a #x 1] <-0}", "0");
+      DoEvalTest ("{:write [S|a b #x 1 -- #y 10 2] :assert (#x dispatch 1) = [S|a #x 1] <-0}", "0");
     }
 
     [Test]
     public void TestWriteReadIncr()
     {
-      DoEvalTest ("{:#x write {i:++} :(#x dispatch 1) assert [S|i #x 0] :#x write {i:++} :(#x dispatch 1) assert [S|i #x 1] <-0}", "0");
+      DoEvalTest ("{:#x write {i:++} :assert (#x dispatch 1) = [S|i #x 0] :#x write {i:++} :assert (#x dispatch 1) = [S|i #x 1] <-0}", "0");
     }
 
     [Test]
     public void TestWriteReadAll()
     {
-      DoEvalTest ("{:write [S|x #s,a 0 #s,b 1 #s,c 2] :(#s,* read 0) assert [S|x #s,a 0 #s,b 1 #s,c 2] :(#s,* read 1) assert [S|x #s,b 1 #s,c 2] :(#s,* read 2) assert [S|x #s,c 2] <-0}", "0");
+      DoEvalTest ("{:write [S|x #s,a 0 #s,b 1 #s,c 2] :assert (#s,* read 0) = [S|x #s,a 0 #s,b 1 #s,c 2] :assert (#s,* read 1) = [S|x #s,b 1 #s,c 2] :assert (#s,* read 2) = [S|x #s,c 2] <-0}", "0");
     }
 
     [Test]
     public void TestWriteReadAllMissingSymbol()
     {
-      DoEvalTest ("{:#x,a write {i:++} :(#x,a #x,b read 0 0) assert [S|i #x,a 0] <-0}", "0");
+      DoEvalTest ("{:#x,a write {i:++} :assert (#x,a #x,b read 0 0) = [S|i #x,a 0] <-0}", "0");
     }
 
     [Test]
@@ -1399,19 +1398,19 @@ namespace RCL.Test
     [Test]
     public void TestWriteThrottleWithDispatchWild()
     {
-      DoEvalTest ("{:write [S|x #a,0 0] f:fiber {<-#a,0 throttle 1} :#a,* dispatch 1 :(wait $f) assert 1 <-0}", "0");
+      DoEvalTest ("{:write [S|x #a,0 0] f:fiber {<-#a,0 throttle 1} :#a,* dispatch 1 :assert (wait $f) = 1 <-0}", "0");
     }
 
     [Test]
     public void TestWriteThrottleWithDispatchWild1()
     {
-      DoEvalTest ("{:write [S|x #a,b,0 0] f:fiber {<-#a,* throttle 1} :#a,b,* dispatch 1 :(wait $f) assert 1 <-0}", "0");
+      DoEvalTest ("{:write [S|x #a,b,0 0] f:fiber {<-#a,* throttle 1} :#a,b,* dispatch 1 :assert (wait $f) = 1 <-0}", "0");
     }
 
     [Test]
     public void TestWritePeek()
     {
-      DoEvalTest ("{:write [S|x #a 0] :(#a peek 2) assert false :write [S|x #a 1] :(#a peek 2) assert true <-0}", "0");
+      DoEvalTest ("{:write [S|x #a 0] :assert (#a peek 2) = false :write [S|x #a 1] :assert (#a peek 2) = true <-0}", "0");
     }
 
     [Test]
@@ -1435,25 +1434,25 @@ namespace RCL.Test
     [Test]
     public void TestWriteGawkDoesNotDispatch()
     {
-      DoEvalTest ("{:#x write {i:++} :(#x gawk 1) assert [S|i #x 0] :(#x dispatch 1) assert [S|i #x 0] <-0}", "0");
+      DoEvalTest ("{:#x write {i:++} :assert (#x gawk 1) = [S|i #x 0] :assert (#x dispatch 1) = [S|i #x 0] <-0}", "0");
     }
 
     [Test]
     public void TestWritePoll()
     {
-      DoEvalTest ("{:(#x poll 0) assert [] :#x #x #x write {i:++ ++ ++} :(#x poll 0) assert [S|i #x 0 #x 1 #x 2] :(#x poll 1) assert [S|i #x 1 #x 2] :(#x poll 2) assert [S|i #x 2] :(#x poll 3) assert [] <-0}", "0");
+      DoEvalTest ("{:assert (#x poll 0) = [] :#x #x #x write {i:++ ++ ++} :assert (#x poll 0) = [S|i #x 0 #x 1 #x 2] :assert (#x poll 1) = [S|i #x 1 #x 2] :assert (#x poll 2) = [S|i #x 2] :assert (#x poll 3) = [] <-0}", "0");
     }
 
     [Test]
     public void TestWriteSnapColumnRemoval ()
     {
-      DoEvalTest ("{:#x,y write {a:1 b:2} :#x,z write {c:3} :(#x,* snap 1) assert [S|c #x,z 3] <-0}", "0");
+      DoEvalTest ("{:#x,y write {a:1 b:2} :#x,z write {c:3} :assert (#x,* snap 1) = [S|c #x,z 3] <-0}", "0");
     }
 
     [Test]
     public void TestWriteSnapConcrete ()
     {
-      DoEvalTest ("{:#x,y write {i:++} :(#x,y snap -1) assert [S|i #x,y 0] <-0}", "0");
+      DoEvalTest ("{:#x,y write {i:++} :assert (#x,y snap -1) = [S|i #x,y 0] <-0}", "0");
     }
 
     [Test]
@@ -1495,38 +1494,38 @@ namespace RCL.Test
     [Test]
     public void TestPage ()
     {
-      DoEvalTest ("{:(#x page 0 2) assert [] :#x #x #x #x #x write {i:++ ++ ++ ++ ++} :(#x page 0 2) assert [S|i #x 0 #x 1] :(#x page 1 2) assert [S|i #x 2 #x 3] :(#x page 2 2) assert [S|i #x 4] <-0}", "0");
+      DoEvalTest ("{:assert (#x page 0 2) = [] :#x #x #x #x #x write {i:++ ++ ++ ++ ++} :assert (#x page 0 2) = [S|i #x 0 #x 1] :assert (#x page 1 2) = [S|i #x 2 #x 3] :assert (#x page 2 2) = [S|i #x 4] <-0}", "0");
     }
 
     [Test]
     public void TestPageBackwards ()
     {
-      DoEvalTest ("{:(#x page 0 -2) assert [] :#x #x #x #x #x write {i:++ ++ ++ ++ ++} :(#x page 0 -2) assert [S|i #x 3 #x 4] :(#x page 1 -2) assert [S|i #x 1 #x 2] :(#x page 2 -2) assert [S|i #x 0] <-0}", "0");
+      DoEvalTest ("{:assert (#x page 0 -2) = [] :#x #x #x #x #x write {i:++ ++ ++ ++ ++} :assert (#x page 0 -2) = [S|i #x 3 #x 4] :assert (#x page 1 -2) = [S|i #x 1 #x 2] :assert (#x page 2 -2) = [S|i #x 0] <-0}", "0");
     }
 
     [Test]
     public void TestSnap ()
     {
-      DoEvalTest ("{:(#s,* snap 0 -1) assert [] :#s,a write {i:++} :(#s,* snap 0 -1) assert [S|i #s,a 0] :#s,a #s,b write {i:++ ++} :(#s,* snap 0 -1) assert [S|i #s,a 1 #s,b 0] <-0}", "0");
+      DoEvalTest ("{:assert (#s,* snap 0 -1) = [] :#s,a write {i:++} :assert (#s,* snap 0 -1) = [S|i #s,a 0] :#s,a #s,b write {i:++ ++} :assert (#s,* snap 0 -1) = [S|i #s,a 1 #s,b 0] <-0}", "0");
     }
 
     [Test]
     public void TestSnapDups ()
     {
-      DoEvalTest ("{:#s,a write {x:1} :#s,b write {x:10} :#s,c write {x:100} :#s,c write {x:100} :#s,d write {x:1000} :(#s,* snap 0 -1) assert [S|x #s,a 1 #s,b 10 #s,c 100 #s,d 1000] <-0}", "0");
-      //DoEvalTest ("{:#s,a write {x:1l y:10l z:100l} :#s,b write {x:2l y:20l z:200l} :#s,c write {x:3l y:30l z:300l} :#s,d write {x:4l y:40l z:400l} :#s,c write {x:3l y:30l z:300l} :(#s snap 0 -1l) assert [S|x y z #s,a 1l 10l 100l #s,b 2l 20l 200l #s,c 3l 30l 300l #s,d 4l 40l 400l] <-0l}", "0l");
+      DoEvalTest ("{:#s,a write {x:1} :#s,b write {x:10} :#s,c write {x:100} :#s,c write {x:100} :#s,d write {x:1000} :assert (#s,* snap 0 -1) = [S|x #s,a 1 #s,b 10 #s,c 100 #s,d 1000] <-0}", "0");
+      //DoEvalTest ("{:#s,a write {x:1l y:10l z:100l} :#s,b write {x:2l y:20l z:200l} :#s,c write {x:3l y:30l z:300l} :#s,d write {x:4l y:40l z:400l} :#s,c write {x:3l y:30l z:300l} :assert (#s snap 0 -1l) = [S|x y z #s,a 1l 10l 100l #s,b 2l 20l 200l #s,c 3l 30l 300l #s,d 4l 40l 400l] <-0l}", "0l");
     }
 
     [Test]
     public void TestSnapChanges1Level ()
     {
-      DoEvalTest ("{:#s,a write {x:1} :#s,b write {x:10} :#s,a write {x:2} :(#s,* snap 0 -1) assert [S|x #s,b 10 #s,a 2] <-0}", "0");
+      DoEvalTest ("{:#s,a write {x:1} :#s,b write {x:10} :#s,a write {x:2} :assert (#s,* snap 0 -1) = [S|x #s,b 10 #s,a 2] <-0}", "0");
     }
 
     [Test]
     public void TestSnapChanges2Level ()
     {
-      DoEvalTest ("{:#s,a,0 write {x:1} :#s,b,0 write {x:10} :#s,a,0 write {x:2} :(#s,* snap 0 -1) assert [S|x #s,b,0 10 #s,a,0 2] <-0}", "0");
+      DoEvalTest ("{:#s,a,0 write {x:1} :#s,b,0 write {x:10} :#s,a,0 write {x:2} :assert (#s,* snap 0 -1) = [S|x #s,b,0 10 #s,a,0 2] <-0}", "0");
     }
 
     [Test]
@@ -1550,25 +1549,25 @@ namespace RCL.Test
     [Test]
     public void TestWriteClearWriteK ()
     {
-      DoEvalTest ("{f:fiber {<-#a read 1} :#a write {x:0} :clear #a :#a write {x:1} :(wait $f) assert [S|x #a 1] <-0}", "0");
+      DoEvalTest ("{f:fiber {<-#a read 1} :#a write {x:0} :clear #a :#a write {x:1} :assert (wait $f) = [S|x #a 1] <-0}", "0");
     }
 
     [Test]
     public void TestWriteClearWriteU ()
     {
-      DoEvalTest ("{f:fiber {<-#a read 1} :write [S|x #a 0] :clear #a :write [S|x #a 1] :(wait $f) assert [S|x #a 1] <-0}", "0");
+      DoEvalTest ("{f:fiber {<-#a read 1} :write [S|x #a 0] :clear #a :write [S|x #a 1] :assert (wait $f) = [S|x #a 1] <-0}", "0");
     }
 
     [Test]
     public void TestWriteClearWriteSyncK ()
     {
-      DoEvalTest ("{:#a write {x:0} :clear #a :#a write {x:1} :(#a read 1) assert [S|x #a 1] <-0}", "0");
+      DoEvalTest ("{:#a write {x:0} :clear #a :#a write {x:1} :assert (#a read 1) = [S|x #a 1] <-0}", "0");
     }
 
     [Test]
     public void TestWriteClearWriteSyncU ()
     {
-      DoEvalTest ("{:write [S|x #a 0] :clear #a :write [S|x #a 1] :(#a read 1) assert [S|x #a 1] <-0}", "0");
+      DoEvalTest ("{:write [S|x #a 0] :clear #a :write [S|x #a 1] :assert (#a read 1) = [S|x #a 1] <-0}", "0");
     }
 
     [Test]
@@ -1646,7 +1645,7 @@ namespace RCL.Test
     [Test]
     public void TestBot ()
     {
-      DoEvalTest ("{b0:bot {:#x write {i:++} <-wait 0} b1:bot {:#y write {i:++} <-wait 0} :(first #x from dump $b0) assert [S|i #x 0] :(first #y from dump $b1) assert [S|i #y 0] <-0}", "0");
+      DoEvalTest ("{b0:bot {:#x write {i:++} <-wait 0} b1:bot {:#y write {i:++} <-wait 0} :assert (first #x from dump $b0) = [S|i #x 0] :assert (first #y from dump $b1) = [S|i #y 0] <-0}", "0");
     }
 
     [Test]
@@ -2190,7 +2189,7 @@ namespace RCL.Test
     [Test]
     public void TestMonoSelfExecWithExit ()
     {
-      DoEvalTest ("{status:unwrap #status from try {:\"exit.rcl\" save #pretty format {go:exit 21} exe:(codebase {}) + \"/rcl.exe\" <-exec \"mono --debug \" + $exe + \" --program=exit.rcl --action=go\"} :$status assert 21 <-0}", "0");
+      DoEvalTest ("{status:unwrap #status from try {:\"exit.rcl\" save #pretty format {go:exit 21} exe:(codebase {}) + \"/rcl.exe\" <-exec \"mono --debug \" + $exe + \" --program=exit.rcl --action=go\"} :assert $status = 21 <-0}", "0");
     }
 #endif
 

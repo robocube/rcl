@@ -2430,13 +2430,13 @@ namespace RCL.Test
     [Test]
     public void TestTryFailAssert ()
     {
-      DoTest ("#status from try {<-#x assert #y}", "{status:1}");
+      DoTest ("#status from try {<-assert #x = #y}", "{status:1}");
     }
 
     [Test]
     public void TestTryOk ()
     {
-      DoTest ("#status #data from try {<-#x assert #x}", "{status:0 data:true}");
+      DoTest ("#status #data from try {<-assert #x = #x}", "{status:0 data:true}");
     }
 
     [Test]
@@ -2472,7 +2472,7 @@ namespace RCL.Test
     [Test]
     public void TestTryAsync0 ()
     {
-      DoTest ("{b:bot {<-try {<-#x assert #y}} <-0 < $b}", "true");
+      DoTest ("{b:bot {<-try {<-assert #x = #y}} <-0 < $b}", "true");
     }
 
     [Test]
@@ -2480,13 +2480,13 @@ namespace RCL.Test
     {
       //The bot operator would continue from the exception and print twice.
       //This is not a good test because we can't check to see whether it printed once or twice.
-      DoTest ("{b:bot {<-try {<-#x assert #y}} :print \"async try\" <-#status from wait $b}", "{status:1}");
+      DoTest ("{b:bot {<-try {<-assert #x = #y}} :print \"async try\" <-#status from wait $b}", "{status:1}");
     }
 
     [Test]
     public void TestTryAsync2 ()
     {
-      DoTest ("{b:bot {<-try {<-#x assert #x}} <-#status from wait $b}", "{status:0}");
+      DoTest ("{b:bot {<-try {<-assert #x = #x}} <-#status from wait $b}", "{status:0}");
     }
 
     [Test]

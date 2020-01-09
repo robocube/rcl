@@ -2507,7 +2507,7 @@ namespace RCL.Test
         "a" #u
       ]
       result:$left join $right
-      :(colofs $result.key) assert "a" "b" "c" "d" "e"
+      :assert (colofs $result.key) = "a" "b" "c" "d" "e"
     }
     */
 
