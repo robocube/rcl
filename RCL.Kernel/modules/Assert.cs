@@ -66,6 +66,7 @@ namespace RCL.Kernel
       runner.Yield (closure, new RCBoolean (true));
     }
 
+    /*
     [RCVerb ("assert")]
     public void EvalAssert (RCRunner runner, RCClosure closure, object left, object right)
     {
@@ -77,7 +78,7 @@ namespace RCL.Kernel
       }
       runner.Yield (closure, new RCBoolean (true));
     }
-
+    */
 
     [RCVerb ("fail")]
     public void EvalFail (RCRunner runner, RCClosure closure, RCLong left, RCString right)
