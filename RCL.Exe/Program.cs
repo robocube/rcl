@@ -129,6 +129,12 @@ namespace RCL.Exe
           RCSystem.Log.Record (0, 0, "runner", 0, "fatal", ex);
           Environment.Exit (1);
         }
+        catch (RCLSyntaxException ex)
+        {
+          //Program file has bad syntax
+          RCSystem.Log.Record (0, 0, "runner", 0, "fatal", ex);
+          Environment.Exit (2);
+        }
         catch (Exception ex)
         {
           // For all other exceptions keep the process open unless instructed to --exit.

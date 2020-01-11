@@ -66,20 +66,6 @@ namespace RCL.Kernel
       runner.Yield (closure, new RCBoolean (true));
     }
 
-    /*
-    [RCVerb ("assert")]
-    public void EvalAssert (RCRunner runner, RCClosure closure, object left, object right)
-    {
-      if (!left.Equals (right))
-      {
-        throw new RCException (closure,
-                               RCErrors.Assert, "" + "Expected: " + right.ToString () +
-                                  ", Actual: " + left.ToString ());
-      }
-      runner.Yield (closure, new RCBoolean (true));
-    }
-    */
-
     [RCVerb ("fail")]
     public void EvalFail (RCRunner runner, RCClosure closure, RCLong left, RCString right)
     {
