@@ -46,12 +46,12 @@ namespace RCL.Core
       int escapeCount = RCTemplate.CalculateReportTemplateEscapeLevel (message);
       if (RCSystem.Args.OutputEnum == RCOutput.Test)
       {
-        wrapper = new RCBlock (wrapper, "error", ":", new RCString ("<<Operation failed: see data for details>>\n"));
+        //wrapper = new RCBlock (wrapper, "error", ":", new RCString ("<<Operation failed: see data for details>>\n"));
         wrapper = new RCBlock (wrapper, "data", ":", new RCTemplate (report, escapeCount, true));
       }
       else
       {
-        wrapper = new RCBlock (wrapper, "error", ":", new RCString ("<<Operation failed: see data for details>>\n"));
+        //wrapper = new RCBlock (wrapper, "error", ":", new RCString ("<<Operation failed: see data for details>>\n"));
         wrapper = new RCBlock (wrapper, "data", ":", new RCTemplate (report, escapeCount, true));
       }
       result = wrapper;
