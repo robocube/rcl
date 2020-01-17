@@ -147,6 +147,22 @@ namespace RCL.Core
       runner.Yield (closure, new RCString (result));
     }
 
+    [RCVerb ("shortid")]
+    public void EvalShortGuid (RCRunner runner, RCClosure closure, RCLong right)
+    {
+      int guids = (int) right[0];
+      RCArray<string> result = new RCArray<string> (guids);
+      for (int i = 0; i < guids; ++i)
+      {
+        string base64Guid = Convert.ToBase64String (Guid.NewGuid ().ToByteArray ());
+        base64Guid = base64Guid.Substring (0, 22);
+        base64Guid = base64Guid.Replace ('+', '-');
+        base64Guid = base64Guid.Replace ('/', '_');
+        result.Write (base64Guid);
+      }
+      runner.Yield (closure, new RCString (result));
+    }
+
     [RCVerb ("ismono")]
     public void IsMono (RCRunner runner, RCClosure closure, RCBlock right)
     {
@@ -262,7 +278,7 @@ namespace RCL.Core
         throw new RCException (closure, RCErrors.File, ex.Message);
       }
 
-      RCSystem.Log.Record (closure, "save", Interlocked.Increment (ref m_handle), path, lines);
+      RCSystem.Log.Record (closure, "save", Interlocked.Increment (ref m_handle), path, new RCString (lines));
       //ideally this should return a symbol right?
       runner.Yield (closure, new RCString (path));
     }
