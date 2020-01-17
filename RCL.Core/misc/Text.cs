@@ -398,6 +398,13 @@ namespace RCL.Core
       runner.Yield (closure, new RCByte (result));
     }
 
+    [RCVerb ("base64")]
+    public void EvalBase64 (RCRunner runner, RCClosure closure, RCString right)
+    {
+      string result = Convert.ToBase64String (Encoding.UTF8.GetBytes (right[0]));
+      runner.Yield (closure, new RCString (result));
+    }
+
     [RCVerb ("resplit")]
     public void EvalResplit (RCRunner runner, RCClosure closure, RCString left, RCString right)
     {
