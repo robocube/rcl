@@ -777,7 +777,7 @@ namespace RCL.Kernel
         next = Fiber.FiberClosure (bot, 0, closure, right);
       }
       bot.ChangeFiberState (0, "start");
-      RCSystem.Log.Record (next, "fiber", 0, "start", right);
+      RCSystem.Log.Record (next, "fiber", 0, "start", "");
       Continue (null, next);
       return id;
     }
