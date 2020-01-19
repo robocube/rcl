@@ -754,7 +754,7 @@ namespace RCL.Kernel
       {
         result = closure.Code.Finish (runner, closure, result);
         bot.ChangeFiberState (closure.Fiber, "done");
-        RCSystem.Log.Record (closure, "fiber", closure.Fiber, "done", result);
+        RCSystem.Log.Record (closure, "fiber", closure.Fiber, "done", "");
         if (closure.Fiber == 0 && closure.Bot == 0)
         {
           runner.Finish (closure, result);

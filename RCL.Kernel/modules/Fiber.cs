@@ -33,7 +33,7 @@ public class Fiber : RCOperator
     RCBot bot = runner.GetBot (closure.Bot);
     RCClosure next = FiberClosure (bot, fiber, closure, code);
     bot.ChangeFiberState (fiber, "start");
-    RCSystem.Log.Record (closure, "fiber", fiber, "start", code);
+    RCSystem.Log.Record (closure, "fiber", fiber, "start", "");
 
     //This creates a separate stream of execution (fiber) from the
     //one that called this method.
