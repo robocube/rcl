@@ -180,6 +180,26 @@ namespace RCL.Kernel
       return builder.ToString ();
     }
 
+    public bool InCodeEval
+    {
+      get
+      {
+        RCOperator op = Code as RCOperator;
+        if (op == null)
+        {
+          return false;
+        }
+        if (op.Left == null)
+        {
+          return Index == 1;
+        }
+        else
+        {
+          return Index == 2;
+        }
+      }
+    }
+
     public void ToString (StringBuilder builder, int indent, bool firstOnTop)
     {
       RCClosure closure = this;

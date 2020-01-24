@@ -603,32 +603,35 @@ namespace RCL.Kernel
       RCBot bot = GetBot (closure.Bot);
       while (parent != null && parent.Bot == closure.Bot && parent.Fiber == closure.Fiber)
       {
-        RCClosure next = parent.Code.Handle (this, parent, exception, status, out result);
-        if (result != null && next == null)
+        if (parent.InCodeEval)
         {
-          string state = status == 1 ? "failed" : "killed";
-          bot.ChangeFiberState (closure.Fiber, state);
-          RCSystem.Log.Record (closure, "fiber", closure.Fiber, state, exception);
-          if (closure.Fiber == 0 && closure.Bot == 0)
+          RCClosure next = parent.Code.Handle (this, parent, exception, status, out result);
+          if (result != null && next == null)
           {
-            Finish (closure, result);
+            string state = status == 1 ? "caught" : "killed";
+            bot.ChangeFiberState (closure.Fiber, state);
+            RCSystem.Log.Record (closure, "fiber", closure.Fiber, state, exception);
+            if (closure.Fiber == 0 && closure.Bot == 0)
+            {
+              Finish (closure, result);
+            }
+            else
+            {
+              bot.FiberDone (this, closure.Bot, closure.Fiber, result);
+            }
+            return;
           }
           else
           {
-            bot.FiberDone (this, closure.Bot, closure.Fiber, result);
+            Continue (null, next);
           }
-          return;
-        }
-        else
-        {
-          Continue (null, next);
-        }
-        if (result != null)
-        {
-          bot.ChangeFiberState (closure.Fiber, "caught");
-          RCSystem.Log.Record (closure, "fiber", closure.Fiber, "caught", exception);
-          ++m_exceptionCount;
-          return;
+          if (result != null)
+          {
+            bot.ChangeFiberState (closure.Fiber, "caught");
+            RCSystem.Log.Record (closure, "fiber", closure.Fiber, "caught", exception);
+            ++m_exceptionCount;
+            return;
+          }
         }
         parent = parent.Parent;
       }
