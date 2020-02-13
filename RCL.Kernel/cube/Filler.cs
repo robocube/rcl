@@ -95,7 +95,7 @@ namespace RCL.Kernel
     public RCCube Plug (RCCube source)
     {
       m_source = source;
-      m_source.VisitCellsForward (this, 0, m_source.Count);
+      m_source.VisitCellsCanonical (this, 0, m_source.Axis.Count);
       return m_target;
     }
 
@@ -104,18 +104,25 @@ namespace RCL.Kernel
       ++m_row;
     }
 
-    public override void VisitScalar<T> (string name,
-                                         Column<T> column, int row)
+    public override void VisitScalar<T> (string name, Column<T> column, int row)
     {
-      RCSymbolScalar scalar = m_source.Axis.Symbol[column.Index[row]];
+      RCSymbolScalar scalar = null;
+      if (m_source.Axis.Symbol != null)
+      {
+        scalar = m_source.Axis.Symbol[column.Index[row]];
+      }
       m_target.WriteCell (name, scalar, column.Data[row], column.Index[row], true, true);
     }
 
-    public override void VisitNull<T> (string name,
-                                       Column<T> column, int row)
+    public override void VisitNull<T> (string name, Column<T> column, int row)
     {
-      RCSymbolScalar scalar = m_source.Axis.Symbol[m_row];
+      RCSymbolScalar scalar = null;
+      if (m_source.Axis.Symbol != null)
+      {
+        scalar = m_source.Axis.Symbol[m_row];
+      }
       m_target.WriteCell (name, scalar, m_defaultValue, m_row, true, true);
     }
   }
 }
+

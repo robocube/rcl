@@ -3470,6 +3470,21 @@
       }
     }
   }
+  TestNameSU:{
+    skip:false
+    src:"a" "b" "c" name [
+       a b            c
+       0 --          --
+       0 "x"         --
+       0 "x" 2020.02.13
+    ]
+    bin:[
+      S              | a b            c
+      #0               0 --          --
+      #0,x             0 "x"         --
+      #0,x,2020.02.13  0 "x" 2020.02.13
+    ]
+  }
   TestSetK0:{
     skip:false
     src:{

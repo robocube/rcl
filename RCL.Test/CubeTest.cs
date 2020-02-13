@@ -3490,6 +3490,24 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestPlug1 ()
+    {
+      DoTest ("1.0 plug [S|x #a -- #b 3.0 #c --]", "[S|x #a 1.0 #b 3.0 #c 1.0]");
+    }
+
+    [Test]
+    public void TestPlug2 ()
+    {
+      DoTest ("1.0 plug [S|x #a -- #a 3.0 #a --]", "[S|x #a 1.0 #a 3.0 #a 1.0]");
+    }
+
+    [Test]
+    public void TestPlug3 ()
+    {
+      DoTest ("1.0 plug [s x #a -- #b 3.0 #c --]", "[s x #a 1.0 #b 3.0 #c 1.0]");
+    }
+
+    [Test]
     public void TestObject ()
     {
       DoTest ("object [S|x y z #a 1 10 100 #a 2 -- -- #a 3 -- --]", "[S|x y z #a 3 10 100]");

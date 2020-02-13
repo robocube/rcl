@@ -105,6 +105,24 @@ program_action:{
   bin:"8"
 }
 
+bad_program:{
+  src:{
+    script:[?
+      mkdir -p $RCL_HOME/tmp
+      cat << 'EOF' > $RCL_HOME/tmp/code.rcl
+      :1 +
+      EOF
+      rcl -bx --program=$RCL_HOME/tmp/code.rcl
+      exit
+    ?]
+    bash:startx "bash"
+    :$bash writex script $R
+    out:try {<-waitx $bash}
+    <-$out.status
+  }
+  bin:2
+}
+
 program_action_status_2:{
   src:{
     script:[?
@@ -346,7 +364,7 @@ exit_dev:{
     sh:startx "bash"
     :$sh writex script {}
     out:try {<-waitx $sh}
-    :$out.status assert 0
+    :assert $out.status = 0
     <-template & $out.data + "\n"
   }
   bin:[?
@@ -381,7 +399,7 @@ exit_number:{
     sh:startx "bash"
     :$sh writex script {}
     out:try {<-waitx $sh}
-    :$out.status assert 0
+    :assert $out.status = 0
     <-template & $out.data + "\n"
   }
   bin:[?
@@ -733,11 +751,11 @@ http_session_id:{
       }
       b:bot {<-serve httpstart "http://localhost:6236/foo/"}
       response:(eval {Cookie:"=" delimit $ID1}) getw "http://localhost:6236/foo"
-      :$response.status assert 401
-      :$response.body assert ""
+      :assert $response.status = 401
+      :assert $response.body = ""
       response:(eval {Cookie:"=" delimit $ID2}) getw "http://localhost:6236/foo"
-      :$response.status assert 200
-      :$response.body assert "super content"
+      :assert $response.status = 200
+      :assert $response.body = "super content"
       :kill $b
       :exit 0
       EOF
@@ -767,11 +785,11 @@ httpcheck_cookie_missing:{
     }
     b:bot {<-serve httpstart "http://localhost:6237/foo/"}
     response:(eval {Cookie:"=" delimit $ID1}) getw "http://localhost:6237/foo"
-    :$response.status assert 401
-    :$response.body assert "Unauthorized"
+    :assert $response.status = 401
+    :assert $response.body = "Unauthorized"
     response:(eval {Cookie:"=" delimit $ID2}) getw "http://localhost:6237/foo"
-    :$response.status assert 200
-    :$response.body assert "super content"
+    :assert $response.status = 200
+    :assert $response.body = "super content"
     :kill $b
   }
 }
@@ -801,8 +819,8 @@ http_headers:{
       Cookie:"id=8d962e72-c8bd-4de4-8416-0838a1b9e630"
     }
     response:$headers getw "http://localhost:6238/foo"
-    :$response.status assert 200
-    :$response.body assert "super content"
+    :assert $response.status = 200
+    :assert $response.body = "super content"
     :kill $b
   }
 }
@@ -833,8 +851,8 @@ get_set_httpcookie:{
     }
     b:bot {<-serve httpstart "http://localhost:6239/foo/"}
     response:{cookie:"a=1,b=2"} getw "http://localhost:6239/foo"
-    :$response.status assert 200
-    :$response.body assert "{a:\"1\" b:\"2\"}"
+    :assert $response.status = 200
+    :assert $response.body = "{a:\"1\" b:\"2\"}"
     :kill $b
   }
 }
@@ -853,8 +871,8 @@ get_no_body:{
     }
     b:bot {<-serve httpstart "http://localhost:6240/foo/"}
     response:getw "http://localhost:6240/foo"
-    :$response.status assert 200
-    :$response.body assert ""
+    :assert $response.status = 200
+    :assert $response.body = ""
     :kill $b
   }
 }
@@ -1116,7 +1134,7 @@ systemd_fiber_killed_not_an_error:{
     <-$out.data
   }
   bin:[?
-    <6>0 0 fiber 1 start {<-0 trace #foo}
+    <6>0 0 fiber 1 start 
     <6>0 1 fiber 1 killed System.Exception: fiber killed
     0
     <<Exec,exit status 2>>
@@ -1139,7 +1157,7 @@ bot_killed_on_wait_timeout:{
     <-$out.data
   }
   bin:[?
-    1 0 fiber 0 start {<-0 trace #a}
+    1 0 fiber 0 start
     1 0 fiber 0 killed <<Reported>>
     0
     <<Exec,exit status 2>>

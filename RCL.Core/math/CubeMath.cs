@@ -1304,7 +1304,7 @@ namespace RCL.Core
       runner.Yield (closure, Key (newKey, cube));
     }
 
-    [RCVerb ("key")]
+    [RCVerb ("name")]
     public void EvalName (RCRunner runner, RCClosure closure, RCString left, RCCube cube)
     {
       RCArray<RCSymbolScalar> newKey = new RCArray<RCSymbolScalar> ();

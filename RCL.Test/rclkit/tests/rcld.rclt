@@ -9,14 +9,14 @@ stop:{
     sh:startx "bash"
     :$sh writex script {}
     out:try {<-waitx $sh}
-    :$out.status assert 0
+    :assert $out.status = 0
     <-#asc,event sort #log parse $out.data
   }
   bin:[
-    bot fiber module   instance event      message                                 document
-      0     0 "runner"        0 "exit"     "1"                                     --
-      0     0 "print"         0 "out"      --                                      "{\n  status:1\n  error:\"<<Operation failed: see data for details>>\\n\"\n  data:[?\n    <<Timeout,Giving up after timeout.>>\n  ?]\n}\n"
-      0     0 "print"         0 "out"      "not running"                           --
+    bot fiber module   instance event      message       document
+      0     0 "runner"        0 "exit"     "1"           --
+      0     0 "print"         0 "out"      --            "{\n  status:1\n  data:[?\n    <<Timeout,Giving up after timeout.>>\n  ?]\n}\n"
+      0     0 "print"         0 "out"      "not running" --
   ]
 }
 
@@ -111,8 +111,9 @@ rcld_echo:{
     sh:startx "bash"
     :$sh writex script {}
     :try {<-waitx $sh}
-    :(load "rcld.test/.rcl/rcld.log") assert log {}
+    :assert (load "rcld.test/.rcl/rcld.log") = log {}
     <-exit $sh
   }
   bin:0
 }
+
