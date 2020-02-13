@@ -2160,24 +2160,30 @@ namespace RCL.Test
     [Test]
     public void TestRenameY1 () { DoTest ("#x rename {a:1 b:2 c:3}", "{x:1 x:2 x:3}"); }
     [Test]
-    public void TestNameKSS () {
-      DoTest ("\"name\" name {:{name:\"a\" value:1} :{name:\"b\" value:2} :{name:\"c\" value:3}}",
-          "{a:{name:\"a\" value:1} b:{name:\"b\" value:2} c:{name:\"c\" value:3}}");
+    public void TestNameKSS ()
+    {
+      DoTest ("\"name\" name {:{name:\"a\" value:1} :{name:\"b\" value:2} :{name:\"c\" value:3}}", "{a:{name:\"a\" value:1} b:{name:\"b\" value:2} c:{name:\"c\" value:3}}");
     }
     [Test]
-    public void TestNameKSY () {
-      DoTest ("\"name\" name {:{name:#a value:1} :{name:#b value:2} :{name:#c value:3}}",
-        "{a:{name:#a value:1} b:{name:#b value:2} c:{name:#c value:3}}");
+    public void TestNameKSY ()
+    {
+      DoTest ("\"name\" name {:{name:#a value:1} :{name:#b value:2} :{name:#c value:3}}", "{a:{name:#a value:1} b:{name:#b value:2} c:{name:#c value:3}}");
     }
     [Test]
-    public void TestNameKYS () {
-      DoTest ("#name name {:{name:\"a\" value:1} :{name:\"b\" value:2} :{name:\"c\" value:3}}",
-          "{a:{name:\"a\" value:1} b:{name:\"b\" value:2} c:{name:\"c\" value:3}}");
+    public void TestNameKYS ()
+    {
+      DoTest ("#name name {:{name:\"a\" value:1} :{name:\"b\" value:2} :{name:\"c\" value:3}}", "{a:{name:\"a\" value:1} b:{name:\"b\" value:2} c:{name:\"c\" value:3}}");
     }
     [Test]
-    public void TestNameKYY () {
-      DoTest ("#name name {:{name:#a value:1} :{name:#b value:2} :{name:#c value:3}}",
-          "{a:{name:#a value:1} b:{name:#b value:2} c:{name:#c value:3}}");
+    public void TestNameKYY ()
+    {
+      DoTest ("#name name {:{name:#a value:1} :{name:#b value:2} :{name:#c value:3}}", "{a:{name:#a value:1} b:{name:#b value:2} c:{name:#c value:3}}");
+    }
+    [Test]
+    public void TestNameSU ()
+    {
+      //Might want some more test cases for this.
+      DoTest ("\"a\" \"b\" \"c\" name [a b c 0 -- -- 0 \"x\" -- 0 \"x\" 2020.02.13]", "[S|a b c #0 0 -- -- #0,x 0 \"x\" -- #0,x,2020.02.13 0 \"x\" 2020.02.13]");
     }
     [Test]
     public void TestSetK0 () { DoTest ("{x:1 y:2} set {y:3 z:4}", "{x:1 y:3 z:4}"); }

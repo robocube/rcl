@@ -7466,6 +7466,51 @@
        3  1  4
     ]
   }
+  TestPlug1:{
+    skip:false
+    src:1.0 plug [
+      S |  x
+      #a  --
+      #b 3.0
+      #c  --
+    ]
+    bin:[
+      S |  x
+      #a 1.0
+      #b 3.0
+      #c 1.0
+    ]
+  }
+  TestPlug2:{
+    skip:false
+    src:1.0 plug [
+      S |  x
+      #a  --
+      #a 3.0
+      #a  --
+    ]
+    bin:[
+      S |  x
+      #a 1.0
+      #a 3.0
+      #a 1.0
+    ]
+  }
+  TestPlug3:{
+    skip:false
+    src:1.0 plug [
+      s    x
+      #a  --
+      #b 3.0
+      #c  --
+    ]
+    bin:[
+      s    x
+      #a 1.0
+      #b 3.0
+      #c 1.0
+    ]
+  }
   TestObject:{
     skip:false
     src:object [
