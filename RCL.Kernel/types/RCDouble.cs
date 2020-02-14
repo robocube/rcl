@@ -9,13 +9,11 @@ namespace RCL.Kernel
   public class RCDouble : RCVector<double>
   {
     public static readonly RCDouble Empty = new RCDouble ();
-    public static readonly CultureInfo Culture;
-    protected static readonly NumberFormatInfo FormatProvider;
+    protected static readonly NumberFormatInfo CanonicalFormatProvider;
     static RCDouble ()
     {
-      FormatProvider = new NumberFormatInfo ();
-      FormatProvider.NumberGroupSeparator = "";
-      Culture = CultureInfo.InvariantCulture;
+      CanonicalFormatProvider = new NumberFormatInfo ();
+      CanonicalFormatProvider.NumberGroupSeparator = "";
     }
 
     public RCDouble (params double[] data) : base (data) { }
@@ -79,11 +77,11 @@ namespace RCL.Kernel
       if (format == null)
       {
         // https://stackoverflow.com/questions/8184068/decimal-tostring-formatting-which-gives-at-least-1-digit-no-upper-limit
-        return scalar.ToString ("0.0###########################", FormatProvider);
+        return scalar.ToString ("0.0###########################", CanonicalFormatProvider);
       }
       else
       {
-        return scalar.ToString (format, FormatProvider);
+        return scalar.ToString (format);
       }
     }
 
