@@ -7,14 +7,12 @@ namespace RCL.Kernel
   public class RCDecimal : RCVector<decimal>
   {
     public static readonly RCDecimal Empty = new RCDecimal ();
-    public static readonly CultureInfo Culture;
-    protected static readonly NumberFormatInfo FormatProvider;
+    protected static readonly NumberFormatInfo CanonicalFormatProvider;
 
     static RCDecimal ()
     {
-      FormatProvider = new NumberFormatInfo ();
-      FormatProvider.NumberGroupSeparator = "";
-      Culture = CultureInfo.InvariantCulture;
+      CanonicalFormatProvider = new NumberFormatInfo ();
+      CanonicalFormatProvider.NumberGroupSeparator = "";
     }
 
     public RCDecimal (params decimal[] data) : base (data) { }
@@ -61,16 +59,16 @@ namespace RCL.Kernel
       {
         if ((scalar % 1) == 0)
         {
-          return scalar.ToString ("N0", FormatProvider);
+          return scalar.ToString ("N0", CanonicalFormatProvider);
         }
         else
         {
-          return scalar.ToString (FormatProvider);
+          return scalar.ToString (CanonicalFormatProvider);
         }
       }
       else
       {
-        return scalar.ToString (format, FormatProvider);
+        return scalar.ToString (format);
       }
     }
 
