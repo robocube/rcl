@@ -2182,8 +2182,15 @@ namespace RCL.Test
     [Test]
     public void TestNameSU ()
     {
-      //Might want some more test cases for this.
       DoTest ("\"a\" \"b\" \"c\" name [a b c 0 -- -- 0 \"x\" -- 0 \"x\" 2020.02.13]", "[S|a b c #0 0 -- -- #0,x 0 \"x\" -- #0,x,2020.02.13 0 \"x\" 2020.02.13]");
+    }
+    [Test]
+    public void TestNameSU1 ()
+    {
+      //Missing column names are skipped over.
+      //It is possibly not the right thing to do.
+      //Probably better to create a symbol with a blank part like #0,,2020.02.13
+      DoTest ("\"a\" \"b\" \"c\" name [a c 0 -- 0 -- 0 2020.02.13]", "[S|a c #0 0 -- #0 0 -- #0,2020.02.13 0 2020.02.13]");
     }
     [Test]
     public void TestSetK0 () { DoTest ("{x:1 y:2} set {y:3 z:4}", "{x:1 y:3 z:4}"); }
