@@ -1311,7 +1311,13 @@ namespace RCL.Core
       RCArray<ColumnBase> sourceColumns = new RCArray<ColumnBase> (left.Count);
       for (int i = 0; i < left.Count; ++i)
       {
-        sourceColumns.Write (cube.GetColumn (left[i]));
+        //The column may be null in which case it gets skipped from the output.
+        //This is needed for consistency with the behavior of cubes.
+        ColumnBase column = cube.GetColumn (left[i]);
+        if (column != null)
+        {
+          sourceColumns.Write (column);
+        }
       }
       for (int i = 0; i < cube.Axis.Count; ++i)
       {
