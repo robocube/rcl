@@ -594,6 +594,38 @@
     }
     bin:[]
   }
+  TestReferenceToMissingG:{
+    skip:false
+    src:{
+      u:[]
+      <-$u.G
+    }
+    bin:~l
+  }
+  TestReferenceToMissingE:{
+    skip:false
+    src:{
+      u:[]
+      <-$u.E
+    }
+    bin:~l
+  }
+  TestReferenceToMissingT:{
+    skip:false
+    src:{
+      u:[]
+      <-$u.T
+    }
+    bin:~t
+  }
+  TestReferenceToMissingS:{
+    skip:false
+    src:{
+      u:[]
+      <-$u.S
+    }
+    bin:~y
+  }
   TestReferenceToEmptyCube:{
     skip:false
     src:{

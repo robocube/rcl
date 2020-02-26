@@ -431,6 +431,30 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestReferenceToMissingG ()
+    {
+      DoEvalTest ("{u:[] <-$u.G}", "~l");
+    }
+
+    [Test]
+    public void TestReferenceToMissingE ()
+    {
+      DoEvalTest ("{u:[] <-$u.E}", "~l");
+    }
+
+    [Test]
+    public void TestReferenceToMissingT ()
+    {
+      DoEvalTest ("{u:[] <-$u.T}", "~t");
+    }
+
+    [Test]
+    public void TestReferenceToMissingS ()
+    {
+      DoEvalTest ("{u:[] <-$u.S}", "~y");
+    }
+
+    [Test]
     public void TestReferenceToEmptyCube ()
     {
       DoEvalTest ("{u:[] <-$u.x}", "[]");

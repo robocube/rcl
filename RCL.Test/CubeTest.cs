@@ -3430,6 +3430,12 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestWhere13 ()
+    {
+      DoTest ("{u:[S|x #a 1 #a 2 #a 3 #a 4] <-$u where $u.x > 2}", "[S|x #a 3 #a 4]");
+    }
+
+    [Test]
     public void TestWhereEmpty1 ()
     {
       DoTest ("{u:[x y 1 -- 2 20] <-$u where $u.y == 20}", "[x y 2 20]");

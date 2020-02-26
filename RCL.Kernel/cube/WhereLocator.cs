@@ -10,6 +10,7 @@ namespace RCL.Kernel
     protected readonly RCCube m_source;
     protected readonly Column<bool> m_locator;
     protected readonly RCCube m_target;
+    protected readonly Dictionary<RCSymbolScalar, bool> m_last;
     protected bool m_indicator;
 
     public WhereLocator (RCCube source, 
@@ -18,6 +19,7 @@ namespace RCL.Kernel
       m_source = source;
       m_locator = locator;
       m_target = new RCCube (source.Axis.Match ());
+      m_last = new Dictionary<RCSymbolScalar, bool> ();
     }
 
     public RCCube Where ()
@@ -28,9 +30,19 @@ namespace RCL.Kernel
 
     public override void BeforeRow (long e, RCTimeScalar t, RCSymbolScalar s, int row)
     {
-      if (!m_locator.Last (s, out m_indicator))
+      bool found;
+      int vrow = m_locator.Index.BinarySearch (row, out found);
+      if (found && vrow < m_locator.Index.Count)
       {
-        m_indicator = false;
+        m_indicator = (bool) m_locator.BoxCell (vrow);
+        m_last[s] = m_indicator;
+      }
+      else
+      {
+        if (!m_last.TryGetValue (s, out m_indicator))
+        {
+          m_indicator = false;
+        }
       }
     }
 
