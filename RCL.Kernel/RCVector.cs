@@ -15,11 +15,19 @@ namespace RCL.Kernel
     
     public RCVector (params T[] data)
     {
+      if (data == null)
+      {
+        data = new T[0];
+      }
       m_data = new RCArray<T> (data);
     }
 
     public RCVector (RCArray<T> data)
     {
+      if (data == null)
+      {
+        data = new RCArray<T> (new T[0]);
+      }
       m_data = data;
     }
 

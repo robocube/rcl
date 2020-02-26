@@ -1554,20 +1554,6 @@ namespace RCL.Core
         WhereIndicator wherer = new WhereIndicator (left, whereCol);
         runner.Yield (closure, wherer.Where ());
       }
-      else if (left.Axis.ColCount == 1 && left.Axis.Symbol != null)
-      {
-        RCArray<bool> whereCol = right.DoColof<bool> (col:0, def:false, allowSparse:true);
-        RCCube result = new RCCube (new RCArray<string> ("S"));
-        for (int i = 0; i < whereCol.Count; ++i)
-        {
-          if (whereCol[i])
-          {
-            result.Write (right.Axis.SymbolAt (i));
-          }
-        }
-        result = Bang (result, left, null, false, false, true, true);
-        runner.Yield (closure, result);
-      }
       else
       {
         Column<bool> whereCol = (Column<bool>) right.GetColumn (0);

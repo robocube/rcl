@@ -7310,6 +7310,24 @@
       2018.12.28 #c  2
     ]
   }
+  TestWhere13:{
+    skip:false
+    src:{
+      u:[
+        S | x
+        #a  1
+        #a  2
+        #a  3
+        #a  4
+      ]
+      <-$u where $u.x > 2
+    }
+    bin:[
+      S | x
+      #a  3
+      #a  4
+    ]
+  }
   TestWhereEmpty1:{
     skip:false
     src:{
