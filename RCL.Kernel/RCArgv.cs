@@ -50,13 +50,22 @@ namespace RCL.Kernel
     //Disables the Getline library which causes problems in non-interactive settings
     //Causes log messages to go to Console.Out rather than Console.Error
     //When --nokeys is set, any input is read with Console.ReadLine
-    public readonly bool Nokeys;
+    public readonly bool NoKeys;
 
     //--noread -r
     //With --nokeys, prevents all calls to Console.ReadLine and related methods
     //Use --noread when attempts to read from stdin would cause errors
     //(For example, under systemd)
-    public readonly bool Noread;
+    public readonly bool NoRead;
+
+    // --noresult
+    /// <summary>
+    /// The result of evaluating Action is generally printed on the console.
+    /// With --noresult, this output is suppressed.
+    /// This can be helpful when debugging a larger program using --action,
+    /// because the large program text may appear on the console, obscuring other output.
+    /// </summary>
+    public readonly bool NoResult;
 
     /// <summary>
     /// Display binary version number on the console no matter what.
@@ -97,7 +106,8 @@ namespace RCL.Kernel
     {
       Exit = false;
       Batch = false;
-      Nokeys = false;
+      NoKeys = false;
+      NoResult = false;
       Version = false;
       FullStack = false;
       Program = "";
@@ -125,11 +135,15 @@ namespace RCL.Kernel
             }
             else if (option.Equals ("nokeys"))
             {
-              Nokeys = true;
+              NoKeys = true;
             }
             else if (option.Equals ("noread"))
             {
-              Noread = true;
+              NoRead = true;
+            }
+            else if (option.Equals ("noresult"))
+            {
+              NoResult = true;
             }
             else if (option.Equals ("fullstack"))
             {
@@ -160,10 +174,10 @@ namespace RCL.Kernel
                   Batch = true;
                   break;
                 case 'k':
-                  Nokeys = true;
+                  NoKeys = true;
                   break;
                 case 'r':
-                  Noread = true;
+                  NoRead = true;
                   break;
                 case 'v':
                   Version = true;
@@ -222,8 +236,9 @@ namespace RCL.Kernel
       Options = new RCBlock (Options, "show", ":", new RCString (Show));
       Options = new RCBlock (Options, "hide", ":", new RCString (Hide));
       Options = new RCBlock (Options, "batch", ":", new RCBoolean (Batch));
-      Options = new RCBlock (Options, "nokeys", ":", new RCBoolean (Nokeys));
-      Options = new RCBlock (Options, "noread", ":", new RCBoolean (Noread));
+      Options = new RCBlock (Options, "nokeys", ":", new RCBoolean (NoKeys));
+      Options = new RCBlock (Options, "noread", ":", new RCBoolean (NoRead));
+      Options = new RCBlock (Options, "noresult", ":", new RCBoolean (NoResult));
       Options = new RCBlock (Options, "exit", ":", new RCBoolean (Exit));
       Options = new RCBlock (Options, "version", ":", new RCBoolean (Version));
       Options = new RCBlock (Options, "fullstack", ":", new RCBoolean (FullStack));
