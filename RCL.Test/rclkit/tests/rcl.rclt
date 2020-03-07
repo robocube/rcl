@@ -105,6 +105,122 @@ program_action:{
   bin:"8"
 }
 
+batch_action_noresult:{
+  src:{
+    script:[?
+      rcl --batch --exit --output=test --action=main --noresult --show="*" << 'EOF'
+      main:{
+        a:1 + 2
+        :print $a
+        b:$a * $a
+        :print $b
+        c:$b / 4.0
+        :print $c
+      }
+      EOF
+      exit
+    ?]
+    bash:startx "bash"
+    :$bash writex script $R
+    out:try {<-waitx $bash}
+    <-template & $out.data + "\n"
+  }
+  bin:[?
+    0 0 print 0 out 3
+    0 0 print 0 out 9
+    0 0 print 0 out 2.25
+  ?]
+}
+
+batch_action_result_shown:{
+  src:{
+    script:[?
+      rcl --batch --exit --output=test --action=main << 'EOF'
+      main:{
+        a:1 + 2
+        :print $a
+        b:$a * $a
+        :print $b
+        c:$b / 4.0
+        :print $c
+      }
+      EOF
+      exit
+    ?]
+    bash:startx "bash"
+    :$bash writex script $R
+    out:try {<-waitx $bash}
+    <-template & $out.data + "\n"
+  }
+  bin:[?
+    {
+      a:3
+      :3
+      b:9
+      :9
+      c:2.25
+      :2.25
+    }
+  ?]
+}
+
+program_action_result_shown:{
+  src:{
+    script:[?
+      mkdir -p $RCL_HOME/tmp
+      cat << 'EOF' > $RCL_HOME/tmp/code.rcl
+      main:{
+        a:1 + 2
+        b:$a * $a
+        c:$b / 4.0
+      }
+      EOF
+      rcl -bx --program=$RCL_HOME/tmp/code.rcl --action=main --output=test --show="*"
+      exit
+    ?]
+    bash:startx "bash"
+    :$bash writex script $R
+    out:try {<-waitx $bash}
+    <-template & $out.data + "\n"
+  }
+  bin:[?
+    {
+      a:3
+      b:9
+      c:2.25
+    }
+  ?]
+}
+
+program_action_noresult:{
+  src:{
+    script:[?
+      mkdir -p $RCL_HOME/tmp
+      cat << 'EOF' > $RCL_HOME/tmp/code.rcl
+      main:{
+        a:1 + 2
+        :print $a
+        b:$a * $a
+        :print $b
+        c:$b / 4.0
+        :print $c
+      }
+      EOF
+      rcl -bx --program=$RCL_HOME/tmp/code.rcl --action=main --output=test --show="*" --noresult
+      exit
+    ?]
+    bash:startx "bash"
+    :$bash writex script $R
+    out:try {<-waitx $bash}
+    <-template & $out.data + "\n"
+  }
+  bin:[?
+    0 0 print 0 out 3
+    0 0 print 0 out 9
+    0 0 print 0 out 2.25
+  ?]
+}
+
 bad_program:{
   src:{
     script:[?

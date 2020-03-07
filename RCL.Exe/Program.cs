@@ -93,8 +93,7 @@ namespace RCL.Exe
           if (cmd.Action != "")
           {
             RCValue result = runner.RepAction (cmd.Action);
-
-            if (cmd.OutputEnum != RCOutput.Clean)
+            if (cmd.OutputEnum != RCOutput.Clean && !cmd.NoResult)
             {
               Console.Out.WriteLine (result.Format (RCFormat.Pretty, RCSystem.Log.GetColmap ()));
             }
@@ -206,13 +205,20 @@ namespace RCL.Exe
 
             bool fragment;
             RCValue code = RCSystem.Parse (text.ToString (), out fragment);
-            RCValue result = runner.Rep (code, restoreStateOnError:true);
+            RCValue codeResult = runner.Rep (code, restoreStateOnError:true);
 
-            if (result != null)
+            if (cmd.Action != "")
             {
-              Console.Out.WriteLine (result.Format (RCFormat.Pretty, RCSystem.Log.GetColmap ()));
+              RCValue actionResult = runner.RepAction (cmd.Action);
+              if (cmd.OutputEnum != RCOutput.Clean && !cmd.NoResult)
+              {
+                Console.Out.WriteLine (actionResult.Format (RCFormat.Pretty, RCSystem.Log.GetColmap ()));
+              }
             }
-
+            else if (codeResult != null && !cmd.NoResult)
+            {
+              Console.Out.WriteLine (codeResult.Format (RCFormat.Pretty, RCSystem.Log.GetColmap ()));
+            }
             if (cmd.Exit)
             {
               status = runner.ExitStatus ();
@@ -222,10 +228,10 @@ namespace RCL.Exe
           }
           else
           {
-            if (cmd.Nokeys)
+            if (cmd.NoKeys)
             {
               //No read requires nokeys to have an effect, obvs.
-              if (cmd.Noread)
+              if (cmd.NoRead)
               {
                 Thread.Sleep (Timeout.Infinite);
               }
