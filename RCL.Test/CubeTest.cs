@@ -3514,6 +3514,26 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestUnplug1 ()
+    {
+      DoTest ("1.0 unplug [S|x #a 1.0 #b 3.0 #c 1.0]", "[S|x #a -- #b 3.0 #c --]");
+    }
+
+    [Test]
+    public void TestUnplug2 ()
+    {
+      DoTest ("1.0 unplug [S|x #a 1.0 #a 3.0 #a 1.0]", "[S|x #a -- #a 3.0 #a --]");
+    }
+
+    [Test]
+    public void TestUnplug3 ()
+    {
+      DoTest ("1.0 unplug [s x #a 1.0 #b 3.0 #c 1.0]", "[s x #a -- #b 3.0 #c --]");
+    }
+
+    //Note: More tests for unplug are needed, implementation needs comparers for other types like string, symbol etc.
+
+    [Test]
     public void TestObject ()
     {
       DoTest ("object [S|x y z #a 1 10 100 #a 2 -- -- #a 3 -- --]", "[S|x y z #a 3 10 100]");
