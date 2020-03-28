@@ -84,17 +84,28 @@ namespace RCL.Kernel
     protected RCCube m_target;
     protected RCCube m_source;
     protected int m_row = 0;
+    protected bool m_unplug = false;
     protected object m_defaultValue;
+    protected System.Collections.IComparer m_comparer;
 
-    public Plugger (RCCube target, object defaultValue)
+    public Plugger (RCCube target, object defaultValue, System.Collections.IComparer comparer)
     {
       m_target = target;
       m_defaultValue = defaultValue;
+      m_comparer = comparer;
     }
 
     public RCCube Plug (RCCube source)
     {
       m_source = source;
+      m_source.VisitCellsCanonical (this, 0, m_source.Axis.Count);
+      return m_target;
+    }
+
+    public RCCube Unplug (RCCube source)
+    {
+      m_source = source;
+      m_unplug = true;
       m_source.VisitCellsCanonical (this, 0, m_source.Axis.Count);
       return m_target;
     }
@@ -106,12 +117,31 @@ namespace RCL.Kernel
 
     public override void VisitScalar<T> (string name, Column<T> column, int row)
     {
-      RCSymbolScalar scalar = null;
-      if (m_source.Axis.Symbol != null)
+      // Just a touch of ugly, slow
+      if (m_unplug && typeof (T) == m_defaultValue.GetType ())
       {
-        scalar = m_source.Axis.Symbol[column.Index[row]];
+        RCSymbolScalar scalar = null;
+        if (m_source.Axis.Symbol != null)
+        {
+          scalar = m_source.Axis.Symbol[column.Index[row]];
+        }
+        if (m_comparer.Compare (column.Data[row], m_defaultValue) != 0)
+        {
+          m_target.WriteCell (name, scalar, column.Data[row], column.Index[row], true, true);
+        }
+        else
+        {
+        }
       }
-      m_target.WriteCell (name, scalar, column.Data[row], column.Index[row], true, true);
+      else
+      {
+        RCSymbolScalar scalar = null;
+        if (m_source.Axis.Symbol != null)
+        {
+          scalar = m_source.Axis.Symbol[column.Index[row]];
+        }
+        m_target.WriteCell (name, scalar, column.Data[row], column.Index[row], true, true);
+      }
     }
 
     public override void VisitNull<T> (string name, Column<T> column, int row)

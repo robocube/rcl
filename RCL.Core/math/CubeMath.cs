@@ -1254,6 +1254,16 @@ namespace RCL.Core
       runner.Yield (closure, result);
     }
 
+    public class PlugLongComparer : System.Collections.IComparer
+    {
+      int System.Collections.IComparer.Compare (object xobj, object yobj)
+      {
+        long x = (long) xobj;
+        long y = (long) yobj;
+        return System.Collections.Comparer.DefaultInvariant.Compare (x, y);
+      }
+    }
+
     [RCVerb ("plug")]
     public void EvalPlug (RCRunner runner, RCClosure closure, RCLong left, RCCube cube)
     {
@@ -1262,9 +1272,20 @@ namespace RCL.Core
         throw new Exception ("plug takes only one default value on the left");
       }
       RCCube result = new RCCube (cube.Axis);
-      Plugger plugger = new Plugger (result, left[0]);
+      Plugger plugger = new Plugger (result, left[0], new PlugLongComparer ());
       plugger.Plug (cube);
       runner.Yield (closure, result);
+    }
+
+    public class PlugDoubleComparer : System.Collections.IComparer
+    {
+      int System.Collections.IComparer.Compare (object xobj, object yobj)
+      {
+        double x = (double) xobj;
+        double y = (double) yobj;
+        if (RCDouble.Equals (x, y)) return 0;
+        return System.Collections.Comparer.DefaultInvariant.Compare (x, y);
+      }
     }
 
     [RCVerb ("plug")]
@@ -1275,8 +1296,34 @@ namespace RCL.Core
         throw new Exception ("plug takes only one default value on the left");
       }
       RCCube result = new RCCube (cube.Axis);
-      Plugger plugger = new Plugger (result, left[0]);
+      Plugger plugger = new Plugger (result, left[0], new PlugDoubleComparer ());
       plugger.Plug (cube);
+      runner.Yield (closure, result);
+    }
+
+    [RCVerb ("unplug")]
+    public void Unplug (RCRunner runner, RCClosure closure, RCLong left, RCCube cube)
+    {
+      if (left.Count != 1)
+      {
+        throw new Exception ("plug takes only one default value on the left");
+      }
+      RCCube result = new RCCube (cube.Axis);
+      Plugger plugger = new Plugger (result, left[0], new PlugLongComparer ());
+      plugger.Unplug (cube);
+      runner.Yield (closure, result);
+    }
+
+    [RCVerb ("unplug")]
+    public void Unplug (RCRunner runner, RCClosure closure, RCDouble left, RCCube cube)
+    {
+      if (left.Count != 1)
+      {
+        throw new Exception ("plug takes only one default value on the left");
+      }
+      RCCube result = new RCCube (cube.Axis);
+      Plugger plugger = new Plugger (result, left[0], new PlugDoubleComparer ());
+      plugger.Unplug (cube);
       runner.Yield (closure, result);
     }
 

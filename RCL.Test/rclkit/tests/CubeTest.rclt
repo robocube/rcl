@@ -7529,6 +7529,51 @@
       #c 1.0
     ]
   }
+  TestUnplug1:{
+    skip:false
+    src:1.0 unplug [
+      S |  x
+      #a 1.0
+      #b 3.0
+      #c 1.0
+    ]
+    bin:[
+      S |  x
+      #a  --
+      #b 3.0
+      #c  --
+    ]
+  }
+  TestUnplug2:{
+    skip:false
+    src:1.0 unplug [
+      S |  x
+      #a 1.0
+      #a 3.0
+      #a 1.0
+    ]
+    bin:[
+      S |  x
+      #a  --
+      #a 3.0
+      #a  --
+    ]
+  }
+  TestUnplug3:{
+    skip:false
+    src:1.0 unplug [
+      s    x
+      #a 1.0
+      #b 3.0
+      #c 1.0
+    ]
+    bin:[
+      s    x
+      #a  --
+      #b 3.0
+      #c  --
+    ]
+  }
   TestObject:{
     skip:false
     src:object [
