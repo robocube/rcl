@@ -11,7 +11,6 @@ namespace RCL.Test
   public class BlockTest
   {
     protected RCRunner runner = new RCRunner ();
-
     /// <summary>
     /// Interface with a simple RCObject
     /// </summary>

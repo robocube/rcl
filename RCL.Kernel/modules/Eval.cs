@@ -8,11 +8,11 @@ namespace RCL.Kernel
     [RCVerb ("eval")]
     public void EvalEval (RCRunner runner, RCClosure closure, RCBlock right)
     {
-      RCClosure parent = new RCClosure (closure.Parent, 
+      RCClosure parent = new RCClosure (closure.Parent,
                                         closure.Bot,
-                                        right, 
-                                        closure.Left, 
-                                        RCBlock.Empty, 
+                                        right,
+                                        closure.Left,
+                                        RCBlock.Empty,
                                         0);
       DoEval (runner, parent, right);
     }
@@ -34,11 +34,11 @@ namespace RCL.Kernel
     [RCVerb ("eval")]
     public void EvalTemplate (RCRunner runner, RCClosure closure, RCTemplate right)
     {
-      RCClosure parent = new RCClosure (closure.Parent, 
+      RCClosure parent = new RCClosure (closure.Parent,
                                         closure.Bot,
-                                        right, 
-                                        closure.Left, 
-                                        RCBlock.Empty, 
+                                        right,
+                                        closure.Left,
+                                        RCBlock.Empty,
                                         0);
       DoEval (runner, parent, right);
     }
@@ -46,11 +46,11 @@ namespace RCL.Kernel
     [RCVerb ("eval")]
     public void EvalEval (RCRunner runner, RCClosure closure, RCOperator right)
     {
-      RCClosure parent = new RCClosure (closure.Parent, 
+      RCClosure parent = new RCClosure (closure.Parent,
                                         closure.Bot,
-                                        right, 
-                                        closure.Left, 
-                                        RCBlock.Empty, 
+                                        right,
+                                        closure.Left,
+                                        RCBlock.Empty,
                                         0);
       DoEval (runner, parent, right);
     }
@@ -81,7 +81,7 @@ namespace RCL.Kernel
       RCClosure parent = UserOpClosure (closure, right, new RCArray<RCBlock> (left), noClimb:true);
       DoEval (runner, parent, right);
     }
-    
+
     [RCVerb ("eval")]
     public void EvalEval (RCRunner runner, RCClosure closure, RCByte right)
     {
@@ -362,8 +362,8 @@ namespace RCL.Kernel
       }
     }
 
-    protected static RCString ExpandTemplate (StringBuilder builder, 
-                                              RCTemplate template, 
+    protected static RCString ExpandTemplate (StringBuilder builder,
+                                              RCTemplate template,
                                               RCBlock right,
                                               int I,
                                               string parentIndent)
@@ -415,7 +415,7 @@ namespace RCL.Kernel
                   if (somethingAdded)
                   {
                     //Notice below in the section with w. If there is extra content
-                    //before the code section on the same line, it will have been 
+                    //before the code section on the same line, it will have been
                     //inserted/indented already.
                     builder.Append (indent);
                   }
@@ -494,7 +494,7 @@ namespace RCL.Kernel
                   }
                 }
                 //indent only includes spaces before the first non-space character.
-                //The non-space part of the text is only inserted once. 
+                //The non-space part of the text is only inserted once.
                 //An edge case involves spaces inserted between code sections on the same line.
                 //\t not spoken here.
                 //while (builder.Length == 0 || builder[builder.Length - 1] == '\n')
@@ -543,8 +543,8 @@ namespace RCL.Kernel
       return new RCString (builder.ToString ());
     }
 
-    public static void DoEval (RCRunner runner, 
-                               RCClosure closure, 
+    public static void DoEval (RCRunner runner,
+                               RCClosure closure,
                                RCReference reference)
     {
       runner.Yield (closure, Resolve (reference.m_static, closure, reference.Parts, null));
@@ -775,10 +775,10 @@ namespace RCL.Kernel
     }
 
     //Construct the next closure, default case.
-    public static RCClosure DoNext (RCValue val, 
-                                    RCRunner runner, 
-                                    RCClosure tail, 
-                                    RCClosure previous, 
+    public static RCClosure DoNext (RCValue val,
+                                    RCRunner runner,
+                                    RCClosure tail,
+                                    RCClosure previous,
                                     RCValue result)
     {
       if (previous.Parent != null)
@@ -792,10 +792,10 @@ namespace RCL.Kernel
     }
 
     //Construct the next closure for a block.
-    public static RCClosure DoNext (RCBlock block, 
-                                    RCRunner runner, 
-                                    RCClosure tail, 
-                                    RCClosure previous, 
+    public static RCClosure DoNext (RCBlock block,
+                                    RCRunner runner,
+                                    RCClosure tail,
+                                    RCClosure previous,
                                     RCValue result)
     {
       if (previous.Index < block.Count - 1)
@@ -834,9 +834,9 @@ namespace RCL.Kernel
       else return null;
     }
 
-    protected static RCBlock NextBlock (RCRunner runner, 
-                                        RCBlock block, 
-                                        RCClosure previous, 
+    protected static RCBlock NextBlock (RCRunner runner,
+                                        RCBlock block,
+                                        RCClosure previous,
                                         RCValue val)
     {
       RCBlock code = block.GetName (previous.Index);
@@ -850,10 +850,10 @@ namespace RCL.Kernel
     }
 
     //Construct the next closure for an operator.
-    public static RCClosure DoNext (RCOperator op, 
-                                    RCRunner runner, 
-                                    RCClosure head, 
-                                    RCClosure previous, 
+    public static RCClosure DoNext (RCOperator op,
+                                    RCRunner runner,
+                                    RCClosure head,
+                                    RCClosure previous,
                                     RCValue result)
     {
       if (op.Left == null)
@@ -925,14 +925,14 @@ namespace RCL.Kernel
       }
     }
 
-    protected static RCClosure NextParentOf (RCOperator op, 
-                                             RCClosure previous, 
+    protected static RCClosure NextParentOf (RCOperator op,
+                                             RCClosure previous,
                                              out RCValue userop,
                                              out RCArray<RCBlock> useropContext)
     {
       //The only operator with IsHigherOrder set is switch.
       //Why is switch magical, why not each, take, fiber, etc...
-      //Am I just missing tests for those? 
+      //Am I just missing tests for those?
       userop = null;
       useropContext = previous.UserOpContext;
       RCClosure argument0, argument1;
@@ -1041,8 +1041,8 @@ namespace RCL.Kernel
       */
     }
 
-    public static bool DoIsLastCall (RCClosure closure, 
-                                     RCClosure arg, 
+    public static bool DoIsLastCall (RCClosure closure,
+                                     RCClosure arg,
                                      RCBlock block)
     {
       //Costly call to GetName, will want to address this at some point.
@@ -1050,8 +1050,8 @@ namespace RCL.Kernel
       return block.GetName (closure.Index).Evaluator.Return;
     }
 
-    public static bool DoIsLastCall (RCClosure closure, 
-                                     RCClosure arg, 
+    public static bool DoIsLastCall (RCClosure closure,
+                                     RCClosure arg,
                                      RCOperator op)
     {
       if (closure.Index == 1)
@@ -1064,8 +1064,8 @@ namespace RCL.Kernel
       }
     }
 
-    public static bool DoIsLastCall (RCClosure closure, 
-                                     RCClosure arg, 
+    public static bool DoIsLastCall (RCClosure closure,
+                                     RCClosure arg,
                                      UserOperator op)
     {
       //Commenting these lines out breaks the case where the last
@@ -1086,8 +1086,8 @@ namespace RCL.Kernel
       }
     }
 
-    protected static RCClosure OwnerOpOf (RCOperator op, 
-                                          RCClosure closure, 
+    protected static RCClosure OwnerOpOf (RCOperator op,
+                                          RCClosure closure,
                                           out RCClosure child)
     {
       child = closure;
@@ -1100,8 +1100,8 @@ namespace RCL.Kernel
       return current;
     }
 
-    public static RCValue DoFinish (RCRunner runner, 
-                                    RCClosure closure, 
+    public static RCValue DoFinish (RCRunner runner,
+                                    RCClosure closure,
                                     RCValue result)
     {
       while (closure != null)

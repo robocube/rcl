@@ -313,7 +313,7 @@ namespace RCL.Exe
           Mono.Unix.Native.Signum signal = signals[index].Signum;
           if (signal == Mono.Unix.Native.Signum.SIGTERM)
           {
-            ThreadPool.QueueUserWorkItem (delegate (object state) 
+            ThreadPool.QueueUserWorkItem (delegate (object state)
             {
               RCSystem.Log.Record (0, 0, "runner", 0, "signal", "SIGTERM");
               runner.Abort (15);
@@ -324,7 +324,7 @@ namespace RCL.Exe
             if (!m_firstSigint)
             {
               m_firstSigint = true;
-              ThreadPool.QueueUserWorkItem (delegate (object state) 
+              ThreadPool.QueueUserWorkItem (delegate (object state)
               {
                 RCSystem.Log.Record (0, 0, "runner", 0, "signal", "SIGINT");
                 runner.Interupt ();
@@ -332,7 +332,7 @@ namespace RCL.Exe
             }
             else
             {
-              ThreadPool.QueueUserWorkItem (delegate (object state) 
+              ThreadPool.QueueUserWorkItem (delegate (object state)
               {
                 RCSystem.Log.Record (0, 0, "runner", 0, "signal", "SIGINT (exiting)");
                 runner.Abort (2);

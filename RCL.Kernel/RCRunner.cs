@@ -566,7 +566,7 @@ namespace RCL.Kernel
         return result;
       }
     }
-   
+
     public string RepString (string code)
     {
       RCValue result = Rep (code, restoreStateOnError:false);
