@@ -28,15 +28,15 @@ namespace RCL.Kernel
       Key = "";
     }
 
-    public static RCSymbolScalar From (params object[] key) 
+    public static RCSymbolScalar From (params object[] key)
     {
       return From (0, key);
     }
 
-    protected static RCSymbolScalar From (int startIndex, params object[] key) 
+    protected static RCSymbolScalar From (int startIndex, params object[] key)
     {
       RCSymbolScalar prev = null;
-      for (int i = startIndex; i < key.Length; ++i) 
+      for (int i = startIndex; i < key.Length; ++i)
       {
         RCSymbolScalar symKey = key[i] as RCSymbolScalar;
         if (symKey != null)
@@ -61,7 +61,7 @@ namespace RCL.Kernel
     public static RCSymbolScalar From (int startIndex, RCSymbolScalar prefix, params object[] key)
     {
       RCSymbolScalar prev = prefix;
-      for (int i = startIndex; i < key.Length; ++i) 
+      for (int i = startIndex; i < key.Length; ++i)
       {
         prev = new RCSymbolScalar (prev, key[i]);
       }
@@ -73,7 +73,7 @@ namespace RCL.Kernel
       RCToken token = lexer.LexSingle (part);
       if (token.Text.Length > 0 && token.Type == RCTokenType.Junk)
       {
-        return new RCSymbolScalar (RCSymbolScalar.Empty, 
+        return new RCSymbolScalar (RCSymbolScalar.Empty,
                                    string.Format ("'{0}'", token.Text));
       }
       else
@@ -140,7 +140,7 @@ namespace RCL.Kernel
       else
       {
         Length = previous.Length + 1;
-        m_string = previous.ToString () + "," + 
+        m_string = previous.ToString () + "," +
           Type.IdShorthand (Key) + Type.Suffix;
       }
       if (Previous.Key.Equals ("*"))
@@ -272,31 +272,31 @@ namespace RCL.Kernel
 
     /// The "Modified Bernstein Hash"
     /// http://www.eternallyconfuzzled.com/tuts/algorithms/jsw_tut_hashing.aspx
-    /// 
-    /// Dan Bernstein created this algorithm and posted it in a newsgroup. 
+    ///
+    /// Dan Bernstein created this algorithm and posted it in a newsgroup.
     /// It is known by many as the Chris Torek hash because Chris went a long way toward
-    /// popularizing it. Since then it has been used successfully by many, but despite 
-    /// that the algorithm itself is not very sound when it comes to avalanche and 
-    /// permutation of the internal state. It has proven very good for small 
-    /// character keys, where it can outperform algorithms that result in a more random 
+    /// popularizing it. Since then it has been used successfully by many, but despite
+    /// that the algorithm itself is not very sound when it comes to avalanche and
+    /// permutation of the internal state. It has proven very good for small
+    /// character keys, where it can outperform algorithms that result in a more random
     /// distribution.
-    /// 
-    /// Bernstein's hash should be used with caution. It performs very 
-    /// well in practice, for no apparently known reasons (much like how the constant 
-    /// 33 does better than more logical constants for no apparent reason), but in theory 
-    /// it is not up to snuff. Always test this function with sample data for every 
-    /// application to ensure that it does not encounter a degenerate case and cause 
+    ///
+    /// Bernstein's hash should be used with caution. It performs very
+    /// well in practice, for no apparently known reasons (much like how the constant
+    /// 33 does better than more logical constants for no apparent reason), but in theory
+    /// it is not up to snuff. Always test this function with sample data for every
+    /// application to ensure that it does not encounter a degenerate case and cause
     /// excessive collisions.
-    /// 
-    /// A minor update to Bernstein's hash replaces addition with XOR for the combining 
-    /// step. This change does not appear to be well known or often used, the original 
+    ///
+    /// A minor update to Bernstein's hash replaces addition with XOR for the combining
+    /// step. This change does not appear to be well known or often used, the original
     /// algorithm is still recommended by nearly everyone, but the new algorithm typically
     /// results in a better distribution.
-    /// 
+    ///
     /// Brian here.  I don't know much about this stuff, I hope it works, someday we
     /// should test it.  Would love to talk to anyone who knows how to do better.
-    /// In the case of RC I think that series with more than one symbol column are going 
-    /// to be the exception rather than the rule, but I want to make sure that they are 
+    /// In the case of RC I think that series with more than one symbol column are going
+    /// to be the exception rather than the rule, but I want to make sure that they are
     /// accomodated in the design from day one.  If they have trouble with uneven
     /// distribution of hashes we can worry about it later.
     //
@@ -335,7 +335,7 @@ namespace RCL.Kernel
       }
       return h;
     }
-      
+
     public override bool Equals (object obj)
     {
       RCSymbolScalar other = obj as RCSymbolScalar;
