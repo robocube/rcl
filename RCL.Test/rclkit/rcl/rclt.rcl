@@ -189,7 +189,7 @@ run_file:{
 }
 
 main:{
-  files:info #arguments 
+  files:info #arguments
   :(flag "debug") switch {
     :"RCL_FLAGS" setenv "--output=test --fullstack --nokeys --show=*" getenv "RCLT_DEBUG_FLAGS"
     :"RCL_FLAGS" setenv "--output=test --show=print:test,print:suite,print:debug,runner,compile --nokeys" getenv "RCL_FLAGS"
