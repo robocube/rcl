@@ -13,7 +13,7 @@ using RCL.Kernel;
 namespace RCL.Exe
 {
   /// <summary>
-  /// The rcl Interpreter
+  /// The entry point for the rcl interpreter
   /// </summary>
   public class Program : MarshalByRefObject
   {
