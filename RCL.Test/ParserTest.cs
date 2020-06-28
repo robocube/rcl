@@ -603,7 +603,7 @@ namespace RCL.Test
       //the bar separates the "key" of the table from values.
       DoParserTest ("[S|x #a 10.0 #a 20.0 #a 30.0]");
     }
-    
+
     [Test]
     public void TestCubeMultiCol ()
     {
