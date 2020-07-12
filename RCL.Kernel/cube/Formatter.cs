@@ -25,7 +25,7 @@ namespace RCL.Kernel
     //The indent level.
     protected int m_level = 0;
 
-    public Formatter (StringBuilder builder, RCFormat args, RCColmap colmap, int level)     
+    public Formatter (StringBuilder builder, RCFormat args, RCColmap colmap, int level)
     {
       m_builder = builder;
       m_args = args;
@@ -41,7 +41,7 @@ namespace RCL.Kernel
     {
       if (source.Count == 0)
       {
-        if (m_args.Syntax == "RCL") 
+        if (m_args.Syntax == "RCL")
         {
           m_builder.Append ("[]");
         }
@@ -166,7 +166,7 @@ namespace RCL.Kernel
         }
       }
       m_builder.Append (m_args.RowDelimeter);
-  
+
       //Okay now format the individual rows using the gathered
       //strings and widths determined by the visitor.
       int rows = m_columns[0].Count;
@@ -199,7 +199,7 @@ namespace RCL.Kernel
         }
       }
       m_builder.Append (m_args.Newline);
-  
+
       --m_level;
       for (int i = m_args.Fragment ? 1 : 0; i < m_level; ++i)
       {
@@ -334,7 +334,7 @@ namespace RCL.Kernel
     protected void FormatCsv (int tcols, bool useGRows, char[] escapeChars, bool head)
     {
       int colOffset = m_args.Showt ? 0 : tcols;
-     
+
       for (int i = 0; i < m_level; ++i)
       {
         m_builder.Append (m_args.Indent);
@@ -403,7 +403,7 @@ namespace RCL.Kernel
       }
       return result;
     }
-  
+
     public override void VisitScalar<T> (string name, Column<T> column, int row)
     {
       string format = m_colmap.GetDisplayFormat (name);
@@ -432,7 +432,7 @@ namespace RCL.Kernel
       m_columns[m_col].Add (scalar);
       m_col = (m_col + 1) % m_names.Count;
     }
-  
+
     public override void EventCol (long time)
     {
       if (!m_args.Showt)

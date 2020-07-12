@@ -6,7 +6,7 @@ namespace RCL.Kernel
 {
   public class RCFormat
   {
-    public static readonly RCFormat Default, Pretty, Canonical, DefaultNoT, TestCanonical, EditorFragment, Html, Csv, Log;
+    public static readonly RCFormat Default, Pretty, Canonical, DefaultNoT, TestCanonical, EditorFragment, Html, Csv, Log, Json;
 
     public readonly string Syntax;
     public readonly string Indent;
@@ -28,6 +28,7 @@ namespace RCL.Kernel
       Canonical = new RCFormat ("RCL", "  ", "\n", " ", "\n", align:true, showt:true, parsableScalars:true, canonicalCubes:true, fragment:false);
       DefaultNoT = new RCFormat ("RCL", "", "", " ", " ", align:false, showt:false, parsableScalars:true, canonicalCubes:false, fragment:false);
       TestCanonical = new RCFormat ("RCL", "", "", " ", " ", align:false, showt:true, parsableScalars:true, canonicalCubes:true, fragment:false);
+      Json = new RCFormat ("JSON", "  ", "\n", " ", ",\n", align:true, showt:true, parsableScalars:false, canonicalCubes:true, fragment:false);
       Html = new RCFormat ("HTML", "  ", "\n", " ", "\n", align:true, showt:true, parsableScalars:true, canonicalCubes:false, fragment:false);
       Csv = new RCFormat ("CSV", "  ", "\n", ",", "\n", align:false, showt:true, parsableScalars:false, canonicalCubes:false, fragment:false);
       Log = new RCFormat ("LOG", "  ", "\n", " ", "\n", align:false, showt:true, parsableScalars:false, canonicalCubes:false, fragment:false);

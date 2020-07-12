@@ -51,7 +51,7 @@ namespace RCL.Kernel
 
     /// <summary>
     /// Operators are important parts of speech in RC and there are several
-    /// places where the parser and printer need to know if something is 
+    /// places where the parser and printer need to know if something is
     /// an operator.  A hardcoded check like this is preferable to an is cast
     /// in these situations.
     /// </summary>
@@ -119,8 +119,8 @@ namespace RCL.Kernel
     /// <summary>
     /// The default implementation of ToString creates its own
     /// builder.  But the real work is done inside of the overload.
-    /// StringBuilders have extra space allocated for new data to 
-    /// be appended so its better to only create one for a given 
+    /// StringBuilders have extra space allocated for new data to
+    /// be appended so its better to only create one for a given
     /// Object.ToString() call.
     /// </summary>
     public override string ToString ()

@@ -86,9 +86,9 @@ namespace RCL.Kernel
 
     public static RCName GetName (string text)
     {
-      if (text == null) 
+      if (text == null)
       {
-        text = "";    
+        text = "";
       }
       string name = null;
       bool escaped = false;
@@ -113,7 +113,7 @@ namespace RCL.Kernel
             for (int i = 1; i < text.Length - 1; ++i)
             {
               if (!RCTokenType.IsIdentifierChar (text[i]))
-              { 
+              {
                 name = text;
                 escaped = true;
                 break;
@@ -160,7 +160,7 @@ namespace RCL.Kernel
             return result;
           }
         }
-        else 
+        else
         {
           return result;
         }
@@ -174,7 +174,7 @@ namespace RCL.Kernel
 
     public static long Num (string name)
     {
-      return GetName (name).Index; 
+      return GetName (name).Index;
     }
 
     public static string RawName (string name)
@@ -187,7 +187,7 @@ namespace RCL.Kernel
       {
         return name.Substring (1, name.Length - 2);
       }
-      else 
+      else
       {
         return name;
       }
@@ -222,7 +222,7 @@ namespace RCL.Kernel
       Quote = new RCEvaluator ("::", false, false, false, false, true, true, Let);
       Yield = new RCEvaluator ("<-", true, true, false, false, false, false, Yield);
       Yiote = new RCEvaluator ("<-:", false, false, false, false, true, true, Yield);
-      Yiyi = new RCEvaluator ("<--", true, false, false, false, false, true, Yield);  
+      Yiyi = new RCEvaluator ("<--", true, false, false, false, false, true, Yield);
       Apply = new RCEvaluator ("<+", false, false, true, false, false, false, Apply);
       Expand = new RCEvaluator ("<&", false, true, false, true, false, false, Expand);
     }
@@ -544,6 +544,9 @@ namespace RCL.Kernel
       return false;
     }
 
+    /// <summary>
+    /// DO NOT USE!!!
+    /// </summary>
     public override RCValue Edit (RCRunner runner, RCValueDelegate editor)
     {
       RCValue val = base.Edit (runner, editor);
@@ -610,7 +613,7 @@ namespace RCL.Kernel
       RCL.Kernel.Format.DoFormat (this, builder, args, null, level);
     }
 
-    public override void Format (StringBuilder builder, 
+    public override void Format (StringBuilder builder,
                                  RCFormat args,
                                  RCColmap colmap,
                                  int level)

@@ -2807,8 +2807,19 @@ namespace RCL.Test
       DoTest (RCFormat.Default, "#csv format [x true]", "\"x\\ntrue\\n\"");
     }
 
-    //To - does not apply to cubes at all
+    [Test]
+    public void TestFormatJson ()
+    {
+      DoTest ("#json format {x:1 y:true z:\"string\" a:1.2 b:{foo:1 bar:\"barstring\" baz:false}}", "\"{\\n  \\\"x\\\":1,\\n  \\\"y\\\":true,\\n  \\\"z\\\":\\\"string\\\",\\n  \\\"a\\\":1.2,\\n  \\\"b\\\":{\\n    \\\"foo\\\":1,\\n    \\\"bar\\\":\\\"barstring\\\",\\n    \\\"baz\\\":false\\n  }\\n}\"");
+    }
 
+    [Test]
+    public void TestFormatJson1 ()
+    {
+      DoTest ("#json format {'name-needs-escape':1234}", "\"{\\n  \\\"name-needs-escape\\\":1234\\n}\"");
+    }
+
+    //To - does not apply to cubes at all
     //Should at and from use indexes or timestamps?
     //For vectors it uses indexes so I think cubes should work the same way.
     //It will use indexes in the timeline though, not in the vector.
