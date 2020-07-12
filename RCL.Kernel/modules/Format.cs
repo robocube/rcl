@@ -46,15 +46,22 @@ namespace RCL.Kernel
       }
       else if (which.Equals ("html"))
       {
+        //content must be a cube
         result = content.Format (RCFormat.Html);
       }
       else if (which.Equals ("csv"))
       {
+        //content must be a cube
         result = content.Format (RCFormat.Csv);
       }
       else if (which.Equals ("log"))
       {
+        //content must be a cube containing expected logging fields
         result = content.Format (RCFormat.Log);
+      }
+      else if (which.Equals ("json"))
+      {
+        result = content.Format (RCFormat.Json);
       }
       else if (which.Equals ("text"))
       {
@@ -167,7 +174,11 @@ namespace RCL.Kernel
             builder.Append (args.Indent);
           }
         }
-        if (child.EscapeName)
+        if (args.Syntax == "JSON")
+        {
+          builder.AppendFormat ("\"{0}\"", child.RawName);
+        }
+        else if (child.EscapeName)
         {
           builder.Append (child.Name);
         }
