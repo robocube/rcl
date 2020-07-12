@@ -53,6 +53,17 @@ namespace RCL.Kernel
       return result;
     }
 
+    public static RCValue ParseJSON (string code)
+    {
+      RCParser parser = new JSONParser ();
+      RCArray<RCToken> tokens = new RCArray<RCToken> ();
+      parser.Lex (code, tokens);
+      bool fragment;
+      RCValue result = parser.Parse (tokens, out fragment, canonical:false);
+      RCAssert.IsNotNull (result, "The result of parser.Parse() was null.");
+      return result;
+    }
+
     public static void Reconfigure (RCLArgv args)
     {
       Args = args;
