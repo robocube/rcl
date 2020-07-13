@@ -5898,6 +5898,28 @@
     ]
     bin:"x\ntrue\n"
   }
+  TestFormatJson:{
+    skip:false
+    src:#json format {
+      x:1
+      y:true
+      z:"string"
+      a:1.2
+      b:{
+        foo:1
+        bar:"barstring"
+        baz:false
+      }
+    }
+    bin:"{\n  \"x\":1,\n  \"y\":true,\n  \"z\":\"string\",\n  \"a\":1.2,\n  \"b\":{\n    \"foo\":1,\n    \"bar\":\"barstring\",\n    \"baz\":false\n  }\n}"
+  }
+  TestFormatJson1:{
+    skip:false
+    src:#json format {
+      'name-needs-escape':1234
+    }
+    bin:"{\n  \"name-needs-escape\":1234\n}"
+  }
   TestAt:{
     skip:false
     src:[
