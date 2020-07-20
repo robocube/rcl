@@ -828,6 +828,12 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestCubeWithOnlyMissingValues ()
+    {
+      DoParserTest ("[S|x #x --]", "[S|x #x --]", RCFormat.TestCanonical);
+    }
+
+    [Test]
     [Ignore ("not convinced this is a good idea")]
     public void TestCubeWithColumnOfBlock1 ()
     {

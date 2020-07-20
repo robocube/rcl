@@ -13,8 +13,7 @@ namespace RCL.Kernel
     protected readonly Dictionary<RCSymbolScalar, bool> m_last;
     protected bool m_indicator;
 
-    public WhereLocator (RCCube source, 
-                         Column<bool> locator)
+    public WhereLocator (RCCube source, Column<bool> locator)
     {
       m_source = source;
       m_locator = locator;
@@ -46,10 +45,7 @@ namespace RCL.Kernel
       }
     }
 
-    public override void AfterRow (long e, 
-                                   RCTimeScalar t, 
-                                   RCSymbolScalar s, 
-                                   int row)
+    public override void AfterRow (long e, RCTimeScalar t, RCSymbolScalar s, int row)
     {
       if (m_indicator)
       {
@@ -59,24 +55,18 @@ namespace RCL.Kernel
       m_indicator = false;
     }
 
-    public override void VisitNull<T> (string name, 
-                                       Column<T> vector, 
-                                       int row)
+    public override void VisitNull<T> (string name, Column<T> vector, int row)
     {
       //base.VisitNull (name, vector, row);
     }
 
-    public override void VisitScalar<T> (string name,
-                                         Column<T> column,
-                                         int row)
+    public override void VisitScalar<T> (string name, Column<T> column, int row)
     {
       int tlrow = column.Index[row];
       if (m_indicator)
       {
-        m_target.WriteCell (name,
-                            m_source.SymbolAt (tlrow),
-                            column.Data[row],
-                            -1, true, true);
+        m_target.WriteCell (name, m_source.SymbolAt (tlrow),
+                            column.Data[row], -1, true, true);
       }
     }
   }

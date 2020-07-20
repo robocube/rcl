@@ -592,7 +592,10 @@
       ]
       <-$u.x
     }
-    bin:[]
+    bin:[
+      S | x
+      #x --
+    ]
   }
   TestReferenceToMissingG:{
     skip:false

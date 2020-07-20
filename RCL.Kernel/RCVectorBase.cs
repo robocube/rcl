@@ -56,6 +56,9 @@ namespace RCL.Kernel
         return new RCTime ((RCArray<RCTimeScalar>) array);
       else if (arrayType == typeof (RCArray<RCIncrScalar>))
         return new RCIncr ((RCArray<RCIncrScalar>) array);
+      // Not sure about this...
+      else if (arrayType == typeof (RCArray<object>))
+        return new RCLong ();
       else throw new Exception ("Return values of type: " + arrayType + " are not supported.");
     }
 

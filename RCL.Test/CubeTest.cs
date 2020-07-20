@@ -1602,6 +1602,12 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestSortColumnOfNothing ()
+    {
+      DoTest ("sort [S|x y #a 1 --]", "[S|x #a 1]");
+    }
+
+    [Test]
     public void TestReferenceColumnFunnyName ()
     {
       DoTest ("{u:['f. bar' 0 1 2 3 4 5 6 7] <-$u.'f. bar'}", "['f. bar' 0 1 2 3 4 5 6 7]");
@@ -1622,7 +1628,7 @@ namespace RCL.Test
     [Test]
     public void TestRowsColumnsWithOnlyNulls ()
     {
-      DoTest ("0 1 rows [a b c d e 1 10 100 1000 -- 2 20 -- 2000 -- 3 30 300 3000 -- 4 -- -- -- -- 5 50 500 -- 50000]", "[a b c d e 1 10 100 1000 -- 2 20 -- 2000 --]");
+      DoTest ("0 1 rows [a b c d e 1 10 100 1000 -- 2 20 -- 2000 -- 3 30 300 3000 -- 4 -- -- -- -- 5 50 500 -- 50000]", "[a b c d 1 10 100 1000 2 20 -- 2000]");
     }
 
     [Test]
@@ -1631,12 +1637,12 @@ namespace RCL.Test
       // The first value in a time series must be included in the output
       // even if its value is equal to the inital value for the corresponding data type.
       // Booleans are particularly problematic because they are equal to false by default.
-      
+
       // Simultaneous initial values.
       DoTest (RCFormat.Default, "[E|S|x 0 #a -1 1 #a 0 2 #a 1] > [E|S|x 0 #a 1 1 #a 0 2 #a -1]",
               "[E|S|x 0 #a false 2 #a true]");
     }
-      
+
     [Test]
     public void TestInitialValue2 ()
     {
@@ -1644,7 +1650,7 @@ namespace RCL.Test
       DoTest (RCFormat.Default, "[E|S|x 0 #a -1 2 #a 0 3 #a 1] > [E|S|x 1 #a 1 2 #a 0 3 #a -1]",
               "[E|S|x 1 #a false 3 #a true]");
     }
-      
+
     [Test]
     public void TestInitialValue3 ()
     {
@@ -1657,7 +1663,6 @@ namespace RCL.Test
     public void TestLatestTimestamp1 ()
     {
       // Make sure that the timestamp in the result is the one with the greatest value from the right and left.
-      
       // In this example the value x changes at T==3l on the RIGHT side.
       DoTest (RCFormat.Default,
               "[E|S|x 0 #a true 2 #a false] or [E|S|x 0 #a true 1 #a false 2 #a true 3 #a false]",
@@ -3447,6 +3452,18 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestWhere14 ()
+    {
+      DoTest ("{u:[S|x #a 0 #b 1 #c 2] <-$u where $u.y > $u.y}", "[]");
+    }
+
+    [Test]
+    public void TestWhere15 ()
+    {
+      DoTest ("{u:[x 0 1 2] <-$u where $u.y > $u.y}", "[]");
+    }
+
+    [Test]
     public void TestWhereEmpty1 ()
     {
       DoTest ("{u:[x y 1 -- 2 20] <-$u where $u.y == 20}", "[x y 2 20]");
@@ -3525,6 +3542,24 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestPlug4 ()
+    {
+      DoTest ("\"plgstr\" plug [s x #a -- #b \"bstr\" #c \"cstr\"]", "[s x #a \"plgstr\" #b \"bstr\" #c \"cstr\"]");
+    }
+
+    [Test]
+    public void TestPlug5 ()
+    {
+      DoTest ("{u:[S|x y #a 1 -- #b 2 \"FOO\" #c 3 --] <-$u ! \"Y\" plug $u.y}", "[S|x y #a 1 \"Y\" #b 2 \"FOO\" #c 3 \"Y\"]");
+    }
+
+    [Test]
+    public void TestPlug6 ()
+    {
+      DoTest ("{u:[S|x #a 1 #b 2 #c 3] <-$u ! \"Y\" plug $u.y}", "[S|x y #a 1 \"Y\" #b 2 \"Y\" #c 3 \"Y\"]");
+    }
+
+    [Test]
     public void TestUnplug1 ()
     {
       DoTest ("1.0 unplug [S|x #a 1.0 #b 3.0 #c 1.0]", "[S|x #a -- #b 3.0 #c --]");
@@ -3540,6 +3575,12 @@ namespace RCL.Test
     public void TestUnplug3 ()
     {
       DoTest ("1.0 unplug [s x #a 1.0 #b 3.0 #c 1.0]", "[s x #a -- #b 3.0 #c --]");
+    }
+
+    [Test]
+    public void TestUnplug4 ()
+    {
+      DoTest ("\"plgstr\" unplug [s x #a \"plgstr\" #b \"bstr\" #c \"cstr\"]", "[s x #a -- #b \"bstr\" #c \"cstr\"]");
     }
 
     //Note: More tests for unplug are needed, implementation needs comparers for other types like string, symbol etc.
@@ -3771,14 +3812,14 @@ namespace RCL.Test
     {
       DoTest ("[T|S|x 08:00 #a 0] & [T|S|x 08:01 #a 1]", "[T|S|x 08:00:00 #a 0 08:01:00 #a 1]");
     }
-      
+
     [Test]
     public void TestAppendTime4 ()
     {
       //Do not remove dups in the case of &.
       DoTest ("[E|S|x 0 #x 0] & [E|S|x 1 #x 0]", "[E|S|x 0 #x 0 1 #x 0]");
     }
-      
+
     //[Test]
     //public void TestBang4 ()
     //{
