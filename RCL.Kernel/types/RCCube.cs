@@ -178,7 +178,7 @@ namespace RCL.Kernel
         return last;
       }
     }
-    
+
     public void Write (RCSymbolScalar s)
     {
       Axis.Write (s);
@@ -193,7 +193,7 @@ namespace RCL.Kernel
     {
       Axis.Write (g, e, t, s);
     }
-    
+
     public class ColumnOfNothing : Column<object>
     {
       public ColumnOfNothing (Timeline timeline) : base (timeline) {}
@@ -256,9 +256,9 @@ namespace RCL.Kernel
       public override object Array { get { return m_data; } }
       public override RCArray<int> Index { get { return m_index; } }
       public new RCArray<object> Data { get { return m_data; } }
-      public override int Count { get { return m_data.Count; } }
+      public override int Count { get { return 0; } }
     }
-    
+
     public class ColumnOfByte : Column<byte>
     {
       public ColumnOfByte (Timeline timeline)
@@ -413,7 +413,7 @@ namespace RCL.Kernel
       public ColumnOfTime (Timeline timeline) : base (timeline) {}
 
       public ColumnOfTime (Timeline timeline,
-                           RCArray<int> index, 
+                           RCArray<int> index,
                            object data)
         : base (timeline, index, data) {}
 
@@ -653,7 +653,7 @@ namespace RCL.Kernel
         }
         else
         {
-          return new RCCube ();
+          return new RCCube (Axis, new RCArray<string> (name), new RCArray<ColumnBase> (new ColumnOfNothing (Axis)));
         }
       }
       else
@@ -824,7 +824,7 @@ namespace RCL.Kernel
 
     public override int Count
     {
-      get { return Rows; }
+      get { return Axis.Count; }
     }
 
     public int Rows
@@ -1229,7 +1229,7 @@ namespace RCL.Kernel
     }
 
     //When reading backwards the result will end up backwards as well.
-    //The best way that I can think of to solve this is to reverse all the vectors 
+    //The best way that I can think of to solve this is to reverse all the vectors
     //and the timeline in place.  I don't want to allocate memory again.
     //This will be done before returning the newly created cube.
     internal void ReverseInPlace ()
@@ -1312,7 +1312,10 @@ namespace RCL.Kernel
       //return early if everything is count zero.
       if (numDoneCols >= columns.Count)
       {
-        return tlrow;
+        if (!canonical || timeline.Symbol == null || timeline.Symbol.Count == 0)
+        {
+          return tlrow;
+        }
       }
       // Always use the canonical method if there is no S column on the axis.
       canonical = canonical || timeline.Symbol == null;
@@ -1320,8 +1323,8 @@ namespace RCL.Kernel
     LOOP:
       long mintime = long.MaxValue;
       int mincol = int.MinValue;
-      Queue<int> mincols = new Queue<int> ();
       RCSymbolScalar symbol = null;
+      Queue<int> mincols = new Queue<int> ();
       RCTimeScalar time = new RCTimeScalar (new DateTime (0), RCTimeType.Timestamp);
       int destTlRow = int.MinValue;
       int nextSourceRow = int.MaxValue;
@@ -1338,7 +1341,11 @@ namespace RCL.Kernel
         {
           continue;
         }
-        if (columns[col].Index[vrow[col]] < nextSourceRow)
+        if (columns[col].TypeCode == '0')
+        {
+          nextSourceRow = tlrow;
+        }
+        else if (columns[col].Index[vrow[col]] < nextSourceRow)
         {
           nextSourceRow = columns[col].Index[vrow[col]];
         }
@@ -1353,11 +1360,17 @@ namespace RCL.Kernel
 
         if (timeline.Event != null)
         {
-          times[col] = timeline.Event[columns[col].Index[vrow[col]]];
+          if (!(columns[col].TypeCode == '0'))
+          {
+            times[col] = timeline.Event[columns[col].Index[vrow[col]]];
+          }
         }
         else
         {
-          times[col] = columns[col].Index[vrow[col]];
+          if (!(columns[col].TypeCode == '0'))
+          {
+            times[col] = columns[col].Index[vrow[col]];
+          }
         }
 
         if (times[col] < mintime)
@@ -1374,7 +1387,14 @@ namespace RCL.Kernel
             }
             else
             {
-              symbolIndex = columns[col].Index[vrow[col]];
+              if (!(columns[col].TypeCode == '0'))
+              {
+                symbolIndex = columns[col].Index[vrow[col]];
+              }
+              else
+              {
+                symbolIndex = destTlRow;
+              }
             }
             symbol = timeline.Symbol[symbolIndex];
             if (timeline.Time != null)
@@ -1401,6 +1421,11 @@ namespace RCL.Kernel
           //last row with that timestamp/symbol will have values
           //on all fields.
         }
+      }
+
+      if (symbol == null && timeline != null && timeline.Symbol != null)
+      {
+        symbol = timeline.Symbol[tlrow];
       }
 
       visitor.BeforeRow (mintime, time, symbol, tlrow);
@@ -1474,7 +1499,14 @@ namespace RCL.Kernel
       //Do the remaining nulls after the mincolth column
       while (j < columns.Count)
       {
-        columns[j].AcceptNull (names[j], visitor, vrow[j]);
+        if (columns[j] == null)
+        {
+          visitor.VisitNull<object> (names[j], null, vrow[j]);
+        }
+        else
+        {
+          columns[j].AcceptNull (names[j], visitor, vrow[j]);
+        }
         if (j < columns.Count - 1)
         {
           visitor.BetweenCols (j);
@@ -1571,9 +1603,9 @@ namespace RCL.Kernel
     /// <summary>
     /// Visit all of the cells in temporal order.
     /// This should really have a start and end row.
-    /// I think we have the possibility of reading cells that are in the 
+    /// I think we have the possibility of reading cells that are in the
     /// process of being written. Also I want to generalize this so that
-    /// it can go backwards, and write a read visitor that can read from 
+    /// it can go backwards, and write a read visitor that can read from
     /// the end of the cube.
     /// </summary>
     public virtual long VisitCellsForward (Visitor visitor, int start, int end)

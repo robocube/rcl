@@ -12,25 +12,21 @@ namespace RCL.Kernel
     protected ReadSpec m_spec;
     protected int m_end;
     protected RCCube m_source;
-  
+
     //The results and information about the results.
     protected RCCube m_target;
     protected Dictionary<RCSymbolScalar, long> m_inSymbols = new Dictionary<RCSymbolScalar, long> ();
     protected RCArray<int> m_inLines = new RCArray<int> ();
     protected RCArray<int> m_acceptedLines;
     protected RCArray<RCSymbolScalar> m_acceptedSymbols;
-  
+
     //State variables to be used along the way.
     protected bool m_accept = false;
     protected bool m_fill = false;
     protected RCSymbolScalar m_symbol = null;
     protected long m_initg = 0;
-  
-    public Reader (RCCube source,
-                   ReadSpec spec,
-                   ReadCounter counter,
-                   bool forceGCol,
-                   int end)
+
+    public Reader (RCCube source, ReadSpec spec, ReadCounter counter, bool forceGCol, int end)
     {
       if (source == null)
       {
@@ -44,7 +40,7 @@ namespace RCL.Kernel
       {
         throw new ArgumentNullException ("counter");
       }
-  
+
       m_source = source;
       m_spec = spec;
       m_counter = counter;
@@ -60,14 +56,14 @@ namespace RCL.Kernel
       }
       m_target = new RCCube (axisCols);
     }
-  
+
     public void Lock ()
     {
       m_acceptedLines.Lock ();
       m_acceptedSymbols.Lock ();
       m_inLines.Lock ();
     }
-  
+
     public RCCube Read ()
     {
       if (m_spec.Forward)
@@ -92,12 +88,12 @@ namespace RCL.Kernel
       m_acceptedSymbols = new RCArray<RCSymbolScalar> (m_inSymbols.Keys);
       return m_target;
     }
-  
+
     public RCArray<int> AcceptedLines
     {
       get { return m_acceptedLines; }
     }
-  
+
     public RCArray<RCSymbolScalar> AcceptedSymbols
     {
       get { return m_acceptedSymbols; }

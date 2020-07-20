@@ -12,7 +12,7 @@ namespace RCL.Kernel
     protected RCSymbolScalar m_symbol;
     protected bool m_rowChanged;
 
-    public Deltafier (RCCube before, RCCube after) 
+    public Deltafier (RCCube before, RCCube after)
     {
       m_before = before;
       m_after = after;
@@ -51,10 +51,7 @@ namespace RCL.Kernel
       m_symbol = s;
     }
 
-    public override void AfterRow (long e, 
-                                   RCTimeScalar t, 
-                                   RCSymbolScalar s, 
-                                   int row)
+    public override void AfterRow (long e, RCTimeScalar t, RCSymbolScalar s, int row)
     {
       if (m_rowChanged)
       {
@@ -63,16 +60,12 @@ namespace RCL.Kernel
       }
     }
 
-    public override void VisitNull<T> (string name, 
-                                       Column<T> vector, 
-                                       int row)
+    public override void VisitNull<T> (string name, Column<T> vector, int row)
     {
       //base.VisitNull (name, vector, row);
     }
 
-    public override void VisitScalar<T> (string name,
-                                         Column<T> column,
-                                         int row)
+    public override void VisitScalar<T> (string name, Column<T> column, int row)
     {
       T val = column.Data[row];
       int tlrow = column.Index[row];
@@ -89,7 +82,7 @@ namespace RCL.Kernel
             m_target.WriteCell (name, m_symbol, val, -1, true, false);
           }
         }
-        else 
+        else
         {
           m_rowChanged = true;
           m_target.WriteCell (name, m_symbol, val, -1, true, false);

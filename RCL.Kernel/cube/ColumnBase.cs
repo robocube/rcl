@@ -26,6 +26,8 @@ namespace RCL.Kernel
         return new RCCube.ColumnOfTime (timeline, index, data);
       else if (type == typeof (RCArray<RCIncrScalar>))
         return new RCCube.ColumnOfIncr (timeline, index, data);
+      else if (type == typeof (RCArray<object>))
+        return new RCCube.ColumnOfNothing (timeline);
       else throw new Exception ("unsupported type: " + type);
     }
 

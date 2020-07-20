@@ -22,7 +22,7 @@ namespace RCL.Kernel
       m_source.VisitCellsForward (this, 0, m_source.Count);
       return m_target;
     }
-  
+
     public override void BeforeRow (long e, RCTimeScalar t, RCSymbolScalar symbol, int row)
     {
       if (m_source.Axis.Has ("G"))
@@ -46,7 +46,7 @@ namespace RCL.Kernel
         m_rowName = m_source.Axis.Symbol[row].Key.ToString ();
       }
     }
-  
+
     public override void VisitScalar<T> (string name, Column<T> column, int row)
     {
       m_row = new RCBlock (m_row, name, ":",

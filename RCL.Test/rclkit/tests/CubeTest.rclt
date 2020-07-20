@@ -3187,6 +3187,17 @@
              0
     ]
   }
+  TestSortColumnOfNothing:{
+    skip:false
+    src:sort [
+      S | x
+      #a  1
+    ]
+    bin:[
+      S | x
+      #a  1
+    ]
+  }
   TestReferenceColumnFunnyName:{
     skip:false
     src:{
@@ -3259,9 +3270,9 @@
        5 50 500   -- 50000
     ]
     bin:[
-       a  b   c    d  e
-       1 10 100 1000 --
-       2 20  -- 2000 --
+       a  b   c    d
+       1 10 100 1000
+       2 20  -- 2000
     ]
   }
   TestInitialValue1:{
@@ -7350,6 +7361,32 @@
       #a  4
     ]
   }
+  TestWhere14:{
+    skip:false
+    src:{
+      u:[
+        S | x
+        #a  0
+        #b  1
+        #c  2
+      ]
+      <-$u where $u.y > $u.y
+    }
+    bin:[]
+  }
+  TestWhere15:{
+    skip:false
+    src:{
+      u:[
+         x
+         0
+         1
+         2
+      ]
+      <-$u where $u.y > $u.y
+    }
+    bin:[]
+  }
   TestWhereEmpty1:{
     skip:false
     src:{
@@ -7551,6 +7588,57 @@
       #c 1.0
     ]
   }
+  TestPlug4:{
+    skip:false
+    src:"plgstr" plug [
+      s  x
+      #a --
+      #b "bstr"
+      #c "cstr"
+    ]
+    bin:[
+      s  x
+      #a "plgstr"
+      #b "bstr"
+      #c "cstr"
+    ]
+  }
+  TestPlug5:{
+    skip:false
+    src:{
+      u:[
+        S | x y
+        #a  1 --
+        #b  2 "FOO"
+        #c  3 --
+      ]
+      <-$u ! "Y" plug $u.y
+    }
+    bin:[
+      S | x y
+      #a  1 "Y"
+      #b  2 "FOO"
+      #c  3 "Y"
+    ]
+  }
+  TestPlug6:{
+    skip:false
+    src:{
+      u:[
+        S | x
+        #a  1
+        #b  2
+        #c  3
+      ]
+      <-$u ! "Y" plug $u.y
+    }
+    bin:[
+      S | x y
+      #a  1 "Y"
+      #b  2 "Y"
+      #c  3 "Y"
+    ]
+  }
   TestUnplug1:{
     skip:false
     src:1.0 unplug [
@@ -7594,6 +7682,21 @@
       #a  --
       #b 3.0
       #c  --
+    ]
+  }
+  TestUnplug4:{
+    skip:false
+    src:"plgstr" unplug [
+      s  x
+      #a "plgstr"
+      #b "bstr"
+      #c "cstr"
+    ]
+    bin:[
+      s  x
+      #a --
+      #b "bstr"
+      #c "cstr"
     ]
   }
   TestObject:{
