@@ -427,7 +427,7 @@ namespace RCL.Test
     [Test]
     public void TestReferenceToMissingColumn()
     {
-      DoEvalTest ("{u:[S|a #x 0] <-$u.x}", "[]");
+      DoEvalTest ("{u:[S|a #x 0] <-$u.x}", "[S|x #x --]");
     }
 
     [Test]
@@ -1205,13 +1205,13 @@ namespace RCL.Test
     [Test]
     public void TestForceWithDyadicTrace ()
     {
-      DoEvalTest ("{:#a force {x:1 y:2} :#a force {y:2 z:3} :assert (1 0 trace #a) = [S|y z #a 2 3] <-0}", "0");
+      DoEvalTest ("{:#a force {x:1 y:2} :#a force {y:2 z:3} :assert (1 0 trace #a) = [S|x y z #a -- 2 3] <-0}", "0");
     }
 
     [Test]
     public void TestForceCubeDyadicTrace ()
     {
-      DoEvalTest ("{:force [S|x y #a 1 2] :force [S|y z #a 2 3] :assert (1 0 trace #a) = [S|y z #a 2 3] <-0}", "0");
+      DoEvalTest ("{:force [S|x y #a 1 2] :force [S|y z #a 2 3] :assert (1 0 trace #a) = [S|x y z #a -- 2 3] <-0}", "0");
     }
 
     [Test]
@@ -1281,7 +1281,7 @@ namespace RCL.Test
     [Test]
     public void TestWriteDispatchWildcard2()
     {
-      DoEvalTest ("{reader:fiber {<-#x dispatch 1} :#x,0 #x,1 write {a:1 10 b:2 20 c:3 30} :#x write {d:4} :assert (wait $reader) = [S|d #x 4] <-0}", "0");
+      DoEvalTest ("{reader:fiber {<-#x dispatch 1} :#x,0 #x,1 write {a:1 10 b:2 20 c:3 30} :#x write {d:4} :assert (wait $reader) = [S|a b c d #x -- -- -- 4] <-0}", "0");
     }
 
     [Test]
@@ -1361,7 +1361,7 @@ namespace RCL.Test
     [Test]
     public void TestWriteReadFirstNull()
     {
-      DoEvalTest ("{:write [S|a b #x 1 -- #y 10 2] :assert (#x dispatch 1) = [S|a #x 1] <-0}", "0");
+      DoEvalTest ("{:write [S|a b #x 1 -- #y 10 2] :assert (#x dispatch 1) = [S|a b #x 1 --] <-0}", "0");
     }
 
     [Test]
@@ -1470,7 +1470,7 @@ namespace RCL.Test
     [Test]
     public void TestWriteSnapColumnRemoval ()
     {
-      DoEvalTest ("{:#x,y write {a:1 b:2} :#x,z write {c:3} :assert (#x,* snap 1) = [S|c #x,z 3] <-0}", "0");
+      DoEvalTest ("{:#x,y write {a:1 b:2} :#x,z write {c:3} :assert (#x,* snap 1) = [S|a b c #x,z -- -- 3] <-0}", "0");
     }
 
     [Test]
@@ -1625,7 +1625,7 @@ namespace RCL.Test
       DoEvalTest (string.Format ("#a,x select {0}", vstring), "[G|S|x y z 0 #a,x 1 10 100]", RCFormat.Default);
       DoEvalTest (string.Format ("#a,x #b,z select {0}", vstring), "[G|S|x y z 0 #a,x 1 10 100 2 #b,z 3 30 300]", RCFormat.Default);
       DoEvalTest (string.Format ("#a,* #b,z select {0}", vstring), "[G|S|x y z 0 #a,x 1 10 100 1 #a,y 2 20 200 2 #b,z 3 30 300]", RCFormat.Default);
-  
+
       DoEvalTest (string.Format ("#b,z select {0}", vstring), "[G|S|x y z 2 #b,z 3 30 300]", RCFormat.Default);
       DoEvalTest (string.Format ("#b,* select {0}", vstring), "[G|S|x y z 2 #b,z 3 30 300]", RCFormat.Default);
       DoEvalTest (string.Format ("#b select {0}", vstring), "[]", RCFormat.Default);
@@ -1665,6 +1665,12 @@ namespace RCL.Test
     {
       DoEvalTest ("#*,b,* select [S|x y z #1,a,0 1 10 100 #1,b,0 2 20 200 #2,b,0 3 30 300]", "[G|S|x y z 1 #1,b,0 2 20 200 2 #2,b,0 3 30 300]", RCFormat.Default);
     }
+
+    //[Test]
+    //public void TestSelectConcrete ()
+    //{
+    //  DoEvalTest ("#SPY,PUT,BUY #SPY,PUT,SELL select [S|qty # 70 #SPY 64 #SPY,PUT 64 #SPY,PUT,BUY 32 #SPY,PUT,SELL 32]", "[S|qty #SPY,PUT,BUY 32 #SPY,PUT,SELL 32]", RCFormat.Default);
+    //}
 
     [Test]
     public void TestBot ()

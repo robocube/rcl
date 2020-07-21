@@ -292,6 +292,7 @@ namespace RCL.Core
           case 'b' : newcol = DoColumn<bool> (oldcol, map, axis); break;
           case 'y' : newcol = DoColumn<RCSymbolScalar> (oldcol, map, axis); break;
           case 't' : newcol = DoColumn<RCTimeScalar> (oldcol, map, axis); break;
+          case '0' : newcol = oldcol; break;
           default: throw new Exception ("Type:" + newcol.TypeCode + " is not supported by sort");
         }
         columns.Write (newcol);

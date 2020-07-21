@@ -20,7 +20,7 @@ _rclt_teardown:{
 }
 
 :"As operators are added, starting rcl processes becomes more cpu intensive"
-___WAIT_FOR_INIT:1000
+___WAIT_FOR_INIT:2000
 
 batch_long:{
   src:{

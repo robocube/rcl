@@ -961,6 +961,14 @@ namespace RCL.Core
 
     public static RCValue Invoke (RCClosure closure, string name, RCCube left, RCCube right)
     {
+      if (right.GetColumn (0).TypeCode == '0')
+      {
+        return right;
+      }
+      else if (left.GetColumn (0).TypeCode == '0')
+      {
+        return left;
+      }
       //If the scalar type is used as the key it is assumed that the
       //argument will be a cube whose first column will be a vector of that scalar type.
       RCActivator.OverloadKey key = new RCActivator.OverloadKey (
@@ -976,6 +984,10 @@ namespace RCL.Core
 
     public static RCValue Invoke (RCClosure closure, string name, RCVectorBase left, RCCube right)
     {
+      if (right.GetColumn (0).TypeCode == '0')
+      {
+        return right;
+      }
       //Here BaseType is always RCVector<T>.
       //This is a bit fragile.
       RCActivator.OverloadKey key = new RCActivator.OverloadKey (
@@ -991,6 +1003,10 @@ namespace RCL.Core
 
     public static RCValue Invoke (RCClosure closure, string name, RCCube left, RCVectorBase right)
     {
+      if (left.GetColumn (0).TypeCode == '0')
+      {
+        return left;
+      }
       //RCVectorBase lvector = left.GetVector (0);
       //Here BaseType is always RCVector<T>.
       //This is a bit fragile.
@@ -1009,6 +1025,10 @@ namespace RCL.Core
     {
       // So we need a version that does this, and a version that looks for all
       // columns which can have the specified operator applied to them
+      if (right.GetColumn (0).TypeCode == '0')
+      {
+        return right;
+      }
       RCActivator.OverloadKey key = new RCActivator.OverloadKey (
         name, typeof (RCCube), null, right.GetType (0));
       Overload overload;
@@ -1288,6 +1308,16 @@ namespace RCL.Core
       }
     }
 
+    public class PlugStringComparer : System.Collections.IComparer
+    {
+      int System.Collections.IComparer.Compare (object xobj, object yobj)
+      {
+        string x = (string) xobj;
+        string y = (string) yobj;
+        return System.Collections.Comparer.DefaultInvariant.Compare (x, y);
+      }
+    }
+
     [RCVerb ("plug")]
     public void EvalPlug (RCRunner runner, RCClosure closure, RCDouble left, RCCube cube)
     {
@@ -1297,6 +1327,19 @@ namespace RCL.Core
       }
       RCCube result = new RCCube (cube.Axis);
       Plugger plugger = new Plugger (result, left[0], new PlugDoubleComparer ());
+      plugger.Plug (cube);
+      runner.Yield (closure, result);
+    }
+
+    [RCVerb ("plug")]
+    public void EvalPlug (RCRunner runner, RCClosure closure, RCString left, RCCube cube)
+    {
+      if (left.Count != 1)
+      {
+        throw new Exception ("plug takes only one default value on the left");
+      }
+      RCCube result = new RCCube (cube.Axis);
+      Plugger plugger = new Plugger (result, left[0], new PlugStringComparer ());
       plugger.Plug (cube);
       runner.Yield (closure, result);
     }
@@ -1323,6 +1366,19 @@ namespace RCL.Core
       }
       RCCube result = new RCCube (cube.Axis);
       Plugger plugger = new Plugger (result, left[0], new PlugDoubleComparer ());
+      plugger.Unplug (cube);
+      runner.Yield (closure, result);
+    }
+
+    [RCVerb ("unplug")]
+    public void Unplug (RCRunner runner, RCClosure closure, RCString left, RCCube cube)
+    {
+      if (left.Count != 1)
+      {
+        throw new Exception ("plug takes only one default value on the left");
+      }
+      RCCube result = new RCCube (cube.Axis);
+      Plugger plugger = new Plugger (result, left[0], new PlugStringComparer ());
       plugger.Unplug (cube);
       runner.Yield (closure, result);
     }
@@ -1595,17 +1651,31 @@ namespace RCL.Core
         runner.Yield (closure, RCCube.Empty);
         return;
       }
+      Column<bool> whereCol = right.GetColumn (0) as Column<bool>;
       if (left.Axis.ColCount == 0)
       {
-        RCArray<bool> whereCol = right.DoColof<bool> (col:0, def:false, allowSparse:true);
-        WhereIndicator wherer = new WhereIndicator (left, whereCol);
-        runner.Yield (closure, wherer.Where ());
+        if (whereCol != null)
+        {
+          RCArray<bool> whereArr = right.DoColof<bool> (col:0, def:false, allowSparse:true);
+          WhereIndicator wherer = new WhereIndicator (left, whereArr);
+          runner.Yield (closure, wherer.Where ());
+        }
+        else
+        {
+          runner.Yield (closure, RCCube.Empty);
+        }
       }
       else
       {
-        Column<bool> whereCol = (Column<bool>) right.GetColumn (0);
-        WhereLocator wherer = new WhereLocator (left, whereCol);
-        runner.Yield (closure, wherer.Where ());
+        if (whereCol != null)
+        {
+          WhereLocator wherer = new WhereLocator (left, whereCol);
+          runner.Yield (closure, wherer.Where ());
+        }
+        else
+        {
+          runner.Yield (closure, RCCube.Empty);
+        }
       }
     }
 
@@ -2861,14 +2931,6 @@ namespace RCL.Core
         ReadCounter counter = new ReadCounter ();
         ReadSpec spec = new ReadSpec (counter, RCSymbol.Wild, (int) left[0], (int) left[1] + 1, false);
         result = right.Read (spec, counter, false, right.Count);
-        for (int i = 0; i < result.Cols; ++i)
-        {
-          ColumnBase column = result.GetColumn (i);
-          if (column == null)
-          {
-            result.Columns.Write (i, new RCCube.ColumnOfNothing (result.Axis));
-          }
-        }
       }
       catch (Exception)
       {

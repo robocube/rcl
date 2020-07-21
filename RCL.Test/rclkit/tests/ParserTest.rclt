@@ -669,6 +669,11 @@
     src:format parse "[x y z -- 10 100 2 20 200 3 30 300]"
     bin:"[x y z -- 10 100 2 20 200 3 30 300]"
   }
+  TestCubeWithOnlyMissingValues:{
+    skip:false
+    src:#testcanonical format #canonical parse "[S|x #x --]"
+    bin:"[S|x #x --]"
+  }
   TestCubeWithColumnOfBlock1:{
     skip:true
     src:format parse "[x {a:1} {b:2} {c:3}]"
