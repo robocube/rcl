@@ -10,11 +10,11 @@ namespace RCL.Kernel
     protected RCArray<T> m_data;
     protected RCArray<int> m_index;
     protected Dictionary<RCSymbolScalar, T> m_last;
+    protected int m_tlcount;
 
-    protected Column (Timeline timeline,
-                      RCArray<int> index,
-                      object data)
+    protected Column (Timeline timeline, RCArray<int> index, object data)
     {
+      m_tlcount = timeline.Count;
       RCArray<T> original = (RCArray<T>) data;
       if (original.Locked ())
       {
@@ -48,6 +48,7 @@ namespace RCL.Kernel
 
     protected Column (Timeline timeline)
     {
+      m_tlcount = timeline.Count;
       //This ctor is used while writing data into the blackboard.
       //Always instantiate m_last because these cubes will always have a symbol column.
       m_data = new RCArray<T> ();

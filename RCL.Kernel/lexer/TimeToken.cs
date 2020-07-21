@@ -111,7 +111,6 @@ namespace RCL.Kernel
 
     public static int LengthOfTimespan (string text, int start)
     {
-      //Console.WriteLine("LengthOfTimespan");
       int current = start;
       if (current < text.Length && text[current] == '-') ++current;
       while (current < text.Length && (text[current] >= '0' && text[current] <= '9')) ++current;
