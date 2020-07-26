@@ -731,7 +731,7 @@ namespace RCL.Kernel
 
     public static void DoYield (RCRunner runner, RCClosure closure, RCValue result)
     {
-      DoYield (runner, closure, result, canonical:false);
+      DoYield (runner, closure, result, canonical:true);
     }
 
     public static void DoYield (RCRunner runner, RCClosure closure, RCValue result, bool canonical)

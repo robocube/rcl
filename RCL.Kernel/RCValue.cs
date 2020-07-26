@@ -92,7 +92,7 @@ namespace RCL.Kernel
 
     public virtual void Eval (RCRunner runner, RCClosure closure)
     {
-      runner.Yield (closure, this);
+      runner.YieldCanonical (closure, this);
     }
 
     public virtual RCClosure Next (RCRunner runner, RCClosure tail, RCClosure previous, RCValue result)

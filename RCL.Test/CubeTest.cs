@@ -243,6 +243,12 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestCube17 ()
+    {
+      DoTest ("{u:[x \"\"] <-count cube eval {a:$u.a}}", "1");
+    }
+
+    [Test]
     public void TestCubeS ()
     {
       DoTest ("cube \"a\" \"b\" \"c\"", "[x \"a\" \"b\" \"c\"]");
@@ -1604,7 +1610,7 @@ namespace RCL.Test
     [Test]
     public void TestSortColumnOfNothing ()
     {
-      DoTest ("sort [S|x y #a 1 --]", "[S|x #a 1]");
+      DoTest ("sort [S|x y #a 1 --]", "[S|x y #a 1 --]");
     }
 
     [Test]
@@ -1628,7 +1634,7 @@ namespace RCL.Test
     [Test]
     public void TestRowsColumnsWithOnlyNulls ()
     {
-      DoTest ("0 1 rows [a b c d e 1 10 100 1000 -- 2 20 -- 2000 -- 3 30 300 3000 -- 4 -- -- -- -- 5 50 500 -- 50000]", "[a b c d 1 10 100 1000 2 20 -- 2000]");
+      DoTest ("0 1 rows [a b c d e 1 10 100 1000 -- 2 20 -- 2000 -- 3 30 300 3000 -- 4 -- -- -- -- 5 50 500 -- 50000]", "[a b c d e 1 10 100 1000 -- 2 20 -- 2000 --]");
     }
 
     [Test]

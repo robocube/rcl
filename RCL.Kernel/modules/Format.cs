@@ -30,6 +30,10 @@ namespace RCL.Kernel
       {
         result = content.Format (RCFormat.Pretty);
       }
+      else if (which.Equals ("defaultnot"))
+      {
+        result = content.Format (RCFormat.DefaultNoT);
+      }
       else if (which.Equals ("canonical"))
       {
         canonical = true;

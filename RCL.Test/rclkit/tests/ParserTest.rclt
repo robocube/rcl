@@ -674,6 +674,11 @@
     src:#testcanonical format #canonical parse "[S|x #x --]"
     bin:"[S|x #x --]"
   }
+  TestCubeWithOnlyMissingValues1:{
+    skip:false
+    src:format parse "[x --]"
+    bin:"[x --]"
+  }
   TestCubeWithColumnOfBlock1:{
     skip:true
     src:format parse "[x {a:1} {b:2} {c:3}]"

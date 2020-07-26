@@ -21,17 +21,17 @@ namespace RCL.Kernel
 
     static RCFormat ()
     {
-      Default = new RCFormat ("RCL", "", "", " ", " ", align:false, showt:true, parsableScalars:true, canonicalCubes:false, fragment:false);
-      Pretty = new RCFormat ("RCL", "  ", "\n", " ", "\n", align:true, showt:true, parsableScalars:true, canonicalCubes:false, fragment:false);
+      Default = new RCFormat ("RCL", "", "", " ", " ", align:false, showt:true, parsableScalars:true, canonicalCubes:true, fragment:false);
+      Pretty = new RCFormat ("RCL", "  ", "\n", " ", "\n", align:true, showt:true, parsableScalars:true, canonicalCubes:true, fragment:false);
       // EditorFragment uses canonical cubes because it is intended for use in the editor where I often edit test cases involving cubes
       EditorFragment = new RCFormat ("RCL", "  ", "\n", " ", "\n", align:true, showt:true, parsableScalars:true, canonicalCubes:true, fragment:true);
       Canonical = new RCFormat ("RCL", "  ", "\n", " ", "\n", align:true, showt:true, parsableScalars:true, canonicalCubes:true, fragment:false);
-      DefaultNoT = new RCFormat ("RCL", "", "", " ", " ", align:false, showt:false, parsableScalars:true, canonicalCubes:false, fragment:false);
+      DefaultNoT = new RCFormat ("RCL", "", "", " ", " ", align:false, showt:false, parsableScalars:true, canonicalCubes:true, fragment:false);
       TestCanonical = new RCFormat ("RCL", "", "", " ", " ", align:false, showt:true, parsableScalars:true, canonicalCubes:true, fragment:false);
       Json = new RCFormat ("JSON", "  ", "\n", " ", ",\n", align:true, showt:true, parsableScalars:false, canonicalCubes:true, fragment:false);
-      Html = new RCFormat ("HTML", "  ", "\n", " ", "\n", align:true, showt:true, parsableScalars:true, canonicalCubes:false, fragment:false);
-      Csv = new RCFormat ("CSV", "  ", "\n", ",", "\n", align:false, showt:true, parsableScalars:false, canonicalCubes:false, fragment:false);
-      Log = new RCFormat ("LOG", "  ", "\n", " ", "\n", align:false, showt:true, parsableScalars:false, canonicalCubes:false, fragment:false);
+      Html = new RCFormat ("HTML", "  ", "\n", " ", "\n", align:true, showt:true, parsableScalars:true, canonicalCubes:true, fragment:false);
+      Csv = new RCFormat ("CSV", "  ", "\n", ",", "\n", align:false, showt:true, parsableScalars:false, canonicalCubes:true, fragment:false);
+      Log = new RCFormat ("LOG", "  ", "\n", " ", "\n", align:false, showt:true, parsableScalars:false, canonicalCubes:true, fragment:false);
     }
 
     public RCFormat (string syntax, string indent, string newline, string delimeter, string rowDelimeter, bool align,
