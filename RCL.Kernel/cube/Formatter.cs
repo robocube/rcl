@@ -169,7 +169,15 @@ namespace RCL.Kernel
 
       //Okay now format the individual rows using the gathered
       //strings and widths determined by the visitor.
-      int rows = m_columns[0].Count;
+      int rows;
+      if (m_columns.Count == 0 || m_columns[0] == null)
+      {
+        rows = 0;
+      }
+      else
+      {
+        rows = m_columns[0].Count;
+      }
       for (int row = 0; row < rows; ++row)
       {
         for (int i = m_args.Fragment ? 1 : 0; i < m_level; ++i)

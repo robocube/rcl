@@ -486,14 +486,7 @@ namespace RCL.Kernel
       {
         if (m_columns[i] == null)
         {
-          if (canonical)
-          {
-            m_columns.Write (i, new ColumnOfNothing (Axis));
-          }
-          else
-          {
-            missingCols.Write (i);
-          }
+          m_columns.Write (i, new ColumnOfNothing (Axis));
         }
         else
         {
@@ -1312,7 +1305,7 @@ namespace RCL.Kernel
       //return early if everything is count zero.
       if (numDoneCols >= columns.Count)
       {
-        if (!canonical || timeline.Symbol == null || timeline.Symbol.Count == 0)
+        if (!canonical || timeline.Count == 0)
         {
           return tlrow;
         }

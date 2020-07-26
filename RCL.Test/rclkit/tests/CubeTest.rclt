@@ -675,6 +675,19 @@
     }
     bin:[]
   }
+  TestCube17:{
+    skip:false
+    src:{
+      u:[
+        x
+        ""
+      ]
+      <-count cube eval {
+        a:$u.a
+      }
+    }
+    bin:1
+  }
   TestCubeS:{
     skip:false
     src:cube "a" "b" "c"
@@ -3190,12 +3203,12 @@
   TestSortColumnOfNothing:{
     skip:false
     src:sort [
-      S | x
-      #a  1
+      S | x  y
+      #a  1 --
     ]
     bin:[
-      S | x
-      #a  1
+      S | x  y
+      #a  1 --
     ]
   }
   TestReferenceColumnFunnyName:{
@@ -3270,9 +3283,9 @@
        5 50 500   -- 50000
     ]
     bin:[
-       a  b   c    d
-       1 10 100 1000
-       2 20  -- 2000
+       a  b   c    d  e
+       1 10 100 1000 --
+       2 20  -- 2000 --
     ]
   }
   TestInitialValue1:{
