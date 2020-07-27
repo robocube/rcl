@@ -92,7 +92,7 @@ namespace RCL.Kernel
 
     public virtual void Eval (RCRunner runner, RCClosure closure)
     {
-      runner.YieldCanonical (closure, this);
+      runner.Yield (closure, this);
     }
 
     public virtual RCClosure Next (RCRunner runner, RCClosure tail, RCClosure previous, RCValue result)
@@ -213,7 +213,7 @@ namespace RCL.Kernel
     }
 
     //Types that have child objects need to override this and lock the children.
-    public virtual void Lock (bool canonical)
+    public virtual void Lock ()
     {
       m_lock = true;
     }

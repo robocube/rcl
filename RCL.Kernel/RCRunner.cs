@@ -667,11 +667,6 @@ namespace RCL.Kernel
       RCL.Kernel.Eval.DoYield (this, closure, result);
     }
 
-    public void YieldCanonical (RCClosure closure, RCValue result)
-    {
-      RCL.Kernel.Eval.DoYield (this, closure, result, canonical:true);
-    }
-
     public void Output (RCClosure closure, RCSymbolScalar name, RCValue val)
     {
       lock (m_botLock)

@@ -76,13 +76,13 @@ namespace RCL.Kernel
       }
     }
 
-    public override void Lock (bool canonical)
+    public override void Lock ()
     {
       if (m_left != null)
       {
-        m_left.Lock (canonical);
+        m_left.Lock ();
       }
-      m_right.Lock (canonical);
+      m_right.Lock ();
     }
 
     public RCValue Left
