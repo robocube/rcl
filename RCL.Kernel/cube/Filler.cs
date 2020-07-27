@@ -106,6 +106,10 @@ namespace RCL.Kernel
     {
       m_source = source;
       m_unplug = true;
+      for (int i = 0; i < m_source.Cols; ++i)
+      {
+        m_target.ReserveColumn (m_source.ColumnAt (i));
+      }
       m_source.VisitCellsCanonical (this, 0, m_source.Axis.Count);
       return m_target;
     }
@@ -146,12 +150,15 @@ namespace RCL.Kernel
 
     public override void VisitNull<T> (string name, Column<T> column, int row)
     {
-      RCSymbolScalar scalar = null;
-      if (m_source.Axis.Symbol != null)
+      if (!m_unplug)
       {
-        scalar = m_source.Axis.Symbol[m_row];
+        RCSymbolScalar scalar = null;
+        if (m_source.Axis.Symbol != null)
+        {
+          scalar = m_source.Axis.Symbol[m_row];
+        }
+        m_target.WriteCell (name, scalar, m_defaultValue, m_row, true, true);
       }
-      m_target.WriteCell (name, scalar, m_defaultValue, m_row, true, true);
     }
   }
 }

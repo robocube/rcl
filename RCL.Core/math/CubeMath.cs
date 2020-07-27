@@ -1284,19 +1284,6 @@ namespace RCL.Core
       }
     }
 
-    [RCVerb ("plug")]
-    public void EvalPlug (RCRunner runner, RCClosure closure, RCLong left, RCCube cube)
-    {
-      if (left.Count != 1)
-      {
-        throw new Exception ("plug takes only one default value on the left");
-      }
-      RCCube result = new RCCube (cube.Axis);
-      Plugger plugger = new Plugger (result, left[0], new PlugLongComparer ());
-      plugger.Plug (cube);
-      runner.Yield (closure, result);
-    }
-
     public class PlugDoubleComparer : System.Collections.IComparer
     {
       int System.Collections.IComparer.Compare (object xobj, object yobj)
@@ -1318,6 +1305,72 @@ namespace RCL.Core
       }
     }
 
+    public class PlugBooleanComparer : System.Collections.IComparer
+    {
+      int System.Collections.IComparer.Compare (object xobj, object yobj)
+      {
+        bool x = (bool) xobj;
+        bool y = (bool) yobj;
+        return System.Collections.Comparer.DefaultInvariant.Compare (x, y);
+      }
+    }
+
+    public class PlugDecimalComparer : System.Collections.IComparer
+    {
+      int System.Collections.IComparer.Compare (object xobj, object yobj)
+      {
+        decimal x = (decimal) xobj;
+        decimal y = (decimal) yobj;
+        if (RCDecimal.Equals (x, y)) return 0;
+        return System.Collections.Comparer.DefaultInvariant.Compare (x, y);
+      }
+    }
+
+    public class PlugSymbolComparer : System.Collections.IComparer
+    {
+      int System.Collections.IComparer.Compare (object xobj, object yobj)
+      {
+        RCSymbolScalar x = (RCSymbolScalar) xobj;
+        RCSymbolScalar y = (RCSymbolScalar) yobj;
+        return x.CompareTo (y);
+      }
+    }
+
+    public class PlugTimeComparer : System.Collections.IComparer
+    {
+      int System.Collections.IComparer.Compare (object xobj, object yobj)
+      {
+        RCTimeScalar x = (RCTimeScalar) xobj;
+        RCTimeScalar y = (RCTimeScalar) yobj;
+        return x.CompareTo (y);
+      }
+    }
+
+    public class PlugIncrComparer : System.Collections.IComparer
+    {
+      int System.Collections.IComparer.Compare (object xobj, object yobj)
+      {
+        RCIncrScalar x = (RCIncrScalar) xobj;
+        RCIncrScalar y = (RCIncrScalar) yobj;
+        int result = x.CompareTo (y);
+        Console.WriteLine("PlugIncrComparer x:{0}, y:{1}, result:{2}", x, y, result);
+        return result;
+      }
+    }
+
+    [RCVerb ("plug")]
+    public void EvalPlug (RCRunner runner, RCClosure closure, RCLong left, RCCube cube)
+    {
+      if (left.Count != 1)
+      {
+        throw new Exception ("plug takes only one default value on the left");
+      }
+      RCCube result = new RCCube (cube.Axis);
+      Plugger plugger = new Plugger (result, left[0], new PlugLongComparer ());
+      plugger.Plug (cube);
+      runner.Yield (closure, result);
+    }
+
     [RCVerb ("plug")]
     public void EvalPlug (RCRunner runner, RCClosure closure, RCDouble left, RCCube cube)
     {
@@ -1332,6 +1385,45 @@ namespace RCL.Core
     }
 
     [RCVerb ("plug")]
+    public void EvalPlug (RCRunner runner, RCClosure closure, RCDecimal left, RCCube cube)
+    {
+      if (left.Count != 1)
+      {
+        throw new Exception ("plug takes only one default value on the left");
+      }
+      RCCube result = new RCCube (cube.Axis);
+      Plugger plugger = new Plugger (result, left[0], new PlugDecimalComparer ());
+      plugger.Plug (cube);
+      runner.Yield (closure, result);
+    }
+
+    [RCVerb ("plug")]
+    public void EvalPlug (RCRunner runner, RCClosure closure, RCBoolean left, RCCube cube)
+    {
+      if (left.Count != 1)
+      {
+        throw new Exception ("plug takes only one default value on the left");
+      }
+      RCCube result = new RCCube (cube.Axis);
+      Plugger plugger = new Plugger (result, left[0], new PlugBooleanComparer ());
+      plugger.Plug (cube);
+      runner.Yield (closure, result);
+    }
+
+    [RCVerb ("plug")]
+    public void EvalPlug (RCRunner runner, RCClosure closure, RCSymbol left, RCCube cube)
+    {
+      if (left.Count != 1)
+      {
+        throw new Exception ("plug takes only one default value on the left");
+      }
+      RCCube result = new RCCube (cube.Axis);
+      Plugger plugger = new Plugger (result, left[0], new PlugSymbolComparer ());
+      plugger.Plug (cube);
+      runner.Yield (closure, result);
+    }
+
+    [RCVerb ("plug")]
     public void EvalPlug (RCRunner runner, RCClosure closure, RCString left, RCCube cube)
     {
       if (left.Count != 1)
@@ -1341,6 +1433,45 @@ namespace RCL.Core
       RCCube result = new RCCube (cube.Axis);
       Plugger plugger = new Plugger (result, left[0], new PlugStringComparer ());
       plugger.Plug (cube);
+      runner.Yield (closure, result);
+    }
+
+    [RCVerb ("plug")]
+    public void EvalPlug (RCRunner runner, RCClosure closure, RCTime left, RCCube cube)
+    {
+      if (left.Count != 1)
+      {
+        throw new Exception ("plug takes only one default value on the left");
+      }
+      RCCube result = new RCCube (cube.Axis);
+      Plugger plugger = new Plugger (result, left[0], new PlugTimeComparer ());
+      plugger.Plug (cube);
+      runner.Yield (closure, result);
+    }
+
+    [RCVerb ("plug")]
+    public void EvalPlug (RCRunner runner, RCClosure closure, RCIncr left, RCCube cube)
+    {
+      if (left.Count != 1)
+      {
+        throw new Exception ("plug takes only one default value on the left");
+      }
+      RCCube result = new RCCube (cube.Axis);
+      Plugger plugger = new Plugger (result, left[0], new PlugIncrComparer ());
+      plugger.Plug (cube);
+      runner.Yield (closure, result);
+    }
+
+    [RCVerb ("unplug")]
+    public void Unplug (RCRunner runner, RCClosure closure, RCBoolean left, RCCube cube)
+    {
+      if (left.Count != 1)
+      {
+        throw new Exception ("plug takes only one default value on the left");
+      }
+      RCCube result = new RCCube (cube.Axis);
+      Plugger plugger = new Plugger (result, left[0], new PlugBooleanComparer ());
+      plugger.Unplug (cube);
       runner.Yield (closure, result);
     }
 
@@ -1371,6 +1502,19 @@ namespace RCL.Core
     }
 
     [RCVerb ("unplug")]
+    public void Unplug (RCRunner runner, RCClosure closure, RCDecimal left, RCCube cube)
+    {
+      if (left.Count != 1)
+      {
+        throw new Exception ("plug takes only one default value on the left");
+      }
+      RCCube result = new RCCube (cube.Axis);
+      Plugger plugger = new Plugger (result, left[0], new PlugDecimalComparer ());
+      plugger.Unplug (cube);
+      runner.Yield (closure, result);
+    }
+
+    [RCVerb ("unplug")]
     public void Unplug (RCRunner runner, RCClosure closure, RCString left, RCCube cube)
     {
       if (left.Count != 1)
@@ -1379,6 +1523,45 @@ namespace RCL.Core
       }
       RCCube result = new RCCube (cube.Axis);
       Plugger plugger = new Plugger (result, left[0], new PlugStringComparer ());
+      plugger.Unplug (cube);
+      runner.Yield (closure, result);
+    }
+
+    [RCVerb ("unplug")]
+    public void Unplug (RCRunner runner, RCClosure closure, RCSymbol left, RCCube cube)
+    {
+      if (left.Count != 1)
+      {
+        throw new Exception ("plug takes only one default value on the left");
+      }
+      RCCube result = new RCCube (cube.Axis);
+      Plugger plugger = new Plugger (result, left[0], new PlugSymbolComparer ());
+      plugger.Unplug (cube);
+      runner.Yield (closure, result);
+    }
+
+    [RCVerb ("unplug")]
+    public void Unplug (RCRunner runner, RCClosure closure, RCTime left, RCCube cube)
+    {
+      if (left.Count != 1)
+      {
+        throw new Exception ("plug takes only one default value on the left");
+      }
+      RCCube result = new RCCube (cube.Axis);
+      Plugger plugger = new Plugger (result, left[0], new PlugTimeComparer ());
+      plugger.Unplug (cube);
+      runner.Yield (closure, result);
+    }
+
+    [RCVerb ("unplug")]
+    public void Unplug (RCRunner runner, RCClosure closure, RCIncr left, RCCube cube)
+    {
+      if (left.Count != 1)
+      {
+        throw new Exception ("plug takes only one default value on the left");
+      }
+      RCCube result = new RCCube (cube.Axis);
+      Plugger plugger = new Plugger (result, left[0], new PlugIncrComparer ());
       plugger.Unplug (cube);
       runner.Yield (closure, result);
     }

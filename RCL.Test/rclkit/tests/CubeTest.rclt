@@ -7556,6 +7556,81 @@
        3  1  4
     ]
   }
+  TestPlugB:{
+    skip:false
+    src:true plug [
+      S |    x
+      #a    --
+      #b false
+      #c    --
+    ]
+    bin:[
+      S |    x
+      #a  true
+      #b false
+      #c  true
+    ]
+  }
+  TestPlugY:{
+    skip:false
+    src:#default plug [
+      S |x
+      #a --
+      #b #mysym
+      #c --
+    ]
+    bin:[
+      S |x
+      #a #default
+      #b #mysym
+      #c #default
+    ]
+  }
+  TestPlugT:{
+    skip:false
+    src:2020.07.27 plug [
+      S |         x
+      #a         --
+      #b 2020.07.01
+      #c         --
+    ]
+    bin:[
+      S |         x
+      #a 2020.07.27
+      #b 2020.07.01
+      #c 2020.07.27
+    ]
+  }
+  TestPlugM:{
+    skip:false
+    src:100m plug [
+      S |   x
+      #a   --
+      #b 200m
+      #c   --
+    ]
+    bin:[
+      S |   x
+      #a 100m
+      #b 200m
+      #c 100m
+    ]
+  }
+  TestPlugI:{
+    skip:false
+    src:++ plug [
+      S | x
+      #a --
+      #b ++
+      #c --
+    ]
+    bin:[
+      S | x
+      #a ++
+      #b ++
+      #c ++
+    ]
+  }
   TestPlug1:{
     skip:false
     src:1.0 plug [
@@ -7652,6 +7727,81 @@
       #c  3 "Y"
     ]
   }
+  TestUnplugB:{
+    skip:false
+    src:true unplug [
+      S |    x
+      #a  true
+      #b false
+      #c  true
+    ]
+    bin:[
+      S |    x
+      #a    --
+      #b false
+      #c    --
+    ]
+  }
+  TestUnplugY:{
+    skip:false
+    src:#default unplug [
+      S |x
+      #a #default
+      #b #mysym
+      #c #default
+    ]
+    bin:[
+      S |x
+      #a --
+      #b #mysym
+      #c --
+    ]
+  }
+  TestUnplugT:{
+    skip:false
+    src:2020.07.27 unplug [
+      S |         x
+      #a 2020.07.27
+      #b 2020.07.01
+      #c 2020.07.27
+    ]
+    bin:[
+      S |         x
+      #a         --
+      #b 2020.07.01
+      #c         --
+    ]
+  }
+  TestUnplugM:{
+    skip:false
+    src:100m unplug [
+      S |   x
+      #a 100m
+      #b 200m
+      #c 100m
+    ]
+    bin:[
+      S |   x
+      #a   --
+      #b 200m
+      #c   --
+    ]
+  }
+  TestUnplugI:{
+    skip:false
+    src:++ unplug [
+      S | x
+      #a --
+      #b ++
+      #c --
+    ]
+    bin:[
+      S | x
+      #a --
+      #b --
+      #c --
+    ]
+  }
   TestUnplug1:{
     skip:false
     src:1.0 unplug [
@@ -7710,6 +7860,36 @@
       #a --
       #b "bstr"
       #c "cstr"
+    ]
+  }
+  TestUnplug5:{
+    skip:false
+    src:1 unplug [
+      S | x
+      #a --
+      #b  1
+      #c --
+    ]
+    bin:[
+      S | x
+      #a --
+      #b --
+      #c --
+    ]
+  }
+  TestUnplug6:{
+    skip:false
+    src:1 unplug [
+      S | x  y
+      #a --  1
+      #b  1 --
+      #c -- --
+    ]
+    bin:[
+      S | x  y
+      #a -- --
+      #b -- --
+      #c -- --
     ]
   }
   TestObject:{
