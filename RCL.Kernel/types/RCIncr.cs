@@ -5,7 +5,7 @@ using System.Globalization;
 using System.Collections.Generic;
 
 namespace RCL.Kernel
-{  
+{
   public enum RCIncrScalar
   {
     Increment = 0,
