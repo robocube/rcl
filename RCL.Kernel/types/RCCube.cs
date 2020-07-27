@@ -474,7 +474,7 @@ namespace RCL.Kernel
       return thisString.Equals (otherString);
     }
 
-    public override void Lock (bool canonical)
+    public override void Lock ()
     {
       Axis.Lock ();
       if (m_reader != null)

@@ -21,7 +21,6 @@ namespace RCL.Kernel
       RCValue content = (RCValue) right;
       which = format[0].Part (0).ToString ();
       string result = null;
-      bool canonical = false;
       if (which.Equals ("default"))
       {
         result = content.Format (RCFormat.Default);
@@ -36,12 +35,10 @@ namespace RCL.Kernel
       }
       else if (which.Equals ("canonical"))
       {
-        canonical = true;
         result = content.Format (RCFormat.Canonical);
       }
       else if (which.Equals ("testcanonical"))
       {
-        canonical = true;
         result = content.Format (RCFormat.TestCanonical);
       }
       else if (which.Equals ("fragment"))
@@ -80,14 +77,7 @@ namespace RCL.Kernel
         result = DoTextFormat (right, "\n");
       }
       else throw new Exception ("Unknown format:" + which);
-      if (canonical)
-      {
-        runner.YieldCanonical (closure, new RCString (result));
-      }
-      else
-      {
-        runner.Yield (closure, new RCString (result));
-      }
+      runner.Yield (closure, new RCString (result));
     }
 
     public static string DoTextFormat (object right, string newline)
