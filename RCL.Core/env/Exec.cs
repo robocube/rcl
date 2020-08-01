@@ -126,6 +126,7 @@ namespace RCL.Core
       {
         if (!m_process.TryGetValue (left[0], out child))
           throw new Exception ("Unknown child process: " + left[0]);
+        m_process.Remove (left[0]);
       }
       ThreadPool.QueueUserWorkItem (child.Kill,
                                     new RCAsyncState (runner, closure, right));
@@ -140,6 +141,7 @@ namespace RCL.Core
       {
         if (!m_process.TryGetValue (right[0], out child))
           throw new Exception ("Unknown child process: " + right[0]);
+        m_process.Remove (right[0]);
       }
       ThreadPool.QueueUserWorkItem (child.Close,
                                     new RCAsyncState (runner, closure, right));
