@@ -139,7 +139,12 @@ namespace RCL.Kernel
     {
       StringBuilder builder = new StringBuilder ();
       int level = 0;
-      Format (builder, args, null, level);
+      RCColmap colmap = null;
+      if (args.UseDisplayCols)
+      {
+        colmap = RCSystem.Log.GetColmap ();
+      }
+      Format (builder, args, colmap, level);
       return builder.ToString ();
     }
 

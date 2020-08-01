@@ -8,7 +8,6 @@ namespace RCL.Kernel
 {
   public class RCLogger
   {
-
     protected static object m_lock = new object ();
     protected static bool m_nokeys;
     protected static TextWriter m_output;
