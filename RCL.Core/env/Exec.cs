@@ -145,6 +145,20 @@ namespace RCL.Core
                                     new RCAsyncState (runner, closure, right));
     }
 
+    [RCVerb ("delx")]
+    public virtual void EvalDelx (
+      RCRunner runner, RCClosure closure, RCLong right)
+    {
+      ChildProcess child;
+      lock (m_lock)
+      {
+        if (!m_process.TryGetValue (right[0], out child))
+          throw new Exception ("Unknown child process: " + right[0]);
+        m_process.Remove (right[0]);
+      }
+      runner.Yield (closure, right);
+    }
+
     public void Dispose ()
     {
       Dispose (true);
@@ -439,7 +453,7 @@ namespace RCL.Core
 #else
             Console.Out.WriteLine ("Closing exec'd processes is not implemented on Windows");
 #endif
-            }
+          }
           else return;
         }
         DateTime timeout = DateTime.UtcNow + new TimeSpan (0, 0, 0, 0, 2000);

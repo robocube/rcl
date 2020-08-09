@@ -18,24 +18,25 @@ namespace RCL.Kernel
     public readonly bool ParsableScalars;
     public readonly bool CanonicalCubes;
     public readonly bool Fragment;
+    public readonly bool UseDisplayCols;
 
     static RCFormat ()
     {
-      Default = new RCFormat ("RCL", "", "", " ", " ", align:false, showt:true, parsableScalars:true, canonicalCubes:false, fragment:false);
-      Pretty = new RCFormat ("RCL", "  ", "\n", " ", "\n", align:true, showt:true, parsableScalars:true, canonicalCubes:false, fragment:false);
+      Default = new RCFormat ("RCL", "", "", " ", " ", align:false, showt:true, parsableScalars:true, canonicalCubes:true, fragment:false, useDisplayCols:false);
+      Pretty = new RCFormat ("RCL", "  ", "\n", " ", "\n", align:true, showt:true, parsableScalars:true, canonicalCubes:true, fragment:false, useDisplayCols:true);
       // EditorFragment uses canonical cubes because it is intended for use in the editor where I often edit test cases involving cubes
-      EditorFragment = new RCFormat ("RCL", "  ", "\n", " ", "\n", align:true, showt:true, parsableScalars:true, canonicalCubes:true, fragment:true);
-      Canonical = new RCFormat ("RCL", "  ", "\n", " ", "\n", align:true, showt:true, parsableScalars:true, canonicalCubes:true, fragment:false);
-      DefaultNoT = new RCFormat ("RCL", "", "", " ", " ", align:false, showt:false, parsableScalars:true, canonicalCubes:false, fragment:false);
-      TestCanonical = new RCFormat ("RCL", "", "", " ", " ", align:false, showt:true, parsableScalars:true, canonicalCubes:true, fragment:false);
-      Json = new RCFormat ("JSON", "  ", "\n", " ", ",\n", align:true, showt:true, parsableScalars:false, canonicalCubes:true, fragment:false);
-      Html = new RCFormat ("HTML", "  ", "\n", " ", "\n", align:true, showt:true, parsableScalars:true, canonicalCubes:false, fragment:false);
-      Csv = new RCFormat ("CSV", "  ", "\n", ",", "\n", align:false, showt:true, parsableScalars:false, canonicalCubes:false, fragment:false);
-      Log = new RCFormat ("LOG", "  ", "\n", " ", "\n", align:false, showt:true, parsableScalars:false, canonicalCubes:false, fragment:false);
+      EditorFragment = new RCFormat ("RCL", "  ", "\n", " ", "\n", align:true, showt:true, parsableScalars:true, canonicalCubes:true, fragment:true, useDisplayCols:false);
+      Canonical = new RCFormat ("RCL", "  ", "\n", " ", "\n", align:true, showt:true, parsableScalars:true, canonicalCubes:true, fragment:false, useDisplayCols:false);
+      DefaultNoT = new RCFormat ("RCL", "", "", " ", " ", align:false, showt:false, parsableScalars:true, canonicalCubes:true, fragment:false, useDisplayCols:false);
+      TestCanonical = new RCFormat ("RCL", "", "", " ", " ", align:false, showt:true, parsableScalars:true, canonicalCubes:true, fragment:false, useDisplayCols:false);
+      Json = new RCFormat ("JSON", "  ", "\n", " ", ",\n", align:true, showt:true, parsableScalars:false, canonicalCubes:true, fragment:false, useDisplayCols:false);
+      Html = new RCFormat ("HTML", "  ", "\n", " ", "\n", align:true, showt:true, parsableScalars:true, canonicalCubes:true, fragment:false, useDisplayCols:false);
+      Csv = new RCFormat ("CSV", "  ", "\n", ",", "\n", align:false, showt:true, parsableScalars:false, canonicalCubes:true, fragment:false, useDisplayCols:false);
+      Log = new RCFormat ("LOG", "  ", "\n", " ", "\n", align:false, showt:true, parsableScalars:false, canonicalCubes:true, fragment:false, useDisplayCols:false);
     }
 
     public RCFormat (string syntax, string indent, string newline, string delimeter, string rowDelimeter, bool align,
-                     bool showt, bool parsableScalars, bool canonicalCubes, bool fragment)
+                     bool showt, bool parsableScalars, bool canonicalCubes, bool fragment, bool useDisplayCols)
     {
       Syntax = syntax;
       Indent = indent;
@@ -49,6 +50,7 @@ namespace RCL.Kernel
       //TODO Remove the argument which is no longer honored.
       CanonicalCubes = true;
       Fragment = fragment;
+      UseDisplayCols = useDisplayCols;
     }
   }
 }

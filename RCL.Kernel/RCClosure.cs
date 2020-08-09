@@ -206,7 +206,7 @@ namespace RCL.Kernel
       Stack<string> lines = new Stack<string> ();
       //Do not include the global namespace in the stack trace.
       while (closure != null && closure.Parent != null)
-      { 
+      {
         if (closure.Code != null)
         {
           RCOperator op = closure.Code as RCOperator;
@@ -220,10 +220,19 @@ namespace RCL.Kernel
         {
           if (result.Value != null)
           {
-            string value = result.Value.Format (RCFormat.Default);
-            value = string.Format ("{0}:{1}", result.Name, value);
-            value = value.Substring (0, Math.Min (80, value.Length));
-            lines.Push (value);
+            RCCube acube = result.Value as RCCube;
+            if (acube != null)
+            {
+              string value = acube.FlatPack ().Format (RCFormat.Default);
+              lines.Push (value);
+            }
+            else
+            {
+              string value = result.Value.Format (RCFormat.Default);
+              value = string.Format ("{0}:{1}", result.Name, value);
+              value = value.Substring (0, Math.Min (80, value.Length));
+              lines.Push (value);
+            }
           }
           result = result.Previous;
         }

@@ -7,7 +7,7 @@ namespace RCL.Kernel
 {
   /// <summary>
   /// When building async operators you always need the runner and
-  /// closure in order to report back later on.  Often you also 
+  /// closure in order to report back later on.  Often you also
   /// need to hold onto some "other" api object as well.
   /// </summary>
   public class RCAsyncState
@@ -33,7 +33,7 @@ namespace RCL.Kernel
 
     //for future implementation
     //protected RCBlock m_impl;
-    
+
     public virtual void Init (string name, RCValue left, RCValue right)
     {
       if (IsLocked)
@@ -76,13 +76,13 @@ namespace RCL.Kernel
       }
     }
 
-    public override void Lock (bool canonical)
+    public override void Lock ()
     {
       if (m_left != null)
       {
-        m_left.Lock (canonical);
+        m_left.Lock ();
       }
-      m_right.Lock (canonical);
+      m_right.Lock ();
     }
 
     public RCValue Left
@@ -330,7 +330,8 @@ namespace RCL.Kernel
     {
       RCFormat format = new RCFormat (args.Syntax, "  ", args.Newline, args.Delimeter,
                                       args.RowDelimeter, args.Align, args.Showt,
-                                      args.ParsableScalars, args.CanonicalCubes, args.Fragment);
+                                      args.ParsableScalars, args.CanonicalCubes, args.Fragment,
+                                      args.UseDisplayCols);
       RCL.Kernel.Format.DoFormat (this, builder, format, null, level);
     }
 
@@ -338,7 +339,8 @@ namespace RCL.Kernel
     {
       RCFormat format = new RCFormat (args.Syntax, "  ", args.Newline, args.Delimeter,
                                       args.RowDelimeter, args.Align, args.Showt,
-                                      args.ParsableScalars, args.CanonicalCubes, args.Fragment);
+                                      args.ParsableScalars, args.CanonicalCubes, args.Fragment,
+                                      args.UseDisplayCols);
       RCL.Kernel.Format.DoFormat (this, builder, format, colmap, level);
     }
 

@@ -2292,8 +2292,8 @@
         z:3
       }
       :assert (1 0 trace #a) = [
-        S | y  z
-        #a  2  3
+        S | x  y  z
+        #a --  2  3
       ]
       <-0
     }
@@ -2311,8 +2311,8 @@
         #a  2  3
       ]
       :assert (1 0 trace #a) = [
-        S | y  z
-        #a  2  3
+        S | x  y  z
+        #a --  2  3
       ]
       <-0
     }
@@ -2568,8 +2568,8 @@
         d:4
       }
       :assert (wait $reader) = [
-        S | d
-        #x  4
+        S | a  b  c  d
+        #x -- -- --  4
       ]
       <-0
     }
@@ -2821,8 +2821,8 @@
         #y 10  2
       ]
       :assert (#x dispatch 1) = [
-        S | a
-        #x  1
+        S | a  b
+        #x  1 --
       ]
       <-0
     }
@@ -2936,8 +2936,8 @@
       <-#a last 0
     }
     bin:[
-      S | x
-      #a  0
+      S | x  y
+      #a  0 --
     ]
   }
   TestWriteLastSuspended:{
@@ -3145,8 +3145,8 @@
         c:3
       }
       :assert (#x,'*' snap 1) = [
-        S   | c
-        #x,z  3
+        S   | a  b  c
+        #x,z -- --  3
       ]
       <-0
     }

@@ -2,64 +2,64 @@
 stub:{
   src:#log parse "0 0 print 0 out"
   bin:[
-    bot fiber module  instance event
-      0     0 "print"        0 "out"
+    bot fiber module  instance event message document
+      0     0 "print"        0 "out"      --       --
   ]
 }
 
 line:{
   src:#log parse "0 0 print 0 out\n"
   bin:[
-    bot fiber module  instance event
-      0     0 "print"        0 "out"
+    bot fiber module  instance event message document
+      0     0 "print"        0 "out"      --       --
   ]
 }
 
 line_space:{
   src:#log parse "0 0 print 0 out \n"
   bin:[
-    bot fiber module  instance event message
-      0     0 "print"        0 "out" ""
+    bot fiber module  instance event message document
+      0     0 "print"        0 "out" ""            --
   ]
 }
 
 line_cr:{
   src:#log parse "0 0 print 0 out\r\n"
   bin:[
-    bot fiber module  instance event
-      0     0 "print"        0 "out"
+    bot fiber module  instance event message document
+      0     0 "print"        0 "out"      --       --
   ]
 }
 
 line_space_cr:{
   src:#log parse "0 0 print 0 out \r\n"
   bin:[
-    bot fiber module  instance event message
-      0     0 "print"        0 "out" ""
+    bot fiber module  instance event message document
+      0     0 "print"        0 "out" ""            --
   ]
 }
 
 message:{
   src:#log parse "0 0 print 0 out this is the message\n"
   bin:[
-    bot fiber module  instance event message
-      0     0 "print"        0 "out" "this is the message"
+    bot fiber module  instance event message               document
+      0     0 "print"        0 "out" "this is the message"       --
   ]
 }
 
 message_stub:{
   src:#log parse "0 0 print 0 out this is the message"
   bin:[
-    bot fiber module  instance event message
-      0     0 "print"        0 "out" "this is the message"
+    bot fiber module  instance event message               document
+      0     0 "print"        0 "out" "this is the message"       --
   ]
 }
 
 message_cr:{
   src:#log parse "0 0 print 0 out this is the message\r\n"
   bin:[
-    bot fiber module  instance event message
-      0     0 "print"        0 "out" "this is the message"
+    bot fiber module  instance event message               document
+      0     0 "print"        0 "out" "this is the message"       --
   ]
 }
 
@@ -88,28 +88,28 @@ doc_cr:{
 rawline:{
   src:#log parse "message1\nmessage2\n0 0 print 0 out message3"
   bin:[
-    bot fiber module  instance event message
-     -1    -1 ""            -1 ""    "message1"
-     -1    -1 ""            -1 ""    "message2"
-      0     0 "print"        0 "out" "message3"
+    bot fiber module  instance event message    document
+     -1    -1 ""            -1 ""    "message1"       --
+     -1    -1 ""            -1 ""    "message2"       --
+      0     0 "print"        0 "out" "message3"       --
   ]
 }
-   
+
 rawline2:{
   src:#log parse "0 0 print 0 out message1\nmessage2\n"
   bin:[
-    bot fiber module  instance event message
-      0     0 "print"        0 "out" "message1"
-     -1    -1 ""            -1 ""    "message2"
+    bot fiber module  instance event message    document
+      0     0 "print"        0 "out" "message1"       --
+     -1    -1 ""            -1 ""    "message2"       --
   ]
-} 
+}
 
 rawline3:{
   src:#log parse "0 0 print 0 out message1\nmessage2\n"
   bin:[
-    bot fiber module  instance event message
-      0     0 "print"        0 "out" "message1"
-     -1    -1 ""            -1 ""    "message2"
+    bot fiber module  instance event message    document
+      0     0 "print"        0 "out" "message1"       --
+     -1    -1 ""            -1 ""    "message2"       --
   ]
-} 
+}
 
