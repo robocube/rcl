@@ -139,7 +139,12 @@ namespace RCL.Kernel
     {
       StringBuilder builder = new StringBuilder ();
       int level = 0;
-      Format (builder, args, null, level);
+      RCColmap colmap = null;
+      if (args.UseDisplayCols)
+      {
+        colmap = RCSystem.Log.GetColmap ();
+      }
+      Format (builder, args, colmap, level);
       return builder.ToString ();
     }
 
@@ -213,7 +218,7 @@ namespace RCL.Kernel
     }
 
     //Types that have child objects need to override this and lock the children.
-    public virtual void Lock (bool canonical)
+    public virtual void Lock ()
     {
       m_lock = true;
     }

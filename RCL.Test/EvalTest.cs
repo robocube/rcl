@@ -1397,7 +1397,7 @@ namespace RCL.Test
     [Test]
     public void TestWriteReadFirstWithLastWithMore()
     {
-      DoEvalTest ("{:write [S|x y #a 0 -- #b -- 1] <-#a last 0}", "[S|x #a 0]");
+      DoEvalTest ("{:write [S|x y #a 0 -- #b -- 1] <-#a last 0}", "[S|x y #a 0 --]");
     }
 
     [Test]

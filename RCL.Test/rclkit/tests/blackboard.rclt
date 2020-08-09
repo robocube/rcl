@@ -18,9 +18,9 @@ ___after_trace1:[
 ]
 
 ___after_snap1:[
-  G|S   | a b c
-  0 #s,x  1 2 3
-  2 #s,z  3 0 1
+  G|S   | a b c  i
+  0 #s,x  1 2 3 --
+  2 #s,z  3 0 1 --
 ]
 
 ___after_extend1:[
@@ -263,9 +263,9 @@ work_credit_issue:eval {
     <-#b,* snap 0 -1
   }
   bin:[
-    S                | i quantity value equity
-    #b,g,work_prod,1   0        1     1     --
-    #b,i,govt_cash,1   0        1     1   #b,g
+    S                | i quantity value credit equity
+    #b,g,work_prod,1   0        1     1     --     --
+    #b,i,govt_cash,1   0        1     1     --   #b,g
   ]
 }
 

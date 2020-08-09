@@ -830,7 +830,13 @@ namespace RCL.Test
     [Test]
     public void TestCubeWithOnlyMissingValues ()
     {
-      DoParserTest ("[S|x #x --]", "[S|x #x --]", RCFormat.TestCanonical);
+      DoParserTest ("[S|x #x --]", "[S|x #x --]", RCFormat.Default);
+    }
+
+    [Test]
+    public void TestCubeWithOnlyMissingValues1 ()
+    {
+      DoParserTest ("[x --]", "[x --]", RCFormat.Default);
     }
 
     [Test]

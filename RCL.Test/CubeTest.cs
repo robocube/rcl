@@ -243,6 +243,12 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestCube17 ()
+    {
+      DoTest ("{u:[x \"\"] <-count cube eval {a:$u.a}}", "1");
+    }
+
+    [Test]
     public void TestCubeS ()
     {
       DoTest ("cube \"a\" \"b\" \"c\"", "[x \"a\" \"b\" \"c\"]");
@@ -1604,7 +1610,7 @@ namespace RCL.Test
     [Test]
     public void TestSortColumnOfNothing ()
     {
-      DoTest ("sort [S|x y #a 1 --]", "[S|x #a 1]");
+      DoTest ("sort [S|x y #a 1 --]", "[S|x y #a 1 --]");
     }
 
     [Test]
@@ -1628,7 +1634,7 @@ namespace RCL.Test
     [Test]
     public void TestRowsColumnsWithOnlyNulls ()
     {
-      DoTest ("0 1 rows [a b c d e 1 10 100 1000 -- 2 20 -- 2000 -- 3 30 300 3000 -- 4 -- -- -- -- 5 50 500 -- 50000]", "[a b c d 1 10 100 1000 2 20 -- 2000]");
+      DoTest ("0 1 rows [a b c d e 1 10 100 1000 -- 2 20 -- 2000 -- 3 30 300 3000 -- 4 -- -- -- -- 5 50 500 -- 50000]", "[a b c d e 1 10 100 1000 -- 2 20 -- 2000 --]");
     }
 
     [Test]
@@ -3524,6 +3530,36 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestPlugB ()
+    {
+      DoTest ("true plug [S|x #a -- #b false #c --]", "[S|x #a true #b false #c true]");
+    }
+
+    [Test]
+    public void TestPlugY ()
+    {
+      DoTest ("#default plug [S|x #a -- #b #mysym #c --]", "[S|x #a #default #b #mysym #c #default]");
+    }
+
+    [Test]
+    public void TestPlugT ()
+    {
+      DoTest ("2020.07.27 plug [S|x #a -- #b 2020.07.01 #c --]", "[S|x #a 2020.07.27 #b 2020.07.01 #c 2020.07.27]");
+    }
+
+    [Test]
+    public void TestPlugM ()
+    {
+      DoTest ("100m plug [S|x #a -- #b 200m #c --]", "[S|x #a 100m #b 200m #c 100m]");
+    }
+
+    [Test]
+    public void TestPlugI ()
+    {
+      DoTest ("++ plug [S|x #a -- #b ++ #c --]", "[S|x #a ++ #b ++ #c ++]");
+    }
+
+    [Test]
     public void TestPlug1 ()
     {
       DoTest ("1.0 plug [S|x #a -- #b 3.0 #c --]", "[S|x #a 1.0 #b 3.0 #c 1.0]");
@@ -3560,6 +3596,36 @@ namespace RCL.Test
     }
 
     [Test]
+    public void TestUnplugB ()
+    {
+      DoTest ("true unplug [S|x #a true #b false #c true]", "[S|x #a -- #b false #c --]");
+    }
+
+    [Test]
+    public void TestUnplugY ()
+    {
+      DoTest ("#default unplug [S|x #a #default #b #mysym #c #default]", "[S|x #a -- #b #mysym #c --]");
+    }
+
+    [Test]
+    public void TestUnplugT ()
+    {
+      DoTest ("2020.07.27 unplug [S|x #a 2020.07.27 #b 2020.07.01 #c 2020.07.27]", "[S|x #a -- #b 2020.07.01 #c --]");
+    }
+
+    [Test]
+    public void TestUnplugM ()
+    {
+      DoTest ("100m unplug [S|x #a 100m #b 200m #c 100m]", "[S|x #a -- #b 200m #c --]");
+    }
+
+    [Test]
+    public void TestUnplugI ()
+    {
+      DoTest ("++ unplug [S|x #a -- #b ++ #c --]", "[S|x #a -- #b -- #c --]");
+    }
+
+    [Test]
     public void TestUnplug1 ()
     {
       DoTest ("1.0 unplug [S|x #a 1.0 #b 3.0 #c 1.0]", "[S|x #a -- #b 3.0 #c --]");
@@ -3581,6 +3647,18 @@ namespace RCL.Test
     public void TestUnplug4 ()
     {
       DoTest ("\"plgstr\" unplug [s x #a \"plgstr\" #b \"bstr\" #c \"cstr\"]", "[s x #a -- #b \"bstr\" #c \"cstr\"]");
+    }
+
+    [Test]
+    public void TestUnplug5 ()
+    {
+      DoTest ("1 unplug [S|x #a -- #b 1 #c --]", "[S|x #a -- #b -- #c --]");
+    }
+
+    [Test]
+    public void TestUnplug6 ()
+    {
+      DoTest ("1 unplug [S|x y #a -- 1 #b 1 -- #c -- --]", "[S|x y #a -- -- #b -- -- #c -- --]");
     }
 
     //Note: More tests for unplug are needed, implementation needs comparers for other types like string, symbol etc.
