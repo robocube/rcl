@@ -12,18 +12,21 @@ namespace RCL.Kernel
     protected string[] m_keywords;
     public KeywordLexer (params string[] keywords)
     {
-      if (keywords == null)
-      {
+      if (keywords == null) {
         throw new ArgumentNullException ("keywords");
       }
       m_keywords = keywords;
     }
 
-    public override RCToken TryParseToken (string text, int start, int index, int line, RCToken previous)
+    public override RCToken TryParseToken (string text,
+                                           int start,
+                                           int index,
+                                           int line,
+                                           RCToken
+                                           previous)
     {
       int length = LengthOfOperator (text, start);
-      if (length < 0)
-      {
+      if (length < 0) {
         return null;
       }
       string opChar = text.Substring (start, length);
@@ -35,9 +38,8 @@ namespace RCL.Kernel
       for (int i = 0; i < m_keywords.Length; ++i)
       {
         int length = LengthOfKeyword (text, start, m_keywords[i]);
-        //Make sure we don't include == as an evaluator, it should be an operator.
-        if (length > 0)
-        {
+        // Make sure we don't include == as an evaluator, it should be an operator.
+        if (length > 0) {
           return length;
         }
       }

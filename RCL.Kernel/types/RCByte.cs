@@ -9,8 +9,8 @@ namespace RCL.Kernel
   public class RCByte : RCVector<byte>
   {
     public static readonly RCByte Empty = new RCByte ();
-    public RCByte (params byte[] data) : base (data) { }
-    public RCByte (RCArray<byte> data) : base (data) { }
+    public RCByte (params byte[] data) : base (data) {}
+    public RCByte (RCArray<byte> data) : base (data) {}
 
     public override bool ScalarEquals (byte x, byte y)
     {

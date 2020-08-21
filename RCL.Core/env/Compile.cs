@@ -32,26 +32,24 @@ namespace RCL.Core
       }
       finally
       {
-        if (results != null)
-        {
+        if (results != null) {
           for (int i = 0; i < results.Errors.Count; ++i)
           {
             CompilerError error = results.Errors[i];
             Console.Out.WriteLine (error.ToString ());
             RCSystem.Log.Record (closure, "compile", 0, "error", error.ToString ());
             /*
-            error.Column;
-            error.ErrorNumber;
-            error.ErrorText;
-            error.FileName;
-            error.IsWarning;
-            error.Line;
-            */
+               error.Column;
+               error.ErrorNumber;
+               error.ErrorText;
+               error.FileName;
+               error.IsWarning;
+               error.Line;
+             */
           }
         }
       }
-      if (results.Errors.Count > 0)
-      {
+      if (results.Errors.Count > 0) {
         throw new Exception ("compilation failed, show compile:error for details");
       }
       Type[] types = results.CompiledAssembly.GetTypes ();
@@ -62,8 +60,7 @@ namespace RCL.Core
         bool isModule;
         RCBlock typeVerbs = RCSystem.Activator.CreateVerbTable (types[i], out isModule);
         result = new RCBlock (result, types[i].Name, ":", typeVerbs);
-        if (isModule)
-        {
+        if (isModule) {
           modules.Write (types[i].Name);
           RCBot bot = runner.GetBot (closure.Bot);
           bot.PutModule (types[i]);

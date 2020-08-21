@@ -13,13 +13,13 @@ namespace RCL.Kernel
     {
       for (int i = 0; i < data.Length; ++i)
       {
-        if (m_data[i] == null)
-        {
+        if (m_data[i] == null) {
           m_data.Write (i, "");
         }
       }
     }
-    public RCString (RCArray<string> data) : base (data) { }
+    public RCString (RCArray<string> data) : base (data) {
+    }
 
     public override char TypeCode
     {
@@ -40,7 +40,7 @@ namespace RCL.Kernel
     {
       get { return typeof (string); }
     }
-    
+
     public override void ScalarToString (StringBuilder builder, string scalar)
     {
       builder.Append ("\"");
@@ -66,39 +66,34 @@ namespace RCL.Kernel
     public override string IdShorthand (object scalar)
     {
       string id = scalar.ToString ();
-      if (id.Length > 0)
-      {
-        if (id[0] == '\'')
-        {
-          if (id[id.Length - 1] == '\'')
-          {
+      if (id.Length > 0) {
+        if (id[0] == '\'') {
+          if (id[id.Length - 1] == '\'') {
             return id;
           }
-          else throw new Exception ("Invalid id: " + id);
+          else {
+            throw new Exception ("Invalid id: " + id);
+          }
         }
       }
-      else
-      {
+      else {
         return id;
       }
 
-      if ((id[0] >= '0') && (id[0] <= '9'))
-      {
+      if ((id[0] >= '0') && (id[0] <= '9')) {
         return "'" + id + "'";
-      } 
-      else
-      {
+      }
+      else {
         for (int i = 0; i < id.Length; ++i)
         {
-          if (!RCTokenType.IsIdentifierChar (id[i]))      
-          {
+          if (!RCTokenType.IsIdentifierChar (id[i])) {
             return "'" + id + "'";
           }
         }
       }
       return id;
     }
-    
+
     public override bool ScalarEquals (string x, string y)
     {
       return x == y;

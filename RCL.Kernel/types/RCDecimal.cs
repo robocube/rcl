@@ -15,8 +15,10 @@ namespace RCL.Kernel
       CanonicalFormatProvider.NumberGroupSeparator = "";
     }
 
-    public RCDecimal (params decimal[] data) : base (data) { }
-    public RCDecimal (RCArray<decimal> data) : base (data) { }
+    public RCDecimal (params decimal[] data) : base (data) {
+    }
+    public RCDecimal (RCArray<decimal> data) : base (data) {
+    }
 
     public override bool ScalarEquals (decimal x, decimal y)
     {
@@ -55,19 +57,15 @@ namespace RCL.Kernel
 
     public static string FormatScalar (string format, decimal scalar)
     {
-      if (format == null)
-      {
-        if ((scalar % 1) == 0)
-        {
+      if (format == null) {
+        if ((scalar % 1) == 0) {
           return scalar.ToString ("N0", CanonicalFormatProvider);
         }
-        else
-        {
+        else {
           return scalar.ToString (CanonicalFormatProvider);
         }
       }
-      else
-      {
+      else {
         return scalar.ToString (format);
       }
     }

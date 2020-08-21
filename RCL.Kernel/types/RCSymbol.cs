@@ -10,10 +10,12 @@ namespace RCL.Kernel
   {
     public static RCSymbol Empty = new RCSymbol ();
     public static RCSymbol Wild = new RCSymbol (RCSymbolScalar.Empty);
-    public RCSymbol (params RCSymbolScalar[] data) : base (data) { }
-    public RCSymbol (RCArray<RCSymbolScalar> data) : base (data) { }
+    public RCSymbol (params RCSymbolScalar[] data) : base (data) {}
+    public RCSymbol (RCArray<RCSymbolScalar> data) : base (data) {}
 
-    public override Type ScalarType { get { return typeof (RCSymbolScalar); } }
+    public override Type ScalarType {
+      get { return typeof (RCSymbolScalar); }
+    }
 
     public override bool ScalarEquals (RCSymbolScalar x, RCSymbolScalar y)
     {

@@ -12,11 +12,10 @@ namespace RCL.Kernel
     /// The data storage for the vector.
     /// </summary>
     protected RCArray<T> m_data;
-    
+
     public RCVector (params T[] data)
     {
-      if (data == null)
-      {
+      if (data == null) {
         data = new T[0];
       }
       m_data = new RCArray<T> (data);
@@ -24,8 +23,7 @@ namespace RCL.Kernel
 
     public RCVector (RCArray<T> data)
     {
-      if (data == null)
-      {
+      if (data == null) {
         data = new RCArray<T> (new T[0]);
       }
       m_data = data;
@@ -66,13 +64,21 @@ namespace RCL.Kernel
 
     public override bool Equals (object obj)
     {
-      if (obj == null) return false;
+      if (obj == null) {
+        return false;
+      }
       RCVector<T> cobj = obj as RCVector<T>;
-      if (cobj == null) return false;
-      if (cobj.Count != Count) return false;
+      if (cobj == null) {
+        return false;
+      }
+      if (cobj.Count != Count) {
+        return false;
+      }
       for (int i = 0; i < Count; ++i)
       {
-        if (!ScalarEquals (this[i], cobj[i])) return false;
+        if (!ScalarEquals (this[i], cobj[i])) {
+          return false;
+        }
       }
       return true;
     }
@@ -169,7 +175,7 @@ namespace RCL.Kernel
       {
         T val = this[i];
         RCSymbolScalar symboli = new RCSymbolScalar (symbol, (long) i);
-        //Do not try to evaluate incrs during cubification
+        // Do not try to evaluate incrs during cubification
         target.WriteCell (this.TypeCode.ToString (), symboli, val, -1, true, false);
         target.Write (symboli);
       }
@@ -196,7 +202,8 @@ namespace RCL.Kernel
       get { return (T) m_vector[i]; }
     }
 
-    public void Dispose () { }
+    public void Dispose () {
+    }
 
     object System.Collections.IEnumerator.Current
     {

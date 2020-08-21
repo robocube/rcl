@@ -13,12 +13,10 @@ namespace RCL.Kernel
       RCSymbolScalar current = scalar;
       while (current != null)
       {
-        if (current.Key.Equals ("*"))
-        {
+        if (current.Key.Equals ("*")) {
           Concrete = false;
           scalar = current.Previous;
-          if (current.Length < scalar.Length)
-          {
+          if (current.Length < scalar.Length) {
             LeadingStar = true;
           }
         }
@@ -27,20 +25,20 @@ namespace RCL.Kernel
       symbol = scalar;
     }
 
-    //If false, it means read symbols under this one.
+    // If false, it means read symbols under this one.
     public readonly bool Concrete = true;
-    //True if symbol contains a leading star.
+    // True if symbol contains a leading star.
     public readonly bool LeadingStar = false;
-    //The symbol being tracked.
+    // The symbol being tracked.
     public RCSymbolScalar symbol;
     public RCSymbolScalar original;
-    //True for dispatch and false for regular reads.
+    // True for dispatch and false for regular reads.
     public bool ignoreDispatchedRows;
-    //The number of records accumulated so far.
+    // The number of records accumulated so far.
     public int count = 0;
-    //Beginning of the range you need to search for rows.
+    // Beginning of the range you need to search for rows.
     public int start = 0;
-    //Number of rows to return per symbol.
+    // Number of rows to return per symbol.
     public int limit = 0;
 
     public RCBlock ToBlock ()

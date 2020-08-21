@@ -24,21 +24,30 @@ namespace RCL.Core
       m_sendBuffer = new byte[BUFFER_SIZE];
     }
 
-    public byte[] RecvBuffer { get { return m_recvBuffer; } }
-    public int Read { get { return m_read; } }
-    public byte[] SendBuffer { get { return m_sendBuffer; } }
+    public byte[] RecvBuffer {
+      get { return m_recvBuffer; }
+    }
+    public int Read {
+      get { return m_read; }
+    }
+    public byte[] SendBuffer {
+      get { return m_sendBuffer; }
+    }
 
-    public virtual RCBlock CompleteReceive (RCRunner runner, int count, long handle, long sid, out long cid)
+    public virtual RCBlock CompleteReceive (RCRunner runner,
+                                            int count,
+                                            long handle,
+                                            long sid,
+                                            out
+                                            long cid)
     {
       RCBlock message = null;
-      if (m_read == 0)
-      {
-        //Inspect the header to see if we have enough buffer for the message
-        //that is going to arrive.  If not create a bigger buffer.
+      if (m_read == 0) {
+        // Inspect the header to see if we have enough buffer for the message
+        // that is going to arrive.  If not create a bigger buffer.
         m_reading = IPAddress.NetworkToHostOrder (BitConverter.ToInt32 (m_recvBuffer, 0));
         m_cid = IPAddress.NetworkToHostOrder (BitConverter.ToInt64 (m_recvBuffer, 4));
-        if (m_reading > m_recvBuffer.Length - HEADER_SIZE)
-        {
+        if (m_reading > m_recvBuffer.Length - HEADER_SIZE) {
           Console.Out.WriteLine ("  replacing buffer...", m_read, m_reading);
           byte[] replacement = new byte[m_reading + HEADER_SIZE];
           m_recvBuffer.CopyTo (replacement, count);
@@ -47,18 +56,15 @@ namespace RCL.Core
       }
       m_read += count;
       cid = m_cid;
-      if (m_read >= m_reading + HEADER_SIZE)
-      {
+      if (m_read >= m_reading + HEADER_SIZE) {
         string text = Encoding.ASCII.GetString (m_recvBuffer, HEADER_SIZE, m_read - HEADER_SIZE);
         bool fragment = false;
-        //This one creates a new parser an so it is threadsafe for multiple calls.
+        // This one creates a new parser an so it is threadsafe for multiple calls.
         RCValue body = RCSystem.Parse (text, out fragment);
-        if (body != null)
-        {
-          //throw new Exception("failed to parse:" + text);
+        if (body != null) {
+          // throw new Exception("failed to parse:" + text);
           RCSymbolScalar correlation = new RCSymbolScalar (null, handle);
-          if (sid > -1)
-          {
+          if (sid > -1) {
             correlation = new RCSymbolScalar (correlation, sid);
           }
           correlation = new RCSymbolScalar (correlation, m_cid);
@@ -74,8 +80,8 @@ namespace RCL.Core
 
     public virtual int PrepareSend (long cid, byte[] payload)
     {
-      //Clearly this strategy will not do when it comes to serializing the whole
-      //object, but for this purpose it should be ok.
+      // Clearly this strategy will not do when it comes to serializing the whole
+      // object, but for this purpose it should be ok.
       byte[] sizeBytes = BitConverter.GetBytes (IPAddress.HostToNetworkOrder (payload.Length));
       byte[] cidBytes = BitConverter.GetBytes (IPAddress.HostToNetworkOrder (cid));
 

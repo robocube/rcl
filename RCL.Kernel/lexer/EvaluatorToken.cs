@@ -9,11 +9,15 @@ namespace RCL.Kernel
 {
   public class EvaluatorToken : RCTokenType
   {
-    public override RCToken TryParseToken (string text, int start, int index, int line, RCToken previous)
+    public override RCToken TryParseToken (string text,
+                                           int start,
+                                           int index,
+                                           int line,
+                                           RCToken
+                                           previous)
     {
       int length = LengthOfOperator (text, start);
-      if (length < 0)
-      {
+      if (length < 0) {
         return null;
       }
       string opChar = text.Substring (start, length);
@@ -25,9 +29,8 @@ namespace RCL.Kernel
       for (int i = 0; i < Evaluators.Length; ++i)
       {
         int length = LengthOfKeyword (text, start, Evaluators[i]);
-        //Make sure we don't include == as an evaluator, it should be an operator.
-        if (length > 0 && text[start+length] != '=')
-        {
+        // Make sure we don't include == as an evaluator, it should be an operator.
+        if (length > 0 && text[start + length] != '=') {
           return length;
         }
       }

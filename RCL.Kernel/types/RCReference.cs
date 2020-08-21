@@ -26,18 +26,18 @@ namespace RCL.Kernel
       Parts = new RCArray<string> (parts);
       Parts.Lock ();
       Name = "";
-      if (parts.Length > 1)
-      {
+      if (parts.Length > 1) {
         for (int i = 0; i < parts.Length; ++i)
         {
           Name += parts[i];
-          if (i < parts.Length - 1)
-          {
+          if (i < parts.Length - 1) {
             Name += '.';
           }
         }
       }
-      else Name = parts[0];
+      else {
+        Name = parts[0];
+      }
     }
 
     public override bool IsReference
@@ -68,11 +68,12 @@ namespace RCL.Kernel
     public static string Delimit (RCArray<string> parts, string delimeter)
     {
       StringBuilder builder = new StringBuilder ();
-      for(int i = 0; i < parts.Count; ++i)
+      for (int i = 0; i < parts.Count; ++i)
       {
         builder.Append (parts[i]);
-        if (i < parts.Count - 1)
+        if (i < parts.Count - 1) {
           builder.Append (delimeter);
+        }
       }
       return builder.ToString ();
     }
@@ -98,9 +99,10 @@ namespace RCL.Kernel
 
     public void SetStatic (RCBlock context)
     {
-      if (IsLocked)
+      if (IsLocked) {
         throw new Exception (
-          "Attempted to modify a locked instance of RCReference.");
+                "Attempted to modify a locked instance of RCReference.");
+      }
 
       m_static = context;
     }

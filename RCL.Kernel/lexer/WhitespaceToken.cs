@@ -3,12 +3,16 @@ namespace RCL.Kernel
 {
   public class WhitespaceToken : RCTokenType
   {
-    public override RCToken TryParseToken (string text, int start, int index, int line, RCToken previous)
+    public override RCToken TryParseToken (string text,
+                                           int start,
+                                           int index,
+                                           int line,
+                                           RCToken
+                                           previous)
     {
       int lines;
       int length = LengthOfWhitespace (text, start, out lines);
-      if (length < 0)
-      {
+      if (length < 0) {
         return null;
       }
       string whiteToken = text.Substring (start, length);
@@ -23,12 +27,10 @@ namespace RCL.Kernel
       {
         current++;
       }
-      if (current == start)
-      {
+      if (current == start) {
         return -1;
       }
-      else
-      {
+      else {
         lines = ScanForNewlines (text, start, current);
         return current - start;
       }

@@ -15,8 +15,7 @@ namespace RCL.Core
     protected static Random m_random = new Random ();
 
     [RCVerb ("randomd")]
-    public void EvalRandomd (
-      RCRunner runner, RCClosure closure, RCLong left, RCLong right)
+    public void EvalRandomd (RCRunner runner, RCClosure closure, RCLong left, RCLong right)
     {
       int seed = (int) left[0];
       Random random = new Random (seed);
@@ -26,12 +25,11 @@ namespace RCL.Core
       {
         result[i] = random.NextDouble ();
       }
-      runner.Yield(closure, new RCDouble (result));
+      runner.Yield (closure, new RCDouble (result));
     }
 
     [RCVerb ("randomd")]
-    public void EvalRandomd (
-      RCRunner runner, RCClosure closure, RCLong right)
+    public void EvalRandomd (RCRunner runner, RCClosure closure, RCLong right)
     {
       long count = right[0];
       double[] result = new double[count];
@@ -46,8 +44,7 @@ namespace RCL.Core
     }
 
     [RCVerb ("randoml")]
-    public void EvalRandoml (
-      RCRunner runner, RCClosure closure, RCLong left, RCLong right)
+    public void EvalRandoml (RCRunner runner, RCClosure closure, RCLong left, RCLong right)
     {
       int seed = (int) left[0];
       Random random = new Random (seed);
@@ -63,16 +60,15 @@ namespace RCL.Core
     }
 
     [RCVerb ("randoml")]
-    public void EvalRandoml (
-      RCRunner runner, RCClosure closure, RCLong right)
+    public void EvalRandoml (RCRunner runner, RCClosure closure, RCLong right)
     {
-      //Make sure we use a different seed each time this operator is called.
-      //int seed = Interlocked.Increment(ref m_seed);
-      //Random random = new Random(seed);
+      // Make sure we use a different seed each time this operator is called.
+      // int seed = Interlocked.Increment(ref m_seed);
+      // Random random = new Random(seed);
 
       long count = right[0];
-      int min = (int)right[1];
-      int max = (int)right[2];
+      int min = (int) right[1];
+      int max = (int) right[2];
       long[] result = new long[count];
       lock (m_random)
       {

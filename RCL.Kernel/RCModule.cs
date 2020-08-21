@@ -7,8 +7,8 @@ using System.IO;
 namespace RCL.Kernel
 {
   [AttributeUsage (AttributeTargets.Class, AllowMultiple = false)]
-  public class RCModule : Attribute 
+  public class RCModule : Attribute
   {
-    
+
   }
 }

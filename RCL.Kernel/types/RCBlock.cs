@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace RCL.Kernel
 {
-  //What is this garbage we should get rid of this.
+  // What is this garbage we should get rid of this.
   public interface IRefable
   {
     RCValue Get (RCArray<string> name, RCArray<RCBlock> context);
@@ -38,40 +38,35 @@ namespace RCL.Kernel
       RCArray<string> result = new RCArray<string> (4);
       for (int i = 0; i < text.Length; ++i)
       {
-        if (i == text.Length - 1)
-        {
+        if (i == text.Length - 1) {
           string partString = text.Substring (partStart);
           RCName part = GetName (partString);
           partStart += partString.Length;
-          //Consume the delimeter
+          // Consume the delimeter
           ++partStart;
           result.Write (part.Text);
         }
-        else if (text[i] == delimeter)
-        {
+        else if (text[i] == delimeter) {
           string partString = text.Substring (partStart, i - partStart);
           RCName part = GetName (partString);
           partStart += partString.Length;
-          //Consume the delimeter
+          // Consume the delimeter
           ++partStart;
           result.Write (part.Text);
         }
-        else if (text[i] == '\'')
-        {
+        else if (text[i] == '\'') {
           int matchingQuote = text.IndexOf ('\'', i + 1);
-          if (matchingQuote < 0)
-          {
+          if (matchingQuote < 0) {
             throw new Exception ("Unmatched single quote in name: " + text);
           }
-          else
-          {
+          else {
             while (matchingQuote > 0 && text[matchingQuote - 1] == '\\')
             {
               matchingQuote = text.IndexOf ('\'', matchingQuote + 1);
             }
-            if (matchingQuote <= 0 || text[matchingQuote] != '\'')
-            {
-              throw new Exception ("Unmatched single quote among escaped single quotes in name: " + text);
+            if (matchingQuote <= 0 || text[matchingQuote] != '\'') {
+              throw new Exception ("Unmatched single quote among escaped single quotes in name: " +
+                                   text);
             }
             string partString = text.Substring (partStart, 1 + (matchingQuote - partStart));
             RCName part = GetName (partString);
@@ -86,8 +81,7 @@ namespace RCL.Kernel
 
     public static RCName GetName (string text)
     {
-      if (text == null)
-      {
+      if (text == null) {
         text = "";
       }
       string name = null;
@@ -95,73 +89,60 @@ namespace RCL.Kernel
       RCName result;
       lock (m_lock)
       {
-        if (!m_names.TryGetValue (text, out result))
-        {
-          if (text[0] == '\'')
-          {
-            if (text.Length == 1 || text[text.Length - 1] != '\'')
-            {
+        if (!m_names.TryGetValue (text, out result)) {
+          if (text[0] == '\'') {
+            if (text.Length == 1 || text[text.Length - 1] != '\'') {
               throw new Exception ("Unmatched single quote in name: " + text);
             }
             // Remove quotes if not necessary
             // They are necessary when the name begins with a number
-            if (text.Length > 1 && text[1] >= '0' && text[1] <= '9')
-            {
+            if (text.Length > 1 && text[1] >= '0' && text[1] <= '9') {
               name = text;
               escaped = true;
             }
             for (int i = 1; i < text.Length - 1; ++i)
             {
-              if (!RCTokenType.IsIdentifierChar (text[i]))
-              {
+              if (!RCTokenType.IsIdentifierChar (text[i])) {
                 name = text;
                 escaped = true;
                 break;
               }
             }
-            if (name == null)
-            {
+            if (name == null) {
               name = text.Substring (1, text.Length - 2);
             }
           }
-          else if (text[0] >= '0' && text[0] <= '9')
-          {
+          else if (text[0] >= '0' && text[0] <= '9') {
             name = "'" + text + "'";
             escaped = true;
           }
-          else
-          {
+          else {
             for (int i = 0; i < text.Length; ++i)
             {
-              //add quotes if necessary
-              if (!RCTokenType.IsIdentifierChar (text[i]))
-              {
+              // add quotes if necessary
+              if (!RCTokenType.IsIdentifierChar (text[i])) {
                 name = "'" + text + "'";
                 escaped = true;
                 break;
               }
             }
-            if (name == null)
-            {
+            if (name == null) {
               name = text;
             }
           }
-          if (m_names.TryGetValue (name, out result))
-          {
-            //this makes it a synonym for next time
+          if (m_names.TryGetValue (name, out result)) {
+            // this makes it a synonym for next time
             m_names.Add (text, result);
             return result;
           }
-          else
-          {
+          else {
             result = new RCName (name, m_names.Count, escaped);
             m_names.Add (result.Text, result);
             m_index.Write (result);
             return result;
           }
         }
-        else
-        {
+        else {
           return result;
         }
       }
@@ -179,16 +160,13 @@ namespace RCL.Kernel
 
     public static string RawName (string name)
     {
-      if (name == null || name.Length == 0)
-      {
+      if (name == null || name.Length == 0) {
         return "";
       }
-      else if (name[0] == '\'')
-      {
+      else if (name[0] == '\'') {
         return name.Substring (1, name.Length - 2);
       }
-      else
-      {
+      else {
         return name;
       }
     }
@@ -247,32 +225,25 @@ namespace RCL.Kernel
 
     public static RCEvaluator For (string symbol)
     {
-      if (symbol.Equals (":"))
-      {
+      if (symbol.Equals (":")) {
         return Let;
       }
-      else if (symbol.Equals ("::"))
-      {
+      else if (symbol.Equals ("::")) {
         return Quote;
       }
-      else if (symbol.Equals ("<-"))
-      {
+      else if (symbol.Equals ("<-")) {
         return Yield;
       }
-      else if (symbol.Equals ("<-:"))
-      {
+      else if (symbol.Equals ("<-:")) {
         return Yiote;
       }
-      else if (symbol.Equals ("<--"))
-      {
+      else if (symbol.Equals ("<--")) {
         return Yiyi;
       }
-      else if (symbol.Equals ("<+"))
-      {
+      else if (symbol.Equals ("<+")) {
         return Apply;
       }
-      else if (symbol.Equals ("<&"))
-      {
+      else if (symbol.Equals ("<&")) {
         return Expand;
       }
       throw new Exception ("Unknown evaluator: " + symbol);
@@ -292,8 +263,8 @@ namespace RCL.Kernel
 
     protected RCBlock ()
     {
-      //this is the empty block.
-      //all blocks are eventually rooted to the empty block.
+      // this is the empty block.
+      // all blocks are eventually rooted to the empty block.
       m_count = 0;
     }
 
@@ -310,8 +281,7 @@ namespace RCL.Kernel
 
     public RCBlock (RCBlock previous, string name, RCEvaluator evaluator, RCValue val)
     {
-      if (val == null)
-      {
+      if (val == null) {
         throw new ArgumentNullException ("value");
       }
       Previous = previous != null ? previous : Empty;
@@ -327,25 +297,25 @@ namespace RCL.Kernel
       : this (previous, name, RCEvaluator.For (instr), new RCLong (val)) {}
 
     public RCBlock (RCBlock previous, string name, string instr, params string[] val)
-      : this (previous, name, RCEvaluator.For (instr), new RCString (val)) { }
+      : this (previous, name, RCEvaluator.For (instr), new RCString (val)) {}
 
     public RCBlock (RCBlock previous, string name, string instr, params double[] val)
-      : this (previous, name, RCEvaluator.For (instr), new RCDouble (val)) { }
+      : this (previous, name, RCEvaluator.For (instr), new RCDouble (val)) {}
 
     public RCBlock (RCBlock previous, string name, string instr, params decimal[] val)
-      : this (previous, name, RCEvaluator.For (instr), new RCDecimal (val)) { }
+      : this (previous, name, RCEvaluator.For (instr), new RCDecimal (val)) {}
 
     public RCBlock (RCBlock previous, string name, string instr, params bool[] val)
-      : this (previous, name, RCEvaluator.For (instr), new RCBoolean (val)) { }
+      : this (previous, name, RCEvaluator.For (instr), new RCBoolean (val)) {}
 
     public RCBlock (RCBlock previous, string name, string instr, params RCIncrScalar[] val)
-      : this (previous, name, RCEvaluator.For (instr), new RCIncr (val)) { }
+      : this (previous, name, RCEvaluator.For (instr), new RCIncr (val)) {}
 
     public RCBlock (RCBlock previous, string name, string instr, params RCTimeScalar[] val)
-      : this (previous, name, RCEvaluator.For (instr), new RCTime (val)) { }
+      : this (previous, name, RCEvaluator.For (instr), new RCTime (val)) {}
 
     public RCBlock (RCBlock previous, string name, string instr, params RCSymbolScalar[] val)
-      : this (previous, name, RCEvaluator.For (instr), new RCSymbol (val)) { }
+      : this (previous, name, RCEvaluator.For (instr), new RCSymbol (val)) {}
 
     public RCBlock (RCBlock previous, string name, string instr, RCValue val)
       : this (previous, name, RCEvaluator.For (instr), val) {}
@@ -369,10 +339,9 @@ namespace RCL.Kernel
       RCBlock current = this;
       while (current != null && current.Count > 0)
       {
-        //The empty block has a null name.
-        //This may not be for the best.
-        if (current.Name != null && current.Name.Equals (name))
-        {
+        // The empty block has a null name.
+        // This may not be for the best.
+        if (current.Name != null && current.Name.Equals (name)) {
           return current;
         }
         current = current.Previous;
@@ -388,12 +357,10 @@ namespace RCL.Kernel
       {
         value = block.Get (name[i]);
         block = value as IRefable;
-        if (block == null)
-        {
+        if (block == null) {
           return value;
         }
-        else if (@this != null)
-        {
+        else if (@this != null) {
           @this.Write ((RCBlock) block);
         }
       }
@@ -408,18 +375,17 @@ namespace RCL.Kernel
       {
         value = block.Get (name[i]);
         block = value as IRefable;
-        if (block == null)
-        {
-          //if it is the last value return it
-          if (i == name.Count - 1)
-          {
+        if (block == null) {
+          // if it is the last value return it
+          if (i == name.Count - 1) {
             return value;
           }
-          //if not, something is wrong
-          else return null;
+          // if not, something is wrong
+          else {
+            return null;
+          }
         }
-        if (@this != null && i < name.Count - 1)
-        {
+        if (@this != null && i < name.Count - 1) {
           @this.Write ((RCBlock) block);
         }
       }
@@ -433,28 +399,25 @@ namespace RCL.Kernel
       object[] array = name.ToArray ();
       for (int i = 0; i < array.Length; ++i)
       {
-        if (array[i] is long)
-        {
+        if (array[i] is long) {
           long index = (long) array[i];
           value = block.Get (index);
         }
-        else if (array[i] is string)
-        {
+        else if (array[i] is string) {
           value = block.Get ((string) array[i]);
         }
         block = value as IRefable;
-        if (block == null)
-        {
-          //if it is the last value return it
-          if (i == name.Length - 1)
-          {
+        if (block == null) {
+          // if it is the last value return it
+          if (i == name.Length - 1) {
             return value;
           }
-          //if not, something is wrong
-          else return null;
+          // if not, something is wrong
+          else {
+            return null;
+          }
         }
-        if (@this != null && i < array.Length - 1)
-        {
+        if (@this != null && i < array.Length - 1) {
           @this.Write ((RCBlock) block);
         }
       }
@@ -464,8 +427,7 @@ namespace RCL.Kernel
     public RCValue Get (string name)
     {
       RCBlock obj = GetName (name);
-      if (obj == null)
-      {
+      if (obj == null) {
         return null;
       }
       return obj.Value;
@@ -474,8 +436,7 @@ namespace RCL.Kernel
     public RCValue Get (string name, RCValue @default)
     {
       RCValue actual = Get (name);
-      if (actual == null)
-      {
+      if (actual == null) {
         actual = @default;
       }
       return actual;
@@ -485,15 +446,13 @@ namespace RCL.Kernel
     public RCBlock GetName (long index)
     {
       RCBlock current = this;
-      if (index < 0)
-      {
+      if (index < 0) {
         for (long i = 1; i < -index; ++i)
         {
           current = current.Previous;
         }
       }
-      else
-      {
+      else {
         for (long i = Count - 1; i > index; --i)
         {
           current = current.Previous;
@@ -513,8 +472,7 @@ namespace RCL.Kernel
     public RCValue Get (long index)
     {
       RCBlock obj = GetName (index);
-      if (obj == null)
-      {
+      if (obj == null) {
         return null;
       }
       return obj.Value;
@@ -523,11 +481,12 @@ namespace RCL.Kernel
     public Type GetType (int index)
     {
       RCVectorBase vector = this.Get (index) as RCVectorBase;
-      if (vector != null)
-      {
+      if (vector != null) {
         return vector.GetElementType ();
       }
-      else throw new Exception ("GetType (index) assumes a vector");
+      else {
+        throw new Exception ("GetType (index) assumes a vector");
+      }
     }
 
     public bool HasNamedVariables ()
@@ -535,8 +494,7 @@ namespace RCL.Kernel
       RCBlock current = this;
       while (current != null)
       {
-        if (current.Name != "" && current.Name != null)
-        {
+        if (current.Name != "" && current.Name != null) {
           return true;
         }
         current = current.Previous;
@@ -550,42 +508,37 @@ namespace RCL.Kernel
     public override RCValue Edit (RCRunner runner, RCValueDelegate editor)
     {
       RCValue val = base.Edit (runner, editor);
-      if (val == null)
-      {
+      if (val == null) {
         RCBlock result = null;
         for (int i = 0; i < Count; ++i)
         {
           RCBlock name = GetName (i);
           val = name.Value.Edit (runner, editor);
-          if (val != null)
-          {
-            if (result == null)
-            {
+          if (val != null) {
+            if (result == null) {
               result = name.Previous;
-              if (result == null)
-              {
+              if (result == null) {
                 result = RCBlock.Empty;
               }
             }
             result = new RCBlock (result, name.Name, Evaluator, val);
           }
-          else
-          {
-            //This avoids creating an identical copy if nothing is to be changed
-            //on any of the child values.
-            if (result == null)
-            {
+          else {
+            // This avoids creating an identical copy if nothing is to be changed
+            // on any of the child values.
+            if (result == null) {
               result = name;
             }
-            else
-            {
+            else {
               result = new RCBlock (result, name.Name, name.Evaluator, name.Value);
             }
           }
         }
         return result;
       }
-      else return val;
+      else {
+        return val;
+      }
     }
 
     public override void Eval (RCRunner runner, RCClosure closure)
@@ -652,12 +605,10 @@ namespace RCL.Kernel
       for (int i = 0; i < this.Count; ++i)
       {
         RCBlock child = this.GetName (i);
-        if (child.Name == "")
-        {
+        if (child.Name == "") {
           names.Push ((long) i);
         }
-        else
-        {
+        else {
           names.Push (child.Name);
         }
         child.Value.Cubify (target, names);
@@ -668,22 +619,22 @@ namespace RCL.Kernel
     public void CheckName (string name)
     {
       RCValue val = Get (name);
-      if (val == null)
-      {
-        throw new Exception (string.Format ("The variable '{0}' was not found in this block.", name));
+      if (val == null) {
+        throw new Exception (string.Format ("The variable '{0}' was not found in this block.",
+                                            name));
       }
     }
 
     public void CheckString (string name)
     {
       RCValue val = Get (name);
-      if (val == null)
-      {
-        throw new Exception (string.Format ("The variable '{0}' was not found in this block.", name));
+      if (val == null) {
+        throw new Exception (string.Format ("The variable '{0}' was not found in this block.",
+                                            name));
       }
-      else if (val.TypeCode != 's')
-      {
-        throw new Exception (string.Format ("The variable '{0}' is not a string. Type is {0}.", val.TypeName));
+      else if (val.TypeCode != 's') {
+        throw new Exception (string.Format ("The variable '{0}' is not a string. Type is {0}.",
+                                            val.TypeName));
       }
     }
 
@@ -692,8 +643,7 @@ namespace RCL.Kernel
       string val = GetString (name);
       for (int i = 0; i < values.Length; ++i)
       {
-        if (values[i] == val)
-        {
+        if (values[i] == val) {
           return;
         }
       }
@@ -702,8 +652,7 @@ namespace RCL.Kernel
       for (int i = 0; i < values.Length; ++i)
       {
         message.Append (values[i]);
-        if (i < values.Length -1)
-        {
+        if (i < values.Length - 1) {
           message.Append (", ");
         }
       }
@@ -713,172 +662,195 @@ namespace RCL.Kernel
     public void CheckBoolean (string name)
     {
       RCValue val = Get (name);
-      if (val == null)
-      {
-        throw new Exception (string.Format ("The variable '{0}' was not found in this block.", name));
+      if (val == null) {
+        throw new Exception (string.Format ("The variable '{0}' was not found in this block.",
+                                            name));
       }
-      else if (val.TypeCode != 'b')
-      {
-        throw new Exception (string.Format ("The variable '{0}' is not a boolean. Type is {0}.", val.TypeName));
+      else if (val.TypeCode != 'b') {
+        throw new Exception (string.Format ("The variable '{0}' is not a boolean. Type is {0}.",
+                                            val.TypeName));
       }
     }
 
     public void CheckLong (string name)
     {
       RCValue val = Get (name);
-      if (val == null)
-      {
-        throw new Exception (string.Format ("The variable '{0}' was not found in this block.", name));
+      if (val == null) {
+        throw new Exception (string.Format ("The variable '{0}' was not found in this block.",
+                                            name));
       }
-      else if (val.TypeCode != 'l')
-      {
-        throw new Exception (string.Format ("The variable '{0}' is not a long. Type is {0}.", val.TypeName));
+      else if (val.TypeCode != 'l') {
+        throw new Exception (string.Format ("The variable '{0}' is not a long. Type is {0}.",
+                                            val.TypeName));
       }
     }
 
     public void CheckLongIsBetween (string name, long min, long max)
     {
       long val = GetLong (name);
-      if (val < min || val > max)
-      {
-        throw new Exception (string.Format ("The variable '{0}' is not between {1} and {2}. Value is {3}.", name, min, max, val));
+      if (val < min || val > max) {
+        throw new Exception (string.Format (
+                               "The variable '{0}' is not between {1} and {2}. Value is {3}.",
+                               name,
+                               min,
+                               max,
+                               val));
       }
     }
 
     public void CheckDouble (string name)
     {
       RCValue val = Get (name);
-      if (val == null)
-      {
-        throw new Exception (string.Format ("The variable '{0}' was not found in this block.", name));
+      if (val == null) {
+        throw new Exception (string.Format ("The variable '{0}' was not found in this block.",
+                                            name));
       }
-      else if (val.TypeCode != 'd')
-      {
-        throw new Exception (string.Format ("The variable '{0}' is not a double. Type is {0}.", val.TypeName));
+      else if (val.TypeCode != 'd') {
+        throw new Exception (string.Format ("The variable '{0}' is not a double. Type is {0}.",
+                                            val.TypeName));
       }
     }
 
     public void CheckDoubleIsBetween (string name, double min, double max)
     {
       double val = GetDouble (name);
-      if (val < min || val > max)
-      {
-        throw new Exception (string.Format ("The variable '{0}' is not between {1} and {2}. Value is {3}.", name, min, max, val));
+      if (val < min || val > max) {
+        throw new Exception (string.Format (
+                               "The variable '{0}' is not between {1} and {2}. Value is {3}.",
+                               name,
+                               min,
+                               max,
+                               val));
       }
     }
 
     public void CheckDecimal (string name)
     {
       RCValue val = Get (name);
-      if (val == null)
-      {
-        throw new Exception (string.Format ("The variable '{0}' was not found in this block.", name));
+      if (val == null) {
+        throw new Exception (string.Format ("The variable '{0}' was not found in this block.",
+                                            name));
       }
-      else if (val.TypeCode != 'm')
-      {
-        throw new Exception (string.Format ("The variable '{0}' is not a decimal. Type is {0}.", val.TypeName));
+      else if (val.TypeCode != 'm') {
+        throw new Exception (string.Format ("The variable '{0}' is not a decimal. Type is {0}.",
+                                            val.TypeName));
       }
     }
 
     public void CheckDecimalIsBetween (string name, decimal min, decimal max)
     {
       decimal val = GetDecimal (name);
-      if (val < min || val > max)
-      {
-        throw new Exception (string.Format ("The variable '{0}' is not between {1} and {2}. Value is {3}.", name, min, max, val));
+      if (val < min || val > max) {
+        throw new Exception (string.Format (
+                               "The variable '{0}' is not between {1} and {2}. Value is {3}.",
+                               name,
+                               min,
+                               max,
+                               val));
       }
     }
 
     public void CheckTime (string name)
     {
       RCValue val = Get (name);
-      if (val == null)
-      {
-        throw new Exception (string.Format ("The variable '{0}' was not found in this block.", name));
+      if (val == null) {
+        throw new Exception (string.Format ("The variable '{0}' was not found in this block.",
+                                            name));
       }
-      else if (val.TypeCode != 't')
-      {
-        throw new Exception (string.Format ("The variable '{0}' is not a time. Type is {0}.", val.TypeName));
+      else if (val.TypeCode != 't') {
+        throw new Exception (string.Format ("The variable '{0}' is not a time. Type is {0}.",
+                                            val.TypeName));
       }
     }
 
     public void CheckTimeIsBetween (string name, RCTimeScalar min, RCTimeScalar max)
     {
       RCTimeScalar val = GetTime (name);
-      if (val.Ticks < min.Ticks || val.Ticks > max.Ticks)
-      {
-        throw new Exception (string.Format ("The variable '{0}' is not between {1} and {2}. Value is {3}.", name, min, max, val));
+      if (val.Ticks < min.Ticks || val.Ticks > max.Ticks) {
+        throw new Exception (string.Format (
+                               "The variable '{0}' is not between {1} and {2}. Value is {3}.",
+                               name,
+                               min,
+                               max,
+                               val));
       }
     }
 
     public void CheckSymbol (string name)
     {
       RCValue val = Get (name);
-      if (val == null)
-      {
-        throw new Exception (string.Format ("The variable '{0}' was not found in this block.", name));
+      if (val == null) {
+        throw new Exception (string.Format ("The variable '{0}' was not found in this block.",
+                                            name));
       }
-      else if (val.TypeCode != 'y')
-      {
-        throw new Exception (string.Format ("The variable '{0}' is not a symbol. Type is {0}.", val.TypeName));
+      else if (val.TypeCode != 'y') {
+        throw new Exception (string.Format ("The variable '{0}' is not a symbol. Type is {0}.",
+                                            val.TypeName));
       }
     }
 
     public void CheckIncr (string name)
     {
       RCValue val = Get (name);
-      if (val == null)
-      {
-        throw new Exception (string.Format ("The variable '{0}' was not found in this block.", name));
+      if (val == null) {
+        throw new Exception (string.Format ("The variable '{0}' was not found in this block.",
+                                            name));
       }
-      else if (val.TypeCode != 'n')
-      {
-        throw new Exception (string.Format ("The variable '{0}' is not an incr op. Type is {0}.", val.TypeName));
+      else if (val.TypeCode != 'n') {
+        throw new Exception (string.Format ("The variable '{0}' is not an incr op. Type is {0}.",
+                                            val.TypeName));
       }
     }
 
     public RCBlock GetBlock (string name, RCBlock def)
     {
       RCBlock val = (RCBlock) Get (name);
-      if (val == null)
-      {
+      if (val == null) {
         return def;
       }
-      else return val;
+      else {
+        return val;
+      }
     }
 
     public RCBlock GetBlock (string name)
     {
       RCBlock val = (RCBlock) Get (name);
-      if (val == null)
-      {
+      if (val == null) {
         throw new Exception ("Required value " + name + " not found in block");
       }
-      else return val;
+      else {
+        return val;
+      }
     }
 
     public RCBlock GetBlock (long i)
     {
-      //Don't forget to update the rest of these
+      // Don't forget to update the rest of these
       RCBlock block = Get (i) as RCBlock;
-      if (block == null)
-      {
+      if (block == null) {
         RCValue val = Get (i);
-        if (val != null)
-        {
-          throw new Exception (string.Format ("Value at index {0} was not a block. Type was {1}", i, val.TypeName));
+        if (val != null) {
+          throw new Exception (string.Format ("Value at index {0} was not a block. Type was {1}",
+                                              i,
+                                              val.TypeName));
         }
-        throw new Exception (string.Format ("No value at index {0} within block (count {1})", i, Count));
+        throw new Exception (string.Format ("No value at index {0} within block (count {1})",
+                                            i,
+                                            Count));
       }
-      else return block;
+      else {
+        return block;
+      }
     }
 
     public string GetString (long i)
     {
       RCString val = (RCString) Get (i);
-      if (val == null)
-      {
-        throw new Exception (string.Format ("No value at index {0} within block. Count: {1}", i, Count));
+      if (val == null) {
+        throw new Exception (string.Format ("No value at index {0} within block. Count: {1}",
+                                            i,
+                                            Count));
       }
       return val[0];
     }
@@ -886,9 +858,10 @@ namespace RCL.Kernel
     public bool GetBoolean (long i)
     {
       RCBoolean val = (RCBoolean) Get (i);
-      if (val == null)
-      {
-        throw new Exception (string.Format ("No value at index {0} within block (count:{1})", i, Count));
+      if (val == null) {
+        throw new Exception (string.Format ("No value at index {0} within block (count:{1})",
+                                            i,
+                                            Count));
       }
       return val[0];
     }
@@ -896,9 +869,10 @@ namespace RCL.Kernel
     public long GetLong (long i)
     {
       RCLong val = (RCLong) Get (i);
-      if (val == null)
-      {
-        throw new Exception (string.Format ("No value at index {0} within block (count:{1})", i, Count));
+      if (val == null) {
+        throw new Exception (string.Format ("No value at index {0} within block (count:{1})",
+                                            i,
+                                            Count));
       }
       return val[0];
     }
@@ -906,9 +880,10 @@ namespace RCL.Kernel
     public double GetDouble (long i)
     {
       RCDouble val = (RCDouble) Get (i);
-      if (val == null)
-      {
-        throw new Exception (string.Format ("No value at index {0} within block (count:{1})", i, Count));
+      if (val == null) {
+        throw new Exception (string.Format ("No value at index {0} within block (count:{1})",
+                                            i,
+                                            Count));
       }
       return val[0];
     }
@@ -916,9 +891,10 @@ namespace RCL.Kernel
     public decimal GetDecimal (long i)
     {
       RCDecimal val = (RCDecimal) Get (i);
-      if (val == null)
-      {
-        throw new Exception (string.Format ("No value at index {0} within block (count:{1})", i, Count));
+      if (val == null) {
+        throw new Exception (string.Format ("No value at index {0} within block (count:{1})",
+                                            i,
+                                            Count));
       }
       return val[0];
     }
@@ -926,9 +902,10 @@ namespace RCL.Kernel
     public RCTimeScalar GetTime (long i)
     {
       RCTime val = (RCTime) Get (i);
-      if (val == null)
-      {
-        throw new Exception (string.Format ("No value at index {0} within block (count:{1})", i, Count));
+      if (val == null) {
+        throw new Exception (string.Format ("No value at index {0} within block (count:{1})",
+                                            i,
+                                            Count));
       }
       return val[0];
     }
@@ -936,9 +913,10 @@ namespace RCL.Kernel
     public RCSymbolScalar GetSymbol (long i)
     {
       RCSymbol val = (RCSymbol) Get (i);
-      if (val == null)
-      {
-        throw new Exception (string.Format ("No value at index {0} within block (count:{1})", i, Count));
+      if (val == null) {
+        throw new Exception (string.Format ("No value at index {0} within block (count:{1})",
+                                            i,
+                                            Count));
       }
       return val[0];
     }
@@ -946,9 +924,10 @@ namespace RCL.Kernel
     public RCIncrScalar GetIncr (long i)
     {
       RCIncr val = (RCIncr) Get (i);
-      if (val == null)
-      {
-        throw new Exception (string.Format ("No value at index {0} within block (count:{1})", i, Count));
+      if (val == null) {
+        throw new Exception (string.Format ("No value at index {0} within block (count:{1})",
+                                            i,
+                                            Count));
       }
       return val[0];
     }
@@ -959,161 +938,177 @@ namespace RCL.Kernel
     public string GetString (string name, string def)
     {
       RCString val = (RCString) Get (name);
-      if (val == null)
-      {
+      if (val == null) {
         return def;
       }
-      else return val[0];
+      else {
+        return val[0];
+      }
     }
 
     public string GetString (string name)
     {
       RCString val = (RCString) Get (name);
-      if (val == null)
-      {
+      if (val == null) {
         throw new Exception ("Required value " + name + " not found in block");
       }
-      else return val[0];
+      else {
+        return val[0];
+      }
     }
 
     public bool GetBoolean (string name, bool def)
     {
       RCBoolean val = (RCBoolean) Get (name);
-      if (val == null)
-      {
+      if (val == null) {
         return def;
       }
-      else return val[0];
+      else {
+        return val[0];
+      }
     }
 
     public bool GetBoolean (string name)
     {
       RCBoolean val = (RCBoolean) Get (name);
-      if (val == null)
-      {
+      if (val == null) {
         throw new Exception ("Required value " + name + " not found in block");
       }
-      else return val[0];
+      else {
+        return val[0];
+      }
     }
 
     public long GetLong (string name, long def)
     {
       RCLong val = (RCLong) Get (name);
-      if (val == null)
-      {
+      if (val == null) {
         return def;
       }
-      else return val[0];
+      else {
+        return val[0];
+      }
     }
 
     public long GetLong (string name)
     {
       RCLong val = (RCLong) Get (name);
-      if (val == null)
-      {
+      if (val == null) {
         throw new Exception ("Required value " + name + " not found in block");
       }
-      else return val[0];
+      else {
+        return val[0];
+      }
     }
 
     public double GetDouble (string name, double def)
     {
       RCDouble val = (RCDouble) Get (name);
-      if (val == null)
-      {
+      if (val == null) {
         return def;
       }
-      else return val[0];
+      else {
+        return val[0];
+      }
     }
 
     public double GetDouble (string name)
     {
       RCDouble val = (RCDouble) Get (name);
-      if (val == null)
-      {
+      if (val == null) {
         throw new Exception ("Required value " + name + " not found in block");
       }
-      else return val[0];
+      else {
+        return val[0];
+      }
     }
 
     public decimal GetDecimal (string name, decimal def)
     {
       RCDecimal val = (RCDecimal) Get (name);
-      if (val == null)
-      {
+      if (val == null) {
         return def;
       }
-      else return val[0];
+      else {
+        return val[0];
+      }
     }
 
     public decimal GetDecimal (string name)
     {
       RCDecimal val = (RCDecimal) Get (name);
-      if (val == null)
-      {
+      if (val == null) {
         throw new Exception ("Required value " + name + " not found in block");
       }
-      else return val[0];
+      else {
+        return val[0];
+      }
     }
 
     public RCTimeScalar GetTime (string name, RCTimeScalar def)
     {
       RCTime val = (RCTime) Get (name);
-      if (val == null)
-      {
+      if (val == null) {
         return def;
       }
-      else return val[0];
+      else {
+        return val[0];
+      }
     }
 
     public RCTimeScalar GetTime (string name)
     {
       RCTime val = (RCTime) Get (name);
-      if (val == null)
-      {
+      if (val == null) {
         throw new Exception ("Required value " + name + " not found in block");
       }
-      else return val[0];
+      else {
+        return val[0];
+      }
     }
 
     public RCSymbolScalar GetSymbol (string name, RCSymbolScalar def)
     {
       RCSymbol val = (RCSymbol) Get (name);
-      if (val == null)
-      {
+      if (val == null) {
         return def;
       }
-      else return val[0];
+      else {
+        return val[0];
+      }
     }
 
     public RCSymbolScalar GetSymbol (string name)
     {
       RCSymbol val = (RCSymbol) Get (name);
-      if (val == null)
-      {
+      if (val == null) {
         throw new Exception ("Required value " + name + " not found in block");
       }
-      else return val[0];
+      else {
+        return val[0];
+      }
     }
 
     public RCIncrScalar GetIncr (string name, RCIncrScalar def)
     {
       RCIncr val = (RCIncr) Get (name);
-      if (val == null)
-      {
+      if (val == null) {
         return def;
       }
-      else return val[0];
+      else {
+        return val[0];
+      }
     }
 
     public RCIncrScalar GetIncr (string name)
     {
       RCIncr val = (RCIncr) Get (name);
-      if (val == null)
-      {
+      if (val == null) {
         throw new Exception ("Required value " + name + " not found in block");
       }
-      else return val[0];
+      else {
+        return val[0];
+      }
     }
   }
 }

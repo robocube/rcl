@@ -31,8 +31,7 @@ namespace RCL.Core
     }
 
     [RCVerb ("where")]
-    public void EvalWhere (
-      RCRunner runner, RCClosure closure, RCString left, RCBoolean right)
+    public void EvalWhere (RCRunner runner, RCClosure closure, RCString left, RCBoolean right)
     {
       runner.Yield (closure, DoWhere<string> (left, right));
     }
@@ -44,8 +43,7 @@ namespace RCL.Core
     }
 
     [RCVerb ("where")]
-    public void EvalWhere (
-      RCRunner runner, RCClosure closure, RCTime left, RCBoolean right)
+    public void EvalWhere (RCRunner runner, RCClosure closure, RCTime left, RCBoolean right)
     {
       runner.Yield (closure, DoWhere<RCTimeScalar> (left, right));
     }
@@ -68,8 +66,7 @@ namespace RCL.Core
       RCBlock result = RCBlock.Empty;
       for (int i = 0; i < right.Count; ++i)
       {
-        if (right[i])
-        {
+        if (right[i]) {
           RCBlock current = left.GetName (i);
           result = new RCBlock (result, current.Name, current.Evaluator, current.Value);
         }
@@ -90,8 +87,7 @@ namespace RCL.Core
       RCArray<long> result = new RCArray<long> (8);
       for (int i = 0; i < right.Count; ++i)
       {
-        if (right[i])
-        {
+        if (right[i]) {
           result.Write ((long) i);
         }
       }
@@ -100,49 +96,43 @@ namespace RCL.Core
 
     protected RCBlock RecursiveWhere (RCBlock left, RCBlock right)
     {
-      if (left.Count != right.Count)
-      {
-        throw new Exception (string.Format ("Left count was {0} but right count was {1}. Counts must match", left.Count, right.Count));
+      if (left.Count != right.Count) {
+        throw new Exception (string.Format (
+                               "Left count was {0} but right count was {1}. Counts must match",
+                               left.Count,
+                               right.Count));
       }
       RCBlock result = RCBlock.Empty;
       for (int i = 0; i < left.Count; ++i)
       {
         RCBlock leftName = left.GetName (i);
         RCValue rightValue = right.Get (i);
-        if (rightValue is RCBlock)
-        {
+        if (rightValue is RCBlock) {
           RCBlock rightBlock = (RCBlock) rightValue;
           RCBlock leftBlock = left.GetBlock (i);
           RCBlock childResult = RecursiveWhere (leftBlock, rightBlock);
-          if (childResult.Count > 0)
-          {
+          if (childResult.Count > 0) {
             result = new RCBlock (result, leftName.Name, leftName.Evaluator, childResult);
           }
         }
-        else if (rightValue is RCBoolean)
-        {
-          if (rightValue.Count == 1)
-          {
-            if (right.GetBoolean (i))
-            {
+        else if (rightValue is RCBoolean) {
+          if (rightValue.Count == 1) {
+            if (right.GetBoolean (i)) {
               result = new RCBlock (result, leftName.Name, ":", leftName.Value);
             }
           }
-          else
-          {
+          else {
             RCBoolean rightVector = (RCBoolean) rightValue;
             RCBlock leftBlock = left.GetBlock (i);
             RCBlock childResult = RCBlock.Empty;
             for (int j = 0; j < rightVector.Count; ++j)
             {
               RCBlock leftVar = leftBlock.GetName (j);
-              if (rightVector[j])
-              {
+              if (rightVector[j]) {
                 childResult = new RCBlock (childResult, leftVar.Name, ":", leftVar.Value);
               }
             }
-            if (childResult.Count > 0)
-            {
+            if (childResult.Count > 0) {
               result = new RCBlock (result, leftName.Name, leftName.Evaluator, childResult);
             }
           }
@@ -156,12 +146,11 @@ namespace RCL.Core
       RCArray<L> result = new RCArray<L> ();
       for (int i = 0; i < right.Count; ++i)
       {
-        if (right[i])
-        {
+        if (right[i]) {
           result.Write (left[i]);
         }
       }
-      return (RCVector<L>) RCVectorBase.FromArray (new RCArray<L> (result));
+      return (RCVector<L>)RCVectorBase.FromArray (new RCArray<L> (result));
     }
   }
 }

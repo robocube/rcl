@@ -15,54 +15,50 @@ namespace RCL.Core
                   new RCClosure (closure, closure.Bot, right, closure.Left, RCBlock.Empty, 0));
     }
 
-    public override RCClosure Handle (RCRunner runner, 
-                                      RCClosure closure, 
-                                      Exception exception, 
-                                      long status, 
+    public override RCClosure Handle (RCRunner runner,
+                                      RCClosure closure,
+                                      Exception exception,
+                                      long status,
                                       out RCValue result)
     {
-      //When the runner finds out about an exception it will try to call this
-      //Handle method on all of the parents in the stack until it gets to
-      //one that returns a closure to eval next.
+      // When the runner finds out about an exception it will try to call this
+      // Handle method on all of the parents in the stack until it gets to
+      // one that returns a closure to eval next.
       RCBlock wrapper = new RCBlock ("status", ":", new RCLong (status));
       RCException rcex = exception as RCException;
       string message;
-      if (rcex != null)
-      {
-        if (RCSystem.Args.OutputEnum == RCOutput.Test)
-        {
+      if (rcex != null) {
+        if (RCSystem.Args.OutputEnum == RCOutput.Test) {
           message = rcex.ToTestString ();
         }
-        else
-        {
+        else {
           message = rcex.ToString ();
         }
       }
-      else
-      {
+      else {
         message = exception.Message;
       }
       RCBlock report = new RCBlock ("", ":", new RCString (message + "\n"));
       int escapeCount = RCTemplate.CalculateReportTemplateEscapeLevel (message);
-      if (RCSystem.Args.OutputEnum == RCOutput.Test)
-      {
+      if (RCSystem.Args.OutputEnum == RCOutput.Test) {
         wrapper = new RCBlock (wrapper, "data", ":", new RCTemplate (report, escapeCount, true));
       }
-      else
-      {
+      else {
         wrapper = new RCBlock (wrapper, "data", ":", new RCTemplate (report, escapeCount, true));
       }
       result = wrapper;
       return base.Next (runner, closure, closure, result);
     }
 
-    public override RCClosure Next (RCRunner runner, RCClosure tail, RCClosure previous, RCValue result)
+    public override RCClosure Next (RCRunner runner,
+                                    RCClosure tail,
+                                    RCClosure previous,
+                                    RCValue
+                                    result)
     {
-      if (previous.Index == 1)
-      {
+      if (previous.Index == 1) {
         long status = 0;
-        if (result is RCNative)
-        {
+        if (result is RCNative) {
           status = 1;
         }
         RCBlock wrapper = new RCBlock ("status", ":", new RCLong (status));
@@ -70,7 +66,9 @@ namespace RCL.Core
         RCClosure next = base.Next (runner, tail, previous, wrapper);
         return next;
       }
-      else return base.Next (runner, tail, previous, result);
+      else {
+        return base.Next (runner, tail, previous, result);
+      }
     }
 
     public override RCValue Finish (RCValue result)
@@ -82,12 +80,10 @@ namespace RCL.Core
 
     public override bool IsLastCall (RCClosure closure, RCClosure arg)
     {
-      if (arg == null)
-      {
+      if (arg == null) {
         return base.IsLastCall (closure, arg);
       }
-      if (!base.IsLastCall (closure, arg))
-      {
+      if (!base.IsLastCall (closure, arg)) {
         return false;
       }
       return arg.Code.IsBeforeLastCall (arg);

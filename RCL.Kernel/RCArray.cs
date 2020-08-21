@@ -21,8 +21,7 @@ namespace RCL.Kernel
 
     public RCArray (params T[] source)
     {
-      if (source == null)
-      {
+      if (source == null) {
         throw new ArgumentNullException ("source");
       }
       m_source = source;
@@ -42,7 +41,8 @@ namespace RCL.Kernel
     }
 
     public RCArray (RCArray<T> source)
-      : this (source.ToArray ()) {}
+      : this (source.ToArray ()) {
+    }
 
     public int Count
     {
@@ -83,7 +83,7 @@ namespace RCL.Kernel
     {
       StringBuilder builder = new StringBuilder ();
       builder.Append ("(");
-      builder.Append (typeof(T).Name);
+      builder.Append (typeof (T).Name);
       builder.Append (" ");
       builder.Append (Count);
       builder.Append ("/");
@@ -92,18 +92,18 @@ namespace RCL.Kernel
       builder.Append ("[");
       for (int i = 0; i < Count; ++i)
       {
-        if (this[i] == null)
-        {
-          // The only time this should ever appear is when printing the context of a debug exception.
-          // It is not parsable. RCArrays with nulls should be caught in Lock (while running the debug build).
+        if (this[i] == null) {
+          // The only time this should ever appear is when printing the context of a debug
+          // exception.
+          // It is not parsable. RCArrays with nulls should be caught in Lock (while
+          // running the
+          // debug build).
           builder.Append ("null");
         }
-        else
-        {
+        else {
           builder.Append (this[i].ToString ());
         }
-        if (i < Count - 1)
-        {
+        if (i < Count - 1) {
           builder.Append (" ");
         }
       }
@@ -129,9 +129,9 @@ namespace RCL.Kernel
 
     public void Write (T[] values)
     {
-      if (m_lock)
-      {
-        throw new InvalidOperationException ("Attempted to Write to an RCArray after it was locked.");
+      if (m_lock) {
+        throw new InvalidOperationException (
+                "Attempted to Write to an RCArray after it was locked.");
       }
       Resize (values.Length, 0);
       for (int i = 0; i < values.Length; ++i)
@@ -143,9 +143,9 @@ namespace RCL.Kernel
 
     public void Write (RCArray<T> values)
     {
-      if (m_lock)
-      {
-        throw new InvalidOperationException ("Attempted to Write to an RCArray after it was locked.");
+      if (m_lock) {
+        throw new InvalidOperationException (
+                "Attempted to Write to an RCArray after it was locked.");
       }
       Resize (values.Count, 0);
       for (int i = 0; i < values.Count; ++i)
@@ -157,8 +157,7 @@ namespace RCL.Kernel
 
     public void Write (T value)
     {
-      if (m_lock)
-      {
+      if (m_lock) {
         throw new Exception ("Cannot write to an RCArray after it is locked.");
       }
       Resize (1, 0);
@@ -171,8 +170,7 @@ namespace RCL.Kernel
     /// </summary>
     public void Write (int i, T value)
     {
-      if (m_lock)
-      {
+      if (m_lock) {
         throw new Exception ("Cannot write to an RCArray after it is locked.");
       }
       Resize (1, 0);
@@ -181,21 +179,19 @@ namespace RCL.Kernel
 
     public void RemoveAt (int i)
     {
-      if (m_lock)
-      {
+      if (m_lock) {
         throw new Exception ("Cannot write to an RCArray after it is locked");
       }
-      for (;i < Count - 1; ++i)
+      for (; i < Count - 1; ++i)
       {
-        m_source[i] = m_source[i+1];
+        m_source[i] = m_source[i + 1];
       }
       --m_count;
     }
 
     public void Clear ()
     {
-      if (m_lock)
-      {
+      if (m_lock) {
         throw new Exception ("Cannot write to an RCArray after it is locked");
       }
       m_count = 0;
@@ -206,7 +202,7 @@ namespace RCL.Kernel
       RCAssert.ArrayHasNoNulls<T> (this);
       m_lock = true;
     }
-   
+
     public bool Locked ()
     {
       return m_lock;
@@ -215,10 +211,9 @@ namespace RCL.Kernel
     public void Resize (long size, long dups)
     {
       long count = m_count + (size - dups);
-      if (m_source.Length < count)
-      {
-        //At some size I want it to switch from exponential to 
-        //linear growth.
+      if (m_source.Length < count) {
+        // At some size I want it to switch from exponential to
+        // linear growth.
         long length = NextPowerOf2 (count);
         T[] source = new T[length];
         for (long i = 0; i < m_count; ++i)
@@ -229,20 +224,18 @@ namespace RCL.Kernel
 
     public void ReverseInPlace ()
     {
-      if (m_lock)
-      {
+      if (m_lock) {
         throw new Exception (
-          "Cannot use ReverseInPlace on an RCArray after it has been locked.");
+                "Cannot use ReverseInPlace on an RCArray after it has been locked.");
       }
       Array.Reverse (m_source, 0, (int) m_count);
     }
 
     public void SortInPlace ()
     {
-      if (m_lock)
-      {
+      if (m_lock) {
         throw new Exception (
-          "Cannot use SortInPlace on an RCArray<T> after it has been locked.");
+                "Cannot use SortInPlace on an RCArray<T> after it has been locked.");
       }
       Array.Sort (m_source, 0, (int) m_count);
     }
@@ -250,21 +243,27 @@ namespace RCL.Kernel
     public int BinarySearch (T val, out bool found)
     {
       // The index of the specified value in the specified array, if value is found;
-      // otherwise, a negative number.If value is not found and value is less than one or more elements in array,
-      // the negative number returned is the bitwise complement of the index of the first element that is larger than value.If
+      // otherwise, a negative number.If value is not found and value is less than one or
+      // more
+      // elements in array,
+      // the negative number returned is the bitwise complement of the index of the first
+      // element
+      // that is larger than value.If
       // value is not found and value is greater than all elements in array,
-      // the negative number returned is the bitwise complement of (the index of the last element plus 1).If this method is
-      // called with a non - sorted array, the return value can be incorrect and a negative number could be returned,
+      // the negative number returned is the bitwise complement of (the index of the last
+      // element
+      // plus 1).If this method is
+      // called with a non - sorted array, the return value can be incorrect and a
+      // negative number
+      // could be returned,
       // even if value is present in array .
       // https://docs.microsoft.com/en-us/dotnet/api/system.array.binarysearch?view=netframework-4.7.2
       int index = Array.BinarySearch<T> (m_source, 0, (int) m_count, val);
-      if (index < 0)
-      {
+      if (index < 0) {
         found = false;
         return ~index;
       }
-      else
-      {
+      else {
         found = true;
         return index;
       }
@@ -291,7 +290,8 @@ namespace RCL.Kernel
       get { return (T) m_array[i]; }
     }
 
-    public void Dispose () { }
+    public void Dispose () {
+    }
 
     object System.Collections.IEnumerator.Current
     {

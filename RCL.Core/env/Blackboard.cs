@@ -8,13 +8,15 @@ using RCL.Kernel;
 
 namespace RCL.Core
 {
-  //Implements concurrency control and communication between fibers.
+  // Implements concurrency control and communication between fibers.
   public class Blackboard
   {
     protected readonly object m_readWriteLock = new object ();
     protected Dictionary<object, Section> m_sections = new Dictionary<object, Section> ();
 
-    public Blackboard () {}
+    public Blackboard ()
+    {
+    }
 
     protected class Section
     {
@@ -22,34 +24,34 @@ namespace RCL.Core
       internal MapQueue m_readWaiters = new MapQueue ();
       internal MapQueue m_dispatchWaiters = new MapQueue ();
       internal MapQueue m_throttleWaiters = new MapQueue ();
-      internal Dictionary<RCSymbolScalar, long> m_dispatchLines = new Dictionary<RCSymbolScalar, long> ();
+      internal Dictionary<RCSymbolScalar, long> m_dispatchLines = new Dictionary<RCSymbolScalar,
+                                                                                 long> ();
       internal ReadCounter m_counter = new ReadCounter ();
       internal RCCube m_blackboard = new RCCube (new RCArray<string> ("G", "E", "S"));
-      //internal RCCube m_blackboard = new RCCube (new RCArray<string> ("G", "S"));
+      // internal RCCube m_blackboard = new RCCube (new RCArray<string> ("G", "S"));
 
       internal void Clear ()
       {
-        //g gets updated...
+        // g gets updated...
         m_g += m_blackboard.Count;
-        //blackboard cube is dumped.
+        // blackboard cube is dumped.
         m_blackboard = new RCCube (new RCArray<string> ("G", "E", "S"));
-        //Uncomment this to disable the E column I think
-        //I want it to be G or E in the blackboard, not both
-        //m_blackboard = new RCCube (new RCArray<string> ("G", "S"));
-        //waiters keep on waiting.
-        //But what about m_counter?
-        //Shouldn't we just reset it?
+        // Uncomment this to disable the E column I think
+        // I want it to be G or E in the blackboard, not both
+        // m_blackboard = new RCCube (new RCArray<string> ("G", "S"));
+        // waiters keep on waiting.
+        // But what about m_counter?
+        // Shouldn't we just reset it?
         m_counter = new ReadCounter ();
       }
     }
 
     protected Section GetSection (RCSymbol symbol)
     {
-      //This assumes that all symbols in symbol have the same first part!
+      // This assumes that all symbols in symbol have the same first part!
       object key = symbol[0].Part (0);
       Section s;
-      if (!m_sections.TryGetValue (key, out s))
-      {
+      if (!m_sections.TryGetValue (key, out s)) {
         s = new Section ();
         m_sections[key] = s;
       }
@@ -62,7 +64,17 @@ namespace RCL.Core
       try
       {
         Section section = GetSection (left);
-        Read (runner, closure, left, new ReadSpec (section.m_counter, left, right, 0, false, false, true, false));
+        Read (runner,
+              closure,
+              left,
+              new ReadSpec (section.m_counter,
+                            left,
+                            right,
+                            0,
+                            false,
+                            false,
+                            true,
+                            false));
       }
       catch (Exception)
       {
@@ -77,7 +89,17 @@ namespace RCL.Core
       {
         RCLong args = new RCLong (0, 0);
         Section section = GetSection (right);
-        Read (runner, closure, right, new ReadSpec (section.m_counter, right, args, 0, false, false, true, false));
+        Read (runner,
+              closure,
+              right,
+              new ReadSpec (section.m_counter,
+                            right,
+                            args,
+                            0,
+                            false,
+                            false,
+                            true,
+                            false));
       }
       catch (Exception)
       {
@@ -90,12 +112,22 @@ namespace RCL.Core
     {
       try
       {
-        //This read is different from all others in that it has force on and fill off.
-        //force causes duplicate values to be written.
-        //fill causes prior values to be filled into the results.
-        //This read gives you exactly what exists in the blackboard.
+        // This read is different from all others in that it has force on and fill off.
+        // force causes duplicate values to be written.
+        // fill causes prior values to be filled into the results.
+        // This read gives you exactly what exists in the blackboard.
         Section section = GetSection (right);
-        Read (runner, closure, right, new ReadSpec (section.m_counter, right, left, 0, false, true, false, true));
+        Read (runner,
+              closure,
+              right,
+              new ReadSpec (section.m_counter,
+                            right,
+                            left,
+                            0,
+                            false,
+                            true,
+                            false,
+                            true));
       }
       catch (Exception)
       {
@@ -108,13 +140,23 @@ namespace RCL.Core
     {
       try
       {
-        //This read is different from all others in that it has force on and fill off.
-        //force causes duplicate values to be written.
-        //fill causes prior values to be filled into the results.
-        //This read gives you exactly what exists in the blackboard.
+        // This read is different from all others in that it has force on and fill off.
+        // force causes duplicate values to be written.
+        // fill causes prior values to be filled into the results.
+        // This read gives you exactly what exists in the blackboard.
         RCLong args = new RCLong (0, 0);
         Section section = GetSection (right);
-        Read (runner, closure, right, new ReadSpec (section.m_counter, right, args, 0, false, true, false, true));
+        Read (runner,
+              closure,
+              right,
+              new ReadSpec (section.m_counter,
+                            right,
+                            args,
+                            0,
+                            false,
+                            true,
+                            false,
+                            true));
       }
       catch (Exception)
       {
@@ -136,50 +178,40 @@ namespace RCL.Core
     {
       lock (m_readWriteLock)
       {
-        //Make abstract symbols concrete
+        // Make abstract symbols concrete
         Section section = GetSection (symbol);
         Satisfy canSatisfy = section.m_counter.CanSatisfy (spec);
         RCCube result = section.m_blackboard.Read (spec,
                                                    section.m_counter,
                                                    true,
                                                    section.m_blackboard.Count);
-        if (spec.SymbolUnlimited)
-        {
-          if (result.Count > 0)
-          {
-            //Notice the canSatisfy constraints here are less strict.
-            //If the start point is greater than zero then we have to
-            //do the full read and then just see if there were enough
-            //rows to satisfy the constraints.
-            if (canSatisfy == Satisfy.No)
-            {
+        if (spec.SymbolUnlimited) {
+          if (result.Count > 0) {
+            // Notice the canSatisfy constraints here are less strict.
+            // If the start point is greater than zero then we have to
+            // do the full read and then just see if there were enough
+            // rows to satisfy the constraints.
+            if (canSatisfy == Satisfy.No) {
               throw new Exception ();
             }
             runner.Yield (closure, result);
           }
-          else
-          {
-            if (canSatisfy == Satisfy.Yes)
-            {
+          else {
+            if (canSatisfy == Satisfy.Yes) {
               throw new Exception ();
             }
             section.m_readWaiters.Enqueue (symbol, closure);
           }
         }
-        else
-        {
-          if (result.Count >= symbol.Count * Math.Abs (spec.SymbolLimit))
-          {
-            if (canSatisfy == Satisfy.No)
-            {
+        else {
+          if (result.Count >= symbol.Count * Math.Abs (spec.SymbolLimit)) {
+            if (canSatisfy == Satisfy.No) {
               throw new Exception ();
             }
             runner.Yield (closure, result);
           }
-          else
-          {
-            if (canSatisfy == Satisfy.Yes)
-            {
+          else {
+            if (canSatisfy == Satisfy.Yes) {
               throw new Exception ();
             }
             section.m_readWaiters.Enqueue (symbol, closure);
@@ -200,19 +232,15 @@ namespace RCL.Core
         RCCube result = s.m_blackboard.Read (spec, s.m_counter, true, s.m_blackboard.Count);
 
         if ((spec.SymbolUnlimited && result.Count > 0) ||
-            (!spec.SymbolUnlimited && result.Count >= left.Count * Math.Abs (spec.SymbolLimit)))
-        {
-          //If dispatch would yield, return lines.
-          if (canSatisfy != Satisfy.Yes)
-          {
+            (!spec.SymbolUnlimited && result.Count >= left.Count * Math.Abs (spec.SymbolLimit))) {
+          // If dispatch would yield, return lines.
+          if (canSatisfy != Satisfy.Yes) {
             throw new Exception ();
           }
           runner.Yield (closure, RCBoolean.True);
         }
-        else
-        {
-          if (canSatisfy != Satisfy.No)
-          {
+        else {
+          if (canSatisfy != Satisfy.No) {
             throw new Exception ();
           }
           runner.Yield (closure, RCBoolean.False);
@@ -223,10 +251,21 @@ namespace RCL.Core
     [RCVerb ("last")]
     public void EvalLast (RCRunner runner, RCClosure closure, RCSymbol left, RCLong right)
     {
-      //right now last defaults to -1 and read defaults to long.MaxValue; thats kind of weird.
-      //but seems to fit with the way i use it those operators.
+      // right now last defaults to -1 and read defaults to long.MaxValue; thats kind of
+      // weird.
+      // but seems to fit with the way i use it those operators.
       Section section = GetSection (left);
-      Read (runner, closure, left, new ReadSpec (section.m_counter, left, right, -1, false, false, true, false));
+      Read (runner,
+            closure,
+            left,
+            new ReadSpec (section.m_counter,
+                          left,
+                          right,
+                          -1,
+                          false,
+                          false,
+                          true,
+                          false));
     }
 
     [RCVerb ("gawk")]
@@ -241,18 +280,14 @@ namespace RCL.Core
         RCCube result = s.m_blackboard.Read (spec, s.m_counter, true, s.m_blackboard.Count);
 
         if ((spec.SymbolUnlimited && result.Count > 0) ||
-            (!spec.SymbolUnlimited && result.Count >= symbol.Count * Math.Abs (spec.SymbolLimit)))
-        {
-          if (canSatisfy != Satisfy.Yes)
-          {
+            (!spec.SymbolUnlimited && result.Count >= symbol.Count * Math.Abs (spec.SymbolLimit))) {
+          if (canSatisfy != Satisfy.Yes) {
             throw new Exception ();
           }
           runner.Yield (closure, result);
         }
-        else
-        {
-          if (canSatisfy != Satisfy.No)
-          {
+        else {
+          if (canSatisfy != Satisfy.No) {
             throw new Exception ();
           }
           s.m_dispatchWaiters.Enqueue (symbol, closure);
@@ -263,7 +298,7 @@ namespace RCL.Core
     [RCVerb ("poll")]
     public void EvalPoll (RCRunner runner, RCClosure closure, RCSymbol symbol, RCLong starts)
     {
-      //Poll is like read but it will never block.
+      // Poll is like read but it will never block.
       lock (m_readWriteLock)
       {
         Section s = GetSection (symbol);
@@ -276,15 +311,16 @@ namespace RCL.Core
     [RCVerb ("snap")]
     public void EvalSnap (RCRunner runner, RCClosure closure, RCSymbol left, RCLong right)
     {
-      //With snap, the read instructions apply to each symbol in a family of symbols.
-      //Not only to the symbol explcitly noted in the left argument.
+      // With snap, the read instructions apply to each symbol in a family of symbols.
+      // Not only to the symbol explcitly noted in the left argument.
       lock (m_readWriteLock)
       {
         Section s = GetSection (left);
-        //This line with the ConcreteSymbols should be added to other operators
-        //RCSymbol concretes = s.m_counter.ConcreteSymbols (left, false);
+        // This line with the ConcreteSymbols should be added to other operators
+        // RCSymbol concretes = s.m_counter.ConcreteSymbols (left, false);
         ReadSpec spec = new ReadSpec (s.m_counter, left, right, -1, false, false, true, false);
-        //RCCube result = s.m_blackboard.Read (spec, s.m_counter, true, s.m_blackboard.Count);
+        // RCCube result = s.m_blackboard.Read (spec, s.m_counter, true,
+        // s.m_blackboard.Count);
         RCCube result = s.m_blackboard.Read (spec, s.m_counter, true, s.m_blackboard.Count);
         runner.Yield (closure, result);
       }
@@ -294,18 +330,17 @@ namespace RCL.Core
     public void EvalPage (RCRunner runner, RCClosure closure, RCSymbol symbol, RCLong right)
     {
       int pageNumber = 0;
-      if (right.Count > 0)
-      {
+      if (right.Count > 0) {
         pageNumber = (int) right[0];
       }
       int pageSize = int.MaxValue;
-      if (right.Count > 1)
-      {
+      if (right.Count > 1) {
         pageSize = (int) right[1];
       }
 
-      //Page let's you access the blackboard by page number and page size, rather than row numbers.
-      //Good for building tools for looking at blackboard contents.
+      // Page lets you access the blackboard by page number and page size, rather than row
+      // numbers.
+      // Good for building tools for looking at blackboard contents.
       lock (m_readWriteLock)
       {
         Section s = GetSection (symbol);
@@ -324,10 +359,9 @@ namespace RCL.Core
       {
         for (int i = 0; i < right.Count; ++i)
         {
-          string name = right [i].Part (0).ToString ();
+          string name = right[i].Part (0).ToString ();
           Section section;
-          if (m_sections.TryGetValue (name, out section))
-          {
+          if (m_sections.TryGetValue (name, out section)) {
             section.Clear ();
           }
         }
@@ -345,13 +379,13 @@ namespace RCL.Core
         ReadSpec spec = s.m_counter.GetReadSpec (symbol, limit, false, true);
         Satisfy canSatisfy = s.m_counter.CanSatisfy (spec);
         RCCube result = s.m_blackboard.Read (spec,
-                                             s.m_counter, true, s.m_blackboard.Count);
+                                             s.m_counter,
+                                             true,
+                                             s.m_blackboard.Count);
 
         if ((spec.SymbolUnlimited && result.Count > 0) ||
-            (!spec.SymbolUnlimited && result.Count >= symbol.Count * Math.Abs (spec.SymbolLimit)))
-        {
-          if (canSatisfy != Satisfy.Yes)
-          {
+            (!spec.SymbolUnlimited && result.Count >= symbol.Count * Math.Abs (spec.SymbolLimit))) {
+          if (canSatisfy != Satisfy.Yes) {
             throw new Exception ();
           }
           s.m_counter.Dispatch (s.m_blackboard, result.AcceptedLines);
@@ -361,10 +395,8 @@ namespace RCL.Core
                                                    result.AcceptedSymbols);
           ContinueWaiters (runner, throttlers);
         }
-        else
-        {
-          if (canSatisfy != Satisfy.No)
-          {
+        else {
+          if (canSatisfy != Satisfy.No) {
             throw new Exception ();
           }
           s.m_dispatchWaiters.Enqueue (symbol, closure);
@@ -374,8 +406,7 @@ namespace RCL.Core
 
     public void ContinueWaiters (RCRunner runner, Dictionary<long, RCClosure> all)
     {
-      if (all != null)
-      {
+      if (all != null) {
         foreach (RCClosure waiter in all.Values)
         {
           runner.Continue (null, waiter);
@@ -384,8 +415,7 @@ namespace RCL.Core
     }
 
     [RCVerb ("throttle")]
-    public void EvalThrottle (
-      RCRunner runner, RCClosure closure, RCSymbol symbol, RCLong right)
+    public void EvalThrottle (RCRunner runner, RCClosure closure, RCSymbol symbol, RCLong right)
     {
       int limit = (int) right[0];
       lock (m_readWriteLock)
@@ -394,29 +424,27 @@ namespace RCL.Core
         ReadSpec spec = s.m_counter.GetReadSpec (symbol, limit, false, true);
         Satisfy canSatisfy = s.m_counter.CanSatisfy (spec);
         RCCube result = s.m_blackboard.Read (spec,
-                                             s.m_counter, true, s.m_blackboard.Count);
+                                             s.m_counter,
+                                             true,
+                                             s.m_blackboard.Count);
 
         if ((spec.SymbolUnlimited && result.Count > 0) ||
-            (!spec.SymbolUnlimited && result.Count >= symbol.Count * Math.Abs (spec.SymbolLimit)))
-        {
-          //If dispatch would yield, suspend.
-          if (canSatisfy != Satisfy.Yes)
-          {
+            (!spec.SymbolUnlimited && result.Count >= symbol.Count * Math.Abs (spec.SymbolLimit))) {
+          // If dispatch would yield, suspend.
+          if (canSatisfy != Satisfy.Yes) {
             throw new Exception ();
           }
           s.m_throttleWaiters.Enqueue (symbol, closure);
         }
-        else
-        {
-          //Return the count of the result set for now.
-          //wny not just return the whole thing?
-          //Because I want to write a version of this that can
-          //know, in near constant time whether dispatch would yield,
-          //without actually producing a result set.
-          //That method can be used by dispatch, peek, and throttle.
-          //So keep the interface locked down.
-          if (canSatisfy != Satisfy.No)
-          {
+        else {
+          // Return the count of the result set for now.
+          // wny not just return the whole thing?
+          // Because I want to write a version of this that can
+          // know, in near constant time whether dispatch would yield,
+          // without actually producing a result set.
+          // That method can be used by dispatch, peek, and throttle.
+          // So keep the interface locked down.
+          if (canSatisfy != Satisfy.No) {
             throw new Exception ();
           }
           runner.Yield (closure, new RCLong (result.Lines));
@@ -442,10 +470,9 @@ namespace RCL.Core
       {
         RCArray<RCSymbolScalar> symbols;
         long line;
-        //Merge all waiters into this collection to avoid readers being
-        //fired multiple times.
-        if (right.Count == 0)
-        {
+        // Merge all waiters into this collection to avoid readers being
+        // fired multiple times.
+        if (right.Count == 0) {
           runner.Yield (closure, new RCLong (0));
           return;
         }
@@ -456,14 +483,14 @@ namespace RCL.Core
           Section s = GetSection (symbol);
           symbols = s.m_blackboard.Write (s.m_counter, right, false, force, s.m_g);
           line = s.m_g + s.m_blackboard.Count;
-          //write should always return the last G value and that G value needs
-          //to be the correct one. This is not the case. Need to fix it.
+          // write should always return the last G value and that G value needs
+          // to be the correct one. This is not the case. Need to fix it.
           s.m_readWaiters.GetReadersForSymbol (ref all, symbols);
           s.m_dispatchWaiters.GetReadersForSymbol (ref all, symbols);
         }
         ContinueWaiters (runner, all);
-        //I really want to see what was written including G and T and i cols.
-        //Not only what was passed in.
+        // I really want to see what was written including G and T and i cols.
+        // Not only what was passed in.
         RCSystem.Log.Record (closure, "board", 0, "write", right);
         runner.Yield (closure, new RCLong (line));
       }
@@ -495,16 +522,16 @@ namespace RCL.Core
     {
       RCArray<RCSymbolScalar> symbols;
       long result;
-      //Merge all waiters into this collection to avoid readers being
-      //fired multiple times.  May never be allocated if no one is listening.
+      // Merge all waiters into this collection to avoid readers being
+      // fired multiple times.  May never be allocated if no one is listening.
       Dictionary<long, RCClosure> all = null;
       lock (m_readWriteLock)
       {
         Section s = GetSection (symbol);
         symbols = s.m_blackboard.Write (s.m_counter, symbol, block, s.m_g, force);
         result = s.m_blackboard.Count;
-        //write should always return the last G value and that G value needs
-        //to be the correct one. This is not the case. Need to fix it.
+        // write should always return the last G value and that G value needs
+        // to be the correct one. This is not the case. Need to fix it.
         s.m_readWaiters.GetReadersForSymbol (ref all, symbols);
         s.m_dispatchWaiters.GetReadersForSymbol (ref all, symbols);
       }
@@ -521,8 +548,7 @@ namespace RCL.Core
     }
 
     [RCVerb ("lines")]
-    public void EvalLines (
-      RCRunner runner, RCClosure closure, RCCube right)
+    public void EvalLines (RCRunner runner, RCClosure closure, RCCube right)
     {
       runner.Yield (closure, new RCLong (right.Lines));
     }
@@ -535,7 +561,10 @@ namespace RCL.Core
         foreach (KeyValuePair<object, Section> kv in m_sections)
         {
           result = new RCBlock (
-            result, kv.Key.ToString (), ":", kv.Value.m_blackboard);
+            result,
+            kv.Key.ToString (),
+            ":",
+            kv.Value.m_blackboard);
         }
       }
       return result;
@@ -544,7 +573,7 @@ namespace RCL.Core
     [RCVerb ("blackboard")]
     public void EvalBlackboard (RCRunner runner, RCClosure closure, RCBlock empty)
     {
-      //Metadata about the blackboard contents.
+      // Metadata about the blackboard contents.
       RCBlock result = RCBlock.Empty;
       lock (m_readWriteLock)
       {
@@ -552,11 +581,17 @@ namespace RCL.Core
         foreach (KeyValuePair<object, Section> kv in m_sections)
         {
           descriptor = new RCBlock (descriptor,
-                                    "rows", ":", new RCLong (kv.Value.m_blackboard.Axis.Count));
+                                    "rows",
+                                    ":",
+                                    new RCLong (kv.Value.m_blackboard.Axis.Count));
           descriptor = new RCBlock (descriptor,
-                                    "cols", ":", new RCLong (kv.Value.m_blackboard.Cols));
+                                    "cols",
+                                    ":",
+                                    new RCLong (kv.Value.m_blackboard.Cols));
           result = new RCBlock (result,
-                                kv.Key.ToString (), ":", descriptor);
+                                kv.Key.ToString (),
+                                ":",
+                                descriptor);
         }
       }
       runner.Yield (closure, result);
@@ -564,13 +599,13 @@ namespace RCL.Core
 
     public class MapQueue
     {
-      //The waiting fibers by symbol.
+      // The waiting fibers by symbol.
       protected Dictionary<RCSymbolScalar, HashSet<long>> m_fibersBySymbol =
-        new Dictionary<RCSymbolScalar, HashSet<long>>();
-      //The symbols being waited for by fiber.
+        new Dictionary<RCSymbolScalar, HashSet<long>> ();
+      // The symbols being waited for by fiber.
       protected Dictionary<long, HashSet<RCSymbolScalar>> m_symbolsByFiber =
-        new Dictionary<long, HashSet<RCSymbolScalar>>();
-      //The order in which the waiters arrived.
+        new Dictionary<long, HashSet<RCSymbolScalar>> ();
+      // The order in which the waiters arrived.
       protected Queue<RCClosure> m_waitOrder = new Queue<RCClosure> ();
 
       public void Abort (RCRunner runner)
@@ -584,20 +619,17 @@ namespace RCL.Core
 
       public void Enqueue (RCSymbol symbol, RCClosure closure)
       {
-        if (m_symbolsByFiber.ContainsKey(closure.Fiber))
-        {
+        if (m_symbolsByFiber.ContainsKey (closure.Fiber)) {
           throw new Exception ("Fiber " + closure.Fiber.ToString () +
-                              " is already waiting, something is wrong.");
+                               " is already waiting, something is wrong.");
         }
         RCArray<RCSymbolScalar> stripped = new RCArray<RCSymbolScalar> (symbol.Count);
         for (int i = 0; i < symbol.Count; ++i)
         {
-          if (symbol[i].Key.Equals ("*"))
-          {
+          if (symbol[i].Key.Equals ("*")) {
             stripped.Write (symbol[i].Previous);
           }
-          else
-          {
+          else {
             stripped.Write (symbol[i]);
           }
         }
@@ -606,8 +638,7 @@ namespace RCL.Core
         for (int i = 0; i < stripped.Count; ++i)
         {
           HashSet<long> fibers;
-          if (!m_fibersBySymbol.TryGetValue (stripped[i], out fibers))
-          {
+          if (!m_fibersBySymbol.TryGetValue (stripped[i], out fibers)) {
             m_fibersBySymbol[stripped[i]] = fibers = new HashSet<long> ();
           }
           fibers.Add (closure.Fiber);
@@ -623,28 +654,23 @@ namespace RCL.Core
         while (scalar != null)
         {
           m_fibersBySymbol.TryGetValue (scalar, out fibers);
-          if (fibers != null)
-          {
-            if (candidates == null)
-            {
+          if (fibers != null) {
+            if (candidates == null) {
               candidates = new HashSet<long> ();
             }
             candidates.UnionWith (fibers);
           }
           scalar = scalar.Previous;
         }
-        if (candidates == null)
-        {
+        if (candidates == null) {
           return null;
         }
         int count = m_waitOrder.Count;
         for (int i = 0; i < count; ++i)
         {
           RCClosure next = m_waitOrder.Dequeue ();
-          if (candidates.Contains (next.Fiber))
-          {
-            if (result == null)
-            {
+          if (candidates.Contains (next.Fiber)) {
+            if (result == null) {
               result = new Queue<RCClosure> ();
             }
             HashSet<RCSymbolScalar> symbols = m_symbolsByFiber[next.Fiber];
@@ -655,10 +681,9 @@ namespace RCL.Core
             }
             result.Enqueue (next);
           }
-          else
-          {
-            //Put it back in the queue, this preserves the original priority
-            //because we go all the way through the queue each time.
+          else {
+            // Put it back in the queue, this preserves the original priority
+            // because we go all the way through the queue each time.
             m_waitOrder.Enqueue (next);
           }
         }
@@ -671,17 +696,15 @@ namespace RCL.Core
         Queue<RCClosure> symbolWaiters;
         for (int i = 0; i < symbol.Count; ++i)
         {
-          //It is possible to have the same closure represented more than once if the
-          //operator requested more than one symbol.  This is deduping the closures
-          //based on the fiber number, if necessary.
-          //But maybe this whole thing should be part of MapQueue.Dequeue for clarity.
-          if ((symbolWaiters = Dequeue (symbol[i])) != null)
-          {
+          // It is possible to have the same closure represented more than once if the
+          // operator requested more than one symbol.  This is deduping the closures
+          // based on the fiber number, if necessary.
+          // But maybe this whole thing should be part of MapQueue.Dequeue for clarity.
+          if ((symbolWaiters = Dequeue (symbol[i])) != null) {
             while (symbolWaiters.Count > 0)
             {
               RCClosure waiter = symbolWaiters.Dequeue ();
-              if (fibers == null)
-              {
+              if (fibers == null) {
                 fibers = new Dictionary<long, RCClosure> ();
               }
               fibers[waiter.Fiber] = waiter;

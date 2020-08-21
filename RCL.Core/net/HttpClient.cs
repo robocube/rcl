@@ -46,7 +46,7 @@ namespace RCL.Core
                              long timeout,
                              long retry,
                              bool shouldRetry)
-        :base (runner, closure, null)
+        : base (runner, closure, null)
       {
         Url = url;
         Method = method;
@@ -54,7 +54,7 @@ namespace RCL.Core
         Body = body;
         BodyOnly = bodyOnly;
         Instance = instance;
-        //RequestTimer = new Timer (AbortWebRequest);
+        // RequestTimer = new Timer (AbortWebRequest);
         RetryTimer = new Timer (RetryWebRequest);
         OverallTimer = new Timer (AbortWebRequestAndFail);
         StartTime = DateTime.UtcNow;
@@ -65,12 +65,10 @@ namespace RCL.Core
 
       protected void RetryOrFail (Exception ex)
       {
-        if (!Aborting && ShouldRetry && Retry.Ticks >= 0)
-        {
+        if (!Aborting && ShouldRetry && Retry.Ticks >= 0) {
           RetryTimer.Change (Retry, NoPeriodicSignal);
         }
-        else
-        {
+        else {
           OverallTimer.Dispose ();
           RetryTimer.Dispose ();
           Runner.Finish (Closure, ex, 1);
@@ -87,8 +85,7 @@ namespace RCL.Core
           SetHeaders (Request, Head);
           request = Request;
         }
-        if (Body.Count > 0)
-        {
+        if (Body.Count > 0) {
           request.BeginGetRequestStream (delegate (IAsyncResult result)
           {
             Stream stream = request.EndGetRequestStream (result);
@@ -98,16 +95,16 @@ namespace RCL.Core
               writer.Write (Body[i]);
             }
             writer.Close ();
-            //How does the stream get closed in this case?
+            // How does the stream get closed in this case?
             RCSystem.Log.Record (Closure, "web", Instance, logEvent, Method + " " + Url);
-            //This does DNS lookups and some other blocking stuff.
+            // This does DNS lookups and some other blocking stuff.
             request.BeginGetResponse (FinishGetResponse, request);
-          }, null);
+          },
+                                         null);
         }
-        else 
-        {
+        else {
           RCSystem.Log.Record (Closure, "web", Instance, logEvent, Method + " " + Url);
-          //This does DNS lookups and some other blocking stuff.
+          // This does DNS lookups and some other blocking stuff.
           request.BeginGetResponse (FinishGetResponse, request);
         }
       }
@@ -117,8 +114,7 @@ namespace RCL.Core
         try
         {
           MakeWebRequest ("request");
-          if (Timeout.Ticks >= 0)
-          {
+          if (Timeout.Ticks >= 0) {
             OverallTimer.Change (Timeout, NoPeriodicSignal);
           }
         }
@@ -133,14 +129,12 @@ namespace RCL.Core
         HttpWebRequest request = null;
         lock (Lock)
         {
-          if (Request != null)
-          {
+          if (Request != null) {
             request = Request;
             Aborting = true;
           }
         }
-        if (request != null)
-        {
+        if (request != null) {
           request.Abort ();
         }
       }
@@ -152,30 +146,24 @@ namespace RCL.Core
 
       protected void SetHeaders (HttpWebRequest request, RCBlock head)
       {
-        if (head != null)
-        {
+        if (head != null) {
           for (int i = 0; i < head.Count; ++i)
           {
             RCBlock header = head.GetName (i);
             string name = header.RawName.ToLower ();
-            if (name == "content-type")
-            {
+            if (name == "content-type") {
               request.ContentType = ((RCString) header.Value)[0];
             }
-            else if (name == "accept")
-            {
+            else if (name == "accept") {
               request.Accept = ((RCString) header.Value)[0];
             }
-            else if (name == "user-agent")
-            {
+            else if (name == "user-agent") {
               request.UserAgent = ((RCString) header.Value)[0];
             }
-            else if (name == "referer")
-            {
+            else if (name == "referer") {
               request.Referer = ((RCString) header.Value)[0];
             }
-            else
-            {
+            else {
               request.Headers.Set (header.RawName, ((RCString) header.Value)[0]);
             }
           }
@@ -200,15 +188,19 @@ namespace RCL.Core
             TextReader reader = new StreamReader (stream);
             body = reader.ReadToEnd ();
             reader.Close ();
-            //Should I also call stream.Close ()? I think I should.
+            // Should I also call stream.Close ()? I think I should.
             stream.Close ();
             block = new RCBlock (RCBlock.Empty,
-                                         "status", ":", new RCLong (status));
+                                 "status",
+                                 ":",
+                                 new RCLong (status));
             RCBlock head = RCBlock.Empty;
             for (int i = 0; i < response.Headers.Count; ++i)
             {
               head = new RCBlock (head,
-                                  response.Headers.Keys[i], ":", new RCString (response.Headers[i].Trim ('"')));
+                                  response.Headers.Keys[i],
+                                  ":",
+                                  new RCString (response.Headers[i].Trim ('"')));
             }
             block = new RCBlock (block, "head", ":", head);
             block = new RCBlock (block, "body", ":", new RCString (body));
@@ -217,22 +209,18 @@ namespace RCL.Core
           catch (WebException webEx)
           {
             ex = webEx;
-            if (webEx.Status == WebExceptionStatus.ProtocolError)
-            {
+            if (webEx.Status == WebExceptionStatus.ProtocolError) {
               response = webEx.Response as HttpWebResponse;
-              if (response != null)
-              {
+              if (response != null) {
                 status = (long) response.StatusCode;
                 body = response.StatusDescription;
               }
-              else
-              {
+              else {
                 status = 700;
                 body = webEx.Message;
               }
             }
-            else
-            {
+            else {
               status = 700;
               body = webEx.Message;
             }
@@ -243,31 +231,26 @@ namespace RCL.Core
             status = 700;
             body = socketEx.Message;
           }
-          
-          if (ex != null)
-          {
+
+          if (ex != null) {
             block = new RCBlock (RCBlock.Empty, "status", ":", new RCLong (status));
             block = new RCBlock (block, "head", ":", RCBlock.Empty);
             block = new RCBlock (block, "body", ":", new RCString (body));
           }
-          if (status >= 500)
-          {
+          if (status >= 500) {
             RetryOrFail (ex);
           }
-          else
-          {
+          else {
             lock (Lock)
             {
               Request = null;
               OverallTimer.Dispose ();
               RetryTimer.Dispose ();
             }
-            if (BodyOnly)
-            {
+            if (BodyOnly) {
               Runner.Yield (Closure, new RCString (body));
             }
-            else
-            {
+            else {
               Runner.Yield (Closure, block);
             }
           }
@@ -278,8 +261,7 @@ namespace RCL.Core
         }
         finally
         {
-          if (response != null)
-          {
+          if (response != null) {
             response.Close ();
           }
         }
@@ -331,14 +313,35 @@ namespace RCL.Core
     }
 
     /*
-    [RCVerb ("get")]
-    public void Get (RCRunner runner, RCClosure closure, RCString right)
-    {
-      //This one only returns the body of the response
-      //And throws exceptions if the response doesn't have a 200 status.
-      if (right.Count != 1)
-      {
+       [RCVerb ("get")]
+       public void Get (RCRunner runner, RCClosure closure, RCString right)
+       {
+       //This one only returns the body of the response
+       //And throws exceptions if the response doesn't have a 200 status.
+       if (right.Count != 1)
+       {
         throw new Exception ("get can only get from one resource at a time.");
+       }
+       RestAsyncState state = new RestAsyncState (runner,
+                                                 closure,
+                                                 right[0],
+                                                 "GET",
+                                                 RCBlock.Empty,
+                                                 new RCString (),
+                                                 false,
+                                                 Interlocked.Increment (ref m_client),
+                                                 m_timeout,
+                                                 m_retry,
+                                                 true);
+       ThreadPool.QueueUserWorkItem (state.BeginWebRequest, state);
+       }
+     */
+
+    [RCVerb ("getw")]
+    public void Getw (RCRunner runner, RCClosure closure, RCString right)
+    {
+      if (right.Count != 1) {
+        throw new Exception ("getw can only get from one resource at a time.");
       }
       RestAsyncState state = new RestAsyncState (runner,
                                                  closure,
@@ -353,160 +356,203 @@ namespace RCL.Core
                                                  true);
       ThreadPool.QueueUserWorkItem (state.BeginWebRequest, state);
     }
-    */
-
-    [RCVerb ("getw")]
-    public void Getw (RCRunner runner, RCClosure closure, RCString right)
-    {
-      if (right.Count != 1)
-      {
-        throw new Exception ("getw can only get from one resource at a time.");
-      }
-      RestAsyncState state = new RestAsyncState (
-        runner, closure, right[0], "GET", RCBlock.Empty, new RCString (), false, Interlocked.Increment (ref m_client), m_timeout, m_retry, true);
-      ThreadPool.QueueUserWorkItem (state.BeginWebRequest, state);
-    }
 
     [RCVerb ("getw")]
     public void Getw (RCRunner runner, RCClosure closure, RCBlock left, RCString right)
     {
-      if (right.Count != 1)
-      {
+      if (right.Count != 1) {
         throw new Exception ("getw can only get from one resource at a time.");
       }
-      RestAsyncState state = new RestAsyncState (
-        runner, closure, right[0], "GET", left, new RCString (), false, Interlocked.Increment (ref m_client), m_timeout, m_retry, true);
+      RestAsyncState state = new RestAsyncState (runner,
+                                                 closure,
+                                                 right[0],
+                                                 "GET",
+                                                 left,
+                                                 new RCString (),
+                                                 false,
+                                                 Interlocked.Increment (ref m_client),
+                                                 m_timeout,
+                                                 m_retry,
+                                                 true);
       ThreadPool.QueueUserWorkItem (state.BeginWebRequest, state);
     }
 
     [RCVerb ("putw")]
     public void Putw (RCRunner runner, RCClosure closure, RCString right)
     {
-      if (right.Count != 1)
-      {
+      if (right.Count != 1) {
         throw new Exception ("putw can only put to one resource at a time.");
       }
-      RestAsyncState state = new RestAsyncState (
-        runner, closure, right[0], "PUT", RCBlock.Empty, right, false, Interlocked.Increment (ref m_client), m_timeout, m_retry, true);
+      RestAsyncState state = new RestAsyncState (runner,
+                                                 closure,
+                                                 right[0],
+                                                 "PUT",
+                                                 RCBlock.Empty,
+                                                 right,
+                                                 false,
+                                                 Interlocked.Increment (ref m_client),
+                                                 m_timeout,
+                                                 m_retry,
+                                                 true);
       ThreadPool.QueueUserWorkItem (state.BeginWebRequest, null);
     }
 
     [RCVerb ("putw")]
     public void Putw (RCRunner runner, RCClosure closure, RCString left, RCString right)
     {
-      if (left.Count != 1)
-      {
+      if (left.Count != 1) {
         throw new Exception ("putw can only put to one resource at a time.");
       }
-      RestAsyncState state = new RestAsyncState (
-        runner, closure, left[0], "PUT", RCBlock.Empty, right, false, Interlocked.Increment (ref m_client), m_timeout, m_retry, true);
+      RestAsyncState state = new RestAsyncState (runner,
+                                                 closure,
+                                                 left[0],
+                                                 "PUT",
+                                                 RCBlock.Empty,
+                                                 right,
+                                                 false,
+                                                 Interlocked.Increment (ref m_client),
+                                                 m_timeout,
+                                                 m_retry,
+                                                 true);
       ThreadPool.QueueUserWorkItem (state.BeginWebRequest, null);
     }
 
     [RCVerb ("putw")]
     public void Putw (RCRunner runner, RCClosure closure, RCString left, RCBlock right)
     {
-      if (left.Count != 1)
-      {
+      if (left.Count != 1) {
         throw new Exception ("putw can only put to one resource at a time.");
       }
       RCString body = (RCString) right.Get ("body");
       RCBlock head = (RCBlock) right.Get ("head", RCBlock.Empty);
-      RestAsyncState state = new RestAsyncState (
-        runner, closure, left[0], "PUT", head, body, false, Interlocked.Increment (ref m_client), m_timeout, m_retry, true);
+      RestAsyncState state = new RestAsyncState (runner,
+                                                 closure,
+                                                 left[0],
+                                                 "PUT",
+                                                 head,
+                                                 body,
+                                                 false,
+                                                 Interlocked.Increment (ref m_client),
+                                                 m_timeout,
+                                                 m_retry,
+                                                 true);
       ThreadPool.QueueUserWorkItem (state.BeginWebRequest, null);
     }
 
     [RCVerb ("postw")]
-    public void Postw (
-      RCRunner runner, RCClosure closure, RCString left, RCString right)
+    public void Postw (RCRunner runner, RCClosure closure, RCString left, RCString right)
     {
-      if (left.Count != 1)
-      {
+      if (left.Count != 1) {
         throw new Exception ("postw can only put to one resource at a time.");
       }
-      RestAsyncState state = new RestAsyncState (
-        runner, closure, left[0], "POST", RCBlock.Empty, right, false, Interlocked.Increment (ref m_client), m_timeout, m_retry, true);
+      RestAsyncState state = new RestAsyncState (runner,
+                                                 closure,
+                                                 left[0],
+                                                 "POST",
+                                                 RCBlock.Empty,
+                                                 right,
+                                                 false,
+                                                 Interlocked.Increment (ref m_client),
+                                                 m_timeout,
+                                                 m_retry,
+                                                 true);
       ThreadPool.QueueUserWorkItem (state.BeginWebRequest, null);
     }
 
     [RCVerb ("postw")]
-    public void Postw (
-      RCRunner runner, RCClosure closure, RCString left, RCBlock right)
+    public void Postw (RCRunner runner, RCClosure closure, RCString left, RCBlock right)
     {
-      if (left.Count != 1)
-      {
+      if (left.Count != 1) {
         throw new Exception ("postw can only put to one resource at a time.");
       }
       RCString body = (RCString) right.Get ("body");
       RCBlock head = (RCBlock) right.Get ("head", RCBlock.Empty);
-      RestAsyncState state = new RestAsyncState (
-        runner, closure, left[0], "POST", head, body, false, Interlocked.Increment (ref m_client), m_timeout, m_retry, true);
-      ThreadPool.QueueUserWorkItem(state.BeginWebRequest, null);
+      RestAsyncState state = new RestAsyncState (runner,
+                                                 closure,
+                                                 left[0],
+                                                 "POST",
+                                                 head,
+                                                 body,
+                                                 false,
+                                                 Interlocked.Increment (ref m_client),
+                                                 m_timeout,
+                                                 m_retry,
+                                                 true);
+      ThreadPool.QueueUserWorkItem (state.BeginWebRequest, null);
     }
 
     [RCVerb ("delw")]
-    public void Delw (
-      RCRunner runner, RCClosure closure, RCString right)
+    public void Delw (RCRunner runner, RCClosure closure, RCString right)
     {
-      if (right.Count != 1)
-      {
+      if (right.Count != 1) {
         throw new Exception ("delw can only get from one resource at a time.");
       }
-      RestAsyncState state = new RestAsyncState (
-        runner, closure, right[0], "DELETE", RCBlock.Empty, new RCString (), false, Interlocked.Increment (ref m_client), m_timeout, m_retry, true);
+      RestAsyncState state = new RestAsyncState (runner,
+                                                 closure,
+                                                 right[0],
+                                                 "DELETE",
+                                                 RCBlock.Empty,
+                                                 new RCString (),
+                                                 false,
+                                                 Interlocked.Increment (ref m_client),
+                                                 m_timeout,
+                                                 m_retry,
+                                                 true);
       ThreadPool.QueueUserWorkItem (state.BeginWebRequest, state);
     }
 
     [RCVerb ("delw")]
-    public void Delw (
-      RCRunner runner, RCClosure closure, RCBlock left, RCString right)
+    public void Delw (RCRunner runner, RCClosure closure, RCBlock left, RCString right)
     {
-      if (right.Count != 1)
-      {
+      if (right.Count != 1) {
         throw new Exception ("delw can only get from one resource at a time.");
       }
-      RestAsyncState state = new RestAsyncState (
-        runner, closure, right[0], "DELETE", left, new RCString (), false, Interlocked.Increment (ref m_client), m_timeout, m_retry, true);
+      RestAsyncState state = new RestAsyncState (runner,
+                                                 closure,
+                                                 right[0],
+                                                 "DELETE",
+                                                 left,
+                                                 new RCString (),
+                                                 false,
+                                                 Interlocked.Increment (ref m_client),
+                                                 m_timeout,
+                                                 m_retry,
+                                                 true);
       ThreadPool.QueueUserWorkItem (state.BeginWebRequest, state);
     }
 
     [RCVerb ("httpget")]
-    public void EvalHttpGet (
-      RCRunner runner, RCClosure closure, RCString left, RCBlock right)
+    public void EvalHttpGet (RCRunner runner, RCClosure closure, RCString left, RCBlock right)
     {
-      //You can send the same request to multiple sites.
-      //I just had an idea, you can use method to propogate data to
-      //other nodes, then consistency becomes the responsiblity of the
-      //process that inserts or  produces the data.
-      //It's a sort-of/maybe idea.
+      // You can send the same request to multiple sites.
+      // I just had an idea, you can use method to propogate data to
+      // other nodes, then consistency becomes the responsiblity of the
+      // process that inserts or  produces the data.
+      // It's a sort-of/maybe idea.
       string query = ToQueryString (right);
       for (int i = 0; i < left.Count; ++i)
       {
-        //Why doesn't this follow the same Begin/End idea as every other API?
-        //Is there some other lower level thing I should use?
+        // Why doesn't this follow the same Begin/End idea as every other API?
+        // Is there some other lower level thing I should use?
         WebClient client = new WebClient ();
         long handle = Interlocked.Increment (ref m_client);
         client.DownloadStringCompleted +=
-          new DownloadStringCompletedEventHandler (
-            client_DownloadStringCompleted);
+          new DownloadStringCompletedEventHandler (client_DownloadStringCompleted);
         Uri uri = new Uri (left[i] + query);
         RCSystem.Log.Record (closure, "httpc", handle, "get", new RCString (left[i]));
         client.DownloadStringAsync (uri, new RCAsyncState (runner, closure, handle));
       }
     }
 
-    public void client_DownloadStringCompleted (
-      object sender, DownloadStringCompletedEventArgs e)
+    public void client_DownloadStringCompleted (object sender, DownloadStringCompletedEventArgs e)
     {
       RCAsyncState state = (RCAsyncState) e.UserState;
       WebClient client = (WebClient) sender;
       try
       {
         client.DownloadStringCompleted -=
-          new DownloadStringCompletedEventHandler(client_DownloadStringCompleted);
-        if (e.Error != null)
-        {
+          new DownloadStringCompletedEventHandler (client_DownloadStringCompleted);
+        if (e.Error != null) {
           throw e.Error;
         }
         RCString result = new RCString (e.Result);

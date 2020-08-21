@@ -17,14 +17,14 @@ namespace RCL.Kernel
 
     public static void WriteBlock (RCArray<byte> result, RCBlock block)
     {
-      //Pre-order traversal of the expression tree.
+      // Pre-order traversal of the expression tree.
       result.Write ((byte) 'k');
       WriteScalarInt (result, block.Count);
       for (int i = 0; i < block.Count; ++i)
       {
         RCBlock name = block.GetName (i);
         Binary.WriteScalarString (name.Name, result);
-        //Binary.WriteScalarString (RCEvaluator.For (name.Evaluator), result);
+        // Binary.WriteScalarString (RCEvaluator.For (name.Evaluator), result);
         Binary.WriteScalarString (name.Evaluator.Symbol, result);
         name.Value.ToByte (result);
       }
@@ -43,19 +43,20 @@ namespace RCL.Kernel
       WriteScalarInt (result, scalar.Length);
       for (int j = 0; j < scalar.Length; ++j)
       {
-        result.Write ((byte) scalar [j]);
+        result.Write ((byte) scalar[j]);
         result.Write ((byte) (scalar[j] << 8));
       }
     }
 
     public static void WriteOperator (RCArray<byte> result, RCOperator op)
     {
-      //Pre-order traversal of the expression tree.
+      // Pre-order traversal of the expression tree.
       result.Write ((byte) 'o');
       int count = op.Left == null ? 2 : 3;
       WriteScalarInt (result, count);
-      if (op.Left != null)
+      if (op.Left != null) {
         op.Left.ToByte (result);
+      }
       Binary.WriteScalarString (op.Name, result);
       op.Right.ToByte (result);
     }
@@ -68,8 +69,8 @@ namespace RCL.Kernel
         Binary.WriteScalarString (reference.Parts[i], result);
     }
 
-    //This works for vectors of types with fixed size.
-    //decimal is an exception because it is not supported by Buffer.BlockCopy.
+    // This works for vectors of types with fixed size.
+    // decimal is an exception because it is not supported by Buffer.BlockCopy.
     public static void WriteVector<T> (RCArray<byte> result, RCArray<T> array, int size)
     {
       int length = (int) array.Count * size;
@@ -88,19 +89,22 @@ namespace RCL.Kernel
     public static void WriteVectorDecimal (RCArray<byte> result, RCArray<decimal> data)
     {
       WriteScalarInt (result, data.Count);
-      result.Resize (data.Count * sizeof(decimal), 0);
+      result.Resize (data.Count * sizeof (decimal), 0);
       for (int i = 0; i < data.Count; ++i)
       {
         decimal val = data[i];
-        //This is horrible because a new byte[8] gets allocated for every
-        //element in this vector.  But Buffer.BlockCopy does not work on
-        //decimal and I spent a silly amount of time googling for efficient
-        //ways to get the bits out one byte at a time, but that effort failed.
-        //I still think there is hope though.
+        // This is horrible because a new byte[8] gets allocated for every
+        // element in this vector.  But Buffer.BlockCopy does not work on
+        // decimal and I spent a silly amount of time googling for efficient
+        // ways to get the bits out one byte at a time, but that effort failed.
+        // I still think there is hope though.
         int[] bits = decimal.GetBits (val);
         Buffer.BlockCopy (
-          bits, 0, result.m_source,
-          (int) result.m_count + i * sizeof (decimal), sizeof (decimal));
+          bits,
+          0,
+          result.m_source,
+          (int) result.m_count + i * sizeof (decimal),
+          sizeof (decimal));
       }
       result.m_count += data.Count * sizeof (decimal);
     }
@@ -125,8 +129,7 @@ namespace RCL.Kernel
       int index = 0;
       for (int i = 0; i < data.Count; ++i)
       {
-        if (!lookup.ContainsKey (data[i]))
-        {
+        if (!lookup.ContainsKey (data[i])) {
           lookup.Add (data[i], index++);
           unique.Add (data[i]);
         }
@@ -157,8 +160,7 @@ namespace RCL.Kernel
       int index = 0;
       for (int i = 0; i < data.Count; ++i)
       {
-        if (!lookup.ContainsKey (data[i]))
-        {
+        if (!lookup.ContainsKey (data[i])) {
           lookup.Add (data[i], index++);
           unique.Write (data[i]);
         }
@@ -180,10 +182,10 @@ namespace RCL.Kernel
 
     public static void WriteScalarSymbol (RCArray<byte> result, RCSymbolScalar scalar)
     {
-      //This is not going to be a triumph of efficiency.
-      //I am considering rewriting RCSymbolScalar so that it stores all of its
-      //data as an array of bytes.  Then the ToByte operation would just
-      //return the internal representation.
+      // This is not going to be a triumph of efficiency.
+      // I am considering rewriting RCSymbolScalar so that it stores all of its
+      // data as an array of bytes.  Then the ToByte operation would just
+      // return the internal representation.
       for (int i = 0; i < scalar.Length; ++i)
       {
         object part = scalar.Part (i);
@@ -191,22 +193,22 @@ namespace RCL.Kernel
         result.Write ((byte) type);
         switch (type)
         {
-          case 'l' :
+        case 'l':
           result.Write (BitConverter.GetBytes ((long) part));
           break;
-          case 'd' :
+        case 'd':
           result.Write (BitConverter.GetBytes ((double) part));
           break;
-          case 'm' :
+        case 'm':
           Binary.WriteScalarDecimal ((decimal) part, result);
           break;
-          case 'b' :
+        case 'b':
           result.Write (BitConverter.GetBytes ((bool) part));
           break;
-          case 's' :
+        case 's':
           Binary.WriteScalarString ((string) part, result);
           break;
-          default: throw new Exception ("Unknown type:" + type + " found in symbol");
+        default: throw new Exception ("Unknown type:" + type + " found in symbol");
         }
       }
     }
@@ -240,52 +242,49 @@ namespace RCL.Kernel
       {
         switch (data[i])
         {
-          case RCIncrScalar.Increment: result.Write (0x00); break;
-          case RCIncrScalar.Decrement: result.Write (0x01); break;
-          case RCIncrScalar.Delete:    result.Write (0x02); break;
+        case RCIncrScalar.Increment: result.Write (0x00); break;
+        case RCIncrScalar.Decrement: result.Write (0x01); break;
+        case RCIncrScalar.Delete:    result.Write (0x02); break;
         }
       }
     }
 
     [RCVerb ("parse")]
-    public void EvalParse (
-      RCRunner runner, RCClosure closure, RCByte right)
+    public void EvalParse (RCRunner runner, RCClosure closure, RCByte right)
     {
       int start = 0;
       RCValue result = DoParse (RCSystem.Activator, right.Data, ref start);
       runner.Yield (closure, result);
     }
 
-    public static RCValue DoParse (
-      RCActivator activator, RCArray<byte> array, ref int start)
+    public static RCValue DoParse (RCActivator activator, RCArray<byte> array, ref int start)
     {
-      //The type of the data to be parsed.
+      // The type of the data to be parsed.
       char type = (char) array[start];
       start += 1;
       switch (type)
       {
-        case 'x': return new RCByte (ReadVector<byte> (array, ref start, sizeof (byte)));
-        case 'l': return new RCLong (ReadVector<long> (array, ref start, sizeof (long)));
-        case 'd': return new RCDouble (ReadVector<double> (array, ref start, sizeof (double)));
-        case 'b': return new RCBoolean (ReadVector<bool> (array, ref start, sizeof (bool)));
-        case 'm': return new RCDecimal (ReadVectorDecimal (array, ref start));
-        case 's': return new RCString (ReadVectorString (array, ref start));
-        case 'y': return new RCSymbol (ReadVectorSymbol (array, ref start));
-        case 't': return new RCTime (ReadVectorTime (array, ref start));
-        case 'n': return new RCIncr (ReadVectorIncr (array, ref start));
-        case 'r': return ReadReference (activator, array, ref start);
-        case 'o': return ReadOperator (activator, array, ref start);
-        case 'k': return ReadBlock (activator, array, ref start);
-        //Again need some kind of "parser extension" or "operator extension" framework
-        //to get this to work, but I want to keep the implementation with RCCube.
-        //case 'u': return RCCube.ReadCube (activator, array, ref start);
-        //default : throw new Exception ("Unsupported type code:" + type);
-        default : return activator.ExtensionFor (type).BinaryParse (activator, array, ref start);
+      case 'x': return new RCByte (ReadVector<byte> (array, ref start, sizeof (byte)));
+      case 'l': return new RCLong (ReadVector<long> (array, ref start, sizeof (long)));
+      case 'd': return new RCDouble (ReadVector<double> (array, ref start, sizeof (double)));
+      case 'b': return new RCBoolean (ReadVector<bool> (array, ref start, sizeof (bool)));
+      case 'm': return new RCDecimal (ReadVectorDecimal (array, ref start));
+      case 's': return new RCString (ReadVectorString (array, ref start));
+      case 'y': return new RCSymbol (ReadVectorSymbol (array, ref start));
+      case 't': return new RCTime (ReadVectorTime (array, ref start));
+      case 'n': return new RCIncr (ReadVectorIncr (array, ref start));
+      case 'r': return ReadReference (activator, array, ref start);
+      case 'o': return ReadOperator (activator, array, ref start);
+      case 'k': return ReadBlock (activator, array, ref start);
+      // Again need some kind of "parser extension" or "operator extension" framework
+      // to get this to work, but I want to keep the implementation with RCCube.
+      // case 'u': return RCCube.ReadCube (activator, array, ref start);
+      // default : throw new Exception ("Unsupported type code:" + type);
+      default: return activator.ExtensionFor (type).BinaryParse (activator, array, ref start);
       }
     }
 
-    public static RCBlock ReadBlock (
-      RCActivator activator, RCArray<byte> data, ref int start)
+    public static RCBlock ReadBlock (RCActivator activator, RCArray<byte> data, ref int start)
     {
       int count = BitConverter.ToInt32 (data.m_source, start);
       start += sizeof (int);
@@ -300,8 +299,7 @@ namespace RCL.Kernel
       return result;
     }
 
-    public static RCOperator ReadOperator (
-      RCActivator activator, RCArray<byte> data, ref int start)
+    public static RCOperator ReadOperator (RCActivator activator, RCArray<byte> data, ref int start)
     {
       int count = BitConverter.ToInt32 (data.m_source, start);
       start += sizeof (int);
@@ -310,30 +308,33 @@ namespace RCL.Kernel
       RCValue right = null;
       string name = null;
 
-      if (count == 2)
-      {
+      if (count == 2) {
         name = Binary.ReadScalarString (data, ref start);
         right = Binary.DoParse (activator, data, ref start);
       }
-      else if (count == 3)
-      {
+      else if (count == 3) {
         left = Binary.DoParse (activator, data, ref start);
         name = Binary.ReadScalarString (data, ref start);
         right = Binary.DoParse (activator, data, ref start);
       }
-      else throw new Exception ("count of an operator must always be 2 or 3.");
+      else {
+        throw new Exception ("count of an operator must always be 2 or 3.");
+      }
 
       return activator.New (name, left, right);
     }
 
-    public static RCReference ReadReference (
-      RCActivator activator, RCArray<byte> array, ref int start)
+    public static RCReference ReadReference (RCActivator activator,
+                                             RCArray<byte> array,
+                                             ref int
+                                             start)
     {
       int count = BitConverter.ToInt32 (array.m_source, start);
       start += sizeof (int);
       string[] parts = new string[count];
-      for (int i = 0; i < count; ++i)
+      for (int i = 0; i < count; ++i) {
         parts[i] = ReadScalarString (array, ref start);
+      }
       return new RCReference (parts);
     }
 
@@ -398,22 +399,22 @@ namespace RCL.Kernel
 
     public static RCArray<string> ReadVectorString (RCArray<byte> array, ref int start)
     {
-      //This is the count of unique elements.
+      // This is the count of unique elements.
       int count = BitConverter.ToInt32 (array.m_source, start);
       start += sizeof (int);
 
       List<string> unique = new List<string> ();
-      //In the case of strings the length contains the number of unique values.
+      // In the case of strings the length contains the number of unique values.
       for (int i = 0; i < count; ++i)
       {
         string scalar = ReadScalarString (array, ref start);
         unique.Add (scalar);
       }
 
-      //This is the count of actual elements.
+      // This is the count of actual elements.
       count = BitConverter.ToInt32 (array.m_source, start);
       start += sizeof (int);
-      string[] result = new string [count];
+      string[] result = new string[count];
       for (int i = 0; i < count; ++i)
       {
         int index = BitConverter.ToInt32 (array.m_source, start);
@@ -439,7 +440,7 @@ namespace RCL.Kernel
 
     public static RCArray<RCSymbolScalar> ReadVectorSymbol (RCArray<byte> data, ref int start)
     {
-      //count of unique elements in the vector.
+      // count of unique elements in the vector.
       int count = BitConverter.ToInt32 (data.m_source, start);
       start += sizeof (int);
       RCArray<RCSymbolScalar> unique = new RCArray<RCSymbolScalar> ();
@@ -449,10 +450,10 @@ namespace RCL.Kernel
         unique.Write (scalar);
       }
 
-      //count of actual elements in the vector.
+      // count of actual elements in the vector.
       count = BitConverter.ToInt32 (data.m_source, start);
       start += sizeof (int);
-      RCSymbolScalar[] result = new RCSymbolScalar [count];
+      RCSymbolScalar[] result = new RCSymbolScalar[count];
       for (int i = 0; i < count; ++i)
       {
         int index = BitConverter.ToInt32 (data.m_source, start);
@@ -473,27 +474,27 @@ namespace RCL.Kernel
         start += 1;
         switch (type)
         {
-          case 'l' :
+        case 'l':
           result = new RCSymbolScalar (result, BitConverter.ToInt64 (data.m_source, start));
           start += sizeof (long);
           break;
-          case 'd' :
+        case 'd':
           result = new RCSymbolScalar (result, BitConverter.ToDouble (data.m_source, start));
           start += sizeof (double);
           break;
-          case 'm' :
+        case 'm':
           result = new RCSymbolScalar (result, Binary.ReadScalarDecimal (data, start));
           start += sizeof (decimal);
           break;
-          case 'b' :
+        case 'b':
           result = new RCSymbolScalar (result, BitConverter.ToBoolean (data.m_source, start));
           start += sizeof (bool);
           break;
-          case 's' :
+        case 's':
           result = new RCSymbolScalar (result, Binary.ReadScalarString (data, ref start));
           break;
-          default : throw new Exception (
-            "Unknown or unsupported type code in symbol:" + type);
+        default: throw new Exception (
+                  "Unknown or unsupported type code in symbol:" + type);
         }
       }
       return result;
@@ -509,9 +510,9 @@ namespace RCL.Kernel
         byte val = array[start];
         switch (val)
         {
-          case 0x00: result[i] = RCIncrScalar.Increment; break;
-          case 0x01: result[i] = RCIncrScalar.Decrement; break;
-          case 0x02: result[i] = RCIncrScalar.Delete; break;
+        case 0x00: result[i] = RCIncrScalar.Increment; break;
+        case 0x01: result[i] = RCIncrScalar.Decrement; break;
+        case 0x02: result[i] = RCIncrScalar.Delete; break;
         }
         start += sizeof (byte);
       }

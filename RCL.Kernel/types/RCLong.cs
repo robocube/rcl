@@ -10,8 +10,10 @@ namespace RCL.Kernel
   {
     public static readonly RCLong Empty = new RCLong ();
     public readonly static RCLong Zero = new RCLong (0);
-    public RCLong (params long[] data) : base (data) { }
-    public RCLong (RCArray<long> data) : base (data) { }
+    public RCLong (params long[] data) : base (data) {
+    }
+    public RCLong (RCArray<long> data) : base (data) {
+    }
 
     public override bool ScalarEquals (long x, long y)
     {

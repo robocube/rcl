@@ -70,18 +70,21 @@ namespace RCL.Kernel
 
     /// <summary>
     /// If true, variables above this closure will not be found by resolve.
-    /// NoClimb is set to true when you pass a variable block into the left argument of eval.
+    /// NoClimb is set to true when you pass a variable block into the left argument of
+    /// eval.
     /// </summary>
     public readonly bool NoClimb;
 
     /// <summary>
     /// If true, variables in the closure will be skipped over when doing resolve.
-    /// NoResolve is set to true in the case of each, so that results of prior iterations do not become visible.
+    /// NoResolve is set to true in the case of each, so that results of prior iterations
+    /// do not become visible.
     /// </summary>
     public readonly bool NoResolve;
 
     public RCClosure (long bot, RCValue code)
-      :this (bot, 0, null, null, code, null, null, 0, null, null, false, false) {}
+      : this (bot, 0, null, null, code, null, null, 0, null, null, false, false) {
+    }
 
     public RCClosure (RCClosure parent,
                       long bot,
@@ -89,7 +92,8 @@ namespace RCL.Kernel
                       RCValue left,
                       RCBlock result,
                       int index)
-      :this (parent, bot, code, left, result, index, null, null) {}
+      : this (parent, bot, code, left, result, index, null, null) {
+    }
 
     public RCClosure (RCClosure parent,
                       long bot,
@@ -100,16 +104,14 @@ namespace RCL.Kernel
                       RCValue userOp,
                       RCArray<RCBlock> userOpContext)
     {
-      if (parent != null)
-      {
+      if (parent != null) {
         Fiber = parent.Fiber;
         Locks = parent.Locks;
         Depth = parent.Depth + 1;
         UserOp = parent.UserOp;
         UserOpContext = parent.UserOpContext;
       }
-      if (code == null)
-      {
+      if (code == null) {
         throw new Exception ("code may not be null.");
       }
       Bot = bot;
@@ -118,12 +120,10 @@ namespace RCL.Kernel
       Left = left;
       Result = result != null ? result : RCBlock.Empty;
       Index = index;
-      if (userOp != null)
-      {
+      if (userOp != null) {
         UserOp = userOp;
       }
-      if (userOpContext != null)
-      {
+      if (userOpContext != null) {
         UserOpContext = userOpContext;
       }
     }
@@ -141,12 +141,10 @@ namespace RCL.Kernel
                       bool noClimb,
                       bool noResolve)
     {
-      if (parent != null)
-      {
+      if (parent != null) {
         Depth = parent.Depth + 1;
       }
-      if (code == null)
-      {
+      if (code == null) {
         throw new Exception ("code may not be null.");
       }
       Bot = bot;
@@ -157,17 +155,14 @@ namespace RCL.Kernel
       Left = left;
       Result = result != null ? result : RCBlock.Empty;
       Index = index;
-      if (userOp != null)
-      {
+      if (userOp != null) {
         UserOp = userOp;
       }
-      if (userOpContext != null)
-      {
+      if (userOpContext != null) {
         UserOpContext = userOpContext;
       }
       NoClimb = noClimb;
-      if (NoClimb)
-      {
+      if (NoClimb) {
         Depth = 0;
       }
       NoResolve = noResolve;
@@ -176,7 +171,7 @@ namespace RCL.Kernel
     public override string ToString ()
     {
       StringBuilder builder = new StringBuilder ();
-      ToString (builder, indent:0, firstOnTop:true);
+      ToString (builder, indent: 0, firstOnTop: true);
       return builder.ToString ();
     }
 
@@ -185,16 +180,13 @@ namespace RCL.Kernel
       get
       {
         RCOperator op = Code as RCOperator;
-        if (op == null)
-        {
+        if (op == null) {
           return false;
         }
-        if (op.Left == null)
-        {
+        if (op.Left == null) {
           return Index == 1;
         }
-        else
-        {
+        else {
           return Index == 2;
         }
       }
@@ -204,30 +196,25 @@ namespace RCL.Kernel
     {
       RCClosure closure = this;
       Stack<string> lines = new Stack<string> ();
-      //Do not include the global namespace in the stack trace.
+      // Do not include the global namespace in the stack trace.
       while (closure != null && closure.Parent != null)
       {
-        if (closure.Code != null)
-        {
+        if (closure.Code != null) {
           RCOperator op = closure.Code as RCOperator;
-          if (op != null)
-          {
+          if (op != null) {
             lines.Push (string.Format ("-- {0}", op.ToString ()));
           }
         }
         RCBlock result = closure.Result;
         while (result != null)
         {
-          if (result.Value != null)
-          {
+          if (result.Value != null) {
             RCCube acube = result.Value as RCCube;
-            if (acube != null)
-            {
+            if (acube != null) {
               string value = acube.FlatPack ().Format (RCFormat.Default);
               lines.Push (value);
             }
-            else
-            {
+            else {
               string value = result.Value.Format (RCFormat.Default);
               value = string.Format ("{0}:{1}", result.Name, value);
               value = value.Substring (0, Math.Min (80, value.Length));
@@ -238,20 +225,22 @@ namespace RCL.Kernel
         }
         closure = closure.Parent;
       }
-      if (firstOnTop)
-      {
+      if (firstOnTop) {
         builder.AppendFormat ("--- BEGIN STACK (bot:{0},fiber:{1},lines:{2}) ---\n",
-                              closure.Bot, closure.Fiber, lines.Count);
+                              closure.Bot,
+                              closure.Fiber,
+                              lines.Count);
         while (lines.Count > 0)
         {
           builder.AppendLine (lines.Pop ());
         }
         builder.AppendFormat ("--- END STACK ---\n");
       }
-      else
-      {
+      else {
         builder.AppendFormat ("--- END STACK (bot:{0},fiber:{1},lines:{2}) ---\n",
-                              closure.Bot, closure.Fiber, lines.Count);
+                              closure.Bot,
+                              closure.Fiber,
+                              lines.Count);
         string[] linesInOrder = lines.ToArray ();
         for (int i = linesInOrder.Length - 1; i >= 0; --i)
         {
@@ -270,22 +259,18 @@ namespace RCL.Kernel
       result = new RCBlock (result, "fiber", ":", this.Fiber);
       result = new RCBlock (result, "index", ":", this.Index);
       result = new RCBlock (result, "result", ":", this.Result);
-      if (this.Left != null)
-      {
+      if (this.Left != null) {
         result = new RCBlock (result, "left", ":", this.Left);
       }
-      if (this.Locks != null)
-      {
+      if (this.Locks != null) {
         result = new RCBlock (result, "locks", ":", this.Locks);
       }
-      if (this.Parent != null)
-      {
+      if (this.Parent != null) {
         result = new RCBlock (result, "parent", ":", this.Parent.Serialize ());
       }
-      if (this.UserOpContext != null)
-      {
-        //TODO: make this List serialize
-        //result = new RCBlock (result, "userOpContext", ":", this.Parent.Serialize ());
+      if (this.UserOpContext != null) {
+        // TODO: make this List serialize
+        // result = new RCBlock (result, "userOpContext", ":", this.Parent.Serialize ());
       }
       result = new RCBlock (result, "noClimb", ":", this.NoClimb);
       result = new RCBlock (result, "noResolve", ":", this.NoResolve);
@@ -299,8 +284,7 @@ namespace RCL.Kernel
       RCSymbol locks = (RCSymbol) right.Get ("locks", null);
       RCBlock parentBlock = (RCBlock) right.GetBlock ("parent", null);
       RCClosure parent = null;
-      if (parentBlock != null)
-      {
+      if (parentBlock != null) {
         parent = Deserialize (parentBlock);
       }
       RCValue code = right.Get ("code");
@@ -310,8 +294,7 @@ namespace RCL.Kernel
       RCValue userOp = right.Get ("userOp");
       RCBlock userOpContextBlock = right.GetBlock ("userOpContext", null);
       RCArray<RCBlock> userOpContext = null;
-      if (userOpContextBlock != null)
-      {
+      if (userOpContextBlock != null) {
         userOpContext = new RCArray<RCBlock> ();
         for (int i = 0; i < userOpContextBlock.Count; ++i)
         {
@@ -320,7 +303,18 @@ namespace RCL.Kernel
       }
       bool noClimb = right.GetBoolean ("noClimb");
       bool noResolve = right.GetBoolean ("noResolve");
-      return new RCClosure (botId, fiber, locks, parent, code, left, result, index, userOp, userOpContext, noClimb, noResolve);
+      return new RCClosure (botId,
+                            fiber,
+                            locks,
+                            parent,
+                            code,
+                            left,
+                            result,
+                            index,
+                            userOp,
+                            userOpContext,
+                            noClimb,
+                            noResolve);
     }
   }
 }

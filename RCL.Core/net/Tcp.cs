@@ -12,9 +12,9 @@ namespace RCL.Core
 {
   public class Tcp
   {
-    //I don't know what this crap is, it should die.
-    //Let's just do binary with tcp always.
-    //And text for http always.
+    // I don't know what this crap is, it should die.
+    // Let's just do binary with tcp always.
+    // And text for http always.
     public abstract class Protocol
     {
       public abstract byte[] Serialize (Client client, RCValue message);
@@ -25,7 +25,11 @@ namespace RCL.Core
     {
       public abstract void Listen (RCRunner runner, RCClosure closure);
       public abstract void Accept (RCRunner runner, RCClosure closure, long limit);
-      public abstract TcpSendState Reply (RCRunner runner, RCClosure closure, long sid, long cid, RCBlock message);
+      public abstract TcpSendState Reply (RCRunner runner,
+                                          RCClosure closure,
+                                          long sid,
+                                          long cid,
+                                          RCBlock message);
       public abstract byte[] Serialize (RCValue message);
     }
 
@@ -46,46 +50,39 @@ namespace RCL.Core
     [RCVerb ("open")]
     public void EvalOpen (RCRunner runner, RCClosure closure, RCLong left, RCSymbol right)
     {
-      //Implementing multiple would require some annoying scatter gather logic.
-      //Plus what if one fails out of the list?
-      if (right.Count != 1)
-      {
+      // Implementing multiple would require some annoying scatter gather logic.
+      // Plus what if one fails out of the list?
+      if (right.Count != 1) {
         throw new Exception ("open takes exactly one protocol,host,[port]");
       }
-      if (left.Count != 1)
-      {
+      if (left.Count != 1) {
         throw new Exception ("open takes a single timeout value");
       }
 
       RCSymbolScalar symbol = right[0];
       string protocol = (string) symbol.Part (0);
       int timeout = (int) left[0];
-      //string host = (string) symbol[1];
-      //long port = -1;
-      //if (symbol.Length > 2)
+      // string host = (string) symbol[1];
+      // long port = -1;
+      // if (symbol.Length > 2)
       //  port = (long) symbol[2];
       RCBot bot = runner.GetBot (closure.Bot);
       long handle = bot.New ();
       Client client;
-      if (protocol.Equals ("http"))
-      {
+      if (protocol.Equals ("http")) {
         client = new TcpHttpClient (handle, symbol);
       }
-      else if (protocol.Equals ("tcp"))
-      {
+      else if (protocol.Equals ("tcp")) {
         client = new TcpClient (handle, symbol, new TcpProtocol (), timeout);
       }
-      else if (protocol.Equals ("udp"))
-      {
+      else if (protocol.Equals ("udp")) {
         throw new NotImplementedException ("No udp sockets yet");
       }
-      else if (protocol.Equals ("cube"))
-      {
+      else if (protocol.Equals ("cube")) {
         throw new NotImplementedException ();
-        //client = new CubeClient (handle, symbol);
+        // client = new CubeClient (handle, symbol);
       }
-      else
-      {
+      else {
         throw new NotImplementedException ("Unknown protocol: " + protocol);
       }
       bot.Put (handle, client);
@@ -96,35 +93,30 @@ namespace RCL.Core
     public void EvalListen (RCRunner runner, RCClosure closure, RCLong right)
     {
       RCSymbolScalar symbol = new RCSymbolScalar (new RCSymbolScalar (null, "tcp"), right[0]);
-      EvalListen (runner, closure, new RCSymbol(symbol));
+      EvalListen (runner, closure, new RCSymbol (symbol));
     }
 
     [RCVerb ("listen")]
     public void EvalListen (RCRunner runner, RCClosure closure, RCSymbol right)
     {
-      if (right.Count != 1)
-      {
-        throw new Exception("listen takes exactly one protocol,port");
+      if (right.Count != 1) {
+        throw new Exception ("listen takes exactly one protocol,port");
       }
       string protocol = (string) right[0].Part (0);
       long port = (long) right[0].Part (1);
       RCBot bot = runner.GetBot (closure.Bot);
       long handle = bot.New ();
       Server server;
-      if (protocol.Equals ("http"))
-      {
+      if (protocol.Equals ("http")) {
         throw new NotImplementedException ("http server not ready yet");
       }
-      else if (protocol.Equals ("tcp"))
-      {
+      else if (protocol.Equals ("tcp")) {
         server = new TcpServer (handle, port, new TcpProtocol ());
       }
-      else if (protocol.Equals ("udp"))
-      {
+      else if (protocol.Equals ("udp")) {
         throw new ArgumentException ("No udp sockets yet");
       }
-      else
-      {
+      else {
         throw new ArgumentException ("Unknown protocol: " + protocol);
       }
       bot.Put (handle, server);
@@ -134,10 +126,9 @@ namespace RCL.Core
     [RCVerb ("close")]
     public void EvalClose (RCRunner runner, RCClosure closure, RCLong right)
     {
-       //Implementing multiple would require some annoying scatter gather logic.
-      //Plus what if one fails out of the list?
-      if (right.Count != 1)
-      {
+      // Implementing multiple would require some annoying scatter gather logic.
+      // Plus what if one fails out of the list?
+      if (right.Count != 1) {
         throw new Exception ("open takes exactly one protocol,host,port");
       }
       RCBot bot = runner.GetBot (closure.Bot);
@@ -206,8 +197,7 @@ namespace RCL.Core
     }
 
     [RCVerb ("receive")]
-    public void EvalReceive (
-      RCRunner runner, RCClosure closure, RCSymbol right)
+    public void EvalReceive (RCRunner runner, RCClosure closure, RCSymbol right)
     {
       DoReceive (runner, closure, right);
     }

@@ -8,7 +8,9 @@ namespace RCL.Core
 {
   public class Constant
   {
-    protected static Dictionary<RCSymbolScalar, RCValue> m_values = new Dictionary<RCSymbolScalar, RCValue> ();
+    protected static Dictionary<RCSymbolScalar, RCValue> m_values =
+      new Dictionary<RCSymbolScalar, RCValue> ();
+
     static Constant ()
     {
       m_values[new RCSymbolScalar (null, "pi")] = new RCDouble (Math.PI);
@@ -26,8 +28,7 @@ namespace RCL.Core
     }
 
     [RCVerb ("constant")]
-    public void EvalConstant (
-      RCRunner runner, RCClosure closure, RCSymbol right)
+    public void EvalConstant (RCRunner runner, RCClosure closure, RCSymbol right)
     {
       runner.Yield (closure, m_values[right[0]]);
     }

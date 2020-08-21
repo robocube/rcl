@@ -47,29 +47,26 @@ namespace RCL.Core
       int end = 0;
       for (int i = 0; i < patch.Count; ++i)
       {
-        //int hunkStart = start;
+        // int hunkStart = start;
         for (int j = 0; j < patch[i].diffs.Count; ++j)
         {
           Operation op = patch[i].diffs[j].operation;
           string text = patch[i].diffs[j].text;
-          if (op == Operation.EQUAL)
-          {
+          if (op == Operation.EQUAL) {
             end = left.IndexOf (text, start);
-            if (end < 0)
-            {
+            if (end < 0) {
               throw new Exception (
-                "cannot find string \"" + text + "\" after position " + start + " in \"" + left + "\"");
+                      "cannot find string \"" + text + "\" after position " + start + " in \"" +
+                      left + "\"");
             }
             end += text.Length;
             string section = left.Substring (start, (end - start));
             start = end; // + text.Length;
             string[] lines = section.Split ('\n');
-            if (breakLines && lines.Length > 1)
-            {
+            if (breakLines && lines.Length > 1) {
               for (int k = 0; k < lines.Length; ++k)
               {
-                if (!(k == lines.Length - 1 && lines[k] == ""))
-                {
+                if (!(k == lines.Length - 1 && lines[k] == "")) {
                   result.WriteCell ("op", null, op.ToString ());
                   result.WriteCell ("old", null, lines[k] + "\n");
                   result.WriteCell ("new", null, lines[k] + "\n");
@@ -77,76 +74,63 @@ namespace RCL.Core
                 }
               }
             }
-            else
-            {
+            else {
               result.WriteCell ("op", null, op.ToString ());
-              result.WriteCell ("old", null, section); 
-              result.WriteCell ("new", null, section); 
+              result.WriteCell ("old", null, section);
+              result.WriteCell ("new", null, section);
               result.Axis.Write (null);
             }
           }
-          else if (op == Operation.INSERT)
-          {
-            //start = Math.Max (0, start - text.Length);
-            //end = start;
-            //end = start;
-            if (breakLines)
-            {
+          else if (op == Operation.INSERT) {
+            // start = Math.Max (0, start - text.Length);
+            // end = start;
+            // end = start;
+            if (breakLines) {
               string[] lines = text.Split ('\n');
-              if (lines.Length > 1)
-              {
+              if (lines.Length > 1) {
                 for (int k = 0; k < lines.Length; ++k)
                 {
-                  if (!(k == lines.Length - 1 && lines[k] == ""))
-                  {
+                  if (!(k == lines.Length - 1 && lines[k] == "")) {
                     result.WriteCell ("op", null, op.ToString ());
                     result.WriteCell ("new", null, lines[k] + "\n");
                     result.Axis.Write (null);
                   }
                 }
               }
-              else
-              {
+              else {
                 result.WriteCell ("op", null, op.ToString ());
                 result.WriteCell ("new", null, text);
                 result.Axis.Write (null);
               }
             }
-            else
-            {
+            else {
               result.WriteCell ("op", null, op.ToString ());
               result.WriteCell ("new", null, text);
               result.Axis.Write (null);
             }
           }
-          else //DELETE
-          {
+          else { // DELETE
             end += patch[i].diffs[j].text.Length;
             start = end;
-            if (breakLines)
-            {
+            if (breakLines) {
               string[] lines = text.Split ('\n');
-              if (lines.Length > 1)
-              {
+              if (lines.Length > 1) {
                 for (int k = 0; k < lines.Length; ++k)
                 {
-                  if (!(k == lines.Length - 1 && lines[k] == ""))
-                  {
+                  if (!(k == lines.Length - 1 && lines[k] == "")) {
                     result.WriteCell ("op", null, op.ToString ());
                     result.WriteCell ("old", null, lines[k] + "\n");
                     result.Axis.Write (null);
                   }
                 }
               }
-              else
-              {
+              else {
                 result.WriteCell ("op", null, op.ToString ());
                 result.WriteCell ("old", null, text);
                 result.Axis.Write (null);
               }
             }
-            else
-            {
+            else {
               result.WriteCell ("op", null, op.ToString ());
               result.WriteCell ("old", null, text);
               result.Axis.Write (null);
@@ -168,26 +152,23 @@ namespace RCL.Core
       {
         Operation op = diffs[i].operation;
         string text = diffs[i].text;
-        if (op == Operation.EQUAL)
-        {
+        if (op == Operation.EQUAL) {
           int match = left.IndexOf (text, start);
-          if (match < 0)
-          {      
+          if (match < 0) {
             throw new Exception (
-              "cannot find string \"" + text + "\" after position " + start + " in \"" + left + "\"");
+                    "cannot find string \"" + text + "\" after position " + start + " in \"" +
+                    left + "\"");
           }
           end = match + text.Length;
           string section = left.Substring (start, end - start);
           start = end;
 
-          if (breakLines)
-          {
+          if (breakLines) {
             int lineStart = 0;
             while (true)
             {
               int lineEnd = section.IndexOf ('\n', lineStart);
-              if (lineEnd >= 0)
-              {
+              if (lineEnd >= 0) {
                 result.WriteCell ("op", null, op.ToString ());
                 string line = section.Substring (lineStart, 1 + (lineEnd - lineStart));
                 result.WriteCell ("old", null, line);
@@ -195,8 +176,7 @@ namespace RCL.Core
                 result.Axis.Write (null);
                 lineStart = lineEnd + 1;
               }
-              else if (lineStart < section.Length)
-              {
+              else if (lineStart < section.Length) {
                 result.WriteCell ("op", null, op.ToString ());
                 string rest = section.Substring (lineStart, section.Length - lineStart);
                 result.WriteCell ("old", null, rest);
@@ -204,24 +184,25 @@ namespace RCL.Core
                 result.Axis.Write (null);
                 break;
               }
-              else break;
+              else {
+                break;
+              }
             }
           }
-          else
-          {
+          else {
             result.WriteCell ("op", null, op.ToString ());
-            result.WriteCell ("old", null, section); 
-            result.WriteCell ("new", null, section); 
+            result.WriteCell ("old", null, section);
+            result.WriteCell ("new", null, section);
             result.Axis.Write (null);
           }
 
-          //string[] lines = section.Split ('\n');
-          //if (lines.Length > 1 && section.Length == 1) continue;
+          // string[] lines = section.Split ('\n');
+          // if (lines.Length > 1 && section.Length == 1) continue;
           /*
-          if (breakLines && lines.Length > 1)
-          {
-            for (int k = 0; k < lines.Length; ++k)
-            {
+             if (breakLines && lines.Length > 1)
+             {
+             for (int k = 0; k < lines.Length; ++k)
+             {
               if (k < lines.Length - 1)
               {
                 result.WriteCell ("op", null, op.ToString ());
@@ -257,61 +238,53 @@ namespace RCL.Core
                 result.WriteCell ("new", null, lines[k] + "\n");
                 result.Axis.Write (null);
               }
-            }
-          }
-          else
-          {
-            result.WriteCell ("op", null, op.ToString ());
-            result.WriteCell ("old", null, section); 
-            result.WriteCell ("new", null, section); 
-            result.Axis.Write (null);
-          }
-          */
+             }
+             }
+             else
+             {
+             result.WriteCell ("op", null, op.ToString ());
+             result.WriteCell ("old", null, section);
+             result.WriteCell ("new", null, section);
+             result.Axis.Write (null);
+             }
+           */
         }
-        else if (op == Operation.INSERT)
-        {
+        else if (op == Operation.INSERT) {
           string section = text;
           string[] lines = section.Split ('\n');
-          if (breakLines && lines.Length > 1)
-          {
+          if (breakLines && lines.Length > 1) {
             for (int k = 0; k < lines.Length; ++k)
             {
-              if (!(k == lines.Length - 1 && lines[k] == ""))
-              {
+              if (!(k == lines.Length - 1 && lines[k] == "")) {
                 result.WriteCell ("op", null, op.ToString ());
                 result.WriteCell ("new", null, lines[k] + "\n");
                 result.Axis.Write (null);
               }
             }
           }
-          else
-          {
+          else {
             result.WriteCell ("op", null, op.ToString ());
-            result.WriteCell ("new", null, section); 
+            result.WriteCell ("new", null, section);
             result.Axis.Write (null);
           }
         }
-        else if (op == Operation.DELETE)
-        {
+        else if (op == Operation.DELETE) {
           start += text.Length;
           string section = text;
           string[] lines = section.Split ('\n');
-          if (breakLines && lines.Length > 1)
-          {
+          if (breakLines && lines.Length > 1) {
             for (int k = 0; k < lines.Length; ++k)
             {
-              if (!(k == lines.Length - 1 && lines[k] == ""))
-              {
+              if (!(k == lines.Length - 1 && lines[k] == "")) {
                 result.WriteCell ("op", null, op.ToString ());
                 result.WriteCell ("old", null, lines[k] + "\n");
                 result.Axis.Write (null);
               }
             }
           }
-          else
-          {
+          else {
             result.WriteCell ("op", null, op.ToString ());
-            result.WriteCell ("old", null, section); 
+            result.WriteCell ("old", null, section);
             result.Axis.Write (null);
           }
         }
@@ -408,9 +381,10 @@ namespace RCL.Core
     [RCVerb ("resplit")]
     public void EvalResplit (RCRunner runner, RCClosure closure, RCString left, RCString right)
     {
-      if (left.Count != 1)
-      {
-        throw new RCException (closure, RCErrors.Count, "resplit requires a single string on the left");
+      if (left.Count != 1) {
+        throw new RCException (closure,
+                               RCErrors.Count,
+                               "resplit requires a single string on the left");
       }
       RCBlock result = RCBlock.Empty;
       Regex regex = new Regex (left[0].ToString (), RegexOptions.Multiline);
@@ -437,10 +411,8 @@ namespace RCL.Core
         for (int j = 0; j < regexes.Length; ++j)
         {
           MatchCollection matchesij = regexes[j].Matches (right[i]);
-          if (matchesij.Count > 0)
-          {
-            if (resulti == null)
-            {
+          if (matchesij.Count > 0) {
+            if (resulti == null) {
               resulti = new RCArray<string> (matchesij.Count + 1);
             }
             for (int k = 0; k < matchesij.Count; ++k)
@@ -449,8 +421,7 @@ namespace RCL.Core
             }
           }
         }
-        if (resulti == null)
-        {
+        if (resulti == null) {
           resulti = new RCArray<string> (0);
         }
         result = new RCBlock (result, "", ":", new RCString (resulti));

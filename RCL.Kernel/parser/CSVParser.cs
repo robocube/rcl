@@ -38,20 +38,18 @@ namespace RCL.Kernel
         RCString column = new RCString (m_data[i]);
         result = new RCBlock (result, m_names[i], ":", column);
       }
-      //TODO: Use when dealing with headless csvs.
+      // TODO: Use when dealing with headless csvs.
       fragment = false;
       return result;
     }
 
     public override void AcceptColumnData (RCToken token)
     {
-      if (m_header)
-      {
+      if (m_header) {
         m_names.Write (token.Text);
         m_data.Write (new RCArray<string> ());
       }
-      else
-      {
+      else {
         m_data[m_column].Write (token.ParseString (m_lexer));
         m_column = (m_column + 1) % m_data.Count;
       }
@@ -60,23 +58,20 @@ namespace RCL.Kernel
     protected RCToken m_lastSeparator = null;
     public override void AcceptSeparator (RCToken token)
     {
-      if (m_header)
-      {
-        if (token.Text.Equals ("\n") || token.Text.Equals ("\r\n"))
-        {
+      if (m_header) {
+        if (token.Text.Equals ("\n") || token.Text.Equals ("\r\n")) {
           m_header = false;
-          if (m_names.Count > 0)
-          {
+          if (m_names.Count > 0) {
             m_column = 0;
           }
         }
       }
-      //Handle empty strings between separators like ",,"
-      //The parser will not see the empty string as a token so it needs a little massaging.
+      // Handle empty strings between separators like ",,"
+      // The parser will not see the empty string as a token so it needs a little
+      // massaging.
       if (m_column >= 0 &&
           m_lastSeparator != null &&
-          m_lastSeparator.Start == (token.Start - m_lastSeparator.Text.Length))
-      {
+          m_lastSeparator.Start == (token.Start - m_lastSeparator.Text.Length)) {
         m_data[m_column].Write ("");
         m_column = (m_column + 1) % m_data.Count;
       }

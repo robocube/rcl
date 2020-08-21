@@ -21,119 +21,140 @@ namespace RCL.Core
         {
           Primitive verb = (Primitive) attributes[i];
           ParameterInfo[] parameters = method.GetParameters ();
-          if (verb.Profile == Profile.Monadic)
-          {
+          if (verb.Profile == Profile.Monadic) {
             Type rtype = parameters[0].ParameterType;
             Type otype = method.ReturnType;
-            RCActivator.OverloadKey key = new RCActivator.OverloadKey (verb.Name, typeof (object), null, rtype);
+            RCActivator.OverloadKey key = new RCActivator.OverloadKey (verb.Name,
+                                                                       typeof (object),
+                                                                       null,
+                                                                       rtype);
 
             Type vectoroptype = typeof (VectorMath).GetNestedType ("VectorOp`2").
-              MakeGenericType (rtype, otype);
-            //Why do I have to do the backtick thingy on GetNestedType but not on GetMethod?
+                                MakeGenericType (rtype, otype);
+            // Why do I have to do the backtick thingy on GetNestedType but not on
+            // GetMethod?
             MethodInfo vectoropMethod = typeof (VectorMath).GetMethod ("MonadicOp").
-              MakeGenericMethod (rtype, otype);
+                                        MakeGenericMethod (rtype, otype);
             Delegate vectorop = Delegate.CreateDelegate (vectoroptype, vectoropMethod);
             Type primoptype = typeof (VectorMath).GetNestedType ("ScalarOp`2").
-              MakeGenericType (rtype, otype);
+                              MakeGenericType (rtype, otype);
             Delegate primop = Delegate.CreateDelegate (primoptype, method);
 
-            if (m_overloads.ContainsKey (key))
+            if (m_overloads.ContainsKey (key)) {
               throw new Exception ("dispatch table already contains the key:" + key);
+            }
             m_overloads.Add (key, new Overload (vectorop, primop));
           }
-          else if (verb.Profile == Profile.Dyadic)
-          {
+          else if (verb.Profile == Profile.Dyadic) {
             Type ltype = parameters[0].ParameterType;
             Type rtype = parameters[1].ParameterType;
             Type otype = method.ReturnType;
 
-            RCActivator.OverloadKey key = new RCActivator.OverloadKey (verb.Name, typeof (object), ltype, rtype);
+            RCActivator.OverloadKey key = new RCActivator.OverloadKey (verb.Name,
+                                                                       typeof (object),
+                                                                       ltype,
+                                                                       rtype);
             Type vectoroptype = typeof (VectorMath).GetNestedType ("VectorOp`3").
-              MakeGenericType (ltype, rtype, otype);
-            //Why do I have to do the backtick thingy on GetNestedType but not on GetMethod?
+                                MakeGenericType (ltype, rtype, otype);
+            // Why do I have to do the backtick thingy on GetNestedType but not on
+            // GetMethod?
             MethodInfo vectoropMethod = typeof (VectorMath).GetMethod ("DyadicOp").
-              MakeGenericMethod (ltype, rtype, otype);
+                                        MakeGenericMethod (ltype, rtype, otype);
             Delegate vectorop = Delegate.CreateDelegate (vectoroptype, vectoropMethod);
             Type primoptype = typeof (VectorMath).GetNestedType ("ScalarOp`3").
-              MakeGenericType (ltype, rtype, otype);
+                              MakeGenericType (ltype, rtype, otype);
             Delegate primop = Delegate.CreateDelegate (primoptype, method);
-            if (m_overloads.ContainsKey (key))
+            if (m_overloads.ContainsKey (key)) {
               throw new Exception ("dispatch table already contains the key:" + key);
+            }
             m_overloads.Add (key, new Overload (vectorop, primop));
           }
-          else if (verb.Profile == Profile.Cumulative)
-          {
-            //The parameter is a ref parameter which is actually a different type than the type
-            //which is being referenced.  GetElementType () gives you the referenced type which is
-            //what we want when constructing generic methods.
+          else if (verb.Profile == Profile.Cumulative) {
+            // The parameter is a ref parameter which is actually a different type than
+            // the type which is being referenced.  GetElementType () gives you the
+            // referenced type which is what we want when constructing generic methods.
             Type stype = parameters[0].ParameterType.GetElementType ();
             Type rtype = parameters[1].ParameterType;
             Type otype = method.ReturnType;
-            //The stype is not a parameter to the operator so it is not included in the key.
-            RCActivator.OverloadKey key = new RCActivator.OverloadKey (verb.Name, typeof (object), null, rtype);
+            // The stype is not a parameter to the operator so it is not included in the
+            // key.
+            RCActivator.OverloadKey key = new RCActivator.OverloadKey (verb.Name,
+                                                                       typeof (object),
+                                                                       null,
+                                                                       rtype);
 
             Type cumoptype = typeof (VectorMath).GetNestedType ("CumVectorOp`2").
-              MakeGenericType (stype, rtype);
+                             MakeGenericType (stype, rtype);
             MethodInfo cumopMethod = typeof (VectorMath).GetMethod ("CumulativeOp").
-              MakeGenericMethod (stype, rtype);
+                                     MakeGenericMethod (stype, rtype);
             Type primoptype = typeof (VectorMath).GetNestedType ("SeqScalarOp`3").
-              MakeGenericType (stype, rtype, otype);
+                              MakeGenericType (stype, rtype, otype);
             Delegate cumop = Delegate.CreateDelegate (cumoptype, cumopMethod);
             Delegate primop = Delegate.CreateDelegate (primoptype, method);
 
-            if (m_overloads.ContainsKey (key))
+            if (m_overloads.ContainsKey (key)) {
               throw new Exception ("dispatch table already contains the key:" + key);
+            }
             m_overloads.Add (key, new Overload (cumop, primop));
           }
-          else if (verb.Profile == Profile.Sequential)
-          {
-            //The parameter is a ref parameter which is actually a different type than the type
-            //which is being referenced.  GetElementType () gives you the referenced type which is
-            //what we want when constructing generic methods.
+          else if (verb.Profile == Profile.Sequential) {
+            // The parameter is a ref parameter which is actually a different type than
+            // the type which is being referenced. GetElementType () gives you the
+            // referenced type which is what we want when constructing generic methods.
             Type stype = parameters[0].ParameterType.GetElementType ();
             Type rtype = parameters[1].ParameterType;
             Type otype = method.ReturnType;
-            //The stype is not a parameter to the operator so it is not included in the key.
-            RCActivator.OverloadKey key = new RCActivator.OverloadKey (verb.Name, typeof (object), null, rtype);
+            // The stype is not a parameter so it is not included in the key.
+            RCActivator.OverloadKey key = new RCActivator.OverloadKey (verb.Name,
+                                                                       typeof (object),
+                                                                       null,
+                                                                       rtype);
 
             Type vectoroptype = typeof (VectorMath).GetNestedType ("SeqVectorOp`3").
-              MakeGenericType (stype, rtype, otype);
-            //Why do I have to do the backtick thingy on GetNestedType but not on GetMethod?
+                                MakeGenericType (stype, rtype, otype);
+            // Why do I have to do the backtick thingy on GetNestedType but not on
+            // GetMethod?
             MethodInfo vectoropMethod = typeof (VectorMath).GetMethod ("SequentialOp").
-              MakeGenericMethod (stype, rtype, otype);
+                                        MakeGenericMethod (stype, rtype, otype);
             Delegate vectorop = Delegate.CreateDelegate (vectoroptype, vectoropMethod);
             Type primoptype = typeof (VectorMath).GetNestedType ("SeqScalarOp`3").
-              MakeGenericType (stype, rtype, otype);
+                              MakeGenericType (stype, rtype, otype);
             Delegate primop = Delegate.CreateDelegate (primoptype, method);
 
-            if (m_overloads.ContainsKey (key))
+            if (m_overloads.ContainsKey (key)) {
               throw new Exception ("dispatch table already contains the key:" + key);
+            }
             m_overloads.Add (key, new Overload (vectorop, primop));
           }
-          else if (verb.Profile == Profile.Contextual)
-          {
-            //The parameter is a ref parameter which is actually a different type than the type
-            //which is being referenced.  GetElementType () gives you the referenced type which is
-            //what we want when constructing generic methods.
+          else if (verb.Profile == Profile.Contextual) {
+            // The parameter is a ref parameter which is actually a different type than
+            // the type which is being referenced. GetElementType () gives you the
+            // referenced type which is what we want when constructing generic methods.
             Type ctype = parameters[0].ParameterType;
-            Type ltype = ctype.GetGenericArguments()[0];
+            Type ltype = ctype.GetGenericArguments ()[0];
             Type rtype = parameters[1].ParameterType;
             Type otype = method.ReturnType;
-            //The stype is not a parameter to the operator so it is not included in the key.
-            RCActivator.OverloadKey key = new RCActivator.OverloadKey (verb.Name, typeof (object), ltype, rtype);
+            // The stype is not a parameter to the operator so it is not included in the
+            // key.
+            RCActivator.OverloadKey key = new RCActivator.OverloadKey (verb.Name,
+                                                                       typeof (object),
+                                                                       ltype,
+                                                                       rtype);
 
             Type vectoroptype = typeof (VectorMath).GetNestedType ("ConVectorOp`4").
-              MakeGenericType (ctype, ltype, rtype, otype);
-            //Why do I have to do the backtick thingy on GetNestedType but not on GetMethod?
+                                MakeGenericType (ctype, ltype, rtype, otype);
+            // Why do I have to do the backtick thingy on GetNestedType but not on
+            // GetMethod?
             MethodInfo vectoropMethod = typeof (VectorMath).GetMethod ("ContextualOp").
-              MakeGenericMethod (ctype, ltype, rtype, otype);
+                                        MakeGenericMethod (ctype, ltype, rtype, otype);
             Delegate vectorop = Delegate.CreateDelegate (vectoroptype, vectoropMethod);
             Type primoptype = typeof (VectorMath).GetNestedType ("ConScalarOp`4").
-              MakeGenericType (ctype, ltype, rtype, otype);
+                              MakeGenericType (ctype, ltype, rtype, otype);
             Delegate primop = Delegate.CreateDelegate (primoptype, method);
 
-            if (m_overloads.ContainsKey (key))
+            if (m_overloads.ContainsKey (key)) {
               throw new Exception ("dispatch table already contains the key:" + key);
+            }
             m_overloads.Add (key, new Overload (vectorop, primop));
           }
         }
@@ -146,35 +167,41 @@ namespace RCL.Core
     public delegate O ConScalarOp <C, L, R, O> (C c, R r);
 
     public delegate RCArray<O> VectorOp <R, O> (RCArray<R> right, ScalarOp <R, O> op);
-    public delegate RCArray<O> VectorOp <L, R, O> (RCArray<L> left, RCArray<R> right, ScalarOp<L, R, O> op);
+    public delegate RCArray<O> VectorOp <L, R, O> (RCArray<L> left,
+                                                   RCArray<R> right,
+                                                   ScalarOp<L, R, O> op);
     public delegate RCArray<O> SeqVectorOp <S, R, O> (RCArray<R> right, SeqScalarOp<S, R, O> op);
-    public delegate RCArray<O> ConVectorOp <C, L, R, O> (RCArray<L> left, RCArray<R> right, ConScalarOp<C, L, R, O> op);
+    public delegate RCArray<O> ConVectorOp <C, L, R, O> (RCArray<L> left,
+                                                         RCArray<R> right,
+                                                         ConScalarOp<C, L, R, O> op);
     public delegate RCArray<R> CumVectorOp <S, R> (RCArray<R> right, SeqScalarOp<S, R, R> op);
 
-    public static RCArray<O> DyadicOp <L, R, O> (RCArray<L> left, RCArray<R> right, ScalarOp<L, R, O> op)
+    public static RCArray<O> DyadicOp <L, R, O> (RCArray<L> left,
+                                                 RCArray<R> right,
+                                                 ScalarOp<L, R, O> op)
     {
-      if (left.Count == 1)
-      {
+      if (left.Count == 1) {
         RCArray<O> output = new RCArray<O> (right.Count);
         for (int i = 0; i < right.Count; ++i)
           output.Write (op (left[0], right[i]));
         return output;
       }
-      else if (right.Count == 1)
-      {
+      else if (right.Count == 1) {
         RCArray<O> output = new RCArray<O> (left.Count);
         for (int i = 0; i < left.Count; ++i)
           output.Write (op (left[i], right[0]));
         return output;
       }
-      else if (left.Count == right.Count)
-      {
+      else if (left.Count == right.Count) {
         RCArray<O> output = new RCArray<O> (left.Count);
         for (int i = 0; i < left.Count; ++i)
           output.Write (op (left[i], right[i]));
         return output;
       }
-      else throw new Exception ("Both vectors must have the same count, or one of them must have a single element.");
+      else {
+        throw new Exception (
+                "Both vectors must have the same count, or one of them must have a single element.");
+      }
     }
 
     public static RCArray<O> MonadicOp <R, O> (RCArray<R> right, ScalarOp<R, O> op)
@@ -186,7 +213,7 @@ namespace RCL.Core
     }
 
     public static RCArray<O> SequentialOp <S, R, O> (RCArray<R> right, SeqScalarOp<S, R, O> op)
-      where S : struct where O : struct
+        where S : struct where O : struct
     {
       S s = new S ();
       O o = new O ();
@@ -195,15 +222,19 @@ namespace RCL.Core
       return new RCArray<O> (o);
     }
 
-    public static RCArray<O> ContextualOp <C, L, R, O> (RCArray<L> left, RCArray<R> right, ConScalarOp<C, L, R, O> op)
-      where C : Context<L>, new ()
+    public static RCArray<O> ContextualOp <C, L, R, O> (RCArray<L> left,
+                                                        RCArray<R> right,
+                                                        ConScalarOp<C, L, R, O> op)
+        where C : Context<L>, new ()
     {
-      //Things left to do to make this work:
-      //Add the equivalent on CubeMath.
-      //Update both type constructors.
-      //I think it will work well, perhaps a little overengineered...
-      //Most people would just expand these two operations by hand rather than adding a new profile.
-      //I have a feeling I will use this facility for other operations... I dunno, I'm going skiing.
+      // Things left to do to make this work:
+      // Add the equivalent on CubeMath.
+      // Update both type constructors.
+      // I think it will work well, perhaps a little overengineered...
+      // Most people would just expand these two operations by hand rather than adding a
+      // new profile.
+      // I have a feeling I will use this facility for other operations... I dunno, I'm
+      // going skiing.
 
       C c = new C ();
       c.Init (left);
@@ -216,10 +247,9 @@ namespace RCL.Core
     }
 
     public static RCArray<R> CumulativeOp <S, R> (RCArray<R> right, SeqScalarOp <S, R, R> op)
-      where S : struct
+        where S : struct
     {
-      if (right.Count == 0)
-      {
+      if (right.Count == 0) {
         return RCArray<R>.Empty;
       }
       RCArray<R> result = new RCArray<R> (right.Count);
@@ -233,13 +263,17 @@ namespace RCL.Core
       return result;
     }
 
-    public static RCValue InvokeDyadic (RCClosure closure, string name, RCVectorBase left, RCVectorBase right)
+    public static RCValue InvokeDyadic (RCClosure closure,
+                                        string name,
+                                        RCVectorBase left,
+                                        RCVectorBase right)
     {
-      RCActivator.OverloadKey key = new RCActivator.OverloadKey (
-        name, typeof (object), left.ScalarType, right.ScalarType);
+      RCActivator.OverloadKey key = new RCActivator.OverloadKey (name,
+                                                                 typeof (object),
+                                                                 left.ScalarType,
+                                                                 right.ScalarType);
       Overload overload;
-      if (!m_overloads.TryGetValue (key, out overload))
-      {
+      if (!m_overloads.TryGetValue (key, out overload)) {
         throw RCException.Overload (closure, name, left, right);
       }
       object array = overload.Invoke (left.Array, right.Array);
@@ -248,11 +282,12 @@ namespace RCL.Core
 
     public static RCValue InvokeMonadic (RCClosure closure, string name, RCVectorBase right)
     {
-      RCActivator.OverloadKey key = new RCActivator.OverloadKey (
-        name, typeof (object), null, right.ScalarType);
+      RCActivator.OverloadKey key = new RCActivator.OverloadKey (name,
+                                                                 typeof (object),
+                                                                 null,
+                                                                 right.ScalarType);
       Overload overload;
-      if (!m_overloads.TryGetValue (key, out overload))
-      {
+      if (!m_overloads.TryGetValue (key, out overload)) {
         throw RCException.Overload (closure, name, right);
       }
       object array = overload.Invoke (right.Array);
@@ -261,67 +296,78 @@ namespace RCL.Core
 
     public static RCValue InvokeSequential (RCClosure closure, string name, RCVectorBase right)
     {
-      RCActivator.OverloadKey key = new RCActivator.OverloadKey (
-        name, typeof (object), null, right.ScalarType);
+      RCActivator.OverloadKey key = new RCActivator.OverloadKey (name,
+                                                                 typeof (object),
+                                                                 null,
+                                                                 right.ScalarType);
       Overload overload;
-      if (!m_overloads.TryGetValue (key, out overload))
-      {
+      if (!m_overloads.TryGetValue (key, out overload)) {
         throw RCException.Overload (closure, name, right);
       }
       object array = overload.Invoke (right.Array);
       return RCVectorBase.FromArray (array);
     }
 
-    [RCVerb ("+")] [RCVerb ("-")] [RCVerb ("*")] [RCVerb ("/")] [RCVerb ("%")]
-    [RCVerb ("and")] [RCVerb ("or")]
-    [RCVerb ("==")] [RCVerb ("!=")] [RCVerb ("<")] [RCVerb (">")] [RCVerb ("<=")] [RCVerb (">=")]
-    [RCVerb ("min")] [RCVerb ("max")]
-    [RCVerb ("long")] [RCVerb ("double")] [RCVerb ("decimal")] [RCVerb ("byte")]
-    [RCVerb ("string")] [RCVerb ("symbol")] [RCVerb ("boolean")] [RCVerb ("time")]
-    [RCVerb ("cut")] [RCVerb ("cutleft")]
+    [RCVerb ("+")][RCVerb ("-")][RCVerb ("*")][RCVerb ("/")][RCVerb ("%")]
+    [RCVerb ("and")][RCVerb ("or")]
+    [RCVerb ("==")][RCVerb ("!=")][RCVerb ("<")][RCVerb (">")][RCVerb ("<=")][RCVerb (">=")]
+    [RCVerb ("min")][RCVerb ("max")]
+    [RCVerb ("long")][RCVerb ("double")][RCVerb ("decimal")][RCVerb ("byte")]
+    [RCVerb ("string")][RCVerb ("symbol")][RCVerb ("boolean")][RCVerb ("time")]
+    [RCVerb ("cut")][RCVerb ("cutleft")]
     public void EvalDyadic (RCRunner runner, RCClosure closure, object left, object right)
     {
-      //Brian! come back here to prevent the native exception
+      // Brian! come back here to prevent the native exception
       RCOperator op = (RCOperator) closure.Code;
       RCVectorBase leftVector = left as RCVectorBase;
       RCVectorBase rightVector = right as RCVectorBase;
-      if (leftVector == null || rightVector == null)
-      {
+      if (leftVector == null || rightVector == null) {
         throw RCException.Overload (closure, op.Name, left, right);
       }
       runner.Yield (closure, VectorMath.InvokeDyadic (closure, op.Name, leftVector, rightVector));
     }
 
-    [RCVerb ("+")] [RCVerb ("-")]
+    [RCVerb ("+")][RCVerb ("-")]
     public void EvalCumulative (RCRunner runner, RCClosure closure, object right)
     {
       RCOperator op = (RCOperator) closure.Code;
-      runner.Yield (closure, VectorMath.InvokeMonadic (
-        closure, op.Name, (RCVectorBase) right));
+      runner.Yield (closure,
+                    VectorMath.InvokeMonadic (
+                      closure,
+                      op.Name,
+                      (RCVectorBase) right));
     }
 
-    [RCVerb ("sum")] [RCVerb ("avg")] [RCVerb ("high")] [RCVerb ("low")]
-    [RCVerb ("any")] [RCVerb ("all")] [RCVerb ("none")]
+    [RCVerb ("sum")][RCVerb ("avg")][RCVerb ("high")][RCVerb ("low")]
+    [RCVerb ("any")][RCVerb ("all")][RCVerb ("none")]
     public void EvalSequential (RCRunner runner, RCClosure closure, object right)
     {
       RCOperator op = (RCOperator) closure.Code;
-      runner.Yield (closure, VectorMath.InvokeSequential (
-        closure, op.Name, (RCVectorBase) right));
+      runner.Yield (closure,
+                    VectorMath.InvokeSequential (
+                      closure,
+                      op.Name,
+                      (RCVectorBase) right));
     }
 
-    [RCVerb ("not")] [RCVerb ("sqrt")] [RCVerb ("abs")]
-    [RCVerb ("long")] [RCVerb ("double")] [RCVerb ("decimal")]
-    [RCVerb ("byte")] [RCVerb ("string")] [RCVerb ("symbol")]
-    [RCVerb ("boolean")] [RCVerb ("time")]
+    [RCVerb ("not")][RCVerb ("sqrt")][RCVerb ("abs")]
+    [RCVerb ("long")][RCVerb ("double")][RCVerb ("decimal")]
+    [RCVerb ("byte")][RCVerb ("string")][RCVerb ("symbol")]
+    [RCVerb ("boolean")][RCVerb ("time")]
     [RCVerb ("isnan")]
-    [RCVerb ("upper")] [RCVerb ("lower")] [RCVerb ("length")]
-    [RCVerb ("year")] [RCVerb ("month")] [RCVerb ("day")] [RCVerb ("hour")] [RCVerb ("minute")] [RCVerb ("second")] [RCVerb ("nano")]
-    [RCVerb ("date")] [RCVerb ("daytime")] [RCVerb ("datetime")] [RCVerb ("timestamp")] [RCVerb ("timespan")]
+    [RCVerb ("upper")][RCVerb ("lower")][RCVerb ("length")]
+    [RCVerb ("year")][RCVerb ("month")][RCVerb ("day")]
+    [RCVerb ("hour")][RCVerb ("minute")][RCVerb ("second")][RCVerb ("nano")]
+    [RCVerb ("date")][RCVerb ("daytime")][RCVerb ("datetime")]
+    [RCVerb ("timestamp")][RCVerb ("timespan")]
     public void EvalMonadic (RCRunner runner, RCClosure closure, object right)
     {
       RCOperator op = (RCOperator) closure.Code;
-      runner.Yield (closure, VectorMath.InvokeMonadic (
-        closure, op.Name, (RCVectorBase) right));
+      runner.Yield (closure,
+                    VectorMath.InvokeMonadic (
+                      closure,
+                      op.Name,
+                      (RCVectorBase) right));
     }
 
     [RCVerb ("typecode")]
@@ -338,35 +384,38 @@ namespace RCL.Core
       runner.Yield (closure, new RCString (val.TypeName.ToString ()));
     }
 
-    [RCVerb ("map")] [RCVerb ("replace")] [RCVerb ("part")] [RCVerb ("fill")] [RCVerb ("ismatch")]
+    [RCVerb ("map")][RCVerb ("replace")][RCVerb ("part")][RCVerb ("fill")][RCVerb ("ismatch")]
     public void EvalContextual (RCRunner runner, RCClosure closure, object left, object right)
     {
       RCOperator op = (RCOperator) closure.Code;
-      runner.Yield (closure, VectorMath.InvokeDyadic (
-        closure, op.Name, (RCVectorBase) left, (RCVectorBase) right));
+      runner.Yield (closure,
+                    VectorMath.InvokeDyadic (
+                      closure,
+                      op.Name,
+                      (RCVectorBase) left,
+                      (RCVectorBase) right));
     }
 
     [RCVerb ("partsUntil")]
     public void EvalPartsUntil (RCRunner runner, RCClosure closure, RCSymbol left, RCLong right)
     {
       RCArray<RCSymbolScalar> result = new RCArray<RCSymbolScalar> (left.Count);
-      if (right.Count == 1)
-      {
+      if (right.Count == 1) {
         for (int i = 0; i < left.Count; ++i)
         {
           result.Write (left[i].PartsUntil (right[0]));
         }
       }
-      else if (right.Count == left.Count)
-      {
+      else if (right.Count == left.Count) {
         for (int i = 0; i < left.Count; ++i)
         {
           result.Write (left[i].PartsUntil (right[i]));
         }
       }
-      else
-      {
-        throw new RCException (closure, RCErrors.Count, "partsBefore requires a single part index or an array having the same count as the left argument");
+      else {
+        throw new RCException (closure,
+                               RCErrors.Count,
+                               "partsBefore requires a single part index or an array having the same count as the left argument");
       }
       runner.Yield (closure, new RCSymbol (result));
     }
@@ -375,23 +424,22 @@ namespace RCL.Core
     public void EvalPartsAfter (RCRunner runner, RCClosure closure, RCSymbol left, RCLong right)
     {
       RCArray<RCSymbolScalar> result = new RCArray<RCSymbolScalar> (left.Count);
-      if (right.Count == 1)
-      {
+      if (right.Count == 1) {
         for (int i = 0; i < left.Count; ++i)
         {
           result.Write (left[i].PartsAfter (right[0]));
         }
       }
-      else if (right.Count == left.Count)
-      {
+      else if (right.Count == left.Count) {
         for (int i = 0; i < left.Count; ++i)
         {
           result.Write (left[i].PartsAfter (right[i]));
         }
       }
-      else
-      {
-        throw new RCException (closure, RCErrors.Count, "partsBefore requires a single part index or an array having the same count as the left argument");
+      else {
+        throw new RCException (closure,
+                               RCErrors.Count,
+                               "partsBefore requires a single part index or an array having the same count as the left argument");
       }
       runner.Yield (closure, new RCSymbol (result));
     }
@@ -408,7 +456,7 @@ namespace RCL.Core
       }
       runner.Yield (closure, new RCTime (result));
     }
-      
+
     [RCVerb ("time")]
     public void EvalTime (RCRunner runner, RCClosure closure, RCSymbol left, RCTime right)
     {
@@ -426,7 +474,10 @@ namespace RCL.Core
     public void EvalSymbolString (RCRunner runner, RCClosure closure, RCString right)
     {
       RCLexer lexer = new RCLexer (new RCArray<RCTokenType> (
-        RCTokenType.Number, RCTokenType.Boolean, RCTokenType.Symbol, RCTokenType.Name));
+                                     RCTokenType.Number,
+                                     RCTokenType.Boolean,
+                                     RCTokenType.Symbol,
+                                     RCTokenType.Name));
       RCArray<RCSymbolScalar> result = new RCArray<RCSymbolScalar> (right.Count);
       for (int i = 0; i < right.Count; ++i)
       {
@@ -445,8 +496,7 @@ namespace RCL.Core
     [RCVerb ("reference")]
     public void EvalReferenceString (RCRunner runner, RCClosure closure, RCSymbol right)
     {
-      if (right.Count != 1)
-      {
+      if (right.Count != 1) {
         throw new Exception ("Only one symbol allowed in the right argument.");
       }
       object[] parts = right[0].ToArray ();
@@ -476,8 +526,7 @@ namespace RCL.Core
     [RCVerb ("swaplr")]
     public void EvalSwaplr (RCRunner runner, RCClosure closure, RCOperator right)
     {
-      if (right.Left == null || right.Right == null)
-      {
+      if (right.Left == null || right.Right == null) {
         throw new Exception ("swaplr requires both left and right arguments");
       }
       RCOperator result = RCSystem.Activator.New (right.Name, right.Right, right.Left);
@@ -495,12 +544,16 @@ namespace RCL.Core
       runner.Yield (closure, new RCSymbol (result));
     }
 
-    [RCVerb ("in")] [RCVerb ("like")] [RCVerb ("within")] [RCVerb ("startsWith")] [RCVerb ("endsWith")]
+    [RCVerb ("in")][RCVerb ("like")][RCVerb ("within")][RCVerb ("startsWith")][RCVerb ("endsWith")]
     public void EvalRightContextual (RCRunner runner, RCClosure closure, object left, object right)
     {
       RCOperator op = (RCOperator) closure.Code;
-      runner.Yield (closure, VectorMath.InvokeDyadic (
-        closure, op.Name, (RCVectorBase) right, (RCVectorBase) left));
+      runner.Yield (closure,
+                    VectorMath.InvokeDyadic (
+                      closure,
+                      op.Name,
+                      (RCVectorBase) right,
+                      (RCVectorBase) left));
     }
   }
 }

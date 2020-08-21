@@ -17,8 +17,8 @@ namespace RCL.Kernel
   public class RCIncr : RCVector<RCIncrScalar>
   {
     public static readonly RCIncr Empty = new RCIncr ();
-    public RCIncr (params RCIncrScalar[] data) : base (data) { }
-    public RCIncr (RCArray<RCIncrScalar> data) : base (data) { }
+    public RCIncr (params RCIncrScalar[] data) : base (data) {}
+    public RCIncr (RCArray<RCIncrScalar> data) : base (data) {}
 
     public override bool ScalarEquals (RCIncrScalar x, RCIncrScalar y)
     {
@@ -34,9 +34,9 @@ namespace RCL.Kernel
     {
       switch (scalar)
       {
-        case RCIncrScalar.Increment : return "++";
-        case RCIncrScalar.Decrement : return "+-";
-        case RCIncrScalar.Delete    : return "+~";
+      case RCIncrScalar.Increment: return "++";
+      case RCIncrScalar.Decrement: return "+-";
+      case RCIncrScalar.Delete: return "+~";
       }
       throw new InvalidOperationException ();
     }

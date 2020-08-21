@@ -10,11 +10,12 @@ namespace RCL.Kernel
   public class SeparatorToken : KeywordLexer
   {
     public SeparatorToken ()
-      :base (",", "\n", "\r\n") {}
+      : base (",", "\n", "\r\n") {
+    }
 
-    public override void Accept(RCParser parser, RCToken token)
+    public override void Accept (RCParser parser, RCToken token)
     {
-      parser.AcceptSeparator(token);
+      parser.AcceptSeparator (token);
     }
 
     public override string TypeName

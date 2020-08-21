@@ -11,8 +11,7 @@ namespace RCL.Core
   public class Tree
   {
     [RCVerb ("tree")]
-    public void EvalTree (
-      RCRunner runner, RCClosure closure, RCByte right)
+    public void EvalTree (RCRunner runner, RCClosure closure, RCByte right)
     {
       RCCube result = new RCCube (new RCArray<string> ("S"));
       TreeNode root = new TreeNode (RCSymbolScalar.Empty, RCSymbolScalar.Empty);
@@ -23,12 +22,15 @@ namespace RCL.Core
       WriteTree (result, root);
       runner.Yield (closure, result);
     }
-    protected double Areax (byte r) { return (double) r; }
-    protected string Formatx (byte r) { return r.ToString (); }
+    protected double Areax (byte r) {
+      return (double) r;
+    }
+    protected string Formatx (byte r) {
+      return r.ToString ();
+    }
 
     [RCVerb ("tree")]
-    public void EvalTree (
-      RCRunner runner, RCClosure closure, RCDouble right)
+    public void EvalTree (RCRunner runner, RCClosure closure, RCDouble right)
     {
       RCCube result = new RCCube (new RCArray<string> ("S"));
       TreeNode root = new TreeNode (RCSymbolScalar.Empty, RCSymbolScalar.Empty);
@@ -39,12 +41,15 @@ namespace RCL.Core
       WriteTree (result, root);
       runner.Yield (closure, result);
     }
-    protected double Aread (double r) { return r; }
-    protected string Formatd (double r) { return string.Format ("{0:0.#}", r); }
+    protected double Aread (double r) {
+      return r;
+    }
+    protected string Formatd (double r) {
+      return string.Format ("{0:0.#}", r);
+    }
 
     [RCVerb ("tree")]
-    public void EvalTree (
-      RCRunner runner, RCClosure closure, RCLong right)
+    public void EvalTree (RCRunner runner, RCClosure closure, RCLong right)
     {
       RCCube result = new RCCube (new RCArray<string> ("S"));
       TreeNode root = new TreeNode (RCSymbolScalar.Empty, RCSymbolScalar.Empty);
@@ -55,12 +60,15 @@ namespace RCL.Core
       WriteTree (result, root);
       runner.Yield (closure, result);
     }
-    protected double Areal (long r) { return (double) r; }
-    protected string Formatl (long r) { return r.ToString (); }
+    protected double Areal (long r) {
+      return (double) r;
+    }
+    protected string Formatl (long r) {
+      return r.ToString ();
+    }
 
     [RCVerb ("tree")]
-    public void EvalTree (
-      RCRunner runner, RCClosure closure, RCString right)
+    public void EvalTree (RCRunner runner, RCClosure closure, RCString right)
     {
       RCCube result = new RCCube (new RCArray<string> ("S"));
       TreeNode root = new TreeNode (RCSymbolScalar.Empty, RCSymbolScalar.Empty);
@@ -71,12 +79,15 @@ namespace RCL.Core
       WriteTree (result, root);
       runner.Yield (closure, result);
     }
-    protected double Areas (string r) { return 1; }
-    protected string Formats (string r) { return r; }
+    protected double Areas (string r) {
+      return 1;
+    }
+    protected string Formats (string r) {
+      return r;
+    }
 
     [RCVerb ("tree")]
-    public void EvalTree (
-      RCRunner runner, RCClosure closure, RCDecimal right)
+    public void EvalTree (RCRunner runner, RCClosure closure, RCDecimal right)
     {
       RCCube result = new RCCube (new RCArray<string> ("S"));
       TreeNode root = new TreeNode (RCSymbolScalar.Empty, RCSymbolScalar.Empty);
@@ -87,12 +98,15 @@ namespace RCL.Core
       WriteTree (result, root);
       runner.Yield (closure, result);
     }
-    protected double Aream (decimal r) { return (double) r; }
-    protected string Formatm (decimal r) { return string.Format ("{0:0.#}", r); }
+    protected double Aream (decimal r) {
+      return (double) r;
+    }
+    protected string Formatm (decimal r) {
+      return string.Format ("{0:0.#}", r);
+    }
 
     [RCVerb ("tree")]
-    public void EvalTree (
-      RCRunner runner, RCClosure closure, RCBoolean right)
+    public void EvalTree (RCRunner runner, RCClosure closure, RCBoolean right)
     {
       RCCube result = new RCCube (new RCArray<string> ("S"));
       TreeNode root = new TreeNode (RCSymbolScalar.Empty, RCSymbolScalar.Empty);
@@ -103,12 +117,15 @@ namespace RCL.Core
       WriteTree (result, root);
       runner.Yield (closure, result);
     }
-    protected double Areab (bool r) { return r ? 1 : 0; }
-    protected string Formatb (bool r) { return r.ToString (); }
+    protected double Areab (bool r) {
+      return r ? 1 : 0;
+    }
+    protected string Formatb (bool r) {
+      return r.ToString ();
+    }
 
     [RCVerb ("tree")]
-    public void EvalTree (
-      RCRunner runner, RCClosure closure, RCSymbol right)
+    public void EvalTree (RCRunner runner, RCClosure closure, RCSymbol right)
     {
       RCCube result = new RCCube (new RCArray<string> ("S"));
       TreeNode root = new TreeNode (RCSymbolScalar.Empty, RCSymbolScalar.Empty);
@@ -119,12 +136,15 @@ namespace RCL.Core
       WriteTree (result, root);
       runner.Yield (closure, result);
     }
-    protected double Areay (RCSymbolScalar r) { return 1; }
-    protected string Formaty (RCSymbolScalar r) { return r.ToString (); }
+    protected double Areay (RCSymbolScalar r) {
+      return 1;
+    }
+    protected string Formaty (RCSymbolScalar r) {
+      return r.ToString ();
+    }
 
     [RCVerb ("tree")]
-    public void EvalTree (
-      RCRunner runner, RCClosure closure, RCBlock right)
+    public void EvalTree (RCRunner runner, RCClosure closure, RCBlock right)
     {
       RCCube result = new RCCube (new RCArray<string> ("S"));
       TreeNode root = new TreeNode (RCSymbolScalar.Empty, RCSymbolScalar.Empty);
@@ -137,8 +157,7 @@ namespace RCL.Core
     }
 
     [RCVerb ("tree")]
-    public void EvalTree (
-      RCRunner runner, RCClosure closure, RCCube right)
+    public void EvalTree (RCRunner runner, RCClosure closure, RCCube right)
     {
       RCCube result = new RCCube (new RCArray<string> ("S"));
       TreeNode root = new TreeNode (RCSymbolScalar.Empty, RCSymbolScalar.Empty);
@@ -161,16 +180,13 @@ namespace RCL.Core
       public TreeNode (TreeNode parent, string name, int number)
       {
         s = new RCSymbolScalar (parent.s, (long) number);
-        if (name == null || name.Equals (""))
-        {
+        if (name == null || name.Equals ("")) {
           k = new RCSymbolScalar (parent.k, (long) number);
         }
-        else
-        {
+        else {
           k = new RCSymbolScalar (parent.k, name);
         }
-        if (parent.children == null)
-        {
+        if (parent.children == null) {
           parent.children = new RCArray<TreeNode> (8);
         }
         parent.children.Write (this);
@@ -190,17 +206,14 @@ namespace RCL.Core
 
     protected void LayoutTree (double angle, TreeNode node)
     {
-      if (node.children != null)
-      {
-        if (node.children.Count == 1)
-        {
+      if (node.children != null) {
+        if (node.children.Count == 1) {
           angle += Math.PI;
           node.children[0].x = node.x + node.children[0].d * Math.Sin (angle);
           node.children[0].y = node.y + node.children[0].d * Math.Cos (angle);
           LayoutTree (angle, node.children[0]);
         }
-        else if (node.children.Count == 2)
-        {
+        else if (node.children.Count == 2) {
           angle += Math.PI;
           node.children[0].x = node.x + node.children[0].d * Math.Sin (angle);
           node.children[0].y = node.y + node.children[0].d * Math.Cos (angle);
@@ -211,8 +224,7 @@ namespace RCL.Core
           node.children[1].y = node.y + node.children[1].d * Math.Cos (angle);
           LayoutTree (angle, node.children[1]);
         }
-        else
-        {
+        else {
           double delta = (2 * Math.PI) / node.children.Count;
           angle += node.children.Count % 2 == 1 ? delta / 2 : 0;
           for (int i = 0; i < node.children.Count; ++i)
@@ -231,19 +243,17 @@ namespace RCL.Core
     {
       node.r = Math.Sqrt (Math.Abs (node.g) / Math.PI);
       node.e = 0;
-      if (node.children != null)
-      {
+      if (node.children != null) {
         double delta = (2 * Math.PI) / node.children.Count;
-        if (node.children.Count == 1)
-        {
+        if (node.children.Count == 1) {
           LayoutBottomUp (node.children[0], level + 1);
           node.e = 2 * node.children[0].r + .5 * Math.PI * node.children[0].e;
           node.children[0].d = node.r + node.children[0].r + node.children[0].e;
           node.children[0].d = Math.Max (node.children[0].d,
-                                         (node.children[0].r + node.children[0].e) / Math.Tan (delta / 2d));
+                                         (node.children[0].r + node.children[0].e) / Math.Tan (
+                                           delta / 2d));
         }
-        else
-        {
+        else {
           for (int i = 0; i < node.children.Count; ++i)
           {
             LayoutBottomUp (node.children[i], level + 1);
@@ -255,7 +265,8 @@ namespace RCL.Core
             node.e = Math.Max (node.e, 2 * node.children[i].r + C * node.children[i].e);
             node.children[i].d = node.r + node.children[i].r + C * node.children[i].e;
             node.children[i].d = Math.Max (node.children[i].d,
-                                           (node.children[i].r + C * node.children[i].e) / Math.Tan (delta / 2d));
+                                           (node.children[i].r + C * node.children[i].e) /
+                                           Math.Tan (delta / 2d));
           }
         }
       }
@@ -271,8 +282,7 @@ namespace RCL.Core
       result.WriteCell ("n", node.s, node.n);
       result.WriteCell ("g", node.s, node.g);
       result.Axis.Write (node.s);
-      if (node.children != null)
-      {
+      if (node.children != null) {
         for (int i = 0; i < node.children.Count; ++i)
         {
           TreeNode child = node.children[i];
@@ -283,7 +293,12 @@ namespace RCL.Core
 
     protected delegate double Area<T> (T r);
     protected delegate string Format<T> (T r);
-    protected void DoTree<T> (TreeNode parent, RCVector<T> right, ref double a, ref double g, Area<T> area, Format<T> format)
+    protected void DoTree<T> (TreeNode parent,
+                              RCVector<T> right,
+                              ref double a,
+                              ref double g,
+                              Area<T> area,
+                              Format<T> format)
     {
       for (int i = 0; i < right.Count; ++i)
       {
@@ -310,8 +325,10 @@ namespace RCL.Core
 
     protected void DoTree (TreeNode parent, RCOperator right, ref double a, ref double g)
     {
-      //This is not quite correct. Operators should have more space allocated like blocks.
-      //And not always assigned an area of one. TestTree16 and others will have to change.
+      // This is not quite correct. Operators should have more space allocated like
+      // blocks.
+      // And not always assigned an area of one. TestTree16 and others will have to
+      // change.
       TreeNode opNode = new TreeNode (parent, null, 0);
       opNode.n = 1;
       opNode.m = 1;
@@ -323,13 +340,11 @@ namespace RCL.Core
 
     protected void DoTree (TreeNode parent, RCCube right, ref double a, ref double g)
     {
-      if (right.Axis.ColCount > 1)
-      {
-        //throw new NotImplementedException ("Cannot handle time cols on cubes yet.");
-        //But we will still handle them as if the time col didn't exist.
+      if (right.Axis.ColCount > 1) {
+        // throw new NotImplementedException ("Cannot handle time cols on cubes yet.");
+        // But we will still handle them as if the time col didn't exist.
       }
-      if (right.Axis.Symbol != null)
-      {
+      if (right.Axis.Symbol != null) {
         Dictionary<RCSymbolScalar, TreeNode> map = new Dictionary<RCSymbolScalar, TreeNode> ();
         for (int i = 0; i < right.Cols; ++i)
         {
@@ -338,20 +353,18 @@ namespace RCL.Core
           colNode.v = colName;
           colNode.n = 0;
           ColumnBase col = right.GetColumn (i);
-          bool numeric = typeof (long).IsAssignableFrom (col.GetElementType());
+          bool numeric = typeof (long).IsAssignableFrom (col.GetElementType ());
           for (int j = 0; j < col.Count; ++j)
           {
             RCSymbolScalar symbol = right.Axis.SymbolAt (col.Index[j]);
             TreeNode rowNode = new TreeNode (colNode, symbol.Key.ToString (), col.Index[j]);
             object box = col.BoxCell (j);
-            if (numeric)
-            {
+            if (numeric) {
               rowNode.n = (long) box;
               rowNode.m = (long) box;
               rowNode.g = Math.Abs ((long) box);
             }
-            else
-            {
+            else {
               rowNode.n = 1;
               rowNode.m = 1;
               rowNode.g = 1;
@@ -365,8 +378,7 @@ namespace RCL.Core
           g += Math.Abs (colNode.g);
         }
       }
-      else
-      {
+      else {
         for (int i = 0; i < right.Cols; ++i)
         {
           string colName = right.ColumnAt (i);
@@ -374,19 +386,17 @@ namespace RCL.Core
           colNode.v = colName;
           colNode.n = 0;
           ColumnBase col = right.GetColumn (i);
-          bool numeric = typeof (long).IsAssignableFrom (col.GetElementType());
+          bool numeric = typeof (long).IsAssignableFrom (col.GetElementType ());
           for (int j = 0; j < right.Count; ++j)
           {
             TreeNode rowNode = new TreeNode (colNode, null, col.Index[j]);
             object box = col.BoxCell (j);
-            if (numeric)
-            {
+            if (numeric) {
               rowNode.n = (long) box;
               rowNode.m = (long) box;
               rowNode.g = Math.Abs ((long) box);
             }
-            else
-            {
+            else {
               rowNode.n = 1;
               rowNode.m = 1;
               rowNode.g = 1;
@@ -407,8 +417,7 @@ namespace RCL.Core
       {
         RCBlock current = right.GetName (i);
         object shortName = current.Name;
-        if (shortName.Equals (""))
-        {
+        if (shortName.Equals ("")) {
           shortName = (long) i;
         }
         RCSymbolScalar s = new RCSymbolScalar (parent.s, (long) i);
@@ -417,18 +426,53 @@ namespace RCL.Core
         node.v = current.Name;
         node.children = new RCArray<TreeNode> ();
         RCVectorBase vector = current.Value as RCVectorBase;
-        if (vector != null)
-        {
+        if (vector != null) {
           switch (vector.TypeCode)
           {
-            case 'l' : DoTree<long> (node, (RCVector<long>) vector, ref node.n, ref node.g, Areal, Formatl); break;
-            case 'd' : DoTree<double> (node, (RCVector<double>) vector, ref node.n, ref node.g, Aread, Formatd); break;
-            case 'm' : DoTree<decimal> (node, (RCVector<decimal>) vector, ref node.n, ref node.g, Aream, Formatm); break;
-            case 's' : DoTree<string> (node, (RCVector<string>) vector, ref node.n, ref node.g, Areas, Formats); break;
-            case 'x' : DoTree<byte> (node, (RCVector<byte>) vector, ref node.n, ref node.g, Areax, Formatx); break;
-            case 'y' : DoTree<RCSymbolScalar> (node, (RCVector<RCSymbolScalar>) vector, ref node.n, ref node.g, Areay, Formaty); break;
-            case 'b' : DoTree<bool> (node, (RCVector<bool>) vector, ref node.n, ref node.g, Areab, Formatb); break;
-            default : throw new Exception ("Unknown typecode: " + vector.TypeCode);
+          case 'l': DoTree<long> (node,
+                                  (RCVector<long>)vector,
+                                  ref node.n,
+                                  ref node.g,
+                                  Areal,
+                                  Formatl); break;
+          case 'd': DoTree<double> (node,
+                                    (RCVector<double>)vector,
+                                    ref node.n,
+                                    ref node.g,
+                                    Aread,
+                                    Formatd); break;
+          case 'm': DoTree<decimal> (node,
+                                     (RCVector<decimal>)vector,
+                                     ref node.n,
+                                     ref node.g,
+                                     Aream,
+                                     Formatm); break;
+          case 's': DoTree<string> (node,
+                                    (RCVector<string>)vector,
+                                    ref node.n,
+                                    ref node.g,
+                                    Areas,
+                                    Formats); break;
+          case 'x': DoTree<byte> (node,
+                                  (RCVector<byte>)vector,
+                                  ref node.n,
+                                  ref node.g,
+                                  Areax,
+                                  Formatx); break;
+          case 'y': DoTree<RCSymbolScalar> (node,
+                                            (RCVector<RCSymbolScalar>)vector,
+                                            ref node.n,
+                                            ref
+                                            node.g,
+                                            Areay,
+                                            Formaty); break;
+          case 'b': DoTree<bool> (node,
+                                  (RCVector<bool>)vector,
+                                  ref node.n,
+                                  ref node.g,
+                                  Areab,
+                                  Formatb); break;
+          default: throw new Exception ("Unknown typecode: " + vector.TypeCode);
           }
           a += node.n;
           g += Math.Abs (node.g);
@@ -436,8 +480,7 @@ namespace RCL.Core
           continue;
         }
         RCBlock block = current.Value as RCBlock;
-        if (block != null)
-        {
+        if (block != null) {
           DoTree (node, block, ref node.n, ref node.g);
           a += node.n;
           g += Math.Abs (node.g);
@@ -445,8 +488,7 @@ namespace RCL.Core
           continue;
         }
         RCCube cube = current.Value as RCCube;
-        if (cube != null)
-        {
+        if (cube != null) {
           DoTree (node, cube, ref node.n, ref node.g);
           a += node.n;
           g += Math.Abs (node.g);
@@ -454,8 +496,7 @@ namespace RCL.Core
           continue;
         }
         RCOperator oper = current.Value as RCOperator;
-        if (oper != null)
-        {
+        if (oper != null) {
           DoTree (node, oper, ref node.n, ref node.g);
           a += node.n;
           g += Math.Abs (node.g);
@@ -463,8 +504,7 @@ namespace RCL.Core
           continue;
         }
         RCReference reference = current.Value as RCReference;
-        if (reference != null)
-        {
+        if (reference != null) {
           DoTree (node, reference, ref node.n, ref node.g);
           a += node.n;
           g += Math.Abs (node.g);

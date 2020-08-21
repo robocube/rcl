@@ -8,7 +8,8 @@ namespace RCL.Kernel
   public class ReadSpec
   {
     protected readonly ReadCounter m_counter;
-    protected readonly Dictionary<RCSymbolScalar, SpecRecord> m_records = new Dictionary<RCSymbolScalar, SpecRecord> ();
+    protected readonly Dictionary<RCSymbolScalar, SpecRecord> m_records =
+      new Dictionary<RCSymbolScalar, SpecRecord> ();
     protected readonly bool m_forward = true;
     protected readonly bool m_ignoreDispatchedRows = true;
     protected int m_start = int.MaxValue;
@@ -21,15 +22,21 @@ namespace RCL.Kernel
     protected int m_skipFirst = 0;
     protected int m_totalLimit = int.MaxValue;
 
-    //This is for page.
-    public ReadSpec (ReadCounter counter, RCSymbol left, int skipFirst, int totalLimit, bool showDeleted)
+    // This is for page.
+    public ReadSpec (ReadCounter counter,
+                     RCSymbol left,
+                     int skipFirst,
+                     int totalLimit,
+                     bool
+                     showDeleted)
     {
-      //For paging.
+      // For paging.
       m_counter = counter;
       m_forward = totalLimit >= 0;
       m_ignoreDispatchedRows = false;
       m_start = 0;
-      //each symbol is unlimited individually.  But the total is going to be limited by stopAfter.
+      // each symbol is unlimited individually.  But the total is going to be limited by
+      // stopAfter.
       m_unlimited = true;
       m_symbolLimit = int.MaxValue;
       m_skipFirst = Math.Abs (skipFirst);
@@ -42,8 +49,8 @@ namespace RCL.Kernel
       }
     }
 
-    //This is for read and its ilk
-    //In this case symbols are added by the client
+    // This is for read and its ilk
+    // In this case symbols are added by the client
     public ReadSpec (ReadCounter counter, int defaultLimit, bool force, bool fill)
     {
       m_counter = counter;
@@ -53,16 +60,23 @@ namespace RCL.Kernel
       m_force = force;
     }
 
-    public ReadSpec (ReadCounter counter, RCSymbol left, RCLong right, int defaultLimit, bool ignoreDispatchedRows, bool force, bool fill, bool showDeleted)
+    public ReadSpec (ReadCounter counter,
+                     RCSymbol left,
+                     RCLong right,
+                     int defaultLimit,
+                     bool
+                     ignoreDispatchedRows,
+                     bool force,
+                     bool fill,
+                     bool showDeleted)
     {
       m_counter = counter;
       ShowDeleted = showDeleted;
       m_ignoreDispatchedRows = ignoreDispatchedRows;
       m_force = force;
       m_fill = fill;
-      if (right.Count == 1)
-      {
-        //It's the start point.
+      if (right.Count == 1) {
+        // It's the start point.
         m_forward = defaultLimit >= 0;
         m_unlimited = defaultLimit == 0;
         m_symbolLimit = Math.Abs (m_unlimited ? int.MaxValue : defaultLimit);
@@ -72,9 +86,8 @@ namespace RCL.Kernel
           Add (left[i], (int) right[0], m_symbolLimit);
         }
       }
-      else if (right.Count == 2)
-      {
-        //It's the start point and the limit.
+      else if (right.Count == 2) {
+        // It's the start point and the limit.
         m_forward = right[1] >= 0;
         m_unlimited = right[1] == 0;
         m_symbolLimit = Math.Abs (m_unlimited ? int.MaxValue : (int) right[1]);
@@ -84,10 +97,9 @@ namespace RCL.Kernel
           Add (left[i], (int) right[0], m_symbolLimit);
         }
       }
-      else
-      {
-        //Who knows what this should do.
-        //Maybe let you give different counts for each symbol.
+      else {
+        // Who knows what this should do.
+        // Maybe let you give different counts for each symbol.
         throw new ArgumentException ("Read takes a maximum of two right arguments.");
       }
     }
@@ -96,22 +108,22 @@ namespace RCL.Kernel
     {
       get { return m_symbolLimit; }
     }
-  
+
     public bool SymbolUnlimited
     {
       get { return m_unlimited; }
     }
-  
+
     public bool Forward
     {
       get { return m_forward; }
     }
-  
+
     public int Start
     {
       get { return m_start; }
     }
-  
+
     public bool IgnoreDispatchedRows
     {
       get { return m_ignoreDispatchedRows; }
@@ -126,7 +138,7 @@ namespace RCL.Kernel
     {
       get { return m_totalLimit; }
     }
-  
+
     public bool Force
     {
       get { return m_force; }
@@ -158,7 +170,10 @@ namespace RCL.Kernel
       RCBlock records = RCBlock.Empty;
       foreach (KeyValuePair<RCSymbolScalar, SpecRecord> specRecord in m_records)
       {
-        records = new RCBlock (records, specRecord.Key.ToString (), ":", specRecord.Value.ToBlock ());
+        records = new RCBlock (records,
+                               specRecord.Key.ToString (),
+                               ":",
+                               specRecord.Value.ToBlock ());
       }
       result = new RCBlock (result, "Records", ":", records);
       return result;
@@ -174,8 +189,7 @@ namespace RCL.Kernel
       SpecRecord record = new SpecRecord (scalar);
       record.start = start;
       record.limit = limit;
-      if (start < m_start)
-      {
+      if (start < m_start) {
         m_start = start;
       }
       RCSymbolScalar current = scalar;
@@ -184,38 +198,36 @@ namespace RCL.Kernel
         m_records[current] = record;
         current = current.Previous;
       }
-      //What happens if you pass multiple identical symbols? boom!
-      //Jan 4 2015 - we really need a test for that!
-      //m_records[record.symbol] = record;
+      // What happens if you pass multiple identical symbols? boom!
+      // Jan 4 2015 - we really need a test for that!
+      // m_records[record.symbol] = record;
     }
-  
+
     public SpecRecord Get (RCSymbolScalar scalar)
     {
       SpecRecord result;
-      //This is for cubes that don't have a timeline: the symbol will be null.
-      if (scalar == null)
-      {
+      // This is for cubes that don't have a timeline: the symbol will be null.
+      if (scalar == null) {
         return m_records[RCSymbolScalar.Empty];
       }
       RCSymbolScalar current = scalar;
       while (current != null)
       {
-        //This will make sure counts are allocated to the most specific symbol first
-        //if you have multiple symbols in the same heirarchy within the same spec.
+        // This will make sure counts are allocated to the most specific symbol first
+        // if you have multiple symbols in the same heirarchy within the same spec.
         if (m_records.TryGetValue (current, out result) &&
             result.count < result.limit &&
-            ((current == scalar) || (!result.Concrete && scalar.IsConcreteOf (result.original))))
-        {
+            ((current == scalar) || (!result.Concrete && scalar.IsConcreteOf (result.original)))) {
           return result;
         }
         current = current.Previous;
       }
       return null;
     }
-  
+
     public System.Collections.IEnumerator GetEnumerator ()
     {
-      return m_records.Values.GetEnumerator();
+      return m_records.Values.GetEnumerator ();
     }
   }
 }

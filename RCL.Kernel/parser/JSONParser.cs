@@ -44,8 +44,7 @@ namespace RCL.Kernel
 
     public override RCValue Parse (RCArray<RCToken> tokens, out bool fragment, bool canonical)
     {
-      if (tokens.Count == 0)
-      {
+      if (tokens.Count == 0) {
         fragment = true;
         return RCBlock.Empty;
       }
@@ -53,22 +52,21 @@ namespace RCL.Kernel
       {
         tokens[i].Type.Accept (this, tokens[i]);
       }
-      //TODO: fragment should be interpreted as in rcl.
+      // TODO: fragment should be interpreted as in rcl.
       fragment = false;
       return m_value;
     }
 
-    public override void AcceptWhitespace (RCToken token) {}
+    public override void AcceptWhitespace (RCToken token) {
+    }
 
     public override void AcceptString (RCToken token)
     {
-      if (m_state == JSONState.Name)
-      {
+      if (m_state == JSONState.Name) {
         m_name = token.ParseString (m_lexer);
         m_state = JSONState.Value;
       }
-      else
-      {
+      else {
         AppendChild (new RCString (token.ParseString (m_lexer)));
       }
     }
@@ -85,31 +83,28 @@ namespace RCL.Kernel
 
     public override void AcceptBlock (RCToken token)
     {
-      if (token.Text.Equals ("{"))
-      {
+      if (token.Text.Equals ("{")) {
         StartBlock ();
         m_state = JSONState.Name;
       }
-      else if (token.Text.Equals ("}"))
-      {
+      else if (token.Text.Equals ("}")) {
         EndBlock ();
       }
     }
 
     public override void AcceptCube (RCToken token)
     {
-      if (token.Text.Equals ("["))
-      {
+      if (token.Text.Equals ("[")) {
         StartBlock ();
         m_state = JSONState.Default;
       }
-      else if (token.Text.Equals ("]"))
-      {
+      else if (token.Text.Equals ("]")) {
         EndBlock ();
       }
     }
 
-    public override void AcceptEvaluator (RCToken token) {}
+    public override void AcceptEvaluator (RCToken token) {
+    }
 
     public override void AcceptNull (RCToken token)
     {
@@ -118,8 +113,7 @@ namespace RCL.Kernel
 
     protected void StartBlock ()
     {
-      if (m_value != null)
-      {
+      if (m_value != null) {
         m_values.Push (m_value);
         m_names.Push (m_name);
         m_states.Push (m_state);
@@ -130,8 +124,7 @@ namespace RCL.Kernel
 
     protected void EndBlock ()
     {
-      if (m_values.Count > 0)
-      {
+      if (m_values.Count > 0) {
         RCBlock child = m_value;
         m_name = m_names.Pop ();
         m_value = m_values.Pop ();
@@ -143,8 +136,7 @@ namespace RCL.Kernel
     protected void AppendChild (RCValue scalar)
     {
       m_value = new RCBlock (m_value, m_name, ":", scalar);
-      if (m_state == JSONState.Value)
-      {
+      if (m_state == JSONState.Value) {
         m_name = "";
         m_state = JSONState.Name;
       }

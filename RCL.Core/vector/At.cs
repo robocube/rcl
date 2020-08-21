@@ -471,7 +471,6 @@ namespace RCL.Core
       RCBlock result = RCBlock.Empty;
       for (int i = 0; i < right.Count; ++i)
       {
-        //O(n) lookup, kinda sucky.
         RCBlock next = left.GetName (right[i]);
         result = new RCBlock (result, next.Name, next.Evaluator, next.Value);
       }
@@ -483,8 +482,7 @@ namespace RCL.Core
       RCBlock result = RCBlock.Empty;
       for (int i = 0; i < right.Count; ++i)
       {
-        //O(n) lookup, kinda sucky.
-        RCBlock next = left.GetName ((long)right[i]);
+        RCBlock next = left.GetName ((long) right[i]);
         result = new RCBlock (result, next.Name, next.Evaluator, next.Value);
       }
       return result;
@@ -495,8 +493,7 @@ namespace RCL.Core
       RCBlock result = RCBlock.Empty;
       for (int i = 0; i < right.Count; ++i)
       {
-        //O(n) lookup, kinda sucky.
-        RCBlock next = left.GetName ((long)right[i]);
+        RCBlock next = left.GetName ((long) right[i]);
         result = new RCBlock (result, next.Name, next.Evaluator, next.Value);
       }
       return result;
@@ -507,8 +504,7 @@ namespace RCL.Core
       RCBlock result = RCBlock.Empty;
       for (int i = 0; i < right.Count; ++i)
       {
-        //O(n) lookup, kinda sucky.
-        RCBlock next = left.GetName ((long)right[i]);
+        RCBlock next = left.GetName ((long) right[i]);
         result = new RCBlock (result, next.Name, next.Evaluator, next.Value);
       }
       return result;
@@ -521,8 +517,7 @@ namespace RCL.Core
       {
         string name = right[i];
         RCBlock next = left.GetName (name);
-        if (next == null)
-        {
+        if (next == null) {
           string message = string.Format ("at: Name '{0}' not found within block", name);
           throw new RCException (closure, RCErrors.Name, message);
         }
@@ -537,8 +532,7 @@ namespace RCL.Core
       for (int i = 0; i < right.Count; ++i)
       {
         RCValue next = left.Get (right[i], null);
-        if (next == null)
-        {
+        if (next == null) {
           string message = string.Format ("at: Name '{0}' not found within block", right[i]);
           throw new RCException (closure, RCErrors.Name, message);
         }
@@ -554,13 +548,12 @@ namespace RCL.Core
       for (int i = 0; i < right.Count; ++i)
       {
         int j = right[i];
-        if (j < 0 || j >= left.Count)
-        {
+        if (j < 0 || j >= left.Count) {
           throw RCException.Range (closure, right[i], left.Count);
         }
         result[i] = left[j];
       }
-      return (RCVector<L>) RCVectorBase.FromArray (new RCArray<L> (result));
+      return (RCVector<L>)RCVectorBase.FromArray (new RCArray<L> (result));
     }
 
     public static RCVector<L> DoAt<L> (RCClosure closure, RCVector<L> left, RCVector<long> right)
@@ -568,26 +561,22 @@ namespace RCL.Core
       L[] result = new L[right.Count];
       for (int i = 0; i < right.Count; ++i)
       {
-        if (right[i] < 0)
-        {
+        if (right[i] < 0) {
           int j = (int) (left.Count + right[i]);
-          if (j < 0 || j >= left.Count)
-          {
+          if (j < 0 || j >= left.Count) {
             throw RCException.Range (closure, right[i], left.Count);
           }
           result[i] = left[j];
         }
-        else
-        {
+        else {
           int j = (int) right[i];
-          if (j < 0 || j >= left.Count)
-          {
+          if (j < 0 || j >= left.Count) {
             throw RCException.Range (closure, right[i], left.Count);
           }
           result[i] = left[j];
         }
       }
-      return (RCVector<L>) RCVectorBase.FromArray (new RCArray<L> (result));
+      return (RCVector<L>)RCVectorBase.FromArray (new RCArray<L> (result));
     }
 
     public static RCVector<L> DoAt<L> (RCClosure closure, RCVector<L> left, RCVector<double> right)
@@ -595,26 +584,22 @@ namespace RCL.Core
       L[] result = new L[right.Count];
       for (int i = 0; i < right.Count; ++i)
       {
-        if (right[i] < 0)
-        {
+        if (right[i] < 0) {
           int j = (int) (left.Count + right[i]);
-          if (j < 0 || j >= left.Count)
-          {
+          if (j < 0 || j >= left.Count) {
             throw RCException.Range (closure, (long) right[i], left.Count);
           }
           result[i] = left[j];
         }
-        else
-        {
+        else {
           int j = (int) right[i];
-          if (j < 0 || j >= left.Count)
-          {
+          if (j < 0 || j >= left.Count) {
             throw RCException.Range (closure, (long) right[i], left.Count);
           }
           result[i] = left[j];
         }
       }
-      return (RCVector<L>) RCVectorBase.FromArray (new RCArray<L> (result));
+      return (RCVector<L>)RCVectorBase.FromArray (new RCArray<L> (result));
     }
 
     public static RCVector<L> DoAt<L> (RCClosure closure, RCVector<L> left, RCVector<decimal> right)
@@ -622,26 +607,22 @@ namespace RCL.Core
       L[] result = new L[right.Count];
       for (int i = 0; i < right.Count; ++i)
       {
-        if (right[i] < 0)
-        {
+        if (right[i] < 0) {
           int j = (int) (left.Count + right[i]);
-          if (j < 0 || j >= left.Count)
-          {
+          if (j < 0 || j >= left.Count) {
             throw RCException.Range (closure, (long) right[i], left.Count);
           }
           result[i] = left[j];
         }
-        else
-        {
+        else {
           int j = (int) right[i];
-          if (j < 0 || j >= left.Count)
-          {
+          if (j < 0 || j >= left.Count) {
             throw RCException.Range (closure, (long) right[i], left.Count);
           }
           result[i] = left[j];
         }
       }
-      return (RCVector<L>) RCVectorBase.FromArray (new RCArray<L> (result));
+      return (RCVector<L>)RCVectorBase.FromArray (new RCArray<L> (result));
     }
   }
 }

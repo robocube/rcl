@@ -40,8 +40,8 @@ namespace RCL.Kernel
     public virtual void AcceptIncr (RCToken token) {}
     public virtual void AcceptLiteral (RCToken token) {}
     public virtual void AcceptJunk (RCToken token) {}
-  
-    //For CSV and XML files
+
+    // For CSV and XML files
     public virtual void AcceptColumnData (RCToken token) {}
     public virtual void AcceptSeparator (RCToken token) {}
     public virtual void AcceptNull (RCToken token) {}
@@ -49,14 +49,14 @@ namespace RCL.Kernel
     public virtual void AcceptXmlContent (RCToken token) {}
     public virtual void AcceptXmlDeclaration (RCToken token) {}
 
-    //For RCL log files
+    // For RCL log files
     public virtual void AcceptLogContent (RCToken token) {}
     public virtual void AcceptEndOfLine (RCToken token) {}
     public virtual void AcceptLogEntryHeader (RCToken token) {}
     public virtual void AcceptLogEntryRawLine (RCToken token) {}
     public virtual void AcceptLogEntryBody (RCToken token) {}
 
-    //For Markdown syntax files
+    // For Markdown syntax files
     public virtual void AcceptMarkdownContent (RCToken token) {}
     public virtual void AcceptMarkdownBeginBold (RCToken token) {}
     public virtual void AcceptMarkdownEndBold (RCToken token) {}

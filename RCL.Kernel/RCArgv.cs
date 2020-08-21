@@ -11,8 +11,7 @@ namespace RCL.Kernel
     public static volatile bool m_initInvoked = false;
     public static RCLArgv Init (string[] argv)
     {
-      if (m_initInvoked)
-      {
+      if (m_initInvoked) {
         throw new InvalidOperationException ("RCLArgv.Init may only be invoked once per appDomain");
       }
       m_instance = new RCLArgv (argv);
@@ -29,33 +28,33 @@ namespace RCL.Kernel
     public readonly RCString Arguments;
     public readonly RCOutput OutputEnum;
 
-    //--exit -x
-    //With --program, causes rcl to exit after --program is finished
-    //With --batch, causes rcl to exit after input has been evaluated
-    //Use --exit to avoid putting calls to :exit in your --program
-    //This is to facilitate interactive debugging and development
+    // --exit -x
+    // With --program, causes rcl to exit after --program is finished
+    // With --batch, causes rcl to exit after input has been evaluated
+    // Use --exit to avoid putting calls to :exit in your --program
+    // This is to facilitate interactive debugging and development
     public readonly bool Exit;
 
-    //--batch -b
-    //Causes rcl to read all input from the console or file at once
-    //After the end of the input, no more input will be accepted,
-    //either with Console.ReadLine or with Getline.
-    //If --exit is set, rcl will exit after processing all input
-    //Otherwise the main thread will go to sleep until one of:
+    // --batch -b
+    // Causes rcl to read all input from the console or file at once
+    // After the end of the input, no more input will be accepted,
+    // either with Console.ReadLine or with Getline.
+    // If --exit is set, rcl will exit after processing all input
+    // Otherwise the main thread will go to sleep until one of:
     // a unix signal requesting termination is received
     // :exit is invoked as a result of --program
     public readonly bool Batch;
 
-    //--nokeys -k
-    //Disables the Getline library which causes problems in non-interactive settings
-    //Causes log messages to go to Console.Out rather than Console.Error
-    //When --nokeys is set, any input is read with Console.ReadLine
+    // --nokeys -k
+    // Disables the Getline library which causes problems in non-interactive settings
+    // Causes log messages to go to Console.Out rather than Console.Error
+    // When --nokeys is set, any input is read with Console.ReadLine
     public readonly bool NoKeys;
 
-    //--noread -r
-    //With --nokeys, prevents all calls to Console.ReadLine and related methods
-    //Use --noread when attempts to read from stdin would cause errors
-    //(For example, under systemd)
+    // --noread -r
+    // With --nokeys, prevents all calls to Console.ReadLine and related methods
+    // Use --noread when attempts to read from stdin would cause errors
+    // (For example, under systemd)
     public readonly bool NoRead;
 
     // --noresult
@@ -120,112 +119,94 @@ namespace RCL.Kernel
       for (int i = 0; i < argv.Length; ++i)
       {
         string[] kv = argv[i].Split ('=');
-        if (kv.Length == 1)
-        {
-          if (kv[0].StartsWith ("--"))
-          {
+        if (kv.Length == 1) {
+          if (kv[0].StartsWith ("--")) {
             string option = kv[0].Substring (2);
-            if (option.Equals ("exit"))
-            {
+            if (option.Equals ("exit")) {
               Exit = true;
             }
-            else if (option.Equals ("batch"))
-            {
+            else if (option.Equals ("batch")) {
               Batch = true;
             }
-            else if (option.Equals ("nokeys"))
-            {
+            else if (option.Equals ("nokeys")) {
               NoKeys = true;
             }
-            else if (option.Equals ("noread"))
-            {
+            else if (option.Equals ("noread")) {
               NoRead = true;
             }
-            else if (option.Equals ("noresult"))
-            {
+            else if (option.Equals ("noresult")) {
               NoResult = true;
             }
-            else if (option.Equals ("fullstack"))
-            {
+            else if (option.Equals ("fullstack")) {
               FullStack = true;
             }
-            else if (option.Equals ("version"))
-            {
-              //This option forces the version to display no matter what.
-              //Useful when you need to check the version number from a test.
+            else if (option.Equals ("version")) {
+              // This option forces the version to display no matter what.
+              // Useful when you need to check the version number from a test.
               Version = true;
             }
-            else
-            {
+            else {
               custom = new RCBlock (custom, option, ":", RCBoolean.True);
             }
           }
-          else if (kv[0].StartsWith ("-"))
-          {
+          else if (kv[0].StartsWith ("-")) {
             for (int j = 1; j < kv[0].Length; ++j)
             {
               char c;
               switch (c = kv[0][j])
               {
-                case 'x':
-                  Exit = true;
-                  break;
-                case 'b':
-                  Batch = true;
-                  break;
-                case 'k':
-                  NoKeys = true;
-                  break;
-                case 'r':
-                  NoRead = true;
-                  break;
-                case 'v':
-                  Version = true;
-                  break;
-                default:
-                  Usage ("Unknown option '" + kv[0][j] + "'");
-                  break;
+              case 'x':
+                Exit = true;
+                break;
+              case 'b':
+                Batch = true;
+                break;
+              case 'k':
+                NoKeys = true;
+                break;
+              case 'r':
+                NoRead = true;
+                break;
+              case 'v':
+                Version = true;
+                break;
+              default:
+                Usage ("Unknown option '" + kv[0][j] + "'");
+                break;
               }
             }
           }
-          else
-          {
-            //do position.
+          else {
+            // do position.
             arguments.Add (kv[0]);
           }
         }
-        else
-        {
-          //do named arguments.
-          if (kv[0].StartsWith ("--"))
-          {
+        else {
+          // do named arguments.
+          if (kv[0].StartsWith ("--")) {
             string option = kv[0].Substring (2);
-            if (option.Equals ("program"))
-            {
+            if (option.Equals ("program")) {
               Program = kv[1];
             }
-            else if (option.Equals ("action"))
-            {
+            else if (option.Equals ("action")) {
               Action = kv[1];
             }
-            else if (option.Equals ("output"))
-            {
+            else if (option.Equals ("output")) {
               Output = kv[1];
             }
-            else if (option.Equals ("show"))
-            {
+            else if (option.Equals ("show")) {
               Show = kv[1].Split (',');
             }
-            else if (option.Equals ("hide"))
-            {
+            else if (option.Equals ("hide")) {
               Hide = kv[1].Split (',');
             }
-            else
-            {
+            else {
               custom = new RCBlock (custom, option, ":", new RCString (kv[1]));
             }
           }
-          else Usage ("Named options start with --");
+          else {
+            Usage ("Named options start with --");
+          }
         }
       }
       Arguments = new RCString (arguments.ToArray ());
@@ -261,7 +242,8 @@ namespace RCL.Kernel
       Console.WriteLine ("  --program         Program file to run on startup");
       Console.WriteLine ("  --action          Operator within program to eval on launch");
       Console.WriteLine ("  --output          Output format [full|multi|single|clean|none]");
-      Console.WriteLine ("  --batch, -b       Non-interactive console (use when reading from standard input)");
+      Console.WriteLine (
+        "  --batch, -b       Non-interactive console (use when reading from standard input)");
       Console.WriteLine ("  --exit, -x        Exit after completion of action");
       Console.WriteLine ("  --version, -v     Force printing of version on start");
       Console.WriteLine ();
@@ -272,26 +254,23 @@ namespace RCL.Kernel
     {
       bool copyright = !Batch && OutputEnum != RCOutput.Clean && OutputEnum != RCOutput.Test;
       bool options = !Batch && OutputEnum != RCOutput.Clean && OutputEnum != RCOutput.Test;
-      bool version = Version || (!Batch && OutputEnum != RCOutput.Clean && OutputEnum != RCOutput.Test);
+      bool version = Version || (!Batch &&
+                                 OutputEnum != RCOutput.Clean &&
+                                 OutputEnum != RCOutput.Test);
 
-      if (version)
-      {
+      if (version) {
         PrintVersion (appDomainVersionString);
       }
-      if (copyright)
-      {
+      if (copyright) {
         PrintCopyright ();
       }
-      if (options)
-      {
+      if (options) {
         Console.WriteLine ();
-        if (Arguments.Count > 0)
-        {
+        if (Arguments.Count > 0) {
           for (int i = 0; i < Arguments.Count; ++i)
           {
             Console.Write (Arguments[i]);
-            if (i < Arguments.Count - 1)
-            {
+            if (i < Arguments.Count - 1) {
               Console.Write (" ");
             }
           }
@@ -299,8 +278,7 @@ namespace RCL.Kernel
         }
         Console.WriteLine (Options.Format (RCFormat.Pretty));
       }
-      if (options || copyright)
-      {
+      if (options || copyright) {
         Console.WriteLine ();
       }
     }
@@ -308,17 +286,14 @@ namespace RCL.Kernel
     protected static void PrintVersion (string appDomainVersionString)
     {
       Assembly assembly = Assembly.GetEntryAssembly ();
-      if (assembly != null)
-      {
+      if (assembly != null) {
         Version version = assembly.GetName ().Version;
         Console.Out.WriteLine ("Robocube Language {0}", version.ToString ());
       }
-      else if (appDomainVersionString != null && appDomainVersionString != "")
-      {
+      else if (appDomainVersionString != null && appDomainVersionString != "") {
         Console.Out.WriteLine ("Robocube Language {0} (isolated)", appDomainVersionString);
       }
-      else
-      {
+      else {
         Console.Out.WriteLine ("Robocube Language (isolated)");
       }
     }
@@ -326,7 +301,7 @@ namespace RCL.Kernel
     protected static void PrintCopyright ()
     {
       Console.Out.WriteLine ("Copyright (C) 2007-2015 Brian M. Andersen");
-      Console.Out.WriteLine ("Copyright (C) 2015-2018 Robocube Corporation");
+      Console.Out.WriteLine ("Copyright (C) 2015-2020 Robocube Corporation");
     }
   }
 }

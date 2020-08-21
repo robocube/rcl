@@ -39,38 +39,35 @@ namespace RCL.Exe
         {
           AppDomainSetup setupInfo = new AppDomainSetup ();
           string build = "dev";
-          if (argQueue.Count > 0)
-          {
+          if (argQueue.Count > 0) {
             string first = argv[0];
             string rclHome = Environment.GetEnvironmentVariable ("RCL_HOME");
-            if (rclHome == null)
-            {
-              throw new Exception ("RCL_HOME was not set. It is needed in order to locate the specified binary: " + first);
+            if (rclHome == null) {
+              throw new Exception (
+                "RCL_HOME was not set. It is needed in order to locate the specified binary: " +
+                first);
             }
-            if (first == "dev")
-            {
+            if (first == "dev") {
               build = first;
-              // It should use the dev build in this case. The current build is not the dev build.
+              // It should use the dev build in this case. The current build is not the
+              // dev build.
               setupInfo = AppDomain.CurrentDomain.SetupInformation;
               setupInfo.ApplicationBase = rclHome + "/dev/rcl/dbg";
               argQueue.Dequeue ();
             }
-            else if (first == "last")
-            {
+            else if (first == "last") {
               argQueue.Dequeue ();
-              throw new NotImplementedException ("last option is not yet implemented. Please specify a build number");
+              throw new NotImplementedException (
+                "last option is not yet implemented. Please specify a build number");
             }
-            else
-            {
+            else {
               int number;
-              if (int.TryParse (first, out number))
-              {
+              if (int.TryParse (first, out number)) {
                 build = number.ToString ();
                 setupInfo.ApplicationBase = rclHome + "/bin/rcl_bin/" + number + "/lib";
                 argQueue.Dequeue ();
               }
-              else
-              {
+              else {
                 setupInfo = AppDomain.CurrentDomain.SetupInformation;
               }
             }
@@ -78,9 +75,10 @@ namespace RCL.Exe
           string appDomainName = "Isolated build:" + build + " id:" + Guid.NewGuid ();
           appDomain = AppDomain.CreateDomain (appDomainName, null, setupInfo);
           Type type = typeof (Program);
-          program = (Program) appDomain.CreateInstanceAndUnwrap (type.Assembly.FullName, type.FullName);
+          program = (Program) appDomain.CreateInstanceAndUnwrap (type.Assembly.FullName,
+                                                                 type.FullName);
           string appDomainVersionString = setupInfo.ApplicationBase;
-          //RCSystem.CrossDomainTraceHelper.StartListening (appDomain);
+          // RCSystem.CrossDomainTraceHelper.StartListening (appDomain);
           program.IsolateCode = code.ToString ();
           program.InstanceMain (argQueue.ToArray (), appDomainVersionString);
           result = (string) appDomain.GetData ("IsolateResult");
@@ -92,22 +90,18 @@ namespace RCL.Exe
         }
         finally
         {
-          if (appDomain != null)
-          {
+          if (appDomain != null) {
             AppDomain.Unload (appDomain);
             appDomain = null;
           }
         }
-        if (result == null)
-        {
-          if (isolateEx == null)
-          {
+        if (result == null) {
+          if (isolateEx == null) {
             isolateEx = new Exception ("Missing IsolateResult for program");
           }
           runner.Finish (closure, isolateEx, 1);
         }
-        else
-        {
+        else {
           runner.Yield (closure, RCSystem.Parse (result));
         }
       });

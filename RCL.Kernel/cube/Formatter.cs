@@ -12,17 +12,17 @@ namespace RCL.Kernel
     protected RCFormat m_args;
     protected RCColmap m_colmap;
 
-    //Names of the columns.
+    // Names of the columns.
     protected List<string> m_names;
-    //For each column, the list of "stringified" values.
+    // For each column, the list of "stringified" values.
     protected List<List<string>> m_columns;
-    //For each column, the length of the longest string.
+    // For each column, the length of the longest string.
     protected List<int> m_max;
-    //Align text to the left of the column, otherwise right.
+    // Align text to the left of the column, otherwise right.
     protected List<bool> m_leftAlign;
-    //The current column.
+    // The current column.
     protected int m_col = 0;
-    //The indent level.
+    // The indent level.
     protected int m_level = 0;
 
     public Formatter (StringBuilder builder, RCFormat args, RCColmap colmap, int level)
@@ -31,18 +31,15 @@ namespace RCL.Kernel
       m_args = args;
       m_level = level;
       m_colmap = colmap;
-      if (m_colmap == null)
-      {
+      if (m_colmap == null) {
         m_colmap = new RCColmap ();
       }
     }
 
     public void Format (RCCube source)
     {
-      if (source.Count == 0)
-      {
-        if (m_args.Syntax == "RCL")
-        {
+      if (source.Count == 0) {
+        if (m_args.Syntax == "RCL") {
           m_builder.Append ("[]");
         }
         return;
@@ -53,8 +50,7 @@ namespace RCL.Kernel
       m_leftAlign = new List<bool> ();
       int tcols = 0;
       bool useGRows = false;
-      if (source.Axis.Has ("G") && m_args.Showt)
-      {
+      if (source.Axis.Has ("G") && m_args.Showt) {
         m_names.Add ("G");
         m_columns.Add (new List<string> ());
         m_max.Add (MIN_WIDTH);
@@ -62,24 +58,21 @@ namespace RCL.Kernel
         ++tcols;
         useGRows = true;
       }
-      if (source.Axis.Has ("E") && m_args.Showt)
-      {
+      if (source.Axis.Has ("E") && m_args.Showt) {
         m_names.Add ("E");
         m_columns.Add (new List<string> ());
         m_max.Add (MIN_WIDTH);
         m_leftAlign.Add (false);
         ++tcols;
       }
-      if (source.Axis.Has ("T") && m_args.Showt)
-      {
+      if (source.Axis.Has ("T") && m_args.Showt) {
         m_names.Add ("T");
         m_columns.Add (new List<string> ());
         m_max.Add (MIN_WIDTH);
         m_leftAlign.Add (false);
         ++tcols;
       }
-      if (source.Axis.Has ("S"))
-      {
+      if (source.Axis.Has ("S")) {
         m_names.Add ("S");
         m_columns.Add (new List<string> ());
         m_max.Add (MIN_WIDTH);
@@ -95,32 +88,28 @@ namespace RCL.Kernel
         m_max.Add (MIN_WIDTH);
         m_leftAlign.Add (type == 'y' || type == 's');
       }
-      //Populate m_columns and m_max.
-      if (m_args.CanonicalCubes)
-      {
+      // Populate m_columns and m_max.
+      if (m_args.CanonicalCubes) {
         source.VisitCellsCanonical (this, 0, source.Axis.Count);
       }
-      else
-      {
+      else {
         source.VisitCellsForward (this, 0, source.Axis.Count);
       }
-      if (m_args.Syntax == "RCL")
-      {
+      if (m_args.Syntax == "RCL") {
         FormatRC (tcols);
       }
-      else if (m_args.Syntax == "HTML")
-      {
+      else if (m_args.Syntax == "HTML") {
         FormatHtml (tcols, useGRows);
       }
-      else if (m_args.Syntax == "CSV")
-      {
+      else if (m_args.Syntax == "CSV") {
         FormatCsv (tcols, useGRows, CSV_ESCAPE_CHARS, true);
       }
-      else if (m_args.Syntax == "LOG")
-      {
+      else if (m_args.Syntax == "LOG") {
         FormatCsv (tcols, useGRows, LOG_ESCAPE_CHARS, false);
       }
-      else throw new Exception ("Unknown syntax for format:" + m_args.Syntax);
+      else {
+        throw new Exception ("Unknown syntax for format:" + m_args.Syntax);
+      }
     }
 
     protected void FormatRC (int tlcols)
@@ -128,8 +117,8 @@ namespace RCL.Kernel
       m_builder.Append ("[");
       m_builder.Append (m_args.Newline);
 
-      //Format the header line with the appropriate
-      //column widths determined in VisitCellsForward.
+      // Format the header line with the appropriate
+      // column widths determined in VisitCellsForward.
       ++m_level;
       for (int i = m_args.Fragment ? 1 : 0; i < m_level; ++i)
       {
@@ -140,42 +129,35 @@ namespace RCL.Kernel
       for (int i = 0; i < m_names.Count; ++i)
       {
         width[i] = Math.Max (m_max[i], m_names[i].Length);
-        if (m_args.Align && !m_leftAlign[i])
-        {
+        if (m_args.Align && !m_leftAlign[i]) {
           m_builder.Append (' ', (width[i] - m_names[i].Length));
         }
         m_builder.Append (m_names[i]);
-        //But what about when the name is longer than max?
-        //Need to handle that here.  Also different types
-        //should be justified differently; strings left, numbers right.
-        //Test cases please.
-        if (i < m_names.Count - 1)
-        {
-          if (m_args.Align && m_leftAlign[i])
-          {
+        // But what about when the name is longer than max?
+        // Need to handle that here.  Also different types
+        // should be justified differently; strings left, numbers right.
+        // Test cases please.
+        if (i < m_names.Count - 1) {
+          if (m_args.Align && m_leftAlign[i]) {
             m_builder.Append (' ', (width[i] - m_names[i].Length));
           }
-          if (i < tlcols)
-          {
+          if (i < tlcols) {
             m_builder.Append ("|");
           }
-          else
-          {
+          else {
             m_builder.Append (m_args.Delimeter);
           }
         }
       }
       m_builder.Append (m_args.RowDelimeter);
 
-      //Okay now format the individual rows using the gathered
-      //strings and widths determined by the visitor.
+      // Okay now format the individual rows using the gathered
+      // strings and widths determined by the visitor.
       int rows;
-      if (m_columns.Count == 0 || m_columns[0] == null)
-      {
+      if (m_columns.Count == 0 || m_columns[0] == null) {
         rows = 0;
       }
-      else
-      {
+      else {
         rows = m_columns[0].Count;
       }
       for (int row = 0; row < rows; ++row)
@@ -187,22 +169,18 @@ namespace RCL.Kernel
         for (int col = 0; col < m_names.Count; ++col)
         {
           string scalar = m_columns[col][row];
-          if (m_args.Align && !m_leftAlign[col])
-          {
+          if (m_args.Align && !m_leftAlign[col]) {
             m_builder.Append (' ', (width[col] - scalar.Length));
           }
           m_builder.Append (scalar);
-          if (col < m_columns.Count - 1)
-          {
-            if (m_args.Align && m_leftAlign[col])
-            {
+          if (col < m_columns.Count - 1) {
+            if (m_args.Align && m_leftAlign[col]) {
               m_builder.Append (' ', (width[col] - scalar.Length));
             }
             m_builder.Append (m_args.Delimeter);
           }
         }
-        if (row < rows - 1)
-        {
+        if (row < rows - 1) {
           m_builder.Append (m_args.RowDelimeter);
         }
       }
@@ -214,7 +192,7 @@ namespace RCL.Kernel
         m_builder.Append (m_args.Indent);
       }
       m_builder.Append ("]");
-      //m_builder.Append (m_args.Newline);
+      // m_builder.Append (m_args.Newline);
     }
 
     protected void FormatHtml (int tcols, bool useGRows)
@@ -229,8 +207,8 @@ namespace RCL.Kernel
       m_builder.Append ("<table>");
       m_builder.Append (m_args.Newline);
 
-      //Format the header line with the appropriate
-      //column widths determined in VisitCellsForward.
+      // Format the header line with the appropriate
+      // column widths determined in VisitCellsForward.
       ++m_level;
       for (int i = 0; i < m_level; ++i)
       {
@@ -242,17 +220,17 @@ namespace RCL.Kernel
       for (int i = colOffset; i < m_names.Count; ++i)
       {
         width[i] = Math.Max (m_max[i], m_names[i].Length);
-        if (i < tlcols)
-        {
+        if (i < tlcols) {
           m_builder.AppendFormat (
-                                  "<th id='c{0}' class='{1}'>",
-                                  i, m_leftAlign[i] ? "txt ch" : "num ch");
+            "<th id='c{0}' class='{1}'>",
+            i,
+            m_leftAlign[i] ? "txt ch" : "num ch");
         }
-        else
-        {
+        else {
           m_builder.AppendFormat (
-                                  "<th id='c{0}' class='{1}'>",
-                                  i, m_leftAlign[i] ? "txt ch" : "num ch");
+            "<th id='c{0}' class='{1}'>",
+            i,
+            m_leftAlign[i] ? "txt ch" : "num ch");
         }
         m_builder.Append (m_names[i]);
         m_builder.Append ("</th>");
@@ -260,18 +238,16 @@ namespace RCL.Kernel
       m_builder.Append ("</tr></thead>");
       m_builder.Append (m_args.RowDelimeter);
 
-      //Okay now format the individual rows using the gathered
-      //strings and widths determined by the visitor.
+      // Okay now format the individual rows using the gathered
+      // strings and widths determined by the visitor.
       int rows = m_columns[0].Count;
       for (int row = 0; row < rows; ++row)
       {
         string outRow;
-        if (useGRows)
-        {
+        if (useGRows) {
           outRow = m_columns[0][row];
         }
-        else
-        {
+        else {
           outRow = row.ToString ();
         }
         for (int i = 0; i < m_level; ++i)
@@ -282,49 +258,48 @@ namespace RCL.Kernel
         for (int col = colOffset; col < m_columns.Count; ++col)
         {
           string scalar = m_columns[col][row];
-          if (col < tlcols)
-          {
-            if (row % 2 == 0)
-            {
+          if (col < tlcols) {
+            if (row % 2 == 0) {
               m_builder.AppendFormat (
-                                      "<th id='r{0}_c{1}' class='{2}'>",
-                                      outRow, col, m_leftAlign[col] ? "txt rh" : "num rh");
+                "<th id='r{0}_c{1}' class='{2}'>",
+                outRow,
+                col,
+                m_leftAlign[col] ? "txt rh" : "num rh");
             }
-            else
-            {
+            else {
               m_builder.AppendFormat (
-                                      "<th id='r{0}_c{1}' class='{2}'>",
-                                      outRow, col, m_leftAlign[col] ? "txt rh" : "num rh");
+                "<th id='r{0}_c{1}' class='{2}'>",
+                outRow,
+                col,
+                m_leftAlign[col] ? "txt rh" : "num rh");
             }
           }
-          else
-          {
-            if (row % 2 == 0)
-            {
+          else {
+            if (row % 2 == 0) {
               m_builder.AppendFormat (
-                                      "<td id='r{0}_c{1}' class='{2}'>",
-                                      outRow, col, m_leftAlign[col] ? "txt" : "num");
+                "<td id='r{0}_c{1}' class='{2}'>",
+                outRow,
+                col,
+                m_leftAlign[col] ? "txt" : "num");
             }
-            else
-            {
+            else {
               m_builder.AppendFormat (
-                                      "<td id='r{0}_c{1}' class='{2}'>",
-                                      outRow, col, m_leftAlign[col] ? "txt" : "num");
+                "<td id='r{0}_c{1}' class='{2}'>",
+                outRow,
+                col,
+                m_leftAlign[col] ? "txt" : "num");
             }
           }
           m_builder.Append (scalar);
-          if (col < tlcols)
-          {
+          if (col < tlcols) {
             m_builder.Append ("</th>");
           }
-          else
-          {
+          else {
             m_builder.Append ("</td>");
           }
         }
         m_builder.Append ("</tr>");
-        if (row < rows - 1)
-        {
+        if (row < rows - 1) {
           m_builder.Append (m_args.RowDelimeter);
         }
       }
@@ -348,23 +323,21 @@ namespace RCL.Kernel
         m_builder.Append (m_args.Indent);
       }
 
-      if (head)
-      {
+      if (head) {
         int[] width = new int[m_names.Count];
         for (int i = colOffset; i < m_names.Count; ++i)
         {
           width[i] = Math.Max (m_max[i], m_names[i].Length);
           m_builder.Append (m_names[i]);
-          if (i < m_names.Count - 1)
-          {
+          if (i < m_names.Count - 1) {
             m_builder.Append (m_args.Delimeter);
           }
         }
         m_builder.Append (m_args.RowDelimeter);
       }
 
-      //Okay now format the individual rows using the gathered
-      //strings and widths determined by the visitor.
+      // Okay now format the individual rows using the gathered
+      // strings and widths determined by the visitor.
       int rows = m_columns[0].Count;
       for (int row = 0; row < rows; ++row)
       {
@@ -375,14 +348,12 @@ namespace RCL.Kernel
         for (int col = colOffset; col < m_columns.Count; ++col)
         {
           string scalar = m_columns[col][row];
-          m_builder.Append (CsvEscapeScalar(scalar, escapeChars));
-          if (col < m_columns.Count - 1)
-          {
+          m_builder.Append (CsvEscapeScalar (scalar, escapeChars));
+          if (col < m_columns.Count - 1) {
             m_builder.Append (m_args.Delimeter);
           }
         }
-        if (row < rows - 1)
-        {
+        if (row < rows - 1) {
           m_builder.Append (m_args.RowDelimeter);
         }
       }
@@ -400,13 +371,11 @@ namespace RCL.Kernel
     {
       string result = scalar;
       int loc = scalar.IndexOf ('"');
-      if (loc > -1)
-      {
+      if (loc > -1) {
         result = result.Replace ("\"", "\"\"");
       }
       loc = result.IndexOfAny (escapeChars);
-      if (loc > -1)
-      {
+      if (loc > -1) {
         result = string.Format ("\"{0}\"", result);
       }
       return result;
@@ -415,10 +384,10 @@ namespace RCL.Kernel
     public override void VisitScalar<T> (string name, Column<T> column, int row)
     {
       string format = m_colmap.GetDisplayFormat (name);
-      string scalar = m_args.ParsableScalars ? column.ScalarToString (format, row) : column.ScalarToCsvString (format, row);
+      string scalar = m_args.ParsableScalars ? column.ScalarToString (format, row) :
+                      column.ScalarToCsvString (format, row);
       int max = m_max[m_col];
-      if (scalar.Length > max)
-      {
+      if (scalar.Length > max) {
         m_max[m_col] = scalar.Length;
       }
       m_columns[m_col].Add (scalar);
@@ -427,14 +396,12 @@ namespace RCL.Kernel
 
     public override void GlobalCol (long grow)
     {
-      if (!m_args.Showt)
-      {
+      if (!m_args.Showt) {
         return;
       }
       string scalar = grow.ToString ();
       int max = m_max[m_col];
-      if (scalar.Length > max)
-      {
+      if (scalar.Length > max) {
         m_max[m_col] = scalar.Length;
       }
       m_columns[m_col].Add (scalar);
@@ -443,14 +410,12 @@ namespace RCL.Kernel
 
     public override void EventCol (long time)
     {
-      if (!m_args.Showt)
-      {
+      if (!m_args.Showt) {
         return;
       }
       string scalar = time.ToString ();
       int max = m_max[m_col];
-      if (scalar.Length > max)
-      {
+      if (scalar.Length > max) {
         m_max[m_col] = scalar.Length;
       }
       m_columns[m_col].Add (scalar);
@@ -459,14 +424,12 @@ namespace RCL.Kernel
 
     public override void TimeCol (RCTimeScalar time)
     {
-      if (!m_args.Showt)
-      {
+      if (!m_args.Showt) {
         return;
       }
       string scalar = time.ToString ();
       int max = m_max[m_col];
-      if (scalar.Length > max)
-      {
+      if (scalar.Length > max) {
         m_max[m_col] = scalar.Length;
       }
       m_columns[m_col].Add (scalar);
@@ -477,8 +440,7 @@ namespace RCL.Kernel
     {
       string scalar = symbol.ToString ();
       int max = m_max[m_col];
-      if (scalar.Length > max)
-      {
+      if (scalar.Length > max) {
         m_max[m_col] = scalar.Length;
       }
       m_columns[m_col].Add (scalar);

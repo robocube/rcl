@@ -21,8 +21,8 @@ namespace RCL.Kernel
       int i = 0;
       int tokenIndex = 0;
       int line = 0;
-      //The only scenario requiring a lookback is for disambiguating
-      //negative numbers from a minus (-) operator.
+      // The only scenario requiring a lookback is for disambiguating
+      // negative numbers from a minus (-) operator.
       RCToken previous = null;
       RCToken token = null;
       try
@@ -33,8 +33,7 @@ namespace RCL.Kernel
           foreach (RCTokenType tokenType in m_types)
           {
             token = tokenType.TryParseToken (input, i, tokenIndex, line, previous);
-            if (token != null)
-            {
+            if (token != null) {
               output.Write (token);
               previous = token;
               ++tokenIndex;
@@ -43,16 +42,14 @@ namespace RCL.Kernel
               break;
             }
           }
-          if (token == null)
-          {
+          if (token == null) {
             throw new Exception (string.Format ("Unable to lex: '{0}', i={1}", input, i));
           }
         }
       }
       catch (Exception ex)
       {
-        if (previous == null)
-        {
+        if (previous == null) {
           previous = new RCToken (input, RCTokenType.Junk, 0, 0, 0, 0);
         }
         throw new RCLSyntaxException (previous, ex);
@@ -67,8 +64,7 @@ namespace RCL.Kernel
       foreach (RCTokenType tokenType in m_types)
       {
         RCToken token = tokenType.TryParseToken (code, 0, 0, 0, null);
-        if (token != null && token.Text.Length == code.Length)
-        {
+        if (token != null && token.Text.Length == code.Length) {
           return token;
         }
       }

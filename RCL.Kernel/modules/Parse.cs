@@ -30,36 +30,31 @@ namespace RCL.Kernel
       RCParser parser = null;
       bool canonical = false;
       string which = left[0].Part (0).ToString ();
-      if (which.Equals ("csv"))
-      {
+      if (which.Equals ("csv")) {
         parser = new CSVParser ();
       }
-      else if (which.Equals ("xml"))
-      {
+      else if (which.Equals ("xml")) {
         parser = new XMLParser ();
       }
-      else if (which.Equals ("json"))
-      {
+      else if (which.Equals ("json")) {
         parser = new JSONParser ();
       }
-      else if (which.Equals ("rcl"))
-      {
+      else if (which.Equals ("rcl")) {
         parser = new RCLParser (RCSystem.Activator);
       }
-      else if (which.Equals ("canonical"))
-      {
+      else if (which.Equals ("canonical")) {
         parser = new RCLParser (RCSystem.Activator);
         canonical = true;
       }
-      else if (which.Equals ("log"))
-      {
+      else if (which.Equals ("log")) {
         parser = new LogParser ();
       }
-      else if (which.Equals ("md"))
-      {
+      else if (which.Equals ("md")) {
         parser = new MarkdownParser ();
       }
-      else throw new Exception ("Unknown parser: " + which);
+      else {
+        throw new Exception ("Unknown parser: " + which);
+      }
       bool fragment;
       RCValue result;
       try
