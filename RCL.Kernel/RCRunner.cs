@@ -7,7 +7,8 @@ namespace RCL.Kernel
 {
   public class RCRunner
   {
-    //I made these public for snap - but snap is not being used the way I originally thought
+    // I made these public for snap - but snap is not being used the way I originally
+    // thought
     public readonly object m_botLock = new object ();
 
     /// <summary>
@@ -18,17 +19,21 @@ namespace RCL.Kernel
     /// <summary>
     /// Closures which are waiting for a bot to finish executing
     /// </summary>
-    protected Dictionary<long, Queue<RCClosure>> m_botWaiters = new Dictionary<long, Queue<RCClosure>> ();
+    protected Dictionary<long, Queue<RCClosure>> m_botWaiters =
+      new Dictionary<long, Queue<RCClosure>> ();
 
     /// <summary>
-    /// The series of closures being observed by watch. watch is used to build debugging tools for rcl
+    /// The series of closures being observed by watch.
+    /// watch is used to build debugging tools for rcl.
     /// </summary>
-    protected Dictionary<long, Queue<RCAsyncState>> m_output = new Dictionary<long, Queue<RCAsyncState>> ();
+    protected Dictionary<long, Queue<RCAsyncState>> m_output =
+      new Dictionary<long, Queue<RCAsyncState>> ();
 
     /// <summary>
     /// Closures which are evaluating the watch operator
     /// </summary>
-    protected Dictionary<long, Queue<RCClosure>> m_watchers = new Dictionary<long, Queue<RCClosure>> ();
+    protected Dictionary<long, Queue<RCClosure>> m_watchers =
+      new Dictionary<long, Queue<RCClosure>> ();
 
     /// <summary>
     /// The initial closure used to launch this runner and all of its bots and fibers
@@ -97,10 +102,11 @@ namespace RCL.Kernel
     protected Queue<RCClosure> m_queue = new Queue<RCClosure> ();
 
     /// <summary>
-    /// Tracks closures which have completed initial execution but have not yet invoked Yield.
-    /// The closure is working asyncly.
+    /// Tracks closures which have completed initial execution but have not yet invoked
+    /// Yield. The closure is working asyncly.
     /// </summary>
-    protected Dictionary<long, Dictionary<long, RCClosure>> m_pending = new Dictionary<long, Dictionary<long, RCClosure>> ();
+    protected Dictionary<long, Dictionary<long, RCClosure>> m_pending =
+      new Dictionary<long, Dictionary< long, RCClosure>> ();
 
     /// <summary>
     /// Used by worker threads to wait when there are no more closures to execute
@@ -120,10 +126,11 @@ namespace RCL.Kernel
     public static RCRunner TestRunner ()
     {
       RCSystem.Reconfigure (new RCLArgv ("--output=test", "--show=print"));
-      return new RCRunner (workers:1);
+      return new RCRunner (workers: 1);
     }
 
-    public RCRunner () : this (workers:1) {}
+    public RCRunner () : this (workers : 1) {
+    }
     public RCRunner (long workers)
     {
       m_ctorThread = Thread.CurrentThread;
@@ -142,15 +149,13 @@ namespace RCL.Kernel
 
     public void Start (RCValue program)
     {
-      if (program == null)
-      {
+      if (program == null) {
         throw new Exception ("program may not be null");
       }
       RCClosure root = null;
       lock (m_queueLock)
       {
-        if (m_root != null)
-        {
+        if (m_root != null) {
           throw new Exception ("Runner has already started.");
         }
         RCBot rootBot = m_bots[0];
@@ -165,19 +170,36 @@ namespace RCL.Kernel
 
     public RCValue Run (RCValue program)
     {
-      return Run (program, restoreStateOnError:false);
+      return Run (program, restoreStateOnError: false);
     }
 
     public RCValue Run (RCValue program, bool restoreStateOnError)
     {
-      //Shouldn't this be an exception?
-      if (program == null)
-      {
+      // Shouldn't this be an exception?
+      if (program == null) {
         return null;
       }
       RCBlock wrapper = new RCBlock (RCBlock.Empty, "", "<-", program);
-      RCClosure parent = new RCClosure (m_bots[0].Id, 0, null, null, wrapper, null, m_state, 0, null, null, noClimb:false, noResolve:false);
-      RCClosure closure = new RCClosure (parent, m_bots[0].Id, program, null, RCBlock.Empty, 0, null, null);
+      RCClosure parent = new RCClosure (m_bots[0].Id,
+                                        0,
+                                        null,
+                                        null,
+                                        wrapper,
+                                        null,
+                                        m_state,
+                                        0,
+                                        null,
+                                        null,
+                                        noClimb: false,
+                                        noResolve: false);
+      RCClosure closure = new RCClosure (parent,
+                                         m_bots[0].Id,
+                                         program,
+                                         null,
+                                         RCBlock.Empty,
+                                         0,
+                                         null,
+                                         null);
       RCValue result = Run (closure, restoreStateOnError);
       return result;
     }
@@ -186,30 +208,29 @@ namespace RCL.Kernel
     {
       lock (m_queueLock)
       {
-        if (m_root == null)
-        {
+        if (m_root == null) {
           m_root = root;
           RCBot rootBot = GetBot (m_root.Bot);
-          //keeping this inside the lock because it should happen before the call to Enqueue.
-          //But only during the very first call to run for this runner.
-          //Log.Record (this, root, root.BotId, "bot", root.BotId, "start", root.Code);
+          // keeping this inside the lock because it should happen before the call to
+          // Enqueue.
+          // But only during the very first call to run for this runner.
+          // Log.Record (this, root, root.BotId, "bot", root.BotId, "start", root.Code);
           rootBot.ChangeFiberState (root.Fiber, "start");
           RCSystem.Log.Record (root, "fiber", root.Fiber, "start", root.Code);
         }
         m_queue.Enqueue (root);
       }
-      //Trigger a worker (don't care which) to take it.
+      // Trigger a worker (don't care which) to take it.
       m_wait.Set ();
-      //Wait for the work to be completed.
+      // Wait for the work to be completed.
       m_done.WaitOne ();
-      //If an exception was thrown, rethrow it on this thread.
-      if (m_exception != null)
-      {
+      // If an exception was thrown, rethrow it on this thread.
+      if (m_exception != null) {
         Exception exception = m_exception;
         m_exception = null;
-        if (restoreStateOnError)
-        {
-          //Make the successfully computed values into the effective state of the environment
+        if (restoreStateOnError) {
+          // Make the successfully computed values into the effective state of the
+          // environment
           RCClosure top = m_exceptionClosure;
           RCClosure underTop = null;
           while (top.Parent != null && top.Parent.Parent != null)
@@ -217,8 +238,7 @@ namespace RCL.Kernel
             underTop = top;
             top = top.Parent;
           }
-          if (underTop != null && top.Code.IsOperator)
-          {
+          if (underTop != null && top.Code.IsOperator) {
             top = underTop;
           }
           m_state = RCBlock.Append (m_state, top.Result);
@@ -226,7 +246,7 @@ namespace RCL.Kernel
         m_runnerUnhandled = true;
         throw exception;
       }
-      //The final result is assigned by the worker in Finish ().
+      // The final result is assigned by the worker in Finish ().
       RCValue result = m_result;
       m_result = null;
       return result;
@@ -239,62 +259,56 @@ namespace RCL.Kernel
 
     void HandleConsoleCancelKeyPress (object sender, ConsoleCancelEventArgs e)
     {
-      //Console.Out.WriteLine ("Cancel Key Press");
-      //Interupt ();
-      //e.Cancel = true;
+      // Console.Out.WriteLine ("Cancel Key Press");
+      // Interupt ();
+      // e.Cancel = true;
     }
 
     public void Interupt ()
     {
-      //Kill all fibers for the 0 bot.
+      // Kill all fibers for the 0 bot.
       this.Kill (0, -1, new Exception ("Interupt"), 1);
     }
 
-    //Previous is the closure that will be removed from the pending set.
-    //Next is the closure that will be added to the queue.
-    //This is done in an atomic fashion so that all fibers will be
-    //represented in m_pending or m_queue at all times.
-    //previous will be null in cases where Continue is used to retry or fork streams of execution.
-    //next will be null in cases where the executing fiber is finished and all
-    //that remains is to remove it from m_pending.
+    // Previous is the closure that will be removed from the pending set.
+    // Next is the closure that will be added to the queue.
+    // This is done in an atomic fashion so that all fibers will be
+    // represented in m_pending or m_queue at all times.
+    // previous will be null in cases where Continue is used to retry or fork streams of
+    // execution.
+    // next will be null in cases where the executing fiber is finished and all
+    // that remains is to remove it from m_pending.
     public void Continue (RCClosure previous, RCClosure next)
     {
       bool live = false;
       lock (m_queueLock)
       {
-        if (previous != null)
-        {
+        if (previous != null) {
           Dictionary<long, RCClosure> pending = null;
-          if (m_pending.TryGetValue (previous.Bot, out pending))
-          {
+          if (m_pending.TryGetValue (previous.Bot, out pending)) {
             RCClosure c = null;
-            if (pending.TryGetValue (previous.Fiber, out c))
-            {
+            if (pending.TryGetValue (previous.Fiber, out c)) {
               pending.Remove (previous.Fiber);
-              if (pending.Count == 0)
-              {
+              if (pending.Count == 0) {
                 m_pending.Remove (previous.Bot);
               }
               live = true;
             }
           }
         }
-        else
-        {
+        else {
           live = true;
         }
-        if (live)
-        {
-          if (next != null)
-          {
+        if (live) {
+          if (next != null) {
             m_queue.Enqueue (next);
             m_wait.Set ();
           }
         }
-        else
-        {
-          //This will internally take the m_botLock.
-          //This should be ok but given that it is just a log write I would like to move this outside.
+        else {
+          // This will internally take the m_botLock.
+          // This should be ok but given that it is just a log write
+          // I would like to move this outside.
           RCBot bot = GetBot (previous.Bot);
           bot.ChangeFiberState (previous.Fiber, "dead");
           RCSystem.Log.Record (previous, "fiber", previous.Fiber, "dead", "");
@@ -307,19 +321,16 @@ namespace RCL.Kernel
       lock (m_queueLock)
       {
         RCClosure next;
-        if (m_queue.Count > 0)
-        {
+        if (m_queue.Count > 0) {
           next = m_queue.Dequeue ();
         }
-        else
-        {
-          //We were signalled, but it was already gone.
-          //Another worker took it out from under us.
+        else {
+          // We were signalled, but it was already gone.
+          // Another worker took it out from under us.
           return null;
         }
         Dictionary<long, RCClosure> fibers = null;
-        if (!m_pending.TryGetValue (next.Bot, out fibers))
-        {
+        if (!m_pending.TryGetValue (next.Bot, out fibers)) {
           fibers = new Dictionary<long, RCClosure> ();
           m_pending[next.Bot] = fibers;
         }
@@ -336,13 +347,14 @@ namespace RCL.Kernel
 
       while (true)
       {
-        if (result == null)
-        {
+        if (result == null) {
           m_wait.WaitOne ();
           prev = next;
           next = Assign ();
         }
-        else break;
+        else {
+          break;
+        }
 
         while (next != null)
         {
@@ -381,8 +393,12 @@ namespace RCL.Kernel
       }
       catch (Exception innerEx)
       {
-        RCSystem.Log.Record (closure, module, closure.Fiber, state,
-                             "An exception occured while reporting an exception: " + innerEx.ToString ());
+        RCSystem.Log.Record (closure,
+                             module,
+                             closure.Fiber,
+                             state,
+                             "An exception occured while reporting an exception: " +
+                             innerEx.ToString ());
       }
     }
 
@@ -417,12 +433,10 @@ namespace RCL.Kernel
     {
       lock (m_botLock)
       {
-        if (m_exceptionCount > 0)
-        {
+        if (m_exceptionCount > 0) {
           return 2;
         }
-        else
-        {
+        else {
           return m_exit;
         }
       }
@@ -431,7 +445,7 @@ namespace RCL.Kernel
     public RCValue Read (string code)
     {
       bool fragment;
-      return m_parser.Parse (m_parser.Lex (code), out fragment, canonical:false);
+      return m_parser.Parse (m_parser.Lex (code), out fragment, canonical: false);
     }
 
     public RCValue Read (string code, out bool fragment, bool canonical)
@@ -446,7 +460,7 @@ namespace RCL.Kernel
 
     public void Reset ()
     {
-      //Should I take the locks here? One or both? Both.
+      // Should I take the locks here? One or both? Both.
       lock (m_queueLock)
       {
         lock (m_botLock)
@@ -470,17 +484,16 @@ namespace RCL.Kernel
 
     public void ResetCount (long botHandle)
     {
-      //Should I take the locks here? One or both? Both.
+      // Should I take the locks here? One or both? Both.
       lock (m_queueLock)
       {
         lock (m_botLock)
         {
           RCBot bot;
-          if (!m_bots.TryGetValue (botHandle, out bot))
-          {
+          if (!m_bots.TryGetValue (botHandle, out bot)) {
             throw new Exception (string.Format ("Invalid bot: {0}", botHandle));
           }
-          //bot.Reset ();
+          // bot.Reset ();
           m_exceptionCount = 0;
           ++m_reset;
         }
@@ -491,8 +504,7 @@ namespace RCL.Kernel
     {
       RCValue result = Run (program, restoreStateOnError);
       RCBlock state = result as RCBlock;
-      if (state != null)
-      {
+      if (state != null) {
         m_state = state;
       }
       return result;
@@ -500,14 +512,12 @@ namespace RCL.Kernel
 
     public RCValue RepAction (string action)
     {
-      if (m_state.Get (action) == null)
-      {
+      if (m_state.Get (action) == null) {
         throw new ArgumentException (string.Format ("Unknown action name: {0}", action));
       }
-      RCValue result = Rep (string.Format ("{0} {{}}", action), restoreStateOnError:true);
+      RCValue result = Rep (string.Format ("{0} {{}}", action), restoreStateOnError: true);
       RCBlock variables = result as RCBlock;
-      if (variables != null)
-      {
+      if (variables != null) {
         for (int i = 0; i < variables.Count; ++i)
         {
           RCBlock variable = variables.GetName (i);
@@ -521,46 +531,66 @@ namespace RCL.Kernel
 
     public RCValue Rep (string code)
     {
-      return Rep (code, restoreStateOnError:false);
+      return Rep (code, restoreStateOnError: false);
     }
 
     public RCValue Rep (string code, bool restoreStateOnError)
     {
       bool fragment = false;
       RCValue peek = RCSystem.Parse (code, out fragment);
-      if (peek == null)
-      {
+      if (peek == null) {
         return null;
       }
       RCBlock variable = peek as RCBlock;
-      if (variable != null && fragment)
-      {
-        if (variable.Count == 0)
-        {
+      if (variable != null && fragment) {
+        if (variable.Count == 0) {
           return null;
         }
-        if (variable.Value.ArgumentEval)
-        {
+        if (variable.Value.ArgumentEval) {
           RCBlock program = new RCBlock (m_state, "", "<-", variable.Value);
-          RCClosure parent = new RCClosure (m_bots[0].Id, 0, null, null, program, null,
-                                            m_state, m_state.Count, null, null, noClimb:false, noResolve:false);
-          RCClosure child = new RCClosure (parent, m_bots[0].Id, variable.Value, null,
-                                           RCBlock.Empty, 0, null, null);
+          RCClosure parent = new RCClosure (m_bots[0].Id,
+                                            0,
+                                            null,
+                                            null,
+                                            program,
+                                            null,
+                                            m_state,
+                                            m_state.Count,
+                                            null,
+                                            null,
+                                            noClimb: false,
+                                            noResolve: false);
+          RCClosure child = new RCClosure (parent,
+                                           m_bots[0].Id,
+                                           variable.Value,
+                                           null,
+                                           RCBlock.Empty,
+                                           0,
+                                           null,
+                                           null);
           RCValue result = Run (child, restoreStateOnError);
           m_state = new RCBlock (m_state, variable.Name, ":", result);
         }
-        else
-        {
-          //What about fragments with multiple parts.
+        else {
+          // What about fragments with multiple parts.
           m_state = new RCBlock (m_state, variable.Name, ":", variable.Value);
         }
         return null;
       }
-      else
-      {
+      else {
         RCBlock program = new RCBlock (m_state, "", "<-", peek);
-        RCClosure parent = new RCClosure (m_bots[0].Id, 0, null, null, program, null,
-                                          m_state, m_state.Count, null, null, noClimb:false, noResolve:false);
+        RCClosure parent = new RCClosure (m_bots[0].Id,
+                                          0,
+                                          null,
+                                          null,
+                                          program,
+                                          null,
+                                          m_state,
+                                          m_state.Count,
+                                          null,
+                                          null,
+                                          noClimb: false,
+                                          noResolve: false);
         RCClosure child = new RCClosure (parent, m_bots[0].Id, peek, null, RCBlock.Empty, 0);
         RCValue result = Run (child, restoreStateOnError);
         return result;
@@ -569,9 +599,8 @@ namespace RCL.Kernel
 
     public string RepString (string code)
     {
-      RCValue result = Rep (code, restoreStateOnError:false);
-      if (result == null)
-      {
+      RCValue result = Rep (code, restoreStateOnError: false);
+      if (result == null) {
         return "";
       }
       return result.Format (RCFormat.DefaultNoT);
@@ -590,8 +619,7 @@ namespace RCL.Kernel
         fiber.m_fiberResults.TryGetValue (0, out finalResult);
         m_result = finalResult;
       }
-      if (m_result == null)
-      {
+      if (m_result == null) {
         m_result = result;
       }
       m_done.Set ();
@@ -604,30 +632,24 @@ namespace RCL.Kernel
       RCBot bot = GetBot (closure.Bot);
       while (parent != null && parent.Bot == closure.Bot && parent.Fiber == closure.Fiber)
       {
-        if (parent.InCodeEval)
-        {
+        if (parent.InCodeEval) {
           RCClosure next = parent.Code.Handle (this, parent, exception, status, out result);
-          if (result != null && next == null)
-          {
+          if (result != null && next == null) {
             string state = status == 1 ? "caught" : "killed";
             bot.ChangeFiberState (closure.Fiber, state);
             RCSystem.Log.Record (closure, "fiber", closure.Fiber, state, exception);
-            if (closure.Fiber == 0 && closure.Bot == 0)
-            {
+            if (closure.Fiber == 0 && closure.Bot == 0) {
               Finish (closure, result);
             }
-            else
-            {
+            else {
               bot.FiberDone (this, closure.Bot, closure.Fiber, result);
             }
             return;
           }
-          else
-          {
+          else {
             Continue (null, next);
           }
-          if (result != null)
-          {
+          if (result != null) {
             bot.ChangeFiberState (closure.Fiber, "caught");
             RCSystem.Log.Record (closure, "fiber", closure.Fiber, "caught", exception);
             ++m_exceptionCount;
@@ -636,27 +658,24 @@ namespace RCL.Kernel
         }
         parent = parent.Parent;
       }
-      //This means it was not handled in the while loop.
-      if (result == null)
-      {
+      // This means it was not handled in the while loop.
+      if (result == null) {
         string state = status == 1 ? "failed" : "killed";
         bot.ChangeFiberState (closure.Fiber, state);
         SafeLogRecord (closure, "fiber", state, exception);
         ++m_exceptionCount;
-        if (closure.Fiber == 0 && closure.Bot == 0)
-        {
+        if (closure.Fiber == 0 && closure.Bot == 0) {
           m_exception = exception;
           m_exceptionClosure = closure;
           m_done.Set ();
         }
-        else
-        {
-          //I think this is sort of mostly the correct think to do.
-          //We need to record the fact that the fiber finished.
-          //But stuffing an exception inside a Native to do so seems wrong.
-          //Need more work on controlling the lifecycle of fibers.
-          //Also I want to get rid of RCNative I think this is the only place
-          //where I still need it.
+        else {
+          // I think this is sort of mostly the correct think to do.
+          // We need to record the fact that the fiber finished.
+          // But stuffing an exception inside a Native to do so seems wrong.
+          // Need more work on controlling the lifecycle of fibers.
+          // Also I want to get rid of RCNative I think this is the only place
+          // where I still need it.
           bot.FiberDone (this, closure.Bot, closure.Fiber, new RCNative (exception));
         }
       }
@@ -674,16 +693,14 @@ namespace RCL.Kernel
         Queue<RCAsyncState> output = m_output[closure.Bot];
         output.Enqueue (new RCAsyncState (this, closure, val));
         Queue<RCClosure> watchers;
-        if (m_watchers.TryGetValue (closure.Bot, out watchers))
-        {
+        if (m_watchers.TryGetValue (closure.Bot, out watchers)) {
           while (watchers.Count > 0)
           {
             RCClosure observer = watchers.Dequeue ();
             Continue (null, observer);
           }
         }
-        else
-        {
+        else {
           while (output.Count > 500)
           {
             output.Dequeue ();
@@ -692,22 +709,20 @@ namespace RCL.Kernel
       }
     }
 
-    //It is possible to have multiple concurrent observers.
-    //However each value will only be returned to one of the observers.
-    //It is hard to see a reason to create multiple observers but there
-    //are multiple potential problems with implementing the constraint that there
-    //be only one.
+    // It is possible to have multiple concurrent observers.
+    // However each value will only be returned to one of the observers.
+    // It is hard to see a reason to create multiple observers but there
+    // are multiple potential problems with implementing the constraint that there
+    // be only one.
     public void Watch (RCClosure closure, long bot)
     {
       RCBlock result;
       lock (m_botLock)
       {
         Queue<RCAsyncState> output = m_output[bot];
-        if (output.Count == 0)
-        {
+        if (output.Count == 0) {
           Queue<RCClosure> watchers;
-          if (!m_watchers.TryGetValue (bot, out watchers))
-          {
+          if (!m_watchers.TryGetValue (bot, out watchers)) {
             watchers = new Queue<RCClosure> ();
             m_watchers[bot] = watchers;
           }
@@ -725,8 +740,7 @@ namespace RCL.Kernel
           while (parent != null)
           {
             if (parent.Parent.Bot != parent.Bot ||
-                parent.Parent.Fiber != parent.Fiber)
-            {
+                parent.Parent.Fiber != parent.Fiber) {
               break;
             }
             parts.Push (parent);
@@ -735,22 +749,18 @@ namespace RCL.Kernel
           while (parts.Count > 0)
           {
             RCClosure top = parts.Pop ();
-            if (top.Code.IsBlock)
-            {
+            if (top.Code.IsBlock) {
               RCBlock code = (RCBlock) top.Code;
               string part = code.GetName (top.Index).Name;
-              if (part != "")
-              {
+              if (part != "") {
                 name = new RCSymbolScalar (name, part);
               }
-              else
-              {
+              else {
                 name = new RCSymbolScalar (name, (long) top.Index);
               }
             }
           }
-          if (name != null)
-          {
+          if (name != null) {
             RCValue val = (RCValue) state.Other;
             values = new RCBlock (values, "", ":", val);
             names.Write (name);
@@ -786,8 +796,7 @@ namespace RCL.Kernel
       RCBot result;
       lock (m_botLock)
       {
-        if (!m_bots.TryGetValue (id, out result))
-        {
+        if (!m_bots.TryGetValue (id, out result)) {
           throw new Exception ("Unknown bot id: " + id);
         }
       }
@@ -796,8 +805,7 @@ namespace RCL.Kernel
 
     public void Done (RCClosure closure, RCLong fibers)
     {
-      if (fibers.Count == 1)
-      {
+      if (fibers.Count == 1) {
         Fiber fiber;
         lock (m_botLock)
         {
@@ -810,8 +818,7 @@ namespace RCL.Kernel
         }
         Yield (closure, new RCBoolean (val));
       }
-      else if (fibers.Count == 2)
-      {
+      else if (fibers.Count == 2) {
         bool val;
         Fiber fiber;
         lock (m_botLock)
@@ -824,18 +831,16 @@ namespace RCL.Kernel
         }
         Yield (closure, new RCBoolean (val));
       }
-      else
-      {
+      else {
         throw new Exception ();
       }
     }
 
     public void Wait (RCClosure closure, RCLong fibers)
     {
-      //At some point I want this to work for multiple fibers,
-      //but the current version will only wait on a single fiber.
-      if (fibers.Count == 1)
-      {
+      // At some point I want this to work for multiple fibers,
+      // but the current version will only wait on a single fiber.
+      if (fibers.Count == 1) {
         Fiber fiber;
         lock (m_botLock)
         {
@@ -844,35 +849,29 @@ namespace RCL.Kernel
         RCValue result = null;
         lock (fiber.m_fiberLock)
         {
-          if (fiber.m_fiberResults.Count == fiber.m_fibers.Count)
-          {
+          if (fiber.m_fiberResults.Count == fiber.m_fibers.Count) {
             fiber.m_fiberResults.TryGetValue (0, out result);
           }
         }
-        if (result == null)
-        {
+        if (result == null) {
           lock (m_botLock)
           {
             Queue<RCClosure> waiters;
-            if (m_botWaiters.TryGetValue (fibers[0], out waiters))
-            {
+            if (m_botWaiters.TryGetValue (fibers[0], out waiters)) {
               waiters.Enqueue (closure);
             }
-            else
-            {
+            else {
               waiters = new Queue<RCClosure> ();
               waiters.Enqueue (closure);
               m_botWaiters.Add (fibers[0], waiters);
             }
           }
         }
-        else
-        {
+        else {
           SafeYieldFromWait (closure, result);
         }
       }
-      else if (fibers.Count == 2)
-      {
+      else if (fibers.Count == 2) {
         RCValue result = null;
         Fiber fiber;
         lock (m_botLock)
@@ -881,28 +880,23 @@ namespace RCL.Kernel
         }
         lock (fiber.m_fiberLock)
         {
-          if (!fiber.m_fiberResults.TryGetValue (fibers[1], out result))
-          {
+          if (!fiber.m_fiberResults.TryGetValue (fibers[1], out result)) {
             Queue<RCClosure> waiters;
-            if (fiber.m_fiberWaiters.TryGetValue (fibers[1], out waiters))
-            {
+            if (fiber.m_fiberWaiters.TryGetValue (fibers[1], out waiters)) {
               waiters.Enqueue (closure);
             }
-            else
-            {
+            else {
               waiters = new Queue<RCClosure> ();
               waiters.Enqueue (closure);
               fiber.m_fiberWaiters.Add (fibers[1], waiters);
             }
           }
         }
-        if (result != null)
-        {
+        if (result != null) {
           SafeYieldFromWait (closure, result);
         }
       }
-      else
-      {
+      else {
         throw new Exception ();
       }
     }
@@ -926,12 +920,13 @@ namespace RCL.Kernel
         {
           lock (m_state.Runner.m_botLock)
           {
-            if (m_state.Runner.m_reset != m_resetCount) return;
+            if (m_state.Runner.m_reset != m_resetCount) {
+              return;
+            }
             Queue<RCClosure> waiters;
-            //Since the bot results are not stored anywhere, we time out if there are waiters
-            //But what if there are multiple waiters? This seems like an issue.
-            if (m_state.Runner.m_botWaiters.TryGetValue (fibers[0], out waiters))
-            {
+            // Since the bot results are not stored anywhere, we time out if there are
+            // waiters but what if there are multiple waiters? This seems like an issue.
+            if (m_state.Runner.m_botWaiters.TryGetValue (fibers[0], out waiters)) {
               Exception ex = new Exception ("Timed out waiting for bot " + fibers[0]);
               m_state.Runner.Kill (fibers[0], -1, ex, 2);
             }
@@ -939,8 +934,8 @@ namespace RCL.Kernel
         }
         catch (ThreadAbortException)
         {
-          //This often happens as the runtime is shutting down,
-          //because this code runs on a thread pool thread.
+          // This often happens as the runtime is shutting down,
+          // because this code runs on a thread pool thread.
         }
         catch (Exception ex)
         {
@@ -961,8 +956,7 @@ namespace RCL.Kernel
           Fiber fiber;
           lock (m_state.Runner.m_botLock)
           {
-            if (m_state.Runner.m_reset != m_resetCount)
-            {
+            if (m_state.Runner.m_reset != m_resetCount) {
               return;
             }
             fiber = (Fiber) m_state.Runner.m_bots[fibers[0]].GetModule (typeof (Fiber));
@@ -970,8 +964,7 @@ namespace RCL.Kernel
           lock (fiber.m_fiberLock)
           {
             RCValue result = null;
-            if (!fiber.m_fiberResults.TryGetValue (fibers[1], out result))
-            {
+            if (!fiber.m_fiberResults.TryGetValue (fibers[1], out result)) {
               Exception ex = new Exception ("Timed out waiting for fiber " + fibers[1]);
               m_state.Runner.Kill (fibers[0], fibers[1], ex, 2);
             }
@@ -979,8 +972,8 @@ namespace RCL.Kernel
         }
         catch (ThreadAbortException)
         {
-          //This often happens as the runtime is shutting down,
-          //because this code runs on a thread pool thread.
+          // This often happens as the runtime is shutting down,
+          // because this code runs on a thread pool thread.
         }
         catch (Exception ex)
         {
@@ -995,10 +988,9 @@ namespace RCL.Kernel
 
     public void Wait (RCClosure closure, RCLong timeout, RCLong fibers)
     {
-      //At some point I want this to work for multiple fibers,
-      //but the current version will only wait on a single fiber.
-      if (fibers.Count == 1)
-      {
+      // At some point I want this to work for multiple fibers,
+      // but the current version will only wait on a single fiber.
+      if (fibers.Count == 1) {
         Fiber fiber;
         lock (m_botLock)
         {
@@ -1007,22 +999,18 @@ namespace RCL.Kernel
         RCValue result = null;
         lock (fiber.m_fiberLock)
         {
-          if (fiber.m_fiberResults.Count == fiber.m_fibers.Count)
-          {
+          if (fiber.m_fiberResults.Count == fiber.m_fibers.Count) {
             fiber.m_fiberResults.TryGetValue (0, out result);
           }
         }
-        if (result == null)
-        {
+        if (result == null) {
           lock (m_botLock)
           {
             Queue<RCClosure> waiters;
-            if (m_botWaiters.TryGetValue (fibers[0], out waiters))
-            {
+            if (m_botWaiters.TryGetValue (fibers[0], out waiters)) {
               waiters.Enqueue (closure);
             }
-            else
-            {
+            else {
               waiters = new Queue<RCClosure> ();
               waiters.Enqueue (closure);
               m_botWaiters.Add (fibers[0], waiters);
@@ -1033,13 +1021,11 @@ namespace RCL.Kernel
             timer.Change (timeout[0], Timeout.Infinite);
           }
         }
-        else
-        {
+        else {
           SafeYieldFromWait (closure, result);
         }
       }
-      else if (fibers.Count == 2)
-      {
+      else if (fibers.Count == 2) {
         RCValue result = null;
         Fiber fiber;
         lock (m_botLock)
@@ -1048,15 +1034,12 @@ namespace RCL.Kernel
         }
         lock (fiber.m_fiberLock)
         {
-          if (!fiber.m_fiberResults.TryGetValue (fibers[1], out result))
-          {
+          if (!fiber.m_fiberResults.TryGetValue (fibers[1], out result)) {
             Queue<RCClosure> waiters;
-            if (fiber.m_fiberWaiters.TryGetValue (fibers[1], out waiters))
-            {
+            if (fiber.m_fiberWaiters.TryGetValue (fibers[1], out waiters)) {
               waiters.Enqueue (closure);
             }
-            else
-            {
+            else {
               waiters = new Queue<RCClosure> ();
               waiters.Enqueue (closure);
               fiber.m_fiberWaiters.Add (fibers[1], waiters);
@@ -1067,13 +1050,11 @@ namespace RCL.Kernel
             timer.Change (timeout[0], Timeout.Infinite);
           }
         }
-        if (result != null)
-        {
+        if (result != null) {
           SafeYieldFromWait (closure, result);
         }
       }
-      else
-      {
+      else {
         throw new Exception ();
       }
     }
@@ -1081,12 +1062,10 @@ namespace RCL.Kernel
     protected void SafeYieldFromWait (RCClosure closure, RCValue result)
     {
       RCNative exValue = result as RCNative;
-      if (exValue != null && exValue.Value is Exception)
-      {
+      if (exValue != null && exValue.Value is Exception) {
         Finish (closure, (Exception) exValue.Value, 1);
       }
-      else
-      {
+      else {
         Yield (closure, result);
       }
     }
@@ -1096,14 +1075,12 @@ namespace RCL.Kernel
       Queue<RCClosure> waiters = null;
       lock (m_botLock)
       {
-        if (m_botWaiters.TryGetValue (bot, out waiters))
-        {
+        if (m_botWaiters.TryGetValue (bot, out waiters)) {
           m_botWaiters.Remove (bot);
         }
         m_bots[bot].Dispose ();
       }
-      if (waiters != null)
-      {
+      if (waiters != null) {
         foreach (RCClosure waiter in waiters)
         {
           // I think this might be another where place where we need SafeYieldFromWait
@@ -1115,24 +1092,20 @@ namespace RCL.Kernel
 
     public void Kill (RCClosure closure, RCLong fibers)
     {
-      if (fibers.Count == 1)
-      {
+      if (fibers.Count == 1) {
         Kill (fibers[0], -1, new Exception ("fiber killed"), 2);
       }
-      else if (fibers.Count == 2)
-      {
+      else if (fibers.Count == 2) {
         Kill (fibers[0], fibers[1], new Exception ("fiber killed"), 2);
       }
-      else
-      {
+      else {
         throw new Exception ();
       }
     }
 
     public void Kill (long bot, long fiber, Exception ex, long status)
     {
-      if (fiber < 0)
-      {
+      if (fiber < 0) {
         lock (m_queueLock)
         {
           Queue<RCClosure> queue = new Queue<RCClosure> ();
@@ -1140,29 +1113,24 @@ namespace RCL.Kernel
           while (m_queue.Count > 0)
           {
             RCClosure queued = m_queue.Dequeue ();
-            if (queued.Bot == bot)
-            {
-              if (!killed.Contains (queued.Fiber))
-              {
+            if (queued.Bot == bot) {
+              if (!killed.Contains (queued.Fiber)) {
                 killed.Add (queued.Fiber);
                 Finish (queued, ex, status);
               }
             }
-            else
-            {
+            else {
               queue.Enqueue (queued);
             }
           }
           m_queue = queue;
           Dictionary<long, RCClosure> pending;
-          if (m_pending.TryGetValue (bot, out pending))
-          {
+          if (m_pending.TryGetValue (bot, out pending)) {
             RCClosure[] closures = new RCClosure[pending.Count];
             pending.Values.CopyTo (closures, 0);
             for (int i = 0; i < closures.Length; ++i)
             {
-              if (!killed.Contains (closures[i].Fiber))
-              {
+              if (!killed.Contains (closures[i].Fiber)) {
                 killed.Add (closures[i].Fiber);
                 Finish (closures[i], ex, status);
               }
@@ -1171,11 +1139,10 @@ namespace RCL.Kernel
           }
         }
       }
-      else
-      {
-        //Kill only the fiber on the designated bot.
-        //Do we want to allow multiple bot fiber pairs? Yes! No.
-        //No. The final answer is no.
+      else {
+        // Kill only the fiber on the designated bot.
+        // Do we want to allow multiple bot fiber pairs? Yes! No.
+        // No. The final answer is no.
         lock (m_queueLock)
         {
           Queue<RCClosure> queue = new Queue<RCClosure> ();
@@ -1183,40 +1150,32 @@ namespace RCL.Kernel
           while (m_queue.Count > 0)
           {
             RCClosure queued = m_queue.Dequeue ();
-            if (queued.Bot == bot)
-            {
+            if (queued.Bot == bot) {
               if (queued.Fiber == fiber &&
-                  !killed.Contains (queued.Fiber))
-              {
+                  !killed.Contains (queued.Fiber)) {
                 killed.Add (queued.Fiber);
                 Finish (queued, ex, status);
               }
-              else
-              {
+              else {
                 queue.Enqueue (queued);
               }
             }
-            else
-            {
+            else {
               queue.Enqueue (queued);
             }
           }
           m_queue = queue;
           Dictionary<long, RCClosure> pending;
-          if (m_pending.TryGetValue (bot, out pending))
-          {
+          if (m_pending.TryGetValue (bot, out pending)) {
             RCClosure target;
-            if (pending.TryGetValue (fiber, out target))
-            {
+            if (pending.TryGetValue (fiber, out target)) {
               pending.Remove (fiber);
-              if (!killed.Contains (fiber))
-              {
+              if (!killed.Contains (fiber)) {
                 killed.Add (fiber);
                 Finish (target, ex, status);
               }
             }
-            if (pending.Count == 0)
-            {
+            if (pending.Count == 0) {
               m_pending.Remove (bot);
             }
           }
@@ -1245,8 +1204,7 @@ namespace RCL.Kernel
 
     public RCOperator New (string op, RCValue right)
     {
-      if (right == null)
-      {
+      if (right == null) {
         throw new ArgumentNullException ("R");
       }
       return RCSystem.Activator.New (op, right);
@@ -1254,8 +1212,7 @@ namespace RCL.Kernel
 
     public RCOperator New (string op, RCValue left, RCValue right)
     {
-      if (right == null)
-      {
+      if (right == null) {
         throw new ArgumentNullException ("R");
       }
       return RCSystem.Activator.New (op, left, right);

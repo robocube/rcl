@@ -35,18 +35,20 @@ namespace RCL.Test
     [Test]
     public void TestEscapedForwardSlashInString ()
     {
-      //Allow forward slashes to be escaped in strings literals.
-      //This is for compatibility with json.
-      //Many json library's escape forward slashes to be more compatible with html.
-      //I don't want to do this with RC but I do want to be able to work with json strings.
-      //So our string escaping routine will allow forward slashes to be escaped.
+      // Allow forward slashes to be escaped in strings literals.
+      // This is for compatibility with json.
+      // Many json library's escape forward slashes to be more compatible with html.
+      // I don't want to do this with RC but I do want to be able to work with json
+      // strings.
+      // So our string escaping routine will allow forward slashes to be escaped.
       DoParserTest ("\"a\\/b\\/c\"", "\"a/b/c\"");
     }
 
     [Test]
     public void TestEscapedUnicodeString ()
     {
-      DoParserTest ("\"\\u8ba1\\u7b97\\u673a\\u2022\\u7f51\\u7edc\\u2022\\u6280\\u672f\\u7c7b\"", "\"计算机•网络•技术类\"");
+      DoParserTest ("\"\\u8ba1\\u7b97\\u673a\\u2022\\u7f51\\u7edc\\u2022\\u6280\\u672f\\u7c7b\"",
+                    "\"计算机•网络•技术类\"");
     }
 
     [Test]
@@ -112,7 +114,8 @@ namespace RCL.Test
     [Test]
     public void TestTimestamp ()
     {
-      DoParserTest ("2015.05.24 08:12:00.123456 2015.05.25 09:13:00.123456 2015.05.26 10:14:00.123456");
+      DoParserTest (
+        "2015.05.24 08:12:00.123456 2015.05.25 09:13:00.123456 2015.05.26 10:14:00.123456");
     }
 
     [Test]
@@ -172,7 +175,8 @@ namespace RCL.Test
     [Test]
     public void TestTimestampNoZero ()
     {
-      // This is now the default format for a datetime - it was originally considered a timestamp.
+      // This is now the default format for a datetime - it was originally considered a
+      // timestamp.
       DoParserTest ("2018.10.11 12:34:56", "2018.10.11 12:34:56");
     }
 
@@ -271,7 +275,7 @@ namespace RCL.Test
     {
       DoParserTest ("not not true");
     }
-    
+
     [Test]
     public void TestMultipleOperatorsInExpression ()
     {
@@ -281,9 +285,9 @@ namespace RCL.Test
     [Test]
     public void TestMinusProblem ()
     {
-      //The key thing is whether whitespace precedes the minus sign.
-      //I think it's worth giving the lexer a single token lookback for
-      //this purpose since this will confuse some people right off the bat.
+      // The key thing is whether whitespace precedes the minus sign.
+      // I think it's worth giving the lexer a single token lookback for
+      // this purpose since this will confuse some people right off the bat.
       DoParserTest ("1-2", "1 - 2");
     }
 
@@ -322,7 +326,7 @@ namespace RCL.Test
     {
       DoParserTest ("1 -2");
     }
-    
+
     [Test]
     public void TestMeaninglessParens ()
     {
@@ -466,7 +470,7 @@ namespace RCL.Test
     {
       DoParserTest ("{:1 + 2 :3 + 4}");
     }
-    
+
     [Test]
     public void TestUnnamedImpliedBlock ()
     {
@@ -500,7 +504,7 @@ namespace RCL.Test
     [Test]
     public void TestOperatorInlineDyadic ()
     {
-      //Aka lambda
+      // Aka lambda
       DoParserTest ("1.0 2.0 3.0 {<-$right - $left} 4.0 5.0 6.0");
     }
 
@@ -531,7 +535,7 @@ namespace RCL.Test
     [Test]
     public void TestUserOperator ()
     {
-      //This is not a user operator the test is misnamed.
+      // This is not a user operator the test is misnamed.
       DoParserTest ("{x:1.0 y:sum 1.0}");
     }
 
@@ -593,14 +597,14 @@ namespace RCL.Test
     [Test]
     public void TestQuotedNamesInSymbol2 ()
     {
-      //In this case the unnecessary quote should be removed.
+      // In this case the unnecessary quote should be removed.
       DoParserTest ("#x,'y'", "#x,y");
     }
 
     [Test]
     public void TestCubeMultiRow ()
     {
-      //the bar separates the "key" of the table from values.
+      // the bar separates the "key" of the table from values.
       DoParserTest ("[S|x #a 10.0 #a 20.0 #a 30.0]");
     }
 
@@ -709,31 +713,41 @@ namespace RCL.Test
     [Test]
     public void TestCubeWithNullRowTestCanonical ()
     {
-      DoParserTest ("[S|x #a 10.0 #a -- #a 30.0]", "[S|x #a 10.0 #a -- #a 30.0]", RCFormat.TestCanonical);
+      DoParserTest ("[S|x #a 10.0 #a -- #a 30.0]",
+                    "[S|x #a 10.0 #a -- #a 30.0]",
+                    RCFormat.TestCanonical);
     }
 
     [Test]
     public void TestCubeWithNullRowCanonical ()
     {
-      DoParserTest ("[S|x #a 10.0 #a -- #a 30.0]", "[\n  S |   x\n  #a 10.0\n  #a   --\n  #a 30.0\n]", RCFormat.Canonical);
+      DoParserTest ("[S|x #a 10.0 #a -- #a 30.0]",
+                    "[\n  S |   x\n  #a 10.0\n  #a   --\n  #a 30.0\n]",
+                    RCFormat.Canonical);
     }
 
     [Test]
     public void TestCubeWithNullColumnLastTestCanonical ()
     {
-      DoParserTest ("[a b c d e 1 10 100 1000 -- 2 20 -- 2000 --]", "[a b c d e 1 10 100 1000 -- 2 20 -- 2000 --]", RCFormat.TestCanonical);
+      DoParserTest ("[a b c d e 1 10 100 1000 -- 2 20 -- 2000 --]",
+                    "[a b c d e 1 10 100 1000 -- 2 20 -- 2000 --]",
+                    RCFormat.TestCanonical);
     }
 
     [Test]
     public void TestCubeWithNullColumnFirstTestCanonical ()
     {
-      DoParserTest ("[a b c d e -- 10 100 1000 1 -- 20 200 2000 2]", "[a b c d e -- 10 100 1000 1 -- 20 200 2000 2]", RCFormat.TestCanonical);
+      DoParserTest ("[a b c d e -- 10 100 1000 1 -- 20 200 2000 2]",
+                    "[a b c d e -- 10 100 1000 1 -- 20 200 2000 2]",
+                    RCFormat.TestCanonical);
     }
 
     [Test]
     public void TestCubeCanonical1 ()
     {
-      DoParserTest ("[S|l d m #a 10 -- -- #a 11 21.0 -- #a 12 22.0 32m]", "[S|l d m #a 10 -- -- #a 11 21.0 -- #a 12 22.0 32m]", RCFormat.TestCanonical);
+      DoParserTest ("[S|l d m #a 10 -- -- #a 11 21.0 -- #a 12 22.0 32m]",
+                    "[S|l d m #a 10 -- -- #a 11 21.0 -- #a 12 22.0 32m]",
+                    RCFormat.TestCanonical);
     }
 
     [Test]
@@ -745,7 +759,9 @@ namespace RCL.Test
     [Test]
     public void TestCubeCanonical3 ()
     {
-      DoParserTest ("[S|x #a 1 #b 2 #c -- #d 3 #e -- #f --]", "[S|x #a 1 #b 2 #c -- #d 3 #e -- #f --]", RCFormat.TestCanonical);
+      DoParserTest ("[S|x #a 1 #b 2 #c -- #d 3 #e -- #f --]",
+                    "[S|x #a 1 #b 2 #c -- #d 3 #e -- #f --]",
+                    RCFormat.TestCanonical);
     }
 
     [Test]
@@ -757,7 +773,7 @@ namespace RCL.Test
     [Test]
     public void TestCubeWithNullInLastRow ()
     {
-      //Parser assumed that the type would always be on the last value in the column.
+      // Parser assumed that the type would always be on the last value in the column.
       DoParserTest ("[S|x #a 10 #a --]");
     }
 
@@ -804,9 +820,11 @@ namespace RCL.Test
     }
 
     [Test]
-    public void TestCubeWithExplicitTimeAndNulls()
+    public void TestCubeWithExplicitTimeAndNulls ()
     {
-      DoParserTest ("[E|S|a b 1 #x 100 -- 3 #y -- 3000]", "[E|S|a b 1 #x 100 -- 3 #y -- 3000]", RCFormat.Default);
+      DoParserTest ("[E|S|a b 1 #x 100 -- 3 #y -- 3000]",
+                    "[E|S|a b 1 #x 100 -- 3 #y -- 3000]",
+                    RCFormat.Default);
     }
 
     [Test]
@@ -884,55 +902,56 @@ namespace RCL.Test
     [Test]
     public void TestRandom ()
     {
-      DoParserTest ("{:#0 #1 write {x:1 10} :#0 #1 write {x:2 20} :(0 read #0) assert [S|x #0 1 #0 10] :(0 read #1) assert [S|x #1 2 #1 20] <-true}");
+      DoParserTest (
+        "{:#0 #1 write {x:1 10} :#0 #1 write {x:2 20} :(0 read #0) assert [S|x #0 1 #0 10] :(0 read #1) assert [S|x #1 2 #1 20] <-true}");
     }
 
     [Test]
     public void TestTemplateWithoutCode1 ()
     {
-      DoParserTest ("[? ?]"); //, "{:\" \"}");
+      DoParserTest ("[? ?]"); // , "{:\" \"}");
     }
 
     [Test]
     public void TestTemplateWithoutCode2 ()
     {
-      DoParserTest ("[? some free text ?]"); //, "{:\" some free text \"}");
+      DoParserTest ("[? some free text ?]"); // , "{:\" some free text \"}");
     }
 
     [Test]
     public void TestTemplateWithoutCode3 ()
     {
-      DoParserTest ("[?<html></html>?]"); //, "{:\"<html></html>\"}");
+      DoParserTest ("[?<html></html>?]"); // , "{:\"<html></html>\"}");
     }
 
     [Test]
     public void TestTemplateWithoutCode4 ()
     {
-      DoParserTest ("[? ?]"); //, "{:\" \"}");
+      DoParserTest ("[? ?]"); // , "{:\" \"}");
     }
 
     [Test]
     public void TestTemplateWithoutCode5 ()
     {
-      DoParserTest ("[??]"); //, "{:\"\"}");
+      DoParserTest ("[??]"); // , "{:\"\"}");
     }
 
     [Test]
     public void TestTemplateWithoutCode6 ()
     {
-      DoParserTest ("[?? [? ?] ??]"); //, "{:\" [? ?] \"}");
+      DoParserTest ("[?? [? ?] ??]"); // , "{:\" [? ?] \"}");
     }
 
     [Test]
     public void TestTemplateWithoutCode7 ()
     {
-      DoParserTest ("[??? [??] ???]"); //, "{:\" [??] \"}");
+      DoParserTest ("[??? [??] ???]"); // , "{:\" [??] \"}");
     }
 
     [Test]
     public void TestTemplateWithoutCode8 ()
     {
-      DoParserTest ("[???[??]???]"); //, "{:\"[??]\"}");
+      DoParserTest ("[???[??]???]"); // , "{:\"[??]\"}");
     }
 
     [Test]
@@ -944,99 +963,112 @@ namespace RCL.Test
     [Test]
     public void TestTemplateWithCode2 ()
     {
-      DoParserTest ("[? [! $x !] ?]", "[? [! $x !] ?]"); //"{:\" \" :$x :\" \"}");
+      DoParserTest ("[? [! $x !] ?]", "[? [! $x !] ?]"); // "{:\" \" :$x :\" \"}");
     }
 
     [Test]
     public void TestTemplateWithCode3 ()
     {
-      DoParserTest ("[?[! $x !]?]");  //"{:\"\" :$x :\"\"}");
+      DoParserTest ("[?[! $x !]?]");  // "{:\"\" :$x :\"\"}");
     }
 
     [Test]
     public void TestTemplateWithCode4 ()
     {
-      //Now let's see if we can trick the parser.
-      DoParserTest ("[?!][! $x !]?]"); //, "{:\"!]\" :$x :\"\"}");
+      // Now let's see if we can trick the parser.
+      DoParserTest ("[?!][! $x !]?]"); // , "{:\"!]\" :$x :\"\"}");
     }
 
 
     [Test]
     public void TestTemplateWithCode5 ()
     {
-      DoParserTest ("[?[! $x !]!]?]"); //, "{:\"\" :$x :\"!]\"}");
+      DoParserTest ("[?[! $x !]!]?]"); // , "{:\"\" :$x :\"!]\"}");
     }
 
     [Test]
     public void TestTemplateWithCode6 ()
     {
-      DoParserTest ("[??[![!! $x !!]!]??]"); //, "{:\"[!\" :$x :\"!]\"}");
+      DoParserTest ("[??[![!! $x !!]!]??]"); // , "{:\"[!\" :$x :\"!]\"}");
     }
 
     [Test]
     public void TestTemplateWithCode7 ()
     {
-      //I'm not quite sure if this is ok like this.  Since the value in the
-      //code block is just a string, a code block is not created on the way out.
-      //Maybe we should prevent this by encapsulating literals inside a block.
-      DoParserTest ("[?[! \"[? ?]\" !]?]");//, "[?[? ?]?]"); //, "{:\"\" :\"[? ?]\" :\"\"}");
+      // I'm not quite sure if this is ok like this.  Since the value in the
+      // code block is just a string, a code block is not created on the way out.
+      // Maybe we should prevent this by encapsulating literals inside a block.
+      DoParserTest ("[?[! \"[? ?]\" !]?]");// , "[?[? ?]?]"); //, "{:\"\" :\"[? ?]\"
+                                           // :\"\"}");
     }
 
     [Test]
     public void TestTemplateWithCode8 ()
     {
-      DoParserTest ("[?this is a question??]"); //, "{:\"this is a question?\"}");
+      DoParserTest ("[?this is a question??]"); // , "{:\"this is a question?\"}");
     }
 
     [Test]
     public void TestTemplateWithCode9 ()
     {
-      //Now let's do some more stuff in the code section.
-      DoParserTest ("[?before[! $x + $y !]after?]"); //, "{:\"before\" :$x + $y :\"after\"}");
+      // Now let's do some more stuff in the code section.
+      DoParserTest ("[?before[! $x + $y !]after?]"); // , "{:\"before\" :$x + $y
+                                                     // :\"after\"}");
     }
 
     [Test]
     public void TestTemplateWithCode10 ()
     {
-      DoParserTest ("[?before[! {<-$x - $y} !]after?]"); //, "{:\"before\" :{<-$x - $y} :\"after\"}");
+      DoParserTest ("[?before[! {<-$x - $y} !]after?]"); // , "{:\"before\" :{<-$x - $y}
+                                                         // :\"after\"}");
     }
 
     [Test]
     public void TestTemplateWithCode11 ()
     {
-      DoParserTest ("[?before[! {x:1 y:2 z:3} !]after?]"); //, "{:\"before\" :{x:1l y:2l z:3l} :\"after\"}");
+      DoParserTest ("[?before[! {x:1 y:2 z:3} !]after?]"); // , "{:\"before\" :{x:1l y:2l
+                                                           // z:3l}
+                                                           // :\"after\"}");
     }
 
     [Test]
     public void TestTemplateWithCode12 ()
     {
-      DoParserTest ("[?before[! [] !]after?]"); //, "{:\"before\" :[] :\"after\"}");
+      DoParserTest ("[?before[! [] !]after?]"); // , "{:\"before\" :[] :\"after\"}");
     }
 
     [Test]
     public void TestTemplateWithCode13 ()
     {
-      //Multiple code sections?
-      DoParserTest ("[?before[! $x !]between[! $y !]after?]"); //, "{:\"before\" :$x :\"between\" :$y :\"after\"}");
+      // Multiple code sections?
+      DoParserTest ("[?before[! $x !]between[! $y !]after?]"); // , "{:\"before\" :$x
+                                                               // :\"between\"
+                                                               // :$y :\"after\"}");
     }
 
     [Test]
     public void TestTemplateWithCode14 ()
     {
-      //Nested code sections?
-      DoParserTest ("[?before[! [?inside?] !]after?]"); //, "{:\"before\" :{:\"inside\"} :\"after\"}");
+      // Nested code sections?
+      DoParserTest ("[?before[! [?inside?] !]after?]"); // , "{:\"before\" :{:\"inside\"}
+                                                        // :\"after\"}");
     }
 
     [Test]
     public void TestTemplateWithCode15 ()
     {
-      DoParserTest ("[?before[! {x:[?one?] y:[?two?] z:[?three?]} !]after?]"); //, "{:\"before\" :{x:{:\"one\"} y:{:\"two\"} z:{:\"three\"}} :\"after\"}");
+      DoParserTest ("[?before[! {x:[?one?] y:[?two?] z:[?three?]} !]after?]"); // ,
+                                                                               // "{:\"before\"
+                                                                               // :{x:{:\"one\"}
+                                                                               // y:{:\"two\"}
+                                                                               // z:{:\"three\"}}
+                                                                               // :\"after\"}");
     }
 
     [Test]
     public void TestTemplateWithCodeEx1 ()
     {
-      //Bugs found after TestTemplateWithCode
+      // Bugs found after TestTemplateWithCode
       DoParserTest ("[?foo[! operator {} !]?]");
     }
 
@@ -1049,7 +1081,8 @@ namespace RCL.Test
     [Test]
     public void TestTemplateWithCodeEx3 ()
     {
-      DoParserTest ("{head:[?a head?] body:[?a body?] html:[?<html>[! head {} !][! body {} !]</html>?] <-html {}}");
+      DoParserTest (
+        "{head:[?a head?] body:[?a body?] html:[?<html>[! head {} !][! body {} !]</html>?] <-html {}}");
     }
 
     [Test]
@@ -1070,21 +1103,21 @@ namespace RCL.Test
     public void TestTemplateMultiline3 ()
     {
       /*
-      [?
-        <html>
+         [?
+         <html>
           [!head {}!]
           [!body {}!]
-        </html>
-      ?]
-      */
-      DoParserTest ("[?\n  <html>\n    [! head {} !]\n    [! body {} !]\n  </html>\n?]", 
+         </html>
+         ?]
+       */
+      DoParserTest ("[?\n  <html>\n    [! head {} !]\n    [! body {} !]\n  </html>\n?]",
                     "[?\n  <html>\n    [! head {} !]\n    [! body {} !]\n  </html>\n?]");
     }
 
     [Test]
     public void TestTemplateMultilineCRLF1 ()
     {
-      //When CRLFs are involved strip them out in the parser.
+      // When CRLFs are involved strip them out in the parser.
       DoParserTest ("[?\r\n  line number one\r\n  line number two\r\n  line number three\r\n?]",
                     "[?\n  line number one\n  line number two\n  line number three\n?]");
     }
@@ -1092,21 +1125,22 @@ namespace RCL.Test
     [Test]
     public void TestTemplateMultilineCRLF2 ()
     {
-      DoParserTest ("    [?\r\n    line number one\r\n    line number two\r\n    line number three\r\n  ?]",
-                    "[?\n  line number one\n  line number two\n  line number three\n?]");
+      DoParserTest (
+        "    [?\r\n    line number one\r\n    line number two\r\n    line number three\r\n  ?]",
+        "[?\n  line number one\n  line number two\n  line number three\n?]");
     }
 
     [Test]
     public void TestTemplateMultilineCRLF3 ()
     {
       /*
-      [?
-        <html>
+         [?
+         <html>
           [!head {}!]
           [!body {}!]
-        </html>
-      ?]
-      */
+         </html>
+         ?]
+       */
       DoParserTest ("[?\r\n  <html>\r\n    [! head {} !]\r\n    [! body {} !]\r\n  </html>\r\n?]",
                     "[?\n  <html>\n    [! head {} !]\n    [! body {} !]\n  </html>\n?]");
     }
@@ -1115,13 +1149,13 @@ namespace RCL.Test
     public void TestTemplateMultilineEx ()
     {
       /*
-      [?
-        <html>
+         [?
+         <html>
           <h1>[!string $R!]</h1>
-        </html>
-      ?]
-      */
-      DoParserTest ("[?\n  <html>\n    <h1>[! string $R !]</h1>\n  </html>\n?]", 
+         </html>
+         ?]
+       */
+      DoParserTest ("[?\n  <html>\n    <h1>[! string $R !]</h1>\n  </html>\n?]",
                     "[?\n  <html>\n    <h1>[! string $R !]</h1>\n  </html>\n?]");
     }
 
@@ -1129,14 +1163,15 @@ namespace RCL.Test
     public void TestTemplateMultilineWithMultipleSectionsOnOne ()
     {
       /*
-      [?
-        first line
-        this [!$R.is!] the [!$R.middle!] line
-        last line
-      ?]
-      */
-      DoParserTest ("[?\n  first line\n  this [! $R.is !] the [! $R.middle !] line\n  last line\n?]",
-                    "[?\n  first line\n  this [! $R.is !] the [! $R.middle !] line\n  last line\n?]");
+         [?
+         first line
+         this [!$R.is!] the [!$R.middle!] line
+         last line
+         ?]
+       */
+      DoParserTest (
+        "[?\n  first line\n  this [! $R.is !] the [! $R.middle !] line\n  last line\n?]",
+        "[?\n  first line\n  this [! $R.is !] the [! $R.middle !] line\n  last line\n?]");
     }
 
     [Test]
@@ -1149,7 +1184,8 @@ namespace RCL.Test
     [Test]
     public void TestTemplateWithLongArray ()
     {
-      DoParserTest ("[?\na\n          [! 1 2 3 4 5 !]\n?]", "[?\n  a\n            [! 1 2 3 4 5 !]\n?]");
+      DoParserTest ("[?\na\n          [! 1 2 3 4 5 !]\n?]",
+                    "[?\n  a\n            [! 1 2 3 4 5 !]\n?]");
     }
 
     [Test]
@@ -1162,30 +1198,34 @@ namespace RCL.Test
     [Test]
     public void TestTemplateMultilineMultipleCodeSections1 ()
     {
-      DoParserTest ("[?\n  [! \"a\" \"b\" \"c\" !][! \"x\" \"y\" \"z\" !]\n?]", 
+      DoParserTest ("[?\n  [! \"a\" \"b\" \"c\" !][! \"x\" \"y\" \"z\" !]\n?]",
                     "[?\n  [! \"a\" \"b\" \"c\" !][! \"x\" \"y\" \"z\" !]\n?]");
     }
 
     [Test]
     public void TestTemplateMultilineMultipleCodeSections2 ()
     {
-      DoParserTest ("[?\n  [! \"a\" \"b\" \"c\" !]\n    [! \"d\" \"e\" \"f\" !]\n      [! \"g\" \"h\" \"i\" !]?]", 
-                    "[?\n  [! \"a\" \"b\" \"c\" !]\n    [! \"d\" \"e\" \"f\" !]\n      [! \"g\" \"h\" \"i\" !]?]");
+      DoParserTest (
+        "[?\n  [! \"a\" \"b\" \"c\" !]\n    [! \"d\" \"e\" \"f\" !]\n      [! \"g\" \"h\" \"i\" !]?]",
+        "[?\n  [! \"a\" \"b\" \"c\" !]\n    [! \"d\" \"e\" \"f\" !]\n      [! \"g\" \"h\" \"i\" !]?]");
     }
 
     [Test]
     public void TestTemplateMultilineMultipleCodeSections3 ()
     {
-      //Now make sure that when there are multiple code sections per line, that everything still works.
-      DoParserTest ("[?\n  [! \"a\" !] [! \"b\" \"c\" !]\n    [! \"d\" \"e\" !] [! \"f\" !]\n      [! \"g\" !] [! \"h\" !] [! \"i\" !]?]", 
-                    "[?\n  [! \"a\" !] [! \"b\" \"c\" !]\n    [! \"d\" \"e\" !] [! \"f\" !]\n      [! \"g\" !] [! \"h\" !] [! \"i\" !]?]");
+      // Now make sure that when there are multiple code sections per line, that
+      // everything still
+      // works.
+      DoParserTest (
+        "[?\n  [! \"a\" !] [! \"b\" \"c\" !]\n    [! \"d\" \"e\" !] [! \"f\" !]\n      [! \"g\" !] [! \"h\" !] [! \"i\" !]?]",
+        "[?\n  [! \"a\" !] [! \"b\" \"c\" !]\n    [! \"d\" \"e\" !] [! \"f\" !]\n      [! \"g\" !] [! \"h\" !] [! \"i\" !]?]");
     }
 
     [Test]
     public void TestTemplateMultilineMultipleCodeSections4 ()
     {
-      //One code section per line, multiple lines.
-      DoParserTest ("[?\n  [! \"a\" \"b\" \"c\" !]\n  [! \"x\" \"y\" \"z\" !]\n?]", 
+      // One code section per line, multiple lines.
+      DoParserTest ("[?\n  [! \"a\" \"b\" \"c\" !]\n  [! \"x\" \"y\" \"z\" !]\n?]",
                     "[?\n  [! \"a\" \"b\" \"c\" !]\n  [! \"x\" \"y\" \"z\" !]\n?]");
     }
 
@@ -1262,7 +1302,7 @@ namespace RCL.Test
       RCValue result = runner.Read (code, out fragment, canonical);
       string actual = result.Format (format);
       NUnit.Framework.Assert.IsNotNull (actual, "RCParser.Parse result was null");
-      actual = actual.Replace("\\r\\n", "\\n");
+      actual = actual.Replace ("\\r\\n", "\\n");
       NUnit.Framework.Assert.AreEqual (expected, actual);
     }
   }

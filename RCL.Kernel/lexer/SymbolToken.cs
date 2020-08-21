@@ -9,23 +9,27 @@ namespace RCL.Kernel
 {
   public class SymbolToken : RCTokenType
   {
-    public override RCToken TryParseToken (string code, int start, int index, int line, RCToken previous)
+    public override RCToken TryParseToken (string code,
+                                           int start,
+                                           int index,
+                                           int line,
+                                           RCToken
+                                           previous)
     {
-      if (start < code.Length && code[start] == '#')
-      {
+      if (start < code.Length && code[start] == '#') {
         int end = start + 1;
-        if (end < code.Length)
-        {
+        if (end < code.Length) {
           int length = LengthOfDelimitedValue (code, end, ',');
-          if (length > 0)
-          {
+          if (length > 0) {
             end += length;
           }
         }
         string token = code.Substring (start, end - start);
         return new RCToken (token, this, start, index, line, 0);
       }
-      else return null;
+      else {
+        return null;
+      }
     }
 
     public override void Accept (RCParser parser, RCToken token)
@@ -40,16 +44,14 @@ namespace RCL.Kernel
 
     public override RCSymbolScalar ParseSymbol (RCLexer lexer, RCToken token)
     {
-      if (token.Text == "#")
-      {
+      if (token.Text == "#") {
         return RCSymbolScalar.Empty;
       }
       string[] parts = token.Text.Split (',');
       string first = parts[0];
-      //When "casting" strings into symbols, the initial # may be omitted
-      //so that "a" becomes #a.
-      if (first[0] == '#')
-      {
+      // When "casting" strings into symbols, the initial # may be omitted
+      // so that "a" becomes #a.
+      if (first[0] == '#') {
         first = first.Substring (1);
       }
       RCToken child = lexer.LexSingle (first);

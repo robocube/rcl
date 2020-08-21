@@ -31,15 +31,12 @@ namespace RCL.Kernel
     {
       bool found;
       int vrow = m_locator.Index.BinarySearch (row, out found);
-      if (found && vrow < m_locator.Index.Count)
-      {
+      if (found && vrow < m_locator.Index.Count) {
         m_indicator = (bool) m_locator.BoxCell (vrow);
         m_last[s] = m_indicator;
       }
-      else
-      {
-        if (!m_last.TryGetValue (s, out m_indicator))
-        {
+      else {
+        if (!m_last.TryGetValue (s, out m_indicator)) {
           m_indicator = false;
         }
       }
@@ -47,8 +44,7 @@ namespace RCL.Kernel
 
     public override void AfterRow (long e, RCTimeScalar t, RCSymbolScalar s, int row)
     {
-      if (m_indicator)
-      {
+      if (m_indicator) {
         long g = -1;
         m_target.Write (g, e, t, s);
       }
@@ -57,16 +53,19 @@ namespace RCL.Kernel
 
     public override void VisitNull<T> (string name, Column<T> vector, int row)
     {
-      //base.VisitNull (name, vector, row);
+      // base.VisitNull (name, vector, row);
     }
 
     public override void VisitScalar<T> (string name, Column<T> column, int row)
     {
       int tlrow = column.Index[row];
-      if (m_indicator)
-      {
-        m_target.WriteCell (name, m_source.SymbolAt (tlrow),
-                            column.Data[row], -1, true, true);
+      if (m_indicator) {
+        m_target.WriteCell (name,
+                            m_source.SymbolAt (tlrow),
+                            column.Data[row],
+                            -1,
+                            true,
+                            true);
       }
     }
   }

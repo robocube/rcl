@@ -6,14 +6,14 @@ using System.Collections.Generic;
 using System.IO;
 
 namespace RCL.Kernel
-{ 
+{
   public class RCActivator
   {
     public static RCActivator CreateDefault ()
     {
-      //Not sure how I feel about this setup.
-      //It could throw an exception and that would be bad.
-      //On the other hand if it throws an exception you are screwed anyhow.
+      // Not sure how I feel about this setup.
+      // It could throw an exception and that would be bad.
+      // On the other hand if it throws an exception you are screwed anyhow.
       Uri codebase = new Uri (Assembly.GetExecutingAssembly ().CodeBase);
       DirectoryInfo dir = new FileInfo (codebase.LocalPath).Directory;
       FileInfo[] files = dir.GetFiles ("*.dll");
@@ -30,24 +30,25 @@ namespace RCL.Kernel
       return new RCActivator (paths.ToArray ());
     }
 
-    //The assemblies which have been loaded
+    // The assemblies which have been loaded
     protected Dictionary<string, Assembly> m_libs = new Dictionary<string, Assembly> ();
 
-    //All of the available operators are available regardless of how they are implemented.
+    // All of the available operators are available regardless of how they are
+    // implemented.
     protected Dictionary<string, Type> m_operator = new Dictionary<string, Type> ();
 
-    //Lookup for final dispatching of the correct operator overload.
+    // Lookup for final dispatching of the correct operator overload.
     protected internal Dictionary<OverloadKey, OverloadValue> m_dispatch;
 
-    //List of types to be treated as modules with state maintained by the bot.
+    // List of types to be treated as modules with state maintained by the bot.
     protected HashSet<Type> m_modules;
 
     public RCActivator (params string[] libs)
     {
-      //You can always override the built in macros with extension libraries
+      // You can always override the built in macros with extension libraries
       foreach (string lib in libs)
       {
-        try 
+        try
         {
           m_libs.Add (lib, Assembly.LoadFile (lib));
         }
@@ -57,7 +58,7 @@ namespace RCL.Kernel
         }
         catch (BadImageFormatException)
         {
-          //Skip any unmanaged dlls in the dir    
+          // Skip any unmanaged dlls in the dir
         }
       }
       m_dispatch = new Dictionary<OverloadKey, OverloadValue> ();
@@ -82,26 +83,26 @@ namespace RCL.Kernel
       }
     }
 
-    protected Dictionary<string, ParserExtension> m_extByToken = new Dictionary<string, ParserExtension> ();
-    protected Dictionary<char, ParserExtension> m_extByCode = new Dictionary<char, ParserExtension> ();
+    protected Dictionary<string, ParserExtension> m_extByToken =
+      new Dictionary<string, ParserExtension> ();
+    protected Dictionary<char, ParserExtension> m_extByCode =
+      new Dictionary<char, ParserExtension> ();
 
     public RCBlock CreateVerbTable (Type type, out bool module)
     {
       RCBlock result = RCBlock.Empty;
-      //Is it an extension?
+      // Is it an extension?
       object[] attributes = type.GetCustomAttributes (typeof (RCExtension), false);
-      if (attributes.Length > 0)
-      {
+      if (attributes.Length > 0) {
         RCExtension ext = (RCExtension) attributes[0];
         ParserExtension extension = (ParserExtension) type.GetConstructor (m_ctor).Invoke (m_ctor);
         m_extByToken[ext.StartToken] = extension;
         m_extByCode[ext.TypeCode] = extension;
       }
-      //Is it a standalone module (with no operators)
+      // Is it a standalone module (with no operators)
       module = false;
       attributes = type.GetCustomAttributes (typeof (RCModule), false);
-      if (attributes.Length > 0)
-      {
+      if (attributes.Length > 0) {
         module = true;
       }
       foreach (MethodInfo method in type.GetMethods ())
@@ -110,31 +111,29 @@ namespace RCL.Kernel
         for (int i = 0; i < attributes.Length; ++i)
         {
           RCVerb verb = (RCVerb) attributes[i];
-          //Check to see if this verb has a custom implementation.
-          //This is for operators that need to override methods on RCOperator
-          //like Next for example. switch and each are good examples.
-          //Having an entry in m_operator is what distinguishes a built-in
-          //operator from a UserOperator implemented in RCL.
-          //note: a user operator may obscure a built-in operator if it has the same name
+          // Check to see if this verb has a custom implementation.
+          // This is for operators that need to override methods on RCOperator
+          // like Next for example. switch and each are good examples.
+          // Having an entry in m_operator is what distinguishes a built-in
+          // operator from a UserOperator implemented in RCL.
+          // note: a user operator may obscure a built-in operator if it has the same name
           Type optype;
           m_operator.TryGetValue (verb.Name, out optype);
-          if (optype == null || optype == typeof (RCOperator))
-          {
-            if (type.IsSubclassOf (typeof (RCOperator)))
-            {
+          if (optype == null || optype == typeof (RCOperator)) {
+            if (type.IsSubclassOf (typeof (RCOperator))) {
               m_operator[verb.Name] = type;
             }
-            else
-            {
+            else {
               m_operator[verb.Name] = typeof (RCOperator);
             }
           }
           ParameterInfo[] parameters = method.GetParameters ();
-          if (parameters.Length == 3)
-          {
-            OverloadKey key = new OverloadKey (verb.Name, typeof (object), null, parameters[2].ParameterType);
-            if (m_dispatch.ContainsKey (key))
-            {
+          if (parameters.Length == 3) {
+            OverloadKey key = new OverloadKey (verb.Name,
+                                               typeof (object),
+                                               null,
+                                               parameters[2].ParameterType);
+            if (m_dispatch.ContainsKey (key)) {
               throw new Exception ("dispatch table already contains the key:" + key);
             }
             OverloadValue value = new OverloadValue (type, method);
@@ -142,11 +141,12 @@ namespace RCL.Kernel
             result = new RCBlock (result, verb.Name, ":", verb.Name);
             module = true;
           }
-          else if (parameters.Length == 4)
-          {
-            OverloadKey key = new OverloadKey (verb.Name, typeof (object), parameters[2].ParameterType, parameters[3].ParameterType);
-            if (m_dispatch.ContainsKey (key))
-            {
+          else if (parameters.Length == 4) {
+            OverloadKey key = new OverloadKey (verb.Name,
+                                               typeof (object),
+                                               parameters[2].ParameterType,
+                                               parameters[3].ParameterType);
+            if (m_dispatch.ContainsKey (key)) {
               throw new Exception ("dispatch table already contains the key:" + key);
             }
             OverloadValue value = new OverloadValue (type, method);
@@ -156,8 +156,7 @@ namespace RCL.Kernel
           }
         }
       }
-      if (module)
-      {
+      if (module) {
         m_modules.Add (type);
       }
       return result;
@@ -168,29 +167,24 @@ namespace RCL.Kernel
     {
       string key = op;
       RCOperator result = null;
-      if (!m_operator.ContainsKey (key))
-      {
+      if (!m_operator.ContainsKey (key)) {
         result = new UserOperator (new RCReference (op));
         result.Init (op, left, right);
       }
-      else
-      {
+      else {
         Type type = m_operator[op];
-        //This is a tiny optimization, avoids using reflection
-        //if we are only going to call the base class RCOperator ctor.
-        //But I would like to note that I am ok with New on operators being
-        //slightly expensive because it will generally only happen during
-        //parsing or macro expansion which are both expensive anyhow.
-        if (type == typeof (RCOperator))
-        {
+        // This is a tiny optimization, avoids using reflection
+        // if we are only going to call the base class RCOperator ctor.
+        // But I would like to note that I am ok with New on operators being
+        // slightly expensive because it will generally only happen during
+        // parsing or macro expansion which are both expensive anyhow.
+        if (type == typeof (RCOperator)) {
           result = new RCOperator ();
           result.Init (op, left, right);
         }
-        else if (type.IsSubclassOf (typeof (RCOperator)))
-        {
+        else if (type.IsSubclassOf (typeof (RCOperator))) {
           ConstructorInfo ctor = type.GetConstructor (m_ctor);
-          if (ctor == null)
-          {
+          if (ctor == null) {
             throw new Exception ("No zero argument constructor found on type " + type);
           }
           result = (RCOperator) ctor.Invoke (null);
@@ -218,8 +212,7 @@ namespace RCL.Kernel
       /// </summary>
       public OverloadKey (string name, Type collection, Type left, Type right)
       {
-        if (collection == null)
-        {
+        if (collection == null) {
           throw new ArgumentNullException ("collection");
         }
         Name = name;
@@ -227,26 +220,26 @@ namespace RCL.Kernel
         Right = right.IsSubclassOf (typeof (RCOperator)) ? typeof (RCOperator) : right;
         Collection = collection;
 
-        //xor the hashes together for name, left and right type.
-        //No idea whether this technique is sufficient for good performance.
-        //Eternally Confuzzled says it is not.
-        //However a lot of the allegedly better algorithms produce uint hashes instead
-        //of int hashes.  And I don't really know how to modify them appropriately.
-        //http://eternallyconfuzzled.com/tuts/algorithms/jsw_tut_hashing.aspx
-        //I kind of wish MSFT gave me a HashCombiner somewhere in the framework.
-        //At any rate we will revisit this kind of thing when I start optimizing RCL.
-        //int h = 0;
-        //h ^= name.GetHashCode ();
-        //h ^= left == null ? 0 : left.GetHashCode ();
-        //h ^= right.GetHashCode ();
-        //Hash = h;
+        // xor the hashes together for name, left and right type.
+        // No idea whether this technique is sufficient for good performance.
+        // Eternally Confuzzled says it is not.
+        // However a lot of the allegedly better algorithms produce uint hashes instead
+        // of int hashes.  And I don't really know how to modify them appropriately.
+        // http://eternallyconfuzzled.com/tuts/algorithms/jsw_tut_hashing.aspx
+        // I kind of wish MSFT gave me a HashCombiner somewhere in the framework.
+        // At any rate we will revisit this kind of thing when I start optimizing RCL.
+        // int h = 0;
+        // h ^= name.GetHashCode ();
+        // h ^= left == null ? 0 : left.GetHashCode ();
+        // h ^= right.GetHashCode ();
+        // Hash = h;
 
-        //Ok the xor hash turned out to be a really bad idea since it produced the
-        //same number for every combination of + (long, double) and + (double, long).
-        //Here is some more bullshit I got off the internet.  It seems to work
-        //a little bit.  Still need to revisit this in seriousness with graphs, charts,
-        //labcoats, beakers and such.
-        //http://stackoverflow.com/questions/1646807/quick-and-simple-hash-code-combinations
+        // Ok the xor hash turned out to be a really bad idea since it produced the
+        // same number for every combination of + (long, double) and + (double, long).
+        // Here is some more bullshit I got off the internet.  It seems to work
+        // a little bit.  Still need to revisit this in seriousness with graphs, charts,
+        // labcoats, beakers and such.
+        // http://stackoverflow.com/questions/1646807/quick-and-simple-hash-code-combinations
 
         Hash = 17;
         Hash = Hash * 31 + name.GetHashCode ();
@@ -257,32 +250,25 @@ namespace RCL.Kernel
 
       public bool Equals (OverloadKey other)
       {
-        if (Left == null && other.Left != null)
-        {
+        if (Left == null && other.Left != null) {
           return false;
         }
-        if (other.Left == null && Left != null)
-        {
+        if (other.Left == null && Left != null) {
           return false;
         }
-        if (!Right.Equals (other.Right))
-        {
+        if (!Right.Equals (other.Right)) {
           return false;
         }
-        if (!Name.Equals (other.Name))
-        {
+        if (!Name.Equals (other.Name)) {
           return false;
         }
-        if (Collection == null && other.Collection != null)
-        {
+        if (Collection == null && other.Collection != null) {
           return false;
         }
-        if (other.Collection == null && Collection != null)
-        {
+        if (other.Collection == null && Collection != null) {
           return false;
         }
-        if (Collection != null && !Collection.Equals (other.Collection))
-        {
+        if (Collection != null && !Collection.Equals (other.Collection)) {
           return false;
         }
         return true;
@@ -295,12 +281,10 @@ namespace RCL.Kernel
 
       public override string ToString ()
       {
-        if (Left == null)
-        {
+        if (Left == null) {
           return Name + "(" + Right + ")";
         }
-        else
-        {
+        else {
           return Name + "(" + Left + ", " + Right + ")";
         }
       }
@@ -323,7 +307,7 @@ namespace RCL.Kernel
       }
     }
 
-    //Shouldn't these move into eval?
+    // Shouldn't these move into eval?
     public void Invoke (RCRunner runner, RCClosure closure, string name, object right)
     {
       OverloadValue overload;
@@ -331,42 +315,50 @@ namespace RCL.Kernel
       Type ctype = right.GetType ();
       try
       {
-        if (m_dispatch.TryGetValue (new OverloadKey (name, ctype, null, rtype), out overload))
-        {
+        if (m_dispatch.TryGetValue (new OverloadKey (name, ctype, null, rtype), out overload)) {
           RCBot bot = runner.GetBot (closure.Bot);
           object state = bot.GetModule (overload.Module);
           overload.Implementation.Invoke (state, new object[] {runner, closure, right});
         }
-        else if (m_dispatch.TryGetValue (new OverloadKey (name, typeof (object), null, rtype), out overload))
-        {
+        else if (m_dispatch.TryGetValue (new OverloadKey (name, typeof (object), null, rtype),
+                                         out
+                                         overload)) {
           RCBot bot = runner.GetBot (closure.Bot);
           object state = bot.GetModule (overload.Module);
           overload.Implementation.Invoke (state, new object[] {runner, closure, right});
         }
-        else if (m_dispatch.TryGetValue (new OverloadKey (name, typeof (object), null, typeof (object)), out overload))
-        {
+        else if (m_dispatch.TryGetValue (new OverloadKey (name,
+                                                          typeof (object),
+                                                          null,
+                                                          typeof (object)),
+                                         out overload)) {
           RCBot bot = runner.GetBot (closure.Bot);
           object state = bot.GetModule (overload.Module);
           overload.Implementation.Invoke (state, new object[] {runner, closure, right});
         }
-        else if (m_dispatch.TryGetValue (new OverloadKey (name, typeof (object), null, typeof (RCOperator)), out overload))
-        {
+        else if (m_dispatch.TryGetValue (new OverloadKey (name,
+                                                          typeof (object),
+                                                          null,
+                                                          typeof (RCOperator)),
+                                         out overload)) {
           RCBot bot = runner.GetBot (closure.Bot);
           object state = bot.GetModule (overload.Module);
           overload.Implementation.Invoke (state, new object[] {runner, closure, right});
         }
-        else throw RCException.Overload (closure, name, right);
+        else {
+          throw RCException.Overload (closure, name, right);
+        }
       }
       catch (TargetInvocationException tiex)
       {
         Exception ex = tiex.GetBaseException ();
-        if (ex is RCException)
-        {
+        if (ex is RCException) {
           throw ex;
         }
-        else
-        {
-          //You have to pass the tiex, not ex here so that the interior stack trace will be preserved when/if it is rethrown.
+        else {
+          // You have to pass the tiex, not ex here so that the interior stack trace will
+          // be
+          // preserved when/if it is rethrown.
           throw new RCException (closure, tiex, RCErrors.Native, ThrowMessage (name, ex));
         }
       }
@@ -380,54 +372,67 @@ namespace RCL.Kernel
       Type ctype = right.GetType ();
       try
       {
-        if (m_dispatch.TryGetValue (new OverloadKey (name, ctype, ltype, rtype), out overload))
-        {
+        if (m_dispatch.TryGetValue (new OverloadKey (name, ctype, ltype, rtype), out overload)) {
           RCBot bot = runner.GetBot (closure.Bot);
           object state = bot.GetModule (overload.Module);
           overload.Implementation.Invoke (state, new object[] {runner, closure, left, right});
         }
-        else if (m_dispatch.TryGetValue (new OverloadKey (name, typeof (object), ltype, rtype), out overload))
-        {
+        else if (m_dispatch.TryGetValue (new OverloadKey (name, typeof (object), ltype, rtype),
+                                         out overload)) {
           RCBot bot = runner.GetBot (closure.Bot);
           object state = bot.GetModule (overload.Module);
           overload.Implementation.Invoke (state, new object[] {runner, closure, left, right});
         }
-        else if (m_dispatch.TryGetValue (new OverloadKey (name, typeof (object), typeof (object), rtype), out overload))
-        {
+        else if (m_dispatch.TryGetValue (new OverloadKey (name,
+                                                          typeof (object),
+                                                          typeof (object),
+                                                          rtype),
+                                         out overload)) {
           RCBot bot = runner.GetBot (closure.Bot);
           object state = bot.GetModule (overload.Module);
           overload.Implementation.Invoke (state, new object[] {runner, closure, left, right});
         }
-        else if (m_dispatch.TryGetValue (new OverloadKey (name, typeof (object), ltype, typeof (object)), out overload))
-        {
+        else if (m_dispatch.TryGetValue (new OverloadKey (name,
+                                                          typeof (object),
+                                                          ltype,
+                                                          typeof (object)),
+                                         out overload)) {
           RCBot bot = runner.GetBot (closure.Bot);
           object state = bot.GetModule (overload.Module);
           overload.Implementation.Invoke (state, new object[] {runner, closure, left, right});
         }
-        else if (m_dispatch.TryGetValue (new OverloadKey (name, typeof (object), typeof (object), typeof (object)), out overload))
-        {
+        else if (m_dispatch.TryGetValue (new OverloadKey (name,
+                                                          typeof (object),
+                                                          typeof (object),
+                                                          typeof (object)),
+                                         out overload)) {
           RCBot bot = runner.GetBot (closure.Bot);
           object state = bot.GetModule (overload.Module);
           overload.Implementation.Invoke (state, new object[] {runner, closure, left, right});
         }
-        else if (m_dispatch.TryGetValue (new OverloadKey (name, typeof (object), ltype, typeof (RCOperator)), out overload))
-        {
+        else if (m_dispatch.TryGetValue (new OverloadKey (name,
+                                                          typeof (object),
+                                                          ltype,
+                                                          typeof (RCOperator)),
+                                         out overload)) {
           RCBot bot = runner.GetBot (closure.Bot);
           object state = bot.GetModule (overload.Module);
           overload.Implementation.Invoke (state, new object[] {runner, closure, left, right});
         }
-        else throw RCException.Overload (closure, name, left, right);
+        else {
+          throw RCException.Overload (closure, name, left, right);
+        }
       }
       catch (TargetInvocationException tiex)
       {
         Exception ex = tiex.GetBaseException ();
-        if (ex is RCException)
-        {
+        if (ex is RCException) {
           throw ex;
         }
-        else
-        {
-          //You have to pass the tiex, not ex here so that the interior stack trace will be preserved when/if it is rethrown.
+        else {
+          // You have to pass the tiex, not ex here so that the interior stack trace will
+          // be
+          // preserved when/if it is rethrown.
           throw new RCException (closure, tiex, RCErrors.Native, ThrowMessage (name, ex));
         }
       }
@@ -435,10 +440,13 @@ namespace RCL.Kernel
 
     protected string ThrowMessage (string name, Exception ex)
     {
-      return string.Format ("An exception was thrown by the operator {0}:\n-- {1}: {2}", name, ex.GetType ().Name, ex.Message);
+      return string.Format ("An exception was thrown by the operator {0}:\n-- {1}: {2}",
+                            name,
+                            ex.GetType ().Name,
+                            ex.Message);
     }
 
-    //Seems like a kind of weird way to do this piece.
+    // Seems like a kind of weird way to do this piece.
     public void InjectState (RCBot bot)
     {
       foreach (Type type in m_modules)
@@ -446,10 +454,10 @@ namespace RCL.Kernel
         bot.PutModule (type);
       }
     }
-      
-    //Maybe this should implement the full interface for parser,
-    //Or maybe the lexer should not do anything to the tokens between [ and ]
-    //Or maybe we need a lexer extension abstraction as well.
+
+    // Maybe this should implement the full interface for parser,
+    // Or maybe the lexer should not do anything to the tokens between [ and ]
+    // Or maybe we need a lexer extension abstraction as well.
     public abstract class ParserExtension
     {
       public abstract RCValue BinaryParse (RCActivator activator, RCArray<byte> data, ref int start);
@@ -475,5 +483,4 @@ namespace RCL.Kernel
       return m_extByCode[code];
     }
   }
-
 }

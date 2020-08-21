@@ -32,7 +32,8 @@ namespace RCL.Test
       RCL.Kernel.Assert.AreSame (dv, c.Get (1));
       RCL.Kernel.Assert.AreSame (bv, c.Get (2));
 
-      RCL.Kernel.Assert.AreEqual ("{a:\"x\" \"y\" \"z\" b:1.0 2.0 3.0 c:true false true}", c.ToString ());
+      RCL.Kernel.Assert.AreEqual ("{a:\"x\" \"y\" \"z\" b:1.0 2.0 3.0 c:true false true}",
+                                  c.ToString ());
     }
 
     /// <summary>
@@ -75,8 +76,8 @@ namespace RCL.Test
       RCVector<double> tp = new RCDouble (10.00, 10.01, 10.02);
       RCVector<double> ts = new RCDouble (100, 500, 100);
       RCOperator vwp = runner.New ("/",
-                              runner.New ("sum", runner.New ("*", tp, ts)),
-                              runner.New ("sum", ts));
+                                   runner.New ("sum", runner.New ("*", tp, ts)),
+                                   runner.New ("sum", ts));
       RCValue val = runner.Run (vwp);
       RCL.Kernel.Assert.AreEqual (new RCDouble ((1000.0 + 5005.0 + 1002.0) / 700.0), val);
       RCL.Kernel.Assert.AreEqual ("10.01", val.ToString ());
@@ -103,15 +104,15 @@ namespace RCL.Test
       RCOperator mult = runner.New ("*", x, two);
       RCOperator div = runner.New ("/", x, two);
 
-      RCVector<double> addResult = (RCVector<double>) runner.Run (add);
-      RCVector<double> subResult = (RCVector<double>) runner.Run (sub);
-      RCVector<double> multResult = (RCVector<double>) runner.Run (mult);
-      RCVector<double> divResult = (RCVector<double>) runner.Run (div);
+      RCVector<double> addResult = (RCVector<double>)runner.Run (add);
+      RCVector<double> subResult = (RCVector<double>)runner.Run (sub);
+      RCVector<double> multResult = (RCVector<double>)runner.Run (mult);
+      RCVector<double> divResult = (RCVector<double>)runner.Run (div);
 
       RCL.Kernel.Assert.AreEqual (new RCDouble (102, 202, 302), addResult);
-      RCL.Kernel.Assert.AreEqual ("102.0 202.0 302.0", addResult.ToString());
+      RCL.Kernel.Assert.AreEqual ("102.0 202.0 302.0", addResult.ToString ());
       RCL.Kernel.Assert.AreEqual (new RCDouble (98, 198, 298), subResult);
-      RCL.Kernel.Assert.AreEqual ("98.0 198.0 298.0", subResult.ToString());
+      RCL.Kernel.Assert.AreEqual ("98.0 198.0 298.0", subResult.ToString ());
       RCL.Kernel.Assert.AreEqual (new RCDouble (200.0, 400.0, 600.0), multResult);
       RCL.Kernel.Assert.AreEqual ("200.0 400.0 600.0", multResult.ToString ());
       RCL.Kernel.Assert.AreEqual (new RCDouble (50, 100, 150), divResult);
@@ -133,67 +134,78 @@ namespace RCL.Test
       RCOperator mult = runner.New ("*", two, x);
       RCOperator div = runner.New ("/", two, x);
 
-      RCVector<double> addResult = (RCVector<double>) runner.Run (add);
-      RCVector<double> subResult = (RCVector<double>) runner.Run (sub);
-      RCVector<double> multResult = (RCVector<double>) runner.Run (mult);
-      RCVector<double> divResult = (RCVector<double>) runner.Run (div);
+      RCVector<double> addResult = (RCVector<double>)runner.Run (add);
+      RCVector<double> subResult = (RCVector<double>)runner.Run (sub);
+      RCVector<double> multResult = (RCVector<double>)runner.Run (mult);
+      RCVector<double> divResult = (RCVector<double>)runner.Run (div);
 
       RCL.Kernel.Assert.AreEqual (new RCDouble (102, 202, 302), addResult);
-      RCL.Kernel.Assert.AreEqual ("102.0 202.0 302.0", addResult.ToString());
+      RCL.Kernel.Assert.AreEqual ("102.0 202.0 302.0", addResult.ToString ());
       RCL.Kernel.Assert.AreEqual (new RCDouble (-98, -198, -298), subResult);
-      RCL.Kernel.Assert.AreEqual ("-98.0 -198.0 -298.0", subResult.ToString());
+      RCL.Kernel.Assert.AreEqual ("-98.0 -198.0 -298.0", subResult.ToString ());
       RCL.Kernel.Assert.AreEqual (new RCDouble (200, 400, 600), multResult);
-      RCL.Kernel.Assert.AreEqual ("200.0 400.0 600.0", multResult.ToString());
+      RCL.Kernel.Assert.AreEqual ("200.0 400.0 600.0", multResult.ToString ());
       RCL.Kernel.Assert.AreEqual (.02, divResult[0]);
       RCL.Kernel.Assert.AreEqual (.01, divResult[1]);
       RCL.Kernel.Assert.AreEqual (.00666, divResult[2]);
-      RCL.Kernel.Assert.AreEqual ("0.02 0.01 0.00666666666666667", divResult.ToString());
+      RCL.Kernel.Assert.AreEqual ("0.02 0.01 0.00666666666666667", divResult.ToString ());
     }
 
     /// <summary>
     /// Variable references, mixing object and operator evaluation
     /// </summary>
     [Test]
-    public void TestReferencesInBlock()
+    public void TestReferencesInBlock ()
     {
-      runner.Reset();
-      RCBlock pos = new RCBlock (null, "pos", ":",
-                                 new RCDouble (100, 200, 300));
-      RCBlock px = new RCBlock (pos, "px", ":",
-                                new RCDouble (10.01, 10.02, 10.01));
-      RCBlock ccy = new RCBlock (px, "ccy", ":",
-                                 runner.New ("*", new RCReference ("pos"), new RCReference ("px")));
+      runner.Reset ();
+      RCBlock pos = new RCBlock (null, "pos", ":", new RCDouble (100, 200, 300));
+      RCBlock px = new RCBlock (pos, "px", ":", new RCDouble (10.01, 10.02, 10.01));
+      RCBlock ccy = new RCBlock (px,
+                                 "ccy",
+                                 ":",
+                                 runner.New ("*",
+                                             new RCReference ("pos"),
+                                             new RCReference ("px")));
 
       RCValue val = runner.Run (ccy);
       RCBlock obj = val as RCBlock;
       RCL.Kernel.Assert.IsNotNull (obj);
-      //Currency vector
-      //RCVector<double> ccyv = obj.Get ("ccy") as RCVector<double>;
+      // Currency vector
+      // RCVector<double> ccyv = obj.Get ("ccy") as RCVector<double>;
       RCL.Kernel.Assert.AreEqual (new RCDouble (1001, 2004, 3003), obj.Get ("ccy"));
       RCL.Kernel.Assert.AreEqual ("1001.0 2004.0 3003.0", obj.Get ("ccy").ToString ());
     }
 
     /// <summary>
-    /// Nested objects, multiple level references, 
-    /// yielding a single result from an object 
+    /// Nested objects, multiple level references,
+    /// yielding a single result from an object
     /// </summary>
     [Test]
     public void TestYieldFromBlock ()
     {
-      //{bbo:{bp=10.00 10.01 10.02 10.01 10.00 ap=10.02 10.03 10.03 10.02 10.01} sprd=$bbo.ap - $bbo.bp <=$sprd / $bbo.bp}
-      //0.00199999999999996 0.00199800199800196 0.000998003992015947 0.000999000999000978 0.000999999999999979d
+      // {bbo:{bp=10.00 10.01 10.02 10.01 10.00 ap=10.02 10.03 10.03 10.02 10.01}
+      // sprd=$bbo.ap -
+      // $bbo.bp <=$sprd / $bbo.bp}
+      // 0.00199999999999996 0.00199800199800196 0.000998003992015947 0.000999000999000978
+      // 0.000999999999999979d
 
       runner.Reset ();
-      RCBlock bp = new RCBlock (null, "bp", ":",
-                                new RCDouble (10.00, 10.01, 10.02, 10.01, 10.00));
-      RCBlock ap = new RCBlock (bp, "ap", ":",
-                                new RCDouble(10.02, 10.03, 10.03, 10.02, 10.01));
-      
+      RCBlock bp = new RCBlock (null, "bp", ":", new RCDouble (10.00, 10.01, 10.02, 10.01, 10.00));
+      RCBlock ap = new RCBlock (bp, "ap", ":", new RCDouble (10.02, 10.03, 10.03, 10.02, 10.01));
+
       RCBlock bbo = new RCBlock (null, "bbo", ":", ap);
-      RCBlock sprd = new RCBlock (bbo, "sprd", ":",
-                                  runner.New ("-", new RCReference ("bbo.ap"), new RCReference ("bbo.bp")));
-      RCBlock sprdpch = new RCBlock (sprd, "sprdbps", "<-",
-                                     runner.New ("/", new RCReference ("sprd"), new RCReference ("bbo.bp")));
+      RCBlock sprd = new RCBlock (bbo,
+                                  "sprd",
+                                  ":",
+                                  runner.New ("-",
+                                              new RCReference ("bbo.ap"),
+                                              new RCReference ("bbo.bp")));
+      RCBlock sprdpch = new RCBlock (sprd,
+                                     "sprdbps",
+                                     "<-",
+                                     runner.New ("/",
+                                                 new RCReference ("sprd"),
+                                                 new RCReference ("bbo.bp")));
 
       RCValue val = runner.Run (sprdpch);
       RCVector<double> v = val as RCVector<double>;
@@ -203,7 +215,9 @@ namespace RCL.Test
       RCL.Kernel.Assert.AreEqual (.01 / 10.02, v[2]);
       RCL.Kernel.Assert.AreEqual (.01 / 10.01, v[3]);
       RCL.Kernel.Assert.AreEqual (.01 / 10.00, v[4]);
-      RCL.Kernel.Assert.AreEqual ("0.00199999999999996 0.00199800199800196 0.000998003992015947 0.000999000999000978 0.000999999999999979", v.ToString());
+      RCL.Kernel.Assert.AreEqual (
+        "0.00199999999999996 0.00199800199800196 0.000998003992015947 0.000999000999000978 0.000999999999999979",
+        v.ToString ());
     }
 
     [Test]
@@ -255,8 +269,14 @@ namespace RCL.Test
     [Test]
     public void TestProgrammaticSymbolBuilding ()
     {
-      RCL.Kernel.Assert.AreEqual ("#1,2,3", RCSymbolScalar.From ((long) 1, (long) 2, (long) 3).ToString ());
-      RCL.Kernel.Assert.AreEqual ("#1,2,3", RCSymbolScalar.From ((long) 1, (int) 2, (long) 3).ToString ());
+      RCL.Kernel.Assert.AreEqual ("#1,2,3",
+                                  RCSymbolScalar.From ((long) 1,
+                                                       (long) 2,
+                                                       (long) 3).ToString ());
+      RCL.Kernel.Assert.AreEqual ("#1,2,3",
+                                  RCSymbolScalar.From ((long) 1,
+                                                       (int) 2,
+                                                       (long) 3).ToString ());
       RCL.Kernel.Assert.AreEqual ("#a,b,c", RCSymbolScalar.From ("a", "b", "c").ToString ());
       RCL.Kernel.Assert.AreEqual ("#'a-b',c,d", RCSymbolScalar.From ("a-b", "c", "d").ToString ());
       RCL.Kernel.Assert.AreEqual ("#a_b,c,d", RCSymbolScalar.From ("a_b", "c", "d").ToString ());
@@ -272,14 +292,20 @@ namespace RCL.Test
     [Test]
     public void TestProgrammaticSymbolBuildingWithIntFirst ()
     {
-      RCL.Kernel.Assert.AreEqual ("#1,2,3", RCSymbolScalar.From ((int) 1, (long) 2, (long) 3).ToString ());
+      RCL.Kernel.Assert.AreEqual ("#1,2,3",
+                                  RCSymbolScalar.From ((int) 1,
+                                                       (long) 2,
+                                                       (long) 3).ToString ());
     }
 
     [Test]
     public void TestMacroCtor ()
     {
       runner.Reset ();
-      NUnit.Framework.Assert.Throws<ArgumentNullException> (delegate () { runner.New ("+", null, null); });
+      NUnit.Framework.Assert.Throws<ArgumentNullException> (delegate ()
+      {
+        runner.New ("+", null, null);
+      });
     }
   }
 }

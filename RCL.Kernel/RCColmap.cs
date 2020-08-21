@@ -39,13 +39,11 @@ namespace RCL.Kernel
 
     public string GetDisplayFormat (string column)
     {
-      if (column == null)
-      {
+      if (column == null) {
         throw new ArgumentNullException ("column");
       }
       DisplayCol col;
-      if (m_displayCols.TryGetValue (column, out col))
-      {
+      if (m_displayCols.TryGetValue (column, out col)) {
         return col.Format;
       }
       return null;

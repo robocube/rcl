@@ -4,7 +4,7 @@ using System.Text;
 
 namespace RCL.Kernel
 {
-  //Not certain I am going to need this in the end.
+  // Not certain I am going to need this in the end.
   public class RCNative : RCValue
   {
     public readonly object Value;
@@ -13,21 +13,19 @@ namespace RCL.Kernel
       Value = value;
     }
 
-    public override void Format (
-      StringBuilder builder, RCFormat args, int level)
+    public override void Format (StringBuilder builder, RCFormat args, int level)
     {
-      //There should be some clean way to identify a native value,
-      //if just for the purpose of raising an error.
-      //This will make it look like an operator to the parser.
+      // There should be some clean way to identify a native value,
+      // if just for the purpose of raising an error.
+      // This will make it look like an operator to the parser.
       builder.Append (Value.ToString ());
     }
 
-    public override void Format (
-      StringBuilder builder, RCFormat args, RCColmap colmap, int level)
+    public override void Format (StringBuilder builder, RCFormat args, RCColmap colmap, int level)
     {
-      //There should be some clean way to identify a native value,
-      //if just for the purpose of raising an error.
-      //This will make it look like an operator to the parser.
+      // There should be some clean way to identify a native value,
+      // if just for the purpose of raising an error.
+      // This will make it look like an operator to the parser.
       builder.Append (Value.ToString ());
     }
 

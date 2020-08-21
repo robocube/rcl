@@ -18,13 +18,13 @@ namespace RCL.Core
 
     public object Invoke (object left, object right)
     {
-      //I think we can do some more magic to make this a static call.
+      // I think we can do some more magic to make this a static call.
       return VectorOp.DynamicInvoke (left, right, ScalarOp);
     }
 
     public object Invoke (object right)
     {
-      //I think we can do some more magic to make this a static call.
+      // I think we can do some more magic to make this a static call.
       return VectorOp.DynamicInvoke (right, ScalarOp);
     }
   }

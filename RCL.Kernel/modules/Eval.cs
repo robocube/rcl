@@ -20,14 +20,14 @@ namespace RCL.Kernel
     [RCVerb ("eval")]
     public void EvalEval (RCRunner runner, RCClosure closure, RCBlock left, RCBlock right)
     {
-      RCClosure parent = UserOpClosure (closure, right, new RCArray<RCBlock> (left), noClimb:true);
+      RCClosure parent = UserOpClosure (closure, right, new RCArray<RCBlock> (left), noClimb: true);
       DoEval (runner, parent, right);
     }
 
     [RCVerb ("eval")]
     public void EvalTemplate (RCRunner runner, RCClosure closure, RCBlock left, RCTemplate right)
     {
-      RCClosure parent = UserOpClosure (closure, right, new RCArray<RCBlock> (left), noClimb:true);
+      RCClosure parent = UserOpClosure (closure, right, new RCArray<RCBlock> (left), noClimb: true);
       DoEval (runner, parent, right);
     }
 
@@ -58,14 +58,14 @@ namespace RCL.Kernel
     [RCVerb ("eval")]
     public void EvalEval (RCRunner runner, RCClosure closure, RCBlock left, RCOperator right)
     {
-      RCClosure parent = UserOpClosure (closure, right, new RCArray<RCBlock> (left), noClimb:true);
+      RCClosure parent = UserOpClosure (closure, right, new RCArray<RCBlock> (left), noClimb: true);
       DoEval (runner, parent, right);
     }
 
     [RCVerb ("eval")]
     public void EvalEval (RCRunner runner, RCClosure closure, RCBlock left, UserOperator right)
     {
-      //Invocation using the activator requires a perfect match on the argument type.
+      // Invocation using the activator requires a perfect match on the argument type.
       EvalEval (runner, closure, left, (RCOperator) right);
     }
 
@@ -78,7 +78,7 @@ namespace RCL.Kernel
     [RCVerb ("eval")]
     public void EvalEval (RCRunner runner, RCClosure closure, RCBlock left, RCReference right)
     {
-      RCClosure parent = UserOpClosure (closure, right, new RCArray<RCBlock> (left), noClimb:true);
+      RCClosure parent = UserOpClosure (closure, right, new RCArray<RCBlock> (left), noClimb: true);
       DoEval (runner, parent, right);
     }
 
@@ -208,53 +208,43 @@ namespace RCL.Kernel
 
     public override bool IsLastCall (RCClosure closure, RCClosure arg)
     {
-      if (arg == null)
-      {
+      if (arg == null) {
         return base.IsLastCall (closure, arg);
       }
-      if (!base.IsLastCall (closure, arg))
-      {
+      if (!base.IsLastCall (closure, arg)) {
         return false;
       }
       return arg.Code.IsBeforeLastCall (arg);
     }
 
-    //Kicks off evaluation for an operator and its arguments.
+    // Kicks off evaluation for an operator and its arguments.
     public static void DoEval (RCRunner runner, RCClosure closure, RCOperator op)
     {
-      if (op.Left == null)
-      {
-        if (closure.Index == 0)
-        {
+      if (op.Left == null) {
+        if (closure.Index == 0) {
           EvalArgument (runner, closure, op.Right);
         }
-        else
-        {
+        else {
           op.EvalOperator (runner, closure);
         }
       }
-      else
-      {
-        if (closure.Index == 0)
-        {
+      else {
+        if (closure.Index == 0) {
           EvalArgument (runner, closure, op.Left);
         }
-        else if (closure.Index == 1)
-        {
+        else if (closure.Index == 1) {
           EvalArgument (runner, closure, op.Right);
         }
-        else
-        {
+        else {
           op.EvalOperator (runner, closure);
         }
       }
     }
 
-    //Evaluates the argument if the argument is another operator or a reference.
+    // Evaluates the argument if the argument is another operator or a reference.
     protected static void EvalArgument (RCRunner runner, RCClosure closure, RCValue argument)
     {
-      if (argument.ArgumentEval)
-      {
+      if (argument.ArgumentEval) {
         RCClosure child = new RCClosure (closure,
                                          closure.Bot,
                                          argument,
@@ -263,11 +253,11 @@ namespace RCL.Kernel
                                          0);
         argument.Eval (runner, child);
       }
-      else
-      {
-        //pretty clear scope for optimization here, why go back to the runner in this case?
-        //runner calls have a lot of overhead.
-        //It was easier to write this way early on.
+      else {
+        // pretty clear scope for optimization here, why go back to the runner in this
+        // case?
+        // runner calls have a lot of overhead.
+        // It was easier to write this way early on.
         DoYield (runner, closure, argument);
       }
     }
@@ -277,85 +267,76 @@ namespace RCL.Kernel
       RCValue left = closure.Result.Get ("0");
       RCValue right = closure.Result.Get ("1");
       RCValue virtop = Resolve (null, closure, new RCArray<string> (op.Name), null, true);
-      if (virtop != null)
-      {
-        RCClosure parent = UserOpClosure (closure, virtop, null, noClimb:false);
+      if (virtop != null) {
+        RCClosure parent = UserOpClosure (closure, virtop, null, noClimb: false);
         virtop.Eval (runner, parent);
         return;
       }
-      if (left == null)
-      {
+      if (left == null) {
         RCSystem.Activator.Invoke (runner, closure, op.Name, right);
       }
-      else
-      {
+      else {
         RCSystem.Activator.Invoke (runner, closure, op.Name, left, right);
       }
-      //A lot of good men died to bring us this one line of code...
-      //Let's keep this around as a memorial.
-      //right.BindRight (runner, closure, this, left);
+      // A lot of good men died to bring us this one line of code...
+      // Let's keep this around as a memorial.
+      // right.BindRight (runner, closure, this, left);
     }
 
-    //Kicks off evaluation for a block.
+    // Kicks off evaluation for a block.
     public static void DoEval (RCRunner runner, RCClosure closure, RCBlock block)
     {
-      if (block.Count == 0)
-      {
+      if (block.Count == 0) {
         DoYield (runner, closure, block);
       }
-      else
-      {
+      else {
         RCBlock current = block.GetName (closure.Index);
-        if (current.Evaluator.Invoke)
-        {
+        if (current.Evaluator.Invoke) {
           string op = ((RCString) current.Value)[0];
           RCSystem.Activator.Invoke (runner, closure, op, closure.Result);
         }
-        else if (current.Evaluator.Template)
-        {
+        else if (current.Evaluator.Template) {
           try
           {
             RCString result = ExpandTemplate (new StringBuilder (),
                                               (RCTemplate) current,
                                               closure.Result,
-                                              0, "");
+                                              0,
+                                              "");
             runner.Yield (closure, result);
           }
           catch (Exception ex)
           {
-            RCException rcex = new RCException (closure, ex,
+            RCException rcex = new RCException (closure,
+                                                ex,
                                                 RCErrors.Native,
                                                 "An exception was thrown by the template.");
             runner.Finish (closure, rcex, (int) RCErrors.Native);
           }
         }
-        else if (current.Evaluator.Pass)
-        {
+        else if (current.Evaluator.Pass) {
           DoYield (runner, closure, current.Value);
         }
-        //This means that Value is an operator or a reference.
-        else if (current.Value.ArgumentEval)
-        {
-          current.Value.Eval (runner, new RCClosure (closure,
-                                                     closure.Bot,
-                                                     current.Value,
-                                                     closure.Left,
-                                                     closure.Result, 0));
+        // This means that Value is an operator or a reference.
+        else if (current.Value.ArgumentEval) {
+          current.Value.Eval (runner,
+                              new RCClosure (closure,
+                                             closure.Bot,
+                                             current.Value,
+                                             closure.Left,
+                                             closure.Result,
+                                             0));
         }
-        else if (current.Evaluator.Return)
-        {
+        else if (current.Evaluator.Return) {
           DoYield (runner, closure, current.Value);
         }
-        else
-        {
-          //I need something different to happen when we are at the top level already.
-          //Or maybe I need to inject a wrapper closure when I do Rep this way?
-          if ((closure.Index < block.Count - 1) || (closure.Parent != null))
-          {
+        else {
+          // I need something different to happen when we are at the top level already.
+          // Or maybe I need to inject a wrapper closure when I do Rep this way?
+          if ((closure.Index < block.Count - 1) || (closure.Parent != null)) {
             DoYield (runner, closure, current.Value);
           }
-          else
-          {
+          else {
             DoYield (runner, closure, current);
           }
         }
@@ -373,8 +354,7 @@ namespace RCL.Kernel
       {
         RCValue child = right.Get (i);
         RCVector<string> text = child as RCVector<string>;
-        if (text == null)
-        {
+        if (text == null) {
           RCArray<string> strings = new RCArray<string> (right.Count);
           RCBlock nestedBlock = (RCBlock) child;
           for (int j = 0; j < nestedBlock.Count; ++j)
@@ -382,75 +362,63 @@ namespace RCL.Kernel
             strings.Write (nestedBlock.GetString (j));
           }
           text = new RCString (strings);
-          //ExpandTemplate (builder, template, (RCBlock) child, I + i, indent);
+          // ExpandTemplate (builder, template, (RCBlock) child, I + i, indent);
         }
-        //else
+        // else
         {
           bool somethingAdded = false;
           for (int j = 0; j < text.Count; ++j)
           {
-            string section = text [j];
+            string section = text[j];
             int start = 0;
             int lineNum = 0;
             for (int k = 0; k < section.Length; ++k)
             {
-              if (section [k] == '\n')
-              {
+              if (section[k] == '\n') {
                 string line;
-                if (i % 2 == 1)
-                {
-                  if (k > 0 && section.Length > 0 && section [k - 1] == '\r')
-                  {
+                if (i % 2 == 1) {
+                  if (k > 0 && section.Length > 0 && section[k - 1] == '\r') {
                     line = section.Substring (start, k - start - 1);
                   }
-                  else
-                  {
+                  else {
                     line = section.Substring (start, k - start);
                   }
-                  //if (j > 0 || start > 0)
+                  // if (j > 0 || start > 0)
                   // Using j and start here didn't work because sometimes empty strings
                   // are added. Instead keep track of whether a line has been added.
                   // We may need this variable to handle other cases as well, but
                   // they haven't cropped yet.
-                  if (somethingAdded)
-                  {
-                    //Notice below in the section with w. If there is extra content
-                    //before the code section on the same line, it will have been
-                    //inserted/indented already.
+                  if (somethingAdded) {
+                    // Notice below in the section with w. If there is extra content
+                    // before the code section on the same line, it will have been
+                    // inserted/indented already.
                     builder.Append (indent);
                   }
                   builder.Append (line);
                   builder.Append ("\n");
                   somethingAdded = true;
                 }
-                else
-                {
-                  //In content sections after the first one,
-                  //skip newlines if they are the first thing in the section.
+                else {
+                  // In content sections after the first one,
+                  // skip newlines if they are the first thing in the section.
                   line = section.Substring (start, k - start);
-                  if (I + i == 0)
-                  {
+                  if (I + i == 0) {
                     builder.Append (line);
                     builder.Append ("\n");
                   }
-                  else if (line != "")
-                  {
-                    if (builder [builder.Length - 1] == '\n')
-                    {
-                      if (start == 0 && (k < section.Length - 1 || i == right.Count - 1))
-                      {
+                  else if (line != "") {
+                    if (builder[builder.Length - 1] == '\n') {
+                      if (start == 0 && (k < section.Length - 1 || i == right.Count - 1)) {
                         builder.Append (indent);
                       }
-                      else if (k == section.Length - 1 && i < right.Count - 1)
-                      {
+                      else if (k == section.Length - 1 && i < right.Count - 1) {
                         builder.Append (indent);
                       }
                     }
                     builder.Append (line);
                     builder.Append ("\n");
                   }
-                  else if (k > 0 || (builder.Length > 0 && builder [builder.Length - 1] != '\n'))
-                  {
+                  else if (k > 0 || (builder.Length > 0 && builder[builder.Length - 1] != '\n')) {
                     builder.Append (line);
                     builder.Append ("\n");
                   }
@@ -459,62 +427,53 @@ namespace RCL.Kernel
                 ++lineNum;
               }
             }
-            if (template.Multiline)
-            {
-              //If this is a code section, the lastPiece is just the last line of the template.
-              //There is no newline at the end.
-              //If this is a text section, the lastPiece is a prefix for the next code section.
+            if (template.Multiline) {
+              // If this is a code section, the lastPiece is just the last line of the
+              // template.
+              // There is no newline at the end.
+              // If this is a text section, the lastPiece is a prefix for the next code
+              // section.
               string lastPiece = section.Substring (start, section.Length - start);
-              if (i % 2 == 1)
-              {
-                //Odd sections are always code sections.
-                //Code sections don't have a newline at the end.
-                if (j == 0)
-                {
-                  //This means there was a newline at the end of section.
-                  if (start > 0 && lastPiece != "")
-                  {
+              if (i % 2 == 1) {
+                // Odd sections are always code sections.
+                // Code sections don't have a newline at the end.
+                if (j == 0) {
+                  // This means there was a newline at the end of section.
+                  if (start > 0 && lastPiece != "") {
                     builder.Append (indent);
                   }
                 }
-                else if (j == text.Count - 1)
-                {
+                else if (j == text.Count - 1) {
                   indent = parentIndent;
                 }
                 builder.Append (lastPiece);
               }
-              else
-              {
+              else {
                 int w;
                 for (w = 0; w < lastPiece.Length; ++w)
                 {
-                  if (lastPiece [w] != ' ')
-                  {
+                  if (lastPiece[w] != ' ') {
                     break;
                   }
                 }
-                //indent only includes spaces before the first non-space character.
-                //The non-space part of the text is only inserted once.
-                //An edge case involves spaces inserted between code sections on the same line.
-                //\t not spoken here.
-                //while (builder.Length == 0 || builder[builder.Length - 1] == '\n')
+                // indent only includes spaces before the first non-space character.
+                // The non-space part of the text is only inserted once.
+                // An edge case involves spaces inserted between code sections on the same
+                // line.
+                // \t not spoken here.
+                // while (builder.Length == 0 || builder[builder.Length - 1] == '\n')
                 {
                   string end;
-                  if (builder.Length == 0 || builder[builder.Length - 1] == '\n')
-                  {
+                  if (builder.Length == 0 || builder[builder.Length - 1] == '\n') {
                     indent = parentIndent + lastPiece.Substring (0, w);
                     end = lastPiece.Substring (w, lastPiece.Length - w);
                   }
-                  else
-                  {
+                  else {
                     end = lastPiece;
                   }
-                  if (i < right.Count - 1)
-                  {
-                    if (section.Length > 0)
-                    {
-                      if (builder.Length == 0 || builder[builder.Length - 1] == '\n')
-                      {
+                  if (i < right.Count - 1) {
+                    if (section.Length > 0) {
+                      if (builder.Length == 0 || builder[builder.Length - 1] == '\n') {
                         builder.Append (indent);
                       }
                     }
@@ -523,20 +482,18 @@ namespace RCL.Kernel
                 }
               }
             }
-            else
-            {
-              //If there are no newlines in the template then just drop the whole thing in as is.
-              builder.Append (text [j]);
+            else {
+              // If there are no newlines in the template then just drop the whole thing
+              // in as is.
+              builder.Append (text[j]);
             }
           }
         }
       }
-      //Go back and remove the final newline now.
-      //Let the enclosing template decide how to finish off.
-      if (template.Multiline)
-      {
-        if (builder.Length > 0 && builder [builder.Length - 1] != '\n')
-        {
+      // Go back and remove the final newline now.
+      // Let the enclosing template decide how to finish off.
+      if (template.Multiline) {
+        if (builder.Length > 0 && builder[builder.Length - 1] != '\n') {
           builder.Append ("\n");
         }
       }
@@ -570,11 +527,9 @@ namespace RCL.Kernel
                                    RCArray<RCBlock> @this,
                                    bool returnNull)
     {
-      if (context != null)
-      {
+      if (context != null) {
         RCValue result = context.Get (name, @this);
-        if (result != null)
-        {
+        if (result != null) {
           return result;
         }
       }
@@ -583,27 +538,23 @@ namespace RCL.Kernel
       while (parent != null)
       {
         IRefable result = parent.Result;
-        if (result != null && !parent.NoResolve)
-        {
+        if (result != null && !parent.NoResolve) {
           val = result.Get (name, @this);
         }
-        if (val != null)
-        {
+        if (val != null) {
           break;
         }
-        if (!parent.NoClimb)
-        {
+        if (!parent.NoClimb) {
           parent = parent.Parent;
         }
-        else
-        {
+        else {
           break;
         }
       }
-      if (val == null && !returnNull)
-      {
-        //Delimit thing is annoying.
-        throw new RCException (closure, RCErrors.Name,
+      if (val == null && !returnNull) {
+        // Delimit thing is annoying.
+        throw new RCException (closure,
+                               RCErrors.Name,
                                "Unable to resolve name " + RCReference.Delimit (name, "."));
       }
       return val;
@@ -616,39 +567,35 @@ namespace RCL.Kernel
     {
       RCValue code = closure.UserOp;
       RCArray<RCBlock> @this = closure.UserOpContext;
-      if (code == null)
-      {
-        if (op.m_reference.Parts.Count > 1)
-        {
+      if (code == null) {
+        if (op.m_reference.Parts.Count > 1) {
           @this = new RCArray<RCBlock> ();
         }
         code = Resolve (op.m_reference.m_static, closure, op.m_reference.Parts, @this);
       }
-      if (code == null)
-      {
+      if (code == null) {
         throw new Exception ("Cannot find definition for operator: " + op.m_reference.Name);
       }
-      if (code.TypeCode == 's')
-      {
+      if (code.TypeCode == 's') {
         string name = ((RCString) code)[0];
         RCValue left = closure.Result.Get ("0");
         RCValue right = closure.Result.Get ("1");
-        if (left != null)
-        {
+        if (left != null) {
           RCSystem.Activator.Invoke (runner, closure, name, left, right);
         }
-        else
-        {
+        else {
           RCSystem.Activator.Invoke (runner, closure, name, right);
         }
       }
-      else
-      {
+      else {
         code.Eval (runner, UserOpClosure (closure, code, @this, noClimb: false));
       }
     }
 
-    public static RCClosure UserOpClosure (RCClosure previous, RCValue code, RCArray<RCBlock> @this, bool noClimb)
+    public static RCClosure UserOpClosure (RCClosure previous,
+                                           RCValue code,
+                                           RCArray<RCBlock> @this,
+                                           bool noClimb)
     {
       return UserOpClosure (previous, code, @this, null, null, noClimb);
     }
@@ -659,7 +606,7 @@ namespace RCL.Kernel
                                            RCValue left,
                                            RCValue right)
     {
-      return UserOpClosure (previous, code, @this, left, right, noClimb:false);
+      return UserOpClosure (previous, code, @this, left, right, noClimb: false);
     }
 
     /// <summary>
@@ -671,37 +618,35 @@ namespace RCL.Kernel
                                            RCValue code,
                                            RCArray<RCBlock> @this,
                                            RCValue left,
-                                           RCValue right, bool noClimb)
+                                           RCValue right,
+                                           bool noClimb)
     {
       left = left != null ? left : previous.Result.Get ("0");
       right = right != null ? right : previous.Result.Get ("1");
       RCBlock result = null;
-      if (@this != null && @this.Count > 0)
-      {
+      if (@this != null && @this.Count > 0) {
         result = @this[0];
-        //This is only for when the this context contains more than one object.
-        //I'm not even sure whether to support this, I guess I should.
-        //But this is not going to be the fastest solution possible.
+        // This is only for when the this context contains more than one object.
+        // I'm not even sure whether to support this, I guess I should.
+        // But this is not going to be the fastest solution possible.
         for (int i = 1; i < @this.Count; ++i)
         {
-          for (int j = 0; j < @this [i].Count; ++j)
+          for (int j = 0; j < @this[i].Count; ++j)
           {
-            RCBlock block = @this [i].GetName (j);
+            RCBlock block = @this[i].GetName (j);
             result = new RCBlock (result, block.Name, ":", block.Value);
           }
         }
       }
-      if (left == null)
-      {
+      if (left == null) {
         result = new RCBlock (result, "R", ":", right);
       }
-      else
-      {
+      else {
         result = new RCBlock (result, "L", ":", left);
         result = new RCBlock (result, "R", ":", right);
       }
-      //Passing code and @this here is important. NextParentOf will look
-      //for the body of the executing function in that variable to detect tail calls.
+      // Passing code and @this here is important. NextParentOf will look
+      // for the body of the executing function in that variable to detect tail calls.
       RCClosure replacement = new RCClosure (previous.Bot,
                                              previous.Fiber,
                                              previous.Locks,
@@ -709,19 +654,25 @@ namespace RCL.Kernel
                                              previous.Code,
                                              previous.Left,
                                              result,
-                                             previous.Index, code, @this, noClimb, noResolve:false);
+                                             previous.Index,
+                                             code,
+                                             @this,
+                                             noClimb,
+                                             noResolve: false);
       RCClosure child = new RCClosure (replacement,
                                        previous.Bot,
                                        code,
                                        previous.Left,
                                        RCBlock.Empty,
-                                       0, code, @this);
+                                       0,
+                                       code,
+                                       @this);
       return child;
     }
 
     public static void DoEvalInline (RCRunner runner, RCClosure closure, InlineOperator op)
     {
-      op.m_code.Eval (runner, UserOpClosure (closure, op.m_code, null, noClimb:false));
+      op.m_code.Eval (runner, UserOpClosure (closure, op.m_code, null, noClimb: false));
     }
 
     public static void DoEvalTemplate (RCRunner runner, RCClosure closure, RCTemplate template)
@@ -731,102 +682,100 @@ namespace RCL.Kernel
 
     public static void DoYield (RCRunner runner, RCClosure closure, RCValue result)
     {
-      if (result == null)
-      {
+      if (result == null) {
         throw new ArgumentNullException ("result");
       }
-      //Check to see if this fiber was killed before moving on
+      // Check to see if this fiber was killed before moving on
       RCBot bot = runner.GetBot (closure.Bot);
-      if (bot.IsFiberDone (closure.Fiber))
-      {
+      if (bot.IsFiberDone (closure.Fiber)) {
         runner.Continue (closure, null);
         return;
       }
-      //Do not permit any further changes to result or its children values.
+      // Do not permit any further changes to result or its children values.
       result.Lock ();
       RCClosure next = closure.Code.Next (runner, closure, closure, result);
-      if (next == null)
-      {
+      if (next == null) {
         result = closure.Code.Finish (runner, closure, result);
         bot.ChangeFiberState (closure.Fiber, "done");
         RCSystem.Log.Record (closure, "fiber", closure.Fiber, "done", "");
-        if (closure.Fiber == 0 && closure.Bot == 0)
-        {
+        if (closure.Fiber == 0 && closure.Bot == 0) {
           runner.Finish (closure, result);
         }
-        //This will handle fibers that wake up from some suspended state
-        //without realizing that they have been killed.
-        else
-        {
+        // This will handle fibers that wake up from some suspended state
+        // without realizing that they have been killed.
+        else {
           bot.FiberDone (runner, closure.Bot, closure.Fiber, result);
         }
-        //Remove closure from the pending queue.
+        // Remove closure from the pending queue.
         runner.Continue (closure, null);
       }
-      else
-      {
+      else {
         runner.Continue (closure, next);
       }
     }
 
-    //Construct the next closure, default case.
+    // Construct the next closure, default case.
     public static RCClosure DoNext (RCValue val,
                                     RCRunner runner,
                                     RCClosure tail,
                                     RCClosure previous,
                                     RCValue result)
     {
-      if (previous.Parent != null)
-      {
+      if (previous.Parent != null) {
         return previous.Parent.Code.Next (runner,
                                           tail == null ? previous : tail,
                                           previous.Parent,
                                           result);
       }
-      else return null;
+      else {
+        return null;
+      }
     }
 
-    //Construct the next closure for a block.
+    // Construct the next closure for a block.
     public static RCClosure DoNext (RCBlock block,
                                     RCRunner runner,
                                     RCClosure tail,
                                     RCClosure previous,
                                     RCValue result)
     {
-      if (previous.Index < block.Count - 1)
-      {
+      if (previous.Index < block.Count - 1) {
         return new RCClosure (previous.Bot,
-                              previous.Fiber, previous.Locks,
-                              previous.Parent, block, previous.Left,
+                              previous.Fiber,
+                              previous.Locks,
+                              previous.Parent,
+                              block,
+                              previous.Left,
                               NextBlock (runner, block, previous, result),
                               previous.Index + 1,
-                              previous.UserOp, previous.UserOpContext, noClimb:false, noResolve:false);
+                              previous.UserOp,
+                              previous.UserOpContext,
+                              noClimb: false,
+                              noResolve: false);
       }
-      else if (previous.Parent != null)
-      {
-        if (block.Count == 0)
-        {
+      else if (previous.Parent != null) {
+        if (block.Count == 0) {
           return previous.Parent.Code.Next (runner,
                                             tail,
                                             previous.Parent,
                                             result);
         }
-        else if (block.Evaluator.Return && previous.Index == block.Count - 1)
-        {
+        else if (block.Evaluator.Return && previous.Index == block.Count - 1) {
           return previous.Parent.Code.Next (runner,
                                             tail,
                                             previous.Parent,
                                             result);
         }
-        else
-        {
+        else {
           return previous.Parent.Code.Next (runner,
                                             tail,
                                             previous.Parent,
                                             NextBlock (runner, block, previous, result));
         }
       }
-      else return null;
+      else {
+        return null;
+      }
     }
 
     protected static RCBlock NextBlock (RCRunner runner,
@@ -840,21 +789,20 @@ namespace RCL.Kernel
                                     code.Evaluator.Next,
                                     val);
       runner.Output (previous,
-                     new RCSymbolScalar (null, code.Name), val);
+                     new RCSymbolScalar (null, code.Name),
+                     val);
       return result;
     }
 
-    //Construct the next closure for an operator.
+    // Construct the next closure for an operator.
     public static RCClosure DoNext (RCOperator op,
                                     RCRunner runner,
                                     RCClosure head,
                                     RCClosure previous,
                                     RCValue result)
     {
-      if (op.Left == null)
-      {
-        if (previous.Index == 0)
-        {
+      if (op.Left == null) {
+        if (previous.Index == 0) {
           RCValue userop;
           RCArray<RCBlock> useropContext;
           RCClosure nextParentOf = NextParentOf (op, previous, out userop, out useropContext);
@@ -864,59 +812,69 @@ namespace RCL.Kernel
                                           previous.Left,
                                           new RCBlock (null, "1", ":", result),
                                           previous.Index + 1,
-                                          userop, useropContext);
+                                          userop,
+                                          useropContext);
           return next;
         }
-        else if (previous.Index == 1 && previous.Parent != null)
-        {
+        else if (previous.Index == 1 && previous.Parent != null) {
           return previous.Parent.Code.Next (runner,
                                             head == null ? previous : head,
                                             previous.Parent,
                                             result);
         }
-        else return null;
+        else {
+          return null;
+        }
       }
-      else
-      {
-        if (previous.Index == 0)
-        {
+      else {
+        if (previous.Index == 0) {
           return new RCClosure (previous.Parent,
                                 head.Bot,
                                 op,
                                 result,
                                 previous.Result,
-                                previous.Index + 1, previous.UserOp, previous.UserOpContext);
+                                previous.Index + 1,
+                                previous.UserOp,
+                                previous.UserOpContext);
         }
-        else if (previous.Index == 1)
-        {
+        else if (previous.Index == 1) {
           RCValue userop;
           RCArray<RCBlock> useropContext;
-          RCClosure next = new RCClosure (NextParentOf (op, previous, out userop, out useropContext),
+          RCClosure next = new RCClosure (NextParentOf (op,
+                                                        previous,
+                                                        out userop,
+                                                        out
+                                                        useropContext),
                                           head.Bot,
                                           op,
-                                          //reset "pocket" left to null.
+                                          // reset "pocket" left to null.
                                           null,
-                                          //fold it into the current context for the final eval.
-                                          new RCBlock (new RCBlock (null, "0", ":", previous.Left), "1", ":", result),
+                                          // fold it into the current context for the
+                                          // final eval.
+                                          new RCBlock (new RCBlock (null, "0", ":", previous.Left),
+                                                       "1",
+                                                       ":",
+                                                       result),
                                           previous.Index + 1,
-                                          userop, useropContext);
+                                          userop,
+                                          useropContext);
           return next;
         }
-        else if (previous.Index == 2 && previous.Parent != null)
-        {
+        else if (previous.Index == 2 && previous.Parent != null) {
           return previous.Parent.Code.Next (runner,
                                             head == null ? previous : head,
                                             previous.Parent,
                                             result);
         }
-        else if (previous.Parent != null && previous.Parent.Parent != null)
-        {
+        else if (previous.Parent != null && previous.Parent.Parent != null) {
           return previous.Parent.Parent.Code.Next (runner,
                                                    head == null ? previous : head,
                                                    previous.Parent.Parent,
                                                    result);
         }
-        else return null;
+        else {
+          return null;
+        }
       }
     }
 
@@ -925,42 +883,35 @@ namespace RCL.Kernel
                                              out RCValue userop,
                                              out RCArray<RCBlock> useropContext)
     {
-      //The only operator with IsHigherOrder set is switch.
-      //Why is switch magical, why not each, take, fiber, etc...
-      //Am I just missing tests for those?
+      // The only operator with IsHigherOrder set is switch.
+      // Why is switch magical, why not each, take, fiber, etc...
+      // Am I just missing tests for those?
       userop = null;
       useropContext = previous.UserOpContext;
       RCClosure argument0, argument1;
       bool recursion = false;
-      if (previous.Parent == null)
-      {
+      if (previous.Parent == null) {
         return previous.Parent;
       }
       recursion = CheckForRecursion (op, previous, ref userop, ref useropContext);
-      if (!recursion)
-      {
+      if (!recursion) {
         return previous.Parent;
       }
       RCClosure parent0 = OwnerOpOf (op, previous, out argument0);
-      if (parent0 == null)
-      {
+      if (parent0 == null) {
         return previous.Parent;
       }
-      if (!parent0.Code.IsLastCall (parent0, argument0))
-      {
-        if (!recursion)
-        {
+      if (!parent0.Code.IsLastCall (parent0, argument0)) {
+        if (!recursion) {
           return previous.Parent;
         }
       }
       RCClosure parent1 = OwnerOpOf (op, parent0, out argument1);
-      if (parent1 == null)
-      {
-        //parent1 is null when there is no switch in the last line.
+      if (parent1 == null) {
+        // parent1 is null when there is no switch in the last line.
         return previous.Parent;
       }
-      if (!parent1.Code.IsLastCall (parent1, argument1))
-      {
+      if (!parent1.Code.IsLastCall (parent1, argument1)) {
         return previous.Parent;
       }
       return parent1.Parent;
@@ -971,15 +922,13 @@ namespace RCL.Kernel
                                          ref RCValue resolved,
                                          ref RCArray<RCBlock> context)
     {
-      //Now we just did the this context work so you know what that means.
-      //We have to pass in this.
+      // Now we just did the this context work so you know what that means.
+      // We have to pass in this.
       UserOperator name = op as UserOperator;
-      if (name == null)
-      {
+      if (name == null) {
         return;
       }
-      if (name.m_reference.Parts.Count > 1)
-      {
+      if (name.m_reference.Parts.Count > 1) {
         context = new RCArray<RCBlock> ();
       }
       resolved = Resolve (null, closure.Parent, name.m_reference.Parts, context);
@@ -991,25 +940,22 @@ namespace RCL.Kernel
                                           ref RCArray<RCBlock> useropContext)
     {
       UserOperator name = op as UserOperator;
-      if (name != null)
-      {
+      if (name != null) {
         PreresolveUserOp (previous, op, ref userop, ref useropContext);
         RCClosure current = previous.Parent;
         while (current != null)
         {
           UserOperator code = current.Code as UserOperator;
-          if (code != null)
-          {
-            if (userop == current.UserOp)
-            {
-              //Tail recursion detected
+          if (code != null) {
+            if (userop == current.UserOp) {
+              // Tail recursion detected
               return true;
             }
           }
           current = current.Parent;
         }
       }
-      //No tail recursion here
+      // No tail recursion here
       return false;
     }
 
@@ -1019,29 +965,30 @@ namespace RCL.Kernel
       // We now check explicitly for the tail recursive case
       // This means less need to worry about "last call" status
       // UserOperator is the only place where this operation might return true now.
-      // There is never a need to eliminate the tail stack frame in the case of a built-in.
+      // There is never a need to eliminate the tail stack frame in the case of a
+      // built-in.
       // Still I don't feel quite ready to excise all of this "last call" code.
       // We will save that until the production system is ready.
       // So that we can do a full and proper regression.
       // It's possible there is something I'm missing.
       /*
-      if (closure.Index == 0)
-      {
-        return op.Left == null;
-      }
-      else
-      {
-        return closure.Index == 1;
-      }
-      */
+         if (closure.Index == 0)
+         {
+         return op.Left == null;
+         }
+         else
+         {
+         return closure.Index == 1;
+         }
+       */
     }
 
     public static bool DoIsLastCall (RCClosure closure,
                                      RCClosure arg,
                                      RCBlock block)
     {
-      //Costly call to GetName, will want to address this at some point.
-      //return block.Evaluator.Return;
+      // Costly call to GetName, will want to address this at some point.
+      // return block.Evaluator.Return;
       return block.GetName (closure.Index).Evaluator.Return;
     }
 
@@ -1049,12 +996,10 @@ namespace RCL.Kernel
                                      RCClosure arg,
                                      RCOperator op)
     {
-      if (closure.Index == 1)
-      {
+      if (closure.Index == 1) {
         return op.Left == null;
       }
-      else
-      {
+      else {
         return closure.Index == 2;
       }
     }
@@ -1063,19 +1008,16 @@ namespace RCL.Kernel
                                      RCClosure arg,
                                      UserOperator op)
     {
-      //Commenting these lines out breaks the case where the last
-      //op is not really the last op. But why?
-      if (arg != null)
-      {
+      // Commenting these lines out breaks the case where the last
+      // op is not really the last op. But why?
+      if (arg != null) {
         bool result = arg.Code.IsLastCall (arg, null);
-        if (result)
-        {
+        if (result) {
           result = DoIsLastCall (closure, arg, (RCOperator) op);
         }
         return result;
       }
-      else
-      {
+      else {
         bool result = DoIsLastCall (closure, arg, (RCOperator) op);
         return result;
       }
@@ -1102,22 +1044,18 @@ namespace RCL.Kernel
       while (closure != null)
       {
         RCBlock obj = closure.Code as RCBlock;
-        if (obj != null)
-        {
-          if (obj.Count > 0 && obj.Evaluator.FinishBlock && result != closure.Code)
-          {
+        if (obj != null) {
+          if (obj.Count > 0 && obj.Evaluator.FinishBlock && result != closure.Code) {
             result = NextBlock (runner, obj, closure, result);
           }
         }
         RCOperator op = closure.Code as RCOperator;
-        if (op != null)
-        {
+        if (op != null) {
           result = op.Finish (result);
         }
         if (closure.Parent != null &&
             (closure.Parent.Bot != closure.Bot ||
-             closure.Parent.Fiber != closure.Fiber))
-        {
+             closure.Parent.Fiber != closure.Fiber)) {
           break;
         }
         closure = closure.Parent;

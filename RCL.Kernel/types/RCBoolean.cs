@@ -12,8 +12,8 @@ namespace RCL.Kernel
     public static readonly RCBoolean True = new RCBoolean (true);
     public static readonly RCBoolean False = new RCBoolean (false);
 
-    public RCBoolean (params bool[] data) : base (data) { }
-    public RCBoolean (RCArray<bool> data) : base (data) { }
+    public RCBoolean (params bool[] data) : base (data) {}
+    public RCBoolean (RCArray<bool> data) : base (data) {}
 
     public override char TypeCode
     {

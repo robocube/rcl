@@ -9,15 +9,17 @@ namespace RCL.Kernel
 {
   public class EmptyVectorToken : RCTokenType
   {
-    public override RCToken TryParseToken (string code, int start, int index, int line, RCToken previous)
+    public override RCToken TryParseToken (string code,
+                                           int start,
+                                           int index,
+                                           int line,
+                                           RCToken
+                                           previous)
     {
-      if (code[start] == '~')
-      {
+      if (code[start] == '~') {
         int end = start + 1;
-        if (end < code.Length)
-        {
-          if (IsIn (code[end], TypeChars))
-          {
+        if (end < code.Length) {
+          if (IsIn (code[end], TypeChars)) {
             string token = code.Substring (start, 2);
             return new RCToken (token, this, start, index, line, 0);
           }
@@ -25,7 +27,9 @@ namespace RCL.Kernel
         }
         return null;
       }
-      else return null;
+      else {
+        return null;
+      }
     }
 
     public override string TypeName

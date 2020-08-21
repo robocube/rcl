@@ -51,10 +51,9 @@ namespace RCL.Core
 
     public override void Open (RCRunner runner, RCClosure closure)
     {
-      Dns.BeginGetHostEntry (
-        m_host,
-        new AsyncCallback (GetHostEntryCompleted),
-        new RCAsyncState (runner, closure, null));
+      Dns.BeginGetHostEntry (m_host,
+                             new AsyncCallback (GetHostEntryCompleted),
+                             new RCAsyncState (runner, closure, null));
     }
 
     protected void GetHostEntryCompleted (IAsyncResult result)
@@ -75,7 +74,9 @@ namespace RCL.Core
     {
       IPAddress address = m_ip.AddressList[i];
       m_socket = new Socket (
-        address.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+        address.AddressFamily,
+        SocketType.Stream,
+        ProtocolType.Tcp);
       IPEndPoint end = new IPEndPoint (address, (int) m_port);
       RCAsyncState statei = new RCAsyncState (state.Runner, state.Closure, i);
       m_socket.BeginConnect (end, new AsyncCallback (ConnectCompleted), statei);
@@ -87,19 +88,17 @@ namespace RCL.Core
       RCAsyncState state = (RCAsyncState) obj;
       try
       {
-        if (!m_socket.Connected)
-        {
+        if (!m_socket.Connected) {
           m_socket.Close ();
           int i = (int) state.Other;
-          if (i >= m_ip.AddressList.Length - 1)
-          {
-            state.Runner.Finish (state.Closure, 
-                                 new RCException (state.Closure, 
-                                                  RCErrors.Timeout, 
-                                                  "Giving up after timeout."), 1);
+          if (i >= m_ip.AddressList.Length - 1) {
+            state.Runner.Finish (state.Closure,
+                                 new RCException (state.Closure,
+                                                  RCErrors.Timeout,
+                                                  "Giving up after timeout."),
+                                 1);
           }
-          else
-          {
+          else {
             m_socket.Close ();
             TryAddress (state, i + 1);
           }
@@ -120,24 +119,21 @@ namespace RCL.Core
         m_socket.EndConnect (result);
         m_openState = state;
         state.Runner.Yield (state.Closure, new RCLong (m_handle));
-        m_socket.BeginReceive (
-          m_buffer.RecvBuffer,
-          m_buffer.Read,
-          m_buffer.RecvBuffer.Length,
-          SocketFlags.None,
-          new AsyncCallback (ReceiveCompleted),
-          null);
+        m_socket.BeginReceive (m_buffer.RecvBuffer,
+                               m_buffer.Read,
+                               m_buffer.RecvBuffer.Length,
+                               SocketFlags.None,
+                               new AsyncCallback (ReceiveCompleted),
+                               null);
       }
       catch (Exception ex)
       {
-        if (i >= m_ip.AddressList.Length - 1)
-        {
+        if (i >= m_ip.AddressList.Length - 1) {
           state.Runner.Report (state.Closure, ex);
         }
-        else
-        {
+        else {
           m_socket.Close ();
-          TryAddress(state, i + 1);
+          TryAddress (state, i + 1);
         }
       }
     }
@@ -148,16 +144,17 @@ namespace RCL.Core
       try
       {
         count = m_socket.EndReceive (result);
-        if (count > 0)
-        {
+        if (count > 0) {
           long sid = -1;
           long ignore;
-          RCBlock message = m_buffer.CompleteReceive (
-            m_openState.Runner, count, m_handle, sid, out ignore);
+          RCBlock message = m_buffer.CompleteReceive (m_openState.Runner,
+                                                      count,
+                                                      m_handle,
+                                                      sid,
+                                                      out ignore);
           RCSymbol id = (RCSymbol) message.Get ("id");
-          //Console.Out.WriteLine ("Client receiving {0}, message:{1}", id, message);
-          if (message != null)
-          {
+          // Console.Out.WriteLine ("Client receiving {0}, message:{1}", id, message);
+          if (message != null) {
             m_inbox.Add (id[0], message);
           }
           m_socket.BeginReceive (
@@ -175,8 +172,7 @@ namespace RCL.Core
       }
       finally
       {
-        if (count == 0)
-        {
+        if (count == 0) {
           m_socket.Close (1000);
           RCSystem.Log.Record (m_openState.Closure, "socket", m_handle, "closed", "");
         }
@@ -185,36 +181,35 @@ namespace RCL.Core
 
     public override void Close (RCRunner runner, RCClosure closure)
     {
-      //Again, wtf is up with this timeout thingy.
-      if (m_socket != null)
-      {
+      // Again, wtf is up with this timeout thingy.
+      if (m_socket != null) {
         m_socket.Close (1000);
       }
     }
 
-    public override TcpSendState Send (
-      RCRunner runner, RCClosure closure, RCBlock message)
+    public override TcpSendState Send (RCRunner runner, RCClosure closure, RCBlock message)
     {
       long cid = Interlocked.Increment (ref m_cid);
-      //Console.Out.WriteLine ("New Cid:{0}", cid);
+      // Console.Out.WriteLine ("New Cid:{0}", cid);
       byte[] payload = m_protocol.Serialize (this, message);
       TcpSendState correlation = new TcpSendState (m_handle, cid, message);
       RCAsyncState state = new RCAsyncState (runner, closure, correlation);
-      if (m_outbox.Add (state))
-      {
-        //Send will add the header to the payload.
-        //This is something I will probably want to change by adding some kind of
-        //serializer/formatter abstraction.
+      if (m_outbox.Add (state)) {
+        // Send will add the header to the payload.
+        // This is something I will probably want to change by adding some kind of
+        // serializer/formatter abstraction.
         int size = m_buffer.PrepareSend (correlation.Id, payload);
         m_socket.BeginSend (
-          m_buffer.SendBuffer, 0, size, SocketFlags.None,
+          m_buffer.SendBuffer,
+          0,
+          size,
+          SocketFlags.None,
           new AsyncCallback (SendCompleted),
           state);
-        //Console.Out.WriteLine ("Client sending {0}", correlation.Id);
+        // Console.Out.WriteLine ("Client sending {0}", correlation.Id);
       }
-      else
-      {
-        //Console.Out.WriteLine ("Another message has to go first");
+      else {
+        // Console.Out.WriteLine ("Another message has to go first");
       }
       return correlation;
     }
@@ -224,23 +219,24 @@ namespace RCL.Core
       RCAsyncState state = (RCAsyncState) result.AsyncState;
       try
       {
-        //Don't know what to do with the count returned... Anything?
+        // Don't know what to do with the count returned... Anything?
         m_socket.EndSend (result);
-        //Dequeue the next item for sending on this channel.
+        // Dequeue the next item for sending on this channel.
         RCAsyncState next = m_outbox.Remove ();
-        if (next != null)
-        {
-          //Send will add the header to the payload.
-          //This is something I will probably want to change by adding some kind of
-          //serializer/formatter abstraction.
+        if (next != null) {
+          // Send will add the header to the payload.
+          // This is something I will probably want to change by adding some kind of
+          // serializer/formatter abstraction.
           TcpSendState correlation = (TcpSendState) next.Other;
           byte[] payload = m_protocol.Serialize (this, correlation.Message);
           int size = m_buffer.PrepareSend (correlation.Id, payload);
-          m_socket.BeginSend (
-            m_buffer.SendBuffer, 0, size, SocketFlags.None,
-            new AsyncCallback (SendCompleted),
-            state);
-          //Console.Out.WriteLine ("Client sending {0}", correlation.Id);
+          m_socket.BeginSend (m_buffer.SendBuffer,
+                              0,
+                              size,
+                              SocketFlags.None,
+                              new AsyncCallback (SendCompleted),
+                              state);
+          // Console.Out.WriteLine ("Client sending {0}", correlation.Id);
         }
       }
       catch (Exception ex)
@@ -251,10 +247,10 @@ namespace RCL.Core
 
     public override void Receive (TcpCollector gatherer, RCSymbolScalar id)
     {
-      //It's not honoring the id here.
-      //We should make sure to return the response to the appropriate
-      //request, not rely on the order.
-      //m_inbox.Remove(runner, closure);
+      // It's not honoring the id here.
+      // We should make sure to return the response to the appropriate
+      // request, not rely on the order.
+      // m_inbox.Remove(runner, closure);
       m_inbox.Remove (id, gatherer);
     }
   }

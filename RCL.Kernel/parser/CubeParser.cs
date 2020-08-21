@@ -48,7 +48,7 @@ namespace RCL.Kernel
       public bool m_canonical = false;
 
       // In the canonical case, use this to unsure empty rows are not skipped over.
-      //public bool m_forceAxisWrite = false;
+      // public bool m_forceAxisWrite = false;
 
       public RCArray<string> m_tlcolnames = new RCArray<string> ();
     }
@@ -63,16 +63,13 @@ namespace RCL.Kernel
     public override RCValue EndParsing (object state)
     {
       State s = (State) state;
-      if (s.m_cube == null)
-      {
+      if (s.m_cube == null) {
         return new RCCube ();
       }
-      if (!s.m_hasTimeline && s.m_cube.Axis.Exists)
-      {
+      if (!s.m_hasTimeline && s.m_cube.Axis.Exists) {
         return s.m_cube.Untl ();
       }
-      else
-      {
+      else {
         return s.m_cube;
       }
     }
@@ -82,13 +79,11 @@ namespace RCL.Kernel
       State s = (State) state;
       s.m_tnames.Write (token.Text);
       s.m_tcolumn = (s.m_tcolumn + 1) % s.m_tnames.Count;
-      if (token.Text == "E")
-      {
+      if (token.Text == "E") {
         s.m_tlcolnames.Write ("E");
         s.m_hasT = true;
       }
-      else if (token.Text == "G" || token.Text == "T" || token.Text == "S")
-      {
+      else if (token.Text == "G" || token.Text == "T" || token.Text == "S") {
         s.m_hasS = false;
         s.m_tlcolnames.Write (token.Text);
       }
@@ -97,71 +92,62 @@ namespace RCL.Kernel
     public override void AcceptScalar (object state, RCToken token, RCLexer lexer)
     {
       State s = (State) state;
-      //Move the column number forward.
+      // Move the column number forward.
       s.m_tcolumn = (s.m_tcolumn + 1) % s.m_tnames.Count;
-      //Create the cube if necessary.
-      if (s.m_cube == null)
-      {
+      // Create the cube if necessary.
+      if (s.m_cube == null) {
         s.m_cube = new RCCube (s.m_tlcolnames);
       }
-      if (s.m_tcolumn < s.m_tlcolnames.Count)
-      {
+      if (s.m_tcolumn < s.m_tlcolnames.Count) {
         string colname = s.m_tnames[s.m_tcolumn];
         char letter = colname[0];
         switch (letter)
         {
-          case 'G' :
-            s.m_global = token.ParseLong (lexer);
-            break;
-          case 'E' :
-            s.m_event = token.ParseLong (lexer);
-            break;
-          case 'T':
-            s.m_time = token.ParseTime (lexer);
-            break;
-          case 'S' :
-            s.m_symbol = token.ParseSymbol (lexer);
-            break;
-          default : throw new Exception (
-            "Unknown timeline column with letter: " + letter);
+        case 'G':
+          s.m_global = token.ParseLong (lexer);
+          break;
+        case 'E':
+          s.m_event = token.ParseLong (lexer);
+          break;
+        case 'T':
+          s.m_time = token.ParseTime (lexer);
+          break;
+        case 'S':
+          s.m_symbol = token.ParseSymbol (lexer);
+          break;
+        default: throw new Exception (
+                  "Unknown timeline column with letter: " + letter);
         }
       }
-      else
-      {
+      else {
         object val = token.Parse (lexer);
-        if (val != null)
-        {
+        if (val != null) {
           ColumnBase column = s.m_cube.GetColumn (s.m_tnames[s.m_tcolumn]);
-          if (s.m_canonical && column != null && column is RCCube.ColumnOfNothing)
-          {
+          if (s.m_canonical && column != null && column is RCCube.ColumnOfNothing) {
             s.m_cube.UnreserveColumn (s.m_tnames[s.m_tcolumn]);
           }
           s.m_cube.WriteCell (s.m_tnames[s.m_tcolumn], s.m_symbol, val, -1, true, true);
         }
-        else
-        {
-          s.m_cube.ReserveColumn (s.m_tnames[s.m_tcolumn], canonical:s.m_canonical);
+        else {
+          s.m_cube.ReserveColumn (s.m_tnames[s.m_tcolumn], canonical: s.m_canonical);
         }
       }
-      //if (s.m_forceAxisWrite || s.m_tcolumn == s.m_tnames.Count - 1)
-      if (s.m_tcolumn == s.m_tnames.Count - 1)
-      {
-        //If there is no time column in the source text then create a
-        //series of ascending integers.
-        if (!s.m_hasT)
-        {
+      // if (s.m_forceAxisWrite || s.m_tcolumn == s.m_tnames.Count - 1)
+      if (s.m_tcolumn == s.m_tnames.Count - 1) {
+        // If there is no time column in the source text then create a
+        // series of ascending integers.
+        if (!s.m_hasT) {
           ++s.m_event;
         }
         s.m_cube.Axis.Write (s.m_global, s.m_event, s.m_time, s.m_symbol);
-        //s.m_forceAxisWrite = false;
+        // s.m_forceAxisWrite = false;
       }
     }
 
     public override void AcceptSpacer (object state, RCToken token)
     {
       State s = (State) state;
-      if (token.Text == "|")
-      {
+      if (token.Text == "|") {
         s.m_hasTimeline = true;
       }
     }
@@ -179,11 +165,11 @@ namespace RCL.Kernel
         char name = tlnames[i][0];
         switch (name)
         {
-          case 'G' : G = Binary.ReadVector<long> (array, ref start, sizeof (long)); break;
-          case 'E' : E = Binary.ReadVector<long> (array, ref start, sizeof (long)); break;
-          case 'T' : T = Binary.ReadVectorTime (array, ref start); break;
-          case 'S' : S = Binary.ReadVectorSymbol (array, ref start); break;
-          default: throw new Exception ("Unknown timeline column: " + tlnames[i]);
+        case 'G': G = Binary.ReadVector<long> (array, ref start, sizeof (long)); break;
+        case 'E': E = Binary.ReadVector<long> (array, ref start, sizeof (long)); break;
+        case 'T': T = Binary.ReadVectorTime (array, ref start); break;
+        case 'S': S = Binary.ReadVectorSymbol (array, ref start); break;
+        default: throw new Exception ("Unknown timeline column: " + tlnames[i]);
         }
       }
       Timeline timeline = new Timeline (G, E, T, S);
@@ -196,15 +182,39 @@ namespace RCL.Kernel
         RCArray<int> index = RCLong.ReadVector4 (array, ref start);
         switch (type)
         {
-          case 'x': columns.Write (new RCCube.ColumnOfByte (timeline, index, Binary.ReadVector<byte> (array, ref start, sizeof (byte)))); break;
-          case 'd': columns.Write (new RCCube.ColumnOfDouble (timeline, index, Binary.ReadVector<double> (array, ref start, sizeof (double)))); break;
-          case 'l': columns.Write (new RCCube.ColumnOfLong (timeline, index, Binary.ReadVector<long> (array, ref start, sizeof (long)))); break;
-          case 'm': columns.Write (new RCCube.ColumnOfDecimal (timeline, index, Binary.ReadVectorDecimal (array, ref start))); break;
-          case 'n': columns.Write (new RCCube.ColumnOfIncr (timeline, index, Binary.ReadVectorIncr (array, ref start))); break;
-          case 'b': columns.Write (new RCCube.ColumnOfBool (timeline, index, Binary.ReadVector<bool> (array, ref start, sizeof (bool)))); break;
-          case 's': columns.Write (new RCCube.ColumnOfString (timeline, index, Binary.ReadVectorString (array, ref start))); break;
-          case 'y': columns.Write (new RCCube.ColumnOfSymbol (timeline, index, Binary.ReadVectorSymbol (array, ref start))); break;
-          default: throw new Exception ("Cannot ReadVector with type " + type);
+        case 'x':
+          RCArray<byte> datax = Binary.ReadVector<byte> (array, ref start, sizeof (byte));
+          columns.Write (new RCCube.ColumnOfByte (timeline, index, datax));
+          break;
+        case 'd':
+          RCArray<double> datad = Binary.ReadVector<double> (array, ref start, sizeof (double));
+          columns.Write (new RCCube.ColumnOfDouble (timeline, index, datad));
+          break;
+        case 'l':
+          RCArray<long> datal = Binary.ReadVector<long> (array, ref start, sizeof (long));
+          columns.Write (new RCCube.ColumnOfLong (timeline, index, datal));
+          break;
+        case 'm':
+          RCArray<decimal> datam = Binary.ReadVectorDecimal (array, ref start);
+          columns.Write (new RCCube.ColumnOfDecimal (timeline, index, datam));
+          break;
+        case 'n':
+          RCArray<RCIncrScalar> datan = Binary.ReadVectorIncr (array, ref start);
+          columns.Write (new RCCube.ColumnOfIncr (timeline, index, datan));
+          break;
+        case 'b':
+          RCArray<bool> datab = Binary.ReadVector <bool> (array, ref start, sizeof (bool));
+          columns.Write (new RCCube.ColumnOfBool (timeline, index, datab));
+          break;
+        case 's':
+          RCArray<string> datas = Binary.ReadVectorString (array, ref start);
+          columns.Write (new RCCube.ColumnOfString (timeline, index, datas));
+          break;
+        case 'y':
+          RCArray<RCSymbolScalar> datay = Binary.ReadVectorSymbol (array, ref start);
+          columns.Write (new RCCube.ColumnOfSymbol (timeline, index, datay));
+          break;
+        default: throw new Exception ("Cannot ReadVector with type " + type);
         }
       }
       return new RCCube (timeline, names, columns);

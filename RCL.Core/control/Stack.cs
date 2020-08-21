@@ -20,7 +20,7 @@ namespace RCL.Core
     {
       bool firstOnTop = RCSystem.Args.OutputEnum != RCOutput.Systemd;
       StringBuilder builder = new StringBuilder ();
-      closure.ToString (builder:builder, indent:0, firstOnTop:firstOnTop);
+      closure.ToString (builder: builder, indent: 0, firstOnTop: firstOnTop);
       string stack = builder.ToString ();
       RCSystem.Log.Record (closure, "stack", 0, "show", stack);
       runner.Yield (closure, new RCString (stack));

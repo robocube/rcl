@@ -67,15 +67,14 @@ namespace RCL.Core
     }
 
     protected RCLong DoFind<T> (RCVector<T> things, RCVector<T> within)
-      where T:IComparable<T>
+        where T : IComparable<T>
     {
-      RCArray<long> result = new RCArray<long>();
+      RCArray<long> result = new RCArray<long> ();
       for (int i = 0; i < within.Count; ++i)
       {
         for (int j = 0; j < things.Count; ++j)
         {
-          if (things[j].CompareTo (within[i]) == 0)
-          {
+          if (things[j].CompareTo (within[i]) == 0) {
             result.Write (i);
           }
         }

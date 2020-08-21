@@ -8,34 +8,54 @@ namespace RCL.Kernel
     public static ColumnBase FromArray (Timeline timeline, RCArray<int> index, object data)
     {
       Type type = data.GetType ();
-      if (type == typeof (RCArray<byte>))
+      if (type == typeof (RCArray<byte>)) {
         return new RCCube.ColumnOfByte (timeline, index, data);
-      else if (type == typeof (RCArray<long>))
+      }
+      else if (type == typeof (RCArray<long>)) {
         return new RCCube.ColumnOfLong (timeline, index, data);
-      else if (type == typeof (RCArray<double>))
+      }
+      else if (type == typeof (RCArray<double>)) {
         return new RCCube.ColumnOfDouble (timeline, index, data);
-      else if (type == typeof (RCArray<decimal>))
+      }
+      else if (type == typeof (RCArray<decimal>)) {
         return new RCCube.ColumnOfDecimal (timeline, index, data);
-      else if (type == typeof (RCArray<string>))
+      }
+      else if (type == typeof (RCArray<string>)) {
         return new RCCube.ColumnOfString (timeline, index, data);
-      else if (type == typeof (RCArray<bool>))
+      }
+      else if (type == typeof (RCArray<bool>)) {
         return new RCCube.ColumnOfBool (timeline, index, data);
-      else if (type == typeof (RCArray<RCSymbolScalar>))
+      }
+      else if (type == typeof (RCArray<RCSymbolScalar>)) {
         return new RCCube.ColumnOfSymbol (timeline, index, data);
-      else if (type == typeof (RCArray<RCTimeScalar>))
+      }
+      else if (type == typeof (RCArray<RCTimeScalar>)) {
         return new RCCube.ColumnOfTime (timeline, index, data);
-      else if (type == typeof (RCArray<RCIncrScalar>))
+      }
+      else if (type == typeof (RCArray<RCIncrScalar>)) {
         return new RCCube.ColumnOfIncr (timeline, index, data);
-      else if (type == typeof (RCArray<object>))
+      }
+      else if (type == typeof (RCArray<object>)) {
         return new RCCube.ColumnOfNothing (timeline);
-      else throw new Exception ("unsupported type: " + type);
+      }
+      else {
+        throw new Exception ("unsupported type: " + type);
+      }
     }
 
     public abstract bool Write (RCSymbolScalar key, int index, object val, bool force);
-    public abstract object Array {get;}
-    public abstract RCArray<int> Index {get;}
-    public abstract char TypeCode {get;}
-    public abstract int Count {get;}
+    public abstract object Array {
+      get;
+    }
+    public abstract RCArray<int> Index {
+      get;
+    }
+    public abstract char TypeCode {
+      get;
+    }
+    public abstract int Count {
+      get;
+    }
     public abstract Type GetElementType ();
     public abstract void Lock ();
     public abstract void ReverseInPlace (int tlcount);

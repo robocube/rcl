@@ -27,27 +27,28 @@ namespace RCL.Kernel
     {
       switch (type.Name)
       {
-        case "RCBlock": return BLOCK_TYPENAME;
-        case "RCCube": return CUBE_TYPENAME;
-        case "RCOperator": return OPERATOR_TYPENAME;
-        case "RCReference": return REFERENCE_TYPENAME;
-        case "RCTemplate": return TEMPLATE_TYPENAME;
-        case "RCByte": return BYTE_TYPENAME;
-        case "RCTime": return TIME_TYPENAME;
-        case "RCBoolean": return BOOLEAN_TYPENAME;
-        case "RCLong": return LONG_TYPENAME;
-        case "RCDouble": return DOUBLE_TYPENAME;
-        case "RCDecimal": return DECIMAL_TYPENAME;
-        case "RCSymbol": return SYMBOL_TYPENAME;
-        case "RCString": return STRING_TYPENAME;
-        case "RCIncr": return INCR_TYPENAME;
-        default: return type.Name;
+      case "RCBlock": return BLOCK_TYPENAME;
+      case "RCCube": return CUBE_TYPENAME;
+      case "RCOperator": return OPERATOR_TYPENAME;
+      case "RCReference": return REFERENCE_TYPENAME;
+      case "RCTemplate": return TEMPLATE_TYPENAME;
+      case "RCByte": return BYTE_TYPENAME;
+      case "RCTime": return TIME_TYPENAME;
+      case "RCBoolean": return BOOLEAN_TYPENAME;
+      case "RCLong": return LONG_TYPENAME;
+      case "RCDouble": return DOUBLE_TYPENAME;
+      case "RCDecimal": return DECIMAL_TYPENAME;
+      case "RCSymbol": return SYMBOL_TYPENAME;
+      case "RCString": return STRING_TYPENAME;
+      case "RCIncr": return INCR_TYPENAME;
+      default: return type.Name;
       }
     }
 
     protected bool m_lock = false;
 
-    public RCValue () {}
+    public RCValue () {
+    }
 
     /// <summary>
     /// Operators are important parts of speech in RC and there are several
@@ -95,7 +96,11 @@ namespace RCL.Kernel
       runner.Yield (closure, this);
     }
 
-    public virtual RCClosure Next (RCRunner runner, RCClosure tail, RCClosure previous, RCValue result)
+    public virtual RCClosure Next (RCRunner runner,
+                                   RCClosure tail,
+                                   RCClosure previous,
+                                   RCValue
+                                   result)
     {
       return RCL.Kernel.Eval.DoNext (this, runner, tail, previous, result);
     }
@@ -105,7 +110,12 @@ namespace RCL.Kernel
       return RCL.Kernel.Eval.DoFinish (runner, closure, result);
     }
 
-    public virtual RCClosure Handle (RCRunner runner, RCClosure closure, Exception exception, long status, out RCValue handled)
+    public virtual RCClosure Handle (RCRunner runner,
+                                     RCClosure closure,
+                                     Exception exception,
+                                     long
+                                     status,
+                                     out RCValue handled)
     {
       handled = null;
       return null;
@@ -140,8 +150,7 @@ namespace RCL.Kernel
       StringBuilder builder = new StringBuilder ();
       int level = 0;
       RCColmap colmap = null;
-      if (args.UseDisplayCols)
-      {
+      if (args.UseDisplayCols) {
         colmap = RCSystem.Log.GetColmap ();
       }
       Format (builder, args, colmap, level);
@@ -173,11 +182,12 @@ namespace RCL.Kernel
 
     public virtual bool IsBeforeLastCall (RCClosure closure)
     {
-      //Yes it matters that this one defaults to false and the other one defaults to true.
+      // Yes it matters that this one defaults to false and the other one defaults to
+      // true.
       return false;
     }
 
-    //Need to get rid of this method.
+    // Need to get rid of this method.
     public virtual bool IsHigherOrder ()
     {
       return false;
@@ -185,12 +195,18 @@ namespace RCL.Kernel
 
     public override bool Equals (object obj)
     {
-      //This should be overridden by all the child classes to avoid
-      //the ToString() operation.  This is a stopgap solution only.
-      if (obj == null) return false;
-      if (obj == this) return true;
+      // This should be overridden by all the child classes to avoid
+      // the ToString() operation.  This is a stopgap solution only.
+      if (obj == null) {
+        return false;
+      }
+      if (obj == this) {
+        return true;
+      }
       RCValue other = obj as RCValue;
-      if (other == null) return false;
+      if (other == null) {
+        return false;
+      }
       string thisText = this.ToString ();
       string otherText = other.ToString ();
       return thisText.Equals (otherText);
@@ -212,21 +228,29 @@ namespace RCL.Kernel
     public virtual RCValue Edit (RCRunner runner, RCValueDelegate editor)
     {
       RCValue edit = editor (this);
-      if (edit != null)
+      if (edit != null) {
         return edit;
+      }
       return null;
     }
 
-    //Types that have child objects need to override this and lock the children.
+    // Types that have child objects need to override this and lock the children.
     public virtual void Lock ()
     {
       m_lock = true;
     }
 
-    public virtual void Cubify (RCCube target, Stack<object> names) {}
+    public virtual void Cubify (RCCube target, Stack<object> names) {
+    }
 
-    public bool IsLocked { get { return m_lock; } }
-    public abstract string TypeName { get; }
-    public abstract char TypeCode { get; }
+    public bool IsLocked {
+      get { return m_lock; }
+    }
+    public abstract string TypeName {
+      get;
+    }
+    public abstract char TypeCode {
+      get;
+    }
   }
 }

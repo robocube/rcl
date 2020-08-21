@@ -9,12 +9,16 @@ namespace RCL.Kernel
 {
   public class JunkToken : RCTokenType
   {
-    public override RCToken TryParseToken (string text, int start, int index, int line, RCToken previous)
+    public override RCToken TryParseToken (string text,
+                                           int start,
+                                           int index,
+                                           int line,
+                                           RCToken
+                                           previous)
     {
       int lines;
       int length = LengthOfJunk (text, start, out lines);
-      if (length < 0)
-      {
+      if (length < 0) {
         return null;
       }
       string token = text.Substring (start, length);
@@ -24,8 +28,7 @@ namespace RCL.Kernel
     public static int LengthOfJunk (string text, int start, out int lines)
     {
       int end = text.IndexOfAny (WhiteChars, start, text.Length - start);
-      if (end < 0)
-      {
+      if (end < 0) {
         end = text.Length;
       }
       lines = ScanForNewlines (text, start, end);

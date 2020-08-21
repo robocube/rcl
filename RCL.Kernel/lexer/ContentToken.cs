@@ -9,21 +9,23 @@ namespace RCL.Kernel
 {
   public class ContentToken : RCTokenType
   {
-    public override RCToken TryParseToken (string code, int start, int index, int line, RCToken previous)
+    public override RCToken TryParseToken (string code,
+                                           int start,
+                                           int index,
+                                           int line,
+                                           RCToken
+                                           previous)
     {
-      if (previous == null)
-      {
+      if (previous == null) {
         return null;
       }
 
-      //we have to count the question marks in the previous token.
-      if (previous.Type != RCTokenType.Block)
-      {
+      // we have to count the question marks in the previous token.
+      if (previous.Type != RCTokenType.Block) {
         return null;
       }
 
-      if (!(previous.Text.StartsWith ("[?") || previous.Text.EndsWith ("!]")))
-      {
+      if (!(previous.Text.StartsWith ("[?") || previous.Text.EndsWith ("!]"))) {
         return null;
       }
 
@@ -36,23 +38,20 @@ namespace RCL.Kernel
 
       for (int end = start; end < code.Length; ++end)
       {
-        if (code[end] == '[')
-        {
+        if (code[end] == '[') {
           int look = end + 1;
           int reps = 0;
           while (code[look] == '!')
           {
             ++reps;
-            if (reps == marks)
-            {
+            if (reps == marks) {
               string token = code.Substring (start, end - start);
               return new RCToken (token, this, start, index, line, lines);
             }
             ++look;
           }
         }
-        else if (code[end] == '?')
-        {
+        else if (code[end] == '?') {
           int look = end + 1;
           int reps = 1;
           while (code[look] == '?')
@@ -60,14 +59,12 @@ namespace RCL.Kernel
             ++reps;
             ++look;
           }
-          if (reps == marks && code[look] == ']')
-          {
+          if (reps == marks && code[look] == ']') {
             string token = code.Substring (start, end - start);
             return new RCToken (token, this, start, index, line, lines);
           }
         }
-        else if (code[end] == '\n')
-        {
+        else if (code[end] == '\n') {
           ++lines;
         }
       }
@@ -81,8 +78,8 @@ namespace RCL.Kernel
 
     public override string ParseString (RCLexer lexer, RCToken token)
     {
-      //Need to handle xml escape characters.
-      //Need to do some stuff here with the whitespace, could be a little involved...
+      // Need to handle xml escape characters.
+      // Need to do some stuff here with the whitespace, could be a little involved...
       return token.Text;
     }
 

@@ -6,12 +6,12 @@ using System.Collections.Generic;
 
 namespace RCL.Kernel
 {
-  //This implementation will be a problem eventually.
-  //We will need to intern symbols for one thing.
-  //Random access into the parts is going to be slow.
-  //Might even want to create a monolithic symbol cache.
-  //Or one shared by bot.  Lots of cool ideas.
-  //Whatever we will fix it later.
+  // This implementation will be a problem eventually.
+  // We will need to intern symbols for one thing.
+  // Random access into the parts is going to be slow.
+  // Might even want to create a monolithic symbol cache.
+  // Or one shared by bot.  Lots of cool ideas.
+  // Whatever we will fix it later.
   public class RCSymbolScalar : IComparable, IComparable<RCSymbolScalar>
   {
     public static readonly RCSymbolScalar Empty = new RCSymbolScalar ();
@@ -39,20 +39,17 @@ namespace RCL.Kernel
       for (int i = startIndex; i < key.Length; ++i)
       {
         RCSymbolScalar symKey = key[i] as RCSymbolScalar;
-        if (symKey != null)
-        {
+        if (symKey != null) {
           for (int j = 0; j < symKey.Length; ++j)
           {
             prev = new RCSymbolScalar (prev, symKey.Part (j));
           }
         }
-        else
-        {
+        else {
           prev = new RCSymbolScalar (prev, key[i]);
         }
       }
-      if (prev == null)
-      {
+      if (prev == null) {
         prev = RCSymbolScalar.Empty;
       }
       return prev;
@@ -71,21 +68,17 @@ namespace RCL.Kernel
     public static RCSymbolScalar From (RCLexer lexer, string part)
     {
       RCToken token = lexer.LexSingle (part);
-      if (token.Text.Length > 0 && token.Type == RCTokenType.Junk)
-      {
+      if (token.Text.Length > 0 && token.Type == RCTokenType.Junk) {
         return new RCSymbolScalar (RCSymbolScalar.Empty,
                                    string.Format ("'{0}'", token.Text));
       }
-      else
-      {
+      else {
         object val = token.Parse (lexer);
         RCSymbolScalar result = val as RCSymbolScalar;
-        if (result == null)
-        {
+        if (result == null) {
           return new RCSymbolScalar (RCSymbolScalar.Empty, val);
         }
-        else
-        {
+        else {
           return result;
         }
       }
@@ -93,58 +86,48 @@ namespace RCL.Kernel
 
     public RCSymbolScalar (RCSymbolScalar previous, object key)
     {
-      if (key == null)
-      {
+      if (key == null) {
         throw new ArgumentNullException ("key");
       }
-      if (key.GetType () == typeof (RCSymbolScalar))
-      {
+      if (key.GetType () == typeof (RCSymbolScalar)) {
         throw new Exception ("Symbols may not contain other symbols.");
       }
-      if (previous == null)
-      {
+      if (previous == null) {
         Previous = RCSymbolScalar.Empty;
       }
-      else
-      {
+      else {
         Previous = previous;
       }
-      if (key.GetType () == typeof (string))
-      {
+      if (key.GetType () == typeof (string)) {
         string str = (string) key;
-        if (str.Length > 0)
-        {
-          if (str[0] == '\'')
-          {
-            if (str[str.Length - 1] == '\'')
-            {
+        if (str.Length > 0) {
+          if (str[0] == '\'') {
+            if (str[str.Length - 1] == '\'') {
               key = str.Substring (1, str.Length - 2);
             }
-            else throw new Exception ("Invalid symbol part: " + str);
+            else {
+              throw new Exception ("Invalid symbol part: " + str);
+            }
           }
         }
       }
-      if (key.GetType () == typeof (int))
-      {
+      if (key.GetType () == typeof (int)) {
         key = (long) (int) key;
       }
       Key = key;
       Type = RCVectorBase.EmptyOf (Key.GetType ());
-      if (Previous == RCSymbolScalar.Empty)
-      {
+      if (Previous == RCSymbolScalar.Empty) {
         Length = 1;
         string part = Type.IdShorthand (Key);
         string prefix = part.Length > 0 && part[0] == '#' ? "" : "#";
         m_string = prefix + part + Type.Suffix;
       }
-      else
-      {
+      else {
         Length = previous.Length + 1;
         m_string = previous.ToString () + "," +
-          Type.IdShorthand (Key) + Type.Suffix;
+                   Type.IdShorthand (Key) + Type.Suffix;
       }
-      if (Previous.Key.Equals ("*"))
-      {
+      if (Previous.Key.Equals ("*")) {
         m_leadingStar = true;
       }
     }
@@ -153,7 +136,7 @@ namespace RCL.Kernel
     {
       object[] result = new object[Length];
       RCSymbolScalar current = this;
-      for(int i = 0; i < result.Length; ++i)
+      for (int i = 0; i < result.Length; ++i)
       {
         result[i] = current.Key;
         current = current.Previous;
@@ -164,8 +147,7 @@ namespace RCL.Kernel
 
     public object Part (long p)
     {
-      if (p < 0)
-      {
+      if (p < 0) {
         long i = -1;
         RCSymbolScalar current = this;
         while (i > p)
@@ -173,14 +155,12 @@ namespace RCL.Kernel
           --i;
           current = current.Previous;
         }
-        if (current == null)
-        {
+        if (current == null) {
           throw new Exception (string.Format ("No part {0} in symbol {1}", p, this));
         }
         return current.Key;
       }
-      else
-      {
+      else {
         long i = Length - 1;
         RCSymbolScalar current = this;
         while (i > p)
@@ -188,8 +168,7 @@ namespace RCL.Kernel
           --i;
           current = current.Previous;
         }
-        if (current == null)
-        {
+        if (current == null) {
           throw new Exception (string.Format ("No part {0} in symbol {1}", p, this));
         }
         return current.Key;
@@ -232,8 +211,7 @@ namespace RCL.Kernel
     {
       RCSymbolScalar concrete = this;
       RCSymbolScalar @abstract = scalar;
-      if (scalar.Equals (RCSymbolScalar.Empty))
-      {
+      if (scalar.Equals (RCSymbolScalar.Empty)) {
         return false;
       }
       while (concrete.Length > @abstract.Length)
@@ -242,10 +220,8 @@ namespace RCL.Kernel
       }
       while (@abstract != null)
       {
-        if (!@abstract.Key.Equals ("*"))
-        {
-          if (!@abstract.Key.Equals (concrete.Key))
-          {
+        if (!@abstract.Key.Equals ("*")) {
+          if (!@abstract.Key.Equals (concrete.Key)) {
             return false;
           }
         }
@@ -302,13 +278,14 @@ namespace RCL.Kernel
     //
     //  Older wiser Brian here.  Why still do this silly hashcode thing?
     //  I bit the bullet and gave every symbol a full string a while ago.
-    //  Multiple symbol columns are no longer an issue because I added compound symbols (tuples).
-    public override int GetHashCode()
+    //  Multiple symbol columns are no longer an issue because I added compound symbols
+    // (tuples).
+    public override int GetHashCode ()
     {
-      //int h = 0;
-      //for (int i = 0; i < Keys.Length; i++)
+      // int h = 0;
+      // for (int i = 0; i < Keys.Length; i++)
       //  h = 33 * h ^ Keys[i].GetHashCode();
-      //return h;
+      // return h;
 
       /*{
        *  @{type="RCSymbol"} symbol = $this
@@ -323,14 +300,14 @@ namespace RCL.Kernel
        */
 
       /* New school - this should translate to the c# block above.
-      {<-{<-h:33i * $h ^ GetHashCode $R} over block $this}
-      */
+         {<-{<-h:33i * $h ^ GetHashCode $R} over block $this}
+       */
 
       RCSymbolScalar symbol = this;
       int h = 0;
       while (symbol != null)
       {
-        h = 33 * h ^ Key.GetHashCode();
+        h = 33 * h ^ Key.GetHashCode ();
         symbol = symbol.Previous;
       }
       return h;
@@ -339,8 +316,7 @@ namespace RCL.Kernel
     public override bool Equals (object obj)
     {
       RCSymbolScalar other = obj as RCSymbolScalar;
-      if (other == null)
-      {
+      if (other == null) {
         return false;
       }
       RCSymbolScalar current = this;
@@ -349,69 +325,60 @@ namespace RCL.Kernel
 
     public int CompareTo (object obj)
     {
-      if (obj == null)
-      {
+      if (obj == null) {
         return 1;
       }
       RCSymbolScalar other = obj as RCSymbolScalar;
-      if (other == null)
-      {
+      if (other == null) {
         return 1;
       }
       return MultiCompareSymbolParts (this.ToArray (), other.ToArray ());
-      //return m_string.CompareTo (other.m_string);
+      // return m_string.CompareTo (other.m_string);
     }
 
     public int CompareTo (RCSymbolScalar other)
     {
-      if (other == null)
-      {
+      if (other == null) {
         return 1;
       }
       return MultiCompareSymbolParts (this.ToArray (), other.ToArray ());
-      //return m_string.CompareTo (other.m_string);
+      // return m_string.CompareTo (other.m_string);
     }
 
     public static int MultiCompareSymbolParts (object[] left, object[] right)
     {
-      if (left.Length == right.Length)
-      {
+      if (left.Length == right.Length) {
         for (int i = 0; i < left.Length; ++i)
         {
           IComparable leftValue = (IComparable) left[i];
           IComparable rightValue = (IComparable) right[i];
           int result = leftValue.CompareTo (rightValue);
-          if (result != 0)
-          {
+          if (result != 0) {
             return result;
           }
         }
         return 0;
       }
-      else if (left.Length > right.Length)
-      {
+      else if (left.Length > right.Length) {
         for (int i = 0; i < right.Length; ++i)
         {
           IComparable leftValue = (IComparable) left[i];
           IComparable rightValue = (IComparable) right[i];
           int result = leftValue.CompareTo (rightValue);
-          if (result != 0)
-          {
+          if (result != 0) {
             return result;
           }
         }
         // the (shorter) right argument is greater
         return 1;
       }
-      else //if (left.Length < right.Length)
-      {
+      else { // if (left.Length < right.Length)
         for (int i = 0; i < left.Length; ++i)
         {
           IComparable leftValue = (IComparable) left[i];
           IComparable rightValue = (IComparable) right[i];
           int result = leftValue.CompareTo (rightValue);
-          if (result != 0)
-          {
+          if (result != 0) {
             return result;
           }
         }

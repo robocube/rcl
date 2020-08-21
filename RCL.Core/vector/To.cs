@@ -13,8 +13,7 @@ namespace RCL.Core
   public class To
   {
     [RCVerb ("to")]
-    public void EvalTo (
-      RCRunner runner, RCClosure closure, RCByte left, RCByte right)
+    public void EvalTo (RCRunner runner, RCClosure closure, RCByte left, RCByte right)
     {
       byte[] result = new byte[right[0] - left[0] + 1];
       for (byte i = 0; i < result.Length; ++i)
@@ -25,8 +24,7 @@ namespace RCL.Core
     }
 
     [RCVerb ("to")]
-    public void EvalTo (
-      RCRunner runner, RCClosure closure, RCLong left, RCLong right)
+    public void EvalTo (RCRunner runner, RCClosure closure, RCLong left, RCLong right)
     {
       long[] result = new long[right[0] - left[0] + 1];
       for (long i = 0; i < result.Length; ++i)
@@ -37,25 +35,23 @@ namespace RCL.Core
     }
 
     [RCVerb ("to")]
-    public void EvalTo (
-      RCRunner runner, RCClosure closure, RCDouble left, RCDouble right)
+    public void EvalTo (RCRunner runner, RCClosure closure, RCDouble left, RCDouble right)
     {
-      double[] result = new double[(int)right[0] - (int)left[0] + 1];
+      double[] result = new double[(int) right[0] - (int) left[0] + 1];
       for (double i = 0; i < result.Length; ++i)
       {
-        result[(int)i] = left[0] + i;
+        result[(int) i] = left[0] + i;
       }
       runner.Yield (closure, new RCDouble (result));
     }
 
     [RCVerb ("to")]
-    public void EvalTo (
-      RCRunner runner, RCClosure closure, RCDecimal left, RCDecimal right)
+    public void EvalTo (RCRunner runner, RCClosure closure, RCDecimal left, RCDecimal right)
     {
-      decimal[] result = new decimal[(int)right[0] - (int)left[0] + 1];
+      decimal[] result = new decimal[(int) right[0] - (int) left[0] + 1];
       for (decimal i = 0; i < result.Length; ++i)
       {
-        result[(int)i] = left[0] + i;
+        result[(int) i] = left[0] + i;
       }
       runner.Yield (closure, new RCDecimal (result));
     }

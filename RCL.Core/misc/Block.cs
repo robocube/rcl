@@ -9,8 +9,7 @@ namespace RCL.Core
     [RCVerb ("name")]
     public void EvalName (RCRunner runner, RCClosure closure, RCString left, RCBlock right)
     {
-      if (left.Count != 1)
-      {
+      if (left.Count != 1) {
         throw new Exception ("left argument must have count 1");
       }
       RCBlock result = Name (left[0], right);
@@ -20,8 +19,7 @@ namespace RCL.Core
     [RCVerb ("name")]
     public void EvalName (RCRunner runner, RCClosure closure, RCSymbol left, RCBlock right)
     {
-      if (left.Count != 1)
-      {
+      if (left.Count != 1) {
         throw new Exception ("left argument must have count 1");
       }
       string nameProperty = (string) left[0].Part (0);
@@ -36,31 +34,27 @@ namespace RCL.Core
       {
         RCBlock name = right.GetName (i);
         RCBlock val;
-        if (name.Value is RCBlock)
-        {
+        if (name.Value is RCBlock) {
           val = (RCBlock) name.Value;
         }
-        else
-        {
-          throw new Exception (string.Format ("Expected a block. Actual type was {0}", name.Value.TypeName));
+        else {
+          throw new Exception (string.Format ("Expected a block. Actual type was {0}",
+                                              name.Value.TypeName));
         }
         RCValue newName = val.Get (nameProperty);
         string nameStr;
         RCString str = newName as RCString;
-        if (str != null)
-        {
+        if (str != null) {
           nameStr = str[0];
         }
-        else
-        {
+        else {
           RCSymbol sym = newName as RCSymbol;
-          if (sym != null)
-          {
+          if (sym != null) {
             nameStr = (string) sym[0].Part (0);
           }
-          else
-          {
-            throw new Exception ("The name must be a string or a symbol with a name in the first part");
+          else {
+            throw new Exception (
+                    "The name must be a string or a symbol with a name in the first part");
           }
         }
         result = new RCBlock (result, nameStr, name.Evaluator, val);
@@ -75,12 +69,10 @@ namespace RCL.Core
       for (int i = 0; i < result.Length; ++i)
       {
         RCBlock name = right.GetName (i);
-        if (name.EscapeName)
-        {
+        if (name.EscapeName) {
           result[i] = RCName.RawName (name.Name);
         }
-        else
-        {
+        else {
           result[i] = name.Name;
         }
       }
@@ -90,20 +82,19 @@ namespace RCL.Core
     [RCVerb ("rename")]
     public void EvalRename (RCRunner runner, RCClosure closure, RCString left, RCBlock right)
     {
-      if (left.Count != right.Count && left.Count != 1)
+      if (left.Count != right.Count && left.Count != 1) {
         throw new Exception ("left and right arguments must have the same length");
+      }
 
       RCBlock result = RCBlock.Empty;
-      if (left.Count == 1)
-      {
+      if (left.Count == 1) {
         for (int i = 0; i < right.Count; ++i)
         {
           RCBlock name = right.GetName (i);
           result = new RCBlock (result, left[0], name.Evaluator, name.Value);
         }
       }
-      else
-      {
+      else {
         for (int i = 0; i < left.Count; ++i)
         {
           RCBlock name = right.GetName (i);
@@ -116,12 +107,12 @@ namespace RCL.Core
     [RCVerb ("rename")]
     public void EvalRename (RCRunner runner, RCClosure closure, RCSymbol left, RCBlock right)
     {
-      if (left.Count != right.Count && left.Count != 1)
+      if (left.Count != right.Count && left.Count != 1) {
         throw new Exception ("left and right arguments must have the same length");
+      }
 
       RCBlock result = RCBlock.Empty;
-      if (left.Count == 1)
-      {
+      if (left.Count == 1) {
         for (int i = 0; i < right.Count; ++i)
         {
           RCBlock name = right.GetName (i);
@@ -129,8 +120,7 @@ namespace RCL.Core
           result = new RCBlock (result, field, name.Evaluator, name.Value);
         }
       }
-      else
-      {
+      else {
         for (int i = 0; i < left.Count; ++i)
         {
           RCBlock name = right.GetName (i);
@@ -147,7 +137,7 @@ namespace RCL.Core
       RCArray<bool> result = new RCArray<bool> ();
       for (int i = 0; i < right.Count; ++i)
       {
-        result.Write (left.Get ((string)right[i].Key) != null);
+        result.Write (left.Get ((string) right[i].Key) != null);
       }
       runner.Yield (closure, new RCBoolean (result));
     }
@@ -166,7 +156,7 @@ namespace RCL.Core
     [RCVerb ("unflip")]
     public void EvalUnflip (RCRunner runner, RCClosure closure, RCBlock right)
     {
-      //Take a block of arrays and turn them into a block of rows.
+      // Take a block of arrays and turn them into a block of rows.
       RCBlock[] blocks = new RCBlock[right.Get (0).Count];
       for (int i = 0; i < blocks.Length; ++i)
       {
@@ -179,13 +169,13 @@ namespace RCL.Core
         for (int j = 0; j < vector.Count; ++j)
         {
           RCValue box = RCVectorBase.FromScalar (vector.Child (j));
-          blocks[j] = new RCBlock (blocks [j], name.Name, ":", box);
+          blocks[j] = new RCBlock (blocks[j], name.Name, ":", box);
         }
       }
       RCBlock result = RCBlock.Empty;
       for (int i = 0; i < blocks.Length; ++i)
       {
-        result = new RCBlock (result, "", ":", blocks [i]);
+        result = new RCBlock (result, "", ":", blocks[i]);
       }
       runner.Yield (closure, result);
     }
@@ -210,8 +200,7 @@ namespace RCL.Core
         {
           RCBlock name = (RCBlock) row.GetName (j);
           int n = Array.IndexOf (names, name.Name);
-          if (n >= 0)
-          {
+          if (n >= 0) {
             RCVectorBase scalar = (RCVectorBase) name.Value;
             columns[n].Write (scalar.Child (0));
           }
@@ -220,11 +209,11 @@ namespace RCL.Core
       RCBlock result = RCBlock.Empty;
       for (int i = 0; i < names.Length; ++i)
       {
-        result = new RCBlock (result, names [i], ":", columns [i]);
+        result = new RCBlock (result, names[i], ":", columns[i]);
       }
       runner.Yield (closure, result);
     }
-  
+
     [RCVerb ("string")]
     public void EvalString (RCRunner runner, RCClosure closure, RCBlock right)
     {
@@ -240,7 +229,7 @@ namespace RCL.Core
     [RCVerb ("double")]
     public void EvalDouble (RCRunner runner, RCClosure closure, RCBlock right)
     {
-      runner.Yield (closure, new RCDouble(CoerceBlock<double>(right)));
+      runner.Yield (closure, new RCDouble (CoerceBlock<double> (right)));
     }
 
     [RCVerb ("byte")]
@@ -256,15 +245,13 @@ namespace RCL.Core
     }
 
     [RCVerb ("decimal")]
-    public void EvalDecimal (
-      RCRunner runner, RCClosure closure, RCBlock right)
+    public void EvalDecimal (RCRunner runner, RCClosure closure, RCBlock right)
     {
       runner.Yield (closure, new RCDecimal (CoerceBlock<decimal> (right)));
     }
 
     [RCVerb ("symbol")]
-    public void EvalSymbol (
-      RCRunner runner, RCClosure closure, RCBlock right)
+    public void EvalSymbol (RCRunner runner, RCClosure closure, RCBlock right)
     {
       runner.Yield (closure, new RCSymbol (CoerceBlock<RCSymbolScalar> (right)));
     }
@@ -284,16 +271,14 @@ namespace RCL.Core
     [RCVerb ("template")]
     public void EvalTemplate (RCRunner runner, RCClosure closure, RCLong left, RCString right)
     {
-      if (right.Count > 1)
-      {
-        throw new RCException (closure, 
-                               RCErrors.Count, 
+      if (right.Count > 1) {
+        throw new RCException (closure,
+                               RCErrors.Count,
                                "template only takes a single string (use & first).");
       }
-      if (left.Count != 1)
-      {
-        throw new RCException (closure, 
-                               RCErrors.Count, 
+      if (left.Count != 1) {
+        throw new RCException (closure,
+                               RCErrors.Count,
                                "escapeCount can only contain a single number");
       }
       runner.Yield (closure, CreateTemplate (right, left[0]));
@@ -302,10 +287,9 @@ namespace RCL.Core
     [RCVerb ("template")]
     public void EvalTemplate (RCRunner runner, RCClosure closure, RCString right)
     {
-      if (right.Count > 1)
-      {
-        throw new RCException (closure, 
-                               RCErrors.Count, 
+      if (right.Count > 1) {
+        throw new RCException (closure,
+                               RCErrors.Count,
                                "template only takes a single string (use & first).");
       }
       runner.Yield (closure, CreateTemplate (right, 1));
@@ -320,10 +304,10 @@ namespace RCL.Core
 
     protected virtual RCArray<T> CoerceBlock<T> (RCBlock right)
     {
-      RCArray<T> result = new RCArray<T>();
+      RCArray<T> result = new RCArray<T> ();
       for (int i = 0; i < right.Count; ++i)
       {
-        RCVector<T> value = (RCVector<T>) right.Get (i);
+        RCVector<T> value = (RCVector<T>)right.Get (i);
         for (int j = 0; j < value.Count; ++j)
         {
           result.Write (value[j]);

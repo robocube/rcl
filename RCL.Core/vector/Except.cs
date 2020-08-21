@@ -61,11 +61,10 @@ namespace RCL.Core
       for (int i = 0; i < left.Count; ++i)
       {
         RCBlock name = left.GetName (i);
-        if (!right.Data.Contains (name.Name))
-        {
-          result = new RCBlock (result, 
-                                name.Name, 
-                                name.Evaluator, 
+        if (!right.Data.Contains (name.Name)) {
+          result = new RCBlock (result,
+                                name.Name,
+                                name.Evaluator,
                                 name.Value);
         }
       }
@@ -83,18 +82,9 @@ namespace RCL.Core
       HashSet<T> results = new HashSet<T> (left);
       for (int i = 0; i < right.Count; ++i)
       {
-        if (results.Contains (right[i]))
-        {
+        if (results.Contains (right[i])) {
           results.Remove (right[i]);
         }
-        /*
-        Can't remember why it was implemented like this orginally.
-        Do I need functionality like this?
-        else
-        {
-          results.Add (right[i]);
-        }
-        */
       }
       T[] array = new T[results.Count];
       results.CopyTo (array);

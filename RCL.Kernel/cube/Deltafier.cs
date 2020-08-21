@@ -32,13 +32,15 @@ namespace RCL.Kernel
         afterSyms.Add (m_after.Axis.Symbol[i]);
       }
       removeSyms.ExceptWith (afterSyms);
-      if (removeSyms.Count > 0)
-      {
+      if (removeSyms.Count > 0) {
         foreach (RCSymbolScalar sym in removeSyms)
         {
-          //Still unsure whether I really want to hardcode "i" here...
+          // Still unsure whether I really want to hardcode "i" here...
           m_target.WriteCell ("i", sym, RCIncrScalar.Delete, -1, true, false);
-          m_target.Write (-1, -1, new RCTimeScalar (DateTime.UtcNow.Ticks, RCTimeType.Timestamp), sym);
+          m_target.Write (-1,
+                          -1,
+                          new RCTimeScalar (DateTime.UtcNow.Ticks, RCTimeType.Timestamp),
+                          sym);
         }
       }
       m_after.VisitCellsForward (this, 0, m_after.Count);
@@ -53,8 +55,7 @@ namespace RCL.Kernel
 
     public override void AfterRow (long e, RCTimeScalar t, RCSymbolScalar s, int row)
     {
-      if (m_rowChanged)
-      {
+      if (m_rowChanged) {
         long g = -1;
         m_target.Write (g, e, t, s);
       }
@@ -62,34 +63,29 @@ namespace RCL.Kernel
 
     public override void VisitNull<T> (string name, Column<T> vector, int row)
     {
-      //base.VisitNull (name, vector, row);
+      // base.VisitNull (name, vector, row);
     }
 
     public override void VisitScalar<T> (string name, Column<T> column, int row)
     {
       T val = column.Data[row];
       int tlrow = column.Index[row];
-      Column<T> beforeCol = (Column<T>) m_before.GetColumn (name);
-      if (beforeCol != null)
-      {
+      Column<T> beforeCol = (Column<T>)m_before.GetColumn (name);
+      if (beforeCol != null) {
         object box;
         beforeCol.BoxLast (m_symbol, out box);
-        if (box != null)
-        {
-          if (!box.Equals (val))
-          {
+        if (box != null) {
+          if (!box.Equals (val)) {
             m_rowChanged = true;
             m_target.WriteCell (name, m_symbol, val, -1, true, false);
           }
         }
-        else
-        {
+        else {
           m_rowChanged = true;
           m_target.WriteCell (name, m_symbol, val, -1, true, false);
         }
       }
-      else
-      {
+      else {
         m_rowChanged = true;
         m_target.WriteCell (name, m_symbol, val, -1, true, false);
       }

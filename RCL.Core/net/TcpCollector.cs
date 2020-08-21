@@ -22,16 +22,13 @@ namespace RCL.Core
 
     public TcpCollector (RCRunner runner, RCClosure closure, RCSymbol ids)
     {
-      if (runner == null)
-      {
+      if (runner == null) {
         throw new ArgumentNullException ("runner");
       }
-      if (closure == null)
-      {
+      if (closure == null) {
         throw new ArgumentNullException ("closure");
       }
-      if (ids == null)
-      {
+      if (ids == null) {
         throw new ArgumentNullException ("ids");
       }
 
@@ -46,18 +43,16 @@ namespace RCL.Core
       lock (m_lock)
       {
         m_results.Add (id, message);
-        //Console.Out.WriteLine("id:{0},Ids:{1}", id.ToString (), Ids.ToString());
-        if (m_results.Count >= Ids.Count)
-        {
+        // Console.Out.WriteLine("id:{0},Ids:{1}", id.ToString (), Ids.ToString());
+        if (m_results.Count >= Ids.Count) {
           foreach (RCValue val in m_results.Values)
           {
             result = new RCBlock (result, "", ":", val);
           }
-          //Console.Out.WriteLine ("Yielding {0}", result);
+          // Console.Out.WriteLine ("Yielding {0}", result);
         }
       }
-      if (result != null)
-      {
+      if (result != null) {
         Runner.Yield (Closure, result);
       }
     }

@@ -30,8 +30,7 @@ namespace RCL.Core
     }
 
     [RCVerb ("openf")]
-    public void EvalOpenf (
-      RCRunner runner, RCClosure closure, RCString right)
+    public void EvalOpenf (RCRunner runner, RCClosure closure, RCString right)
     {
       long handle = -1;
       lock (m_lock)
@@ -40,8 +39,7 @@ namespace RCL.Core
         {
           FileState state;
           FileInfo f = new FileInfo (right[0]);
-          if (!m_filesByName.TryGetValue (f.FullName, out state))
-          {
+          if (!m_filesByName.TryGetValue (f.FullName, out state)) {
             StreamWriter w = f.AppendText ();
             ++m_handle;
             handle = m_handle;
@@ -49,8 +47,7 @@ namespace RCL.Core
             m_filesByHandle.Add (handle, state);
             m_filesByName.Add (f.FullName, state);
           }
-          else
-          {
+          else {
             handle = state.m_h;
           }
         }
@@ -59,18 +56,15 @@ namespace RCL.Core
     }
 
     [RCVerb ("writef")]
-    public void EvalWritef (
-      RCRunner runner, RCClosure closure, RCLong left, RCString right)
+    public void EvalWritef (RCRunner runner, RCClosure closure, RCLong left, RCString right)
     {
-      if (left.Count != 1)
-      {
+      if (left.Count != 1) {
         throw new Exception ("writef requires exactly one handle");
       }
       lock (m_lock)
       {
         FileState f;
-        if (!m_filesByHandle.TryGetValue (left[0], out f))
-        {
+        if (!m_filesByHandle.TryGetValue (left[0], out f)) {
           throw new Exception ("Bad file handle: " + left[0]);
         }
         StringBuilder builder = new StringBuilder ();
@@ -93,8 +87,7 @@ namespace RCL.Core
         lock (m_lock)
         {
           FileState f;
-          if (!m_filesByHandle.TryGetValue (left[0], out f))
-          {
+          if (!m_filesByHandle.TryGetValue (left[0], out f)) {
             throw new Exception ("Bad file handle: " + left[0]);
           }
           f.m_w.BaseStream.EndWrite (result);

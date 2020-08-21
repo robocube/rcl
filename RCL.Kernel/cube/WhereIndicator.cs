@@ -26,9 +26,8 @@ namespace RCL.Kernel
 
     public override void AfterRow (long e, RCTimeScalar t, RCSymbolScalar s, int row)
     {
-      if (m_indicator[row])
-      {
-        //g needs to be included in the signature above.
+      if (m_indicator[row]) {
+        // g needs to be included in the signature above.
         long g = -1;
         m_target.Write (g, e, t, s);
       }
@@ -36,23 +35,19 @@ namespace RCL.Kernel
 
     public override void VisitNull<T> (string name, Column<T> vector, int row)
     {
-      //base.VisitNull (name, vector, row);
+      // base.VisitNull (name, vector, row);
     }
 
     public override void VisitScalar<T> (string name, Column<T> column, int row)
     {
       int tlrow = column.Index[row];
-      if (m_source.Axis.Symbol != null)
-      {
-        if (m_indicator[tlrow])
-        {
+      if (m_source.Axis.Symbol != null) {
+        if (m_indicator[tlrow]) {
           m_target.WriteCell (name, m_source.SymbolAt (tlrow), column.Data[row], -1, true, true);
         }
       }
-      else
-      {
-        if (m_indicator[tlrow])
-        {
+      else {
+        if (m_indicator[tlrow]) {
           m_target.WriteCell (name, null, column.Data[row], -1, true, true);
         }
       }

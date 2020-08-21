@@ -19,8 +19,8 @@ namespace RCL.Kernel
 
     /// <summary>
     /// Multiple rows in the timeline can be grouped together to represent a single,
-    /// discrete event.  Consecutive rows having the same value in E (but differing symbols)
-    /// will be treated as a single event.
+    /// discrete event.  Consecutive rows having the same value in E (but differing
+    /// symbols) will be treated as a single event.
     /// </summary>
     public readonly RCArray<long> Event;
 
@@ -30,7 +30,7 @@ namespace RCL.Kernel
     /// It is also used when merging two cubes that don't share a common source.
     /// </summary>
     public readonly RCArray<RCTimeScalar> Time;
-  
+
     /// <summary>
     /// The (S)ymbol on the event.
     /// Symbols are intended to represent entities in your application.
@@ -44,7 +44,7 @@ namespace RCL.Kernel
     /// </summary>
     public readonly CubeProto Proto;
 
-    //The list of columns on the axis.
+    // The list of columns on the axis.
     public readonly RCArray<string> Colset;
 
     protected int m_count = 0;
@@ -61,20 +61,16 @@ namespace RCL.Kernel
     public Timeline (RCArray<string> cols)
     {
       Colset = cols;
-      if (Colset.Contains ("G"))
-      {
+      if (Colset.Contains ("G")) {
         Global = new RCArray<long> ();
       }
-      if (Colset.Contains ("E"))
-      {
+      if (Colset.Contains ("E")) {
         Event = new RCArray<long> ();
       }
-      if (Colset.Contains ("T"))
-      {
+      if (Colset.Contains ("T")) {
         Time = new RCArray<RCTimeScalar> ();
       }
-      if (Colset.Contains ("S"))
-      {
+      if (Colset.Contains ("S")) {
         Symbol = new RCArray<RCSymbolScalar> ();
       }
       Proto = CubeProto.Create (this);
@@ -86,32 +82,28 @@ namespace RCL.Kernel
       m_count = count;
       Proto = CubeProto.Create (this);
     }
-    public Timeline (RCArray<long> g, 
+    public Timeline (RCArray<long> g,
                      RCArray<long> e,
                      RCArray<RCTimeScalar> t,
                      RCArray<RCSymbolScalar> s)
     {
       Colset = new RCArray<string> (4);
-      if (g != null)
-      {
+      if (g != null) {
         Colset.Write ("G");
         Global = g;
         m_count = Global.Count;
       }
-      if (e != null)
-      {
+      if (e != null) {
         Colset.Write ("E");
         Event = e;
         m_count = Event.Count;
       }
-      if (t != null)
-      {
+      if (t != null) {
         Colset.Write ("T");
         Time = t;
         m_count = Time.Count;
       }
-      if (s != null)
-      {
+      if (s != null) {
         Colset.Write ("S");
         Symbol = s;
         m_count = Symbol.Count;
@@ -119,12 +111,14 @@ namespace RCL.Kernel
       Proto = CubeProto.Create (this);
     }
 
-    public Timeline (params string[] cols) 
-      :this (new RCArray<string> (cols)) {}
+    public Timeline (params string[] cols)
+      : this (new RCArray<string> (cols)) {
+    }
 
     /// <summary>
-    /// For a Timeline, the standard sort order is by time column (G, E or T) followed by the symbol column, ascending.
-    /// Timelines need to be sorted before they can be merged together with other timelines.
+    /// For a Timeline, the standard sort order is by time column (G, E or T) followed by
+    /// the symbol column, ascending. Timelines need to be sorted before they can be
+    /// merged together with other timelines.
     /// </summary>
     public Timeline EnsureSorted ()
     {
@@ -133,8 +127,7 @@ namespace RCL.Kernel
 
     public long TimeAt (int i)
     {
-      if (Event == null)
-      {
+      if (Event == null) {
         return i;
       }
       return Event[i];
@@ -142,8 +135,7 @@ namespace RCL.Kernel
 
     public long EventAt (int i)
     {
-      if (Event == null)
-      {
+      if (Event == null) {
         return i;
       }
       return Event[i];
@@ -151,8 +143,7 @@ namespace RCL.Kernel
 
     public RCTimeScalar RealTimeAt (int i)
     {
-      if (Time == null)
-      {
+      if (Time == null) {
         return RCTimeScalar.Empty;
       }
       return Time[i];
@@ -160,8 +151,7 @@ namespace RCL.Kernel
 
     public RCSymbolScalar SymbolAt (int i)
     {
-      if (Symbol == null)
-      {
+      if (Symbol == null) {
         return null;
       }
       return Symbol[i];
@@ -175,8 +165,7 @@ namespace RCL.Kernel
       }
       set
       {
-        if (Colset.Locked ())
-        {
+        if (Colset.Locked ()) {
           throw new Exception ("Tried to modify Count after cube was locked.");
         }
         m_count = value;
@@ -185,20 +174,16 @@ namespace RCL.Kernel
 
     public void Lock ()
     {
-      if (Event != null)
-      {
+      if (Event != null) {
         Event.Lock ();
       }
-      if (Time != null)
-      {
-        Time.Lock (); 
+      if (Time != null) {
+        Time.Lock ();
       }
-      if (Symbol != null)
-      {
+      if (Symbol != null) {
         Symbol.Lock ();
       }
-      if (Global != null)
-      {
+      if (Global != null) {
         Global.Lock ();
       }
       Colset.Lock ();
@@ -226,13 +211,11 @@ namespace RCL.Kernel
 
     public void Write (long e, RCSymbolScalar s)
     {
-      //You will get an exception if these arrays have been locked from writing.
-      if (Event != null)
-      {
+      // You will get an exception if these arrays have been locked from writing.
+      if (Event != null) {
         Event.Write (e);
       }
-      if (Symbol != null)
-      {
+      if (Symbol != null) {
         Symbol.Write (s);
       }
       ++m_count;
@@ -240,13 +223,11 @@ namespace RCL.Kernel
 
     public void Write (RCTimeScalar t, RCSymbolScalar s)
     {
-      //You will get an exception if these arrays have been locked from writing.
-      if (Time != null)
-      {
+      // You will get an exception if these arrays have been locked from writing.
+      if (Time != null) {
         Time.Write (t);
       }
-      if (Symbol != null)
-      {
+      if (Symbol != null) {
         Symbol.Write (s);
       }
       ++m_count;
@@ -254,20 +235,16 @@ namespace RCL.Kernel
 
     public void Write (long g, long e, RCTimeScalar t, RCSymbolScalar s)
     {
-      if (Global != null)
-      {
+      if (Global != null) {
         Global.Write (g);
       }
-      if (Event != null)
-      {
+      if (Event != null) {
         Event.Write (e);
       }
-      if (Time != null)
-      {
+      if (Time != null) {
         Time.Write (t);
       }
-      if (Symbol != null)
-      {
+      if (Symbol != null) {
         Symbol.Write (s);
       }
       ++m_count;
@@ -275,20 +252,16 @@ namespace RCL.Kernel
 
     public void Write (Timeline source, int i)
     {
-      if (source.Global != null)
-      {
+      if (source.Global != null) {
         Global.Write (source.Global[i]);
       }
-      if (source.Event != null)
-      {
+      if (source.Event != null) {
         Event.Write (source.Event[i]);
       }
-      if (source.Time != null)
-      {
+      if (source.Time != null) {
         Time.Write (source.Time[i]);
       }
-      if (source.Symbol != null)
-      {
+      if (source.Symbol != null) {
         Symbol.Write (source.Symbol[i]);
       }
       ++m_count;
@@ -301,20 +274,16 @@ namespace RCL.Kernel
 
     internal void ReverseInPlace ()
     {
-      if (Global != null)
-      {
+      if (Global != null) {
         Global.ReverseInPlace ();
       }
-      if (Event != null)
-      {
+      if (Event != null) {
         Event.ReverseInPlace ();
       }
-      if (Time != null)
-      {
+      if (Time != null) {
         Time.ReverseInPlace ();
       }
-      if (Symbol != null)
-      {
+      if (Symbol != null) {
         Symbol.ReverseInPlace ();
       }
     }

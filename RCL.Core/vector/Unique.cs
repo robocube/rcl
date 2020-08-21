@@ -30,12 +30,10 @@ namespace RCL.Core
       HashSet<T> items = new HashSet<T> ();
       for (int i = 0; i < right.Count; ++i)
       {
-        if (!items.Contains (right[i]))
-        {
+        if (!items.Contains (right[i])) {
           items.Add (right[i]);
         }
-        else
-        {
+        else {
           // Three or more instances of the dup
           // will be represented two or more times
           result.Write (right[i]);
@@ -105,8 +103,7 @@ namespace RCL.Core
       for (int i = 0; i < right.Count; ++i)
       {
         RCBlock name = right.GetName (i);
-        if (!names.Contains (name.Name))
-        {
+        if (!names.Contains (name.Name)) {
           names.Write (name.Name);
         }
       }
@@ -125,8 +122,7 @@ namespace RCL.Core
 
       for (int i = 0; i < right.Count; ++i)
       {
-        if (!items.Contains (right[i]))
-        {
+        if (!items.Contains (right[i])) {
           items.Add (right[i]);
           results.Write (right[i]);
         }

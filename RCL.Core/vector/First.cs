@@ -263,8 +263,7 @@ namespace RCL.Core
     [RCVerb ("unwrap")]
     public void EvalUnwrap (RCRunner runner, RCClosure closure, RCBlock right)
     {
-      if (right.Count != 1)
-      {
+      if (right.Count != 1) {
         throw new Exception ("monadic unwrap unwraps a block containing a single element");
       }
       runner.Yield (closure, right.Get (0));
@@ -273,13 +272,11 @@ namespace RCL.Core
     [RCVerb ("get")]
     public void EvalGet (RCRunner runner, RCClosure closure, RCBlock left, RCLong right)
     {
-      if (right.Count != 1)
-      {
+      if (right.Count != 1) {
         throw new Exception ("right argument may only contain a single index");
       }
       RCValue result = left.Get (right[0]);
-      if (result == null)
-      {
+      if (result == null) {
         throw new RCException (closure, RCErrors.Range, "Index " + right[0] + " is out of range");
       }
       runner.Yield (closure, result);
@@ -288,13 +285,11 @@ namespace RCL.Core
     [RCVerb ("get")]
     public void EvalGet (RCRunner runner, RCClosure closure, RCLong left, RCBlock right)
     {
-      if (left.Count != 1)
-      {
+      if (left.Count != 1) {
         throw new Exception ("left argument may only contain a single index");
       }
       RCValue result = right.Get (left[0]);
-      if (result == null)
-      {
+      if (result == null) {
         throw new RCException (closure, RCErrors.Range, "Index " + left[0] + " is out of range");
       }
       runner.Yield (closure, result);
@@ -303,13 +298,11 @@ namespace RCL.Core
     [RCVerb ("get")]
     public void EvalGet (RCRunner runner, RCClosure closure, RCBlock left, RCString right)
     {
-      if (right.Count != 1)
-      {
+      if (right.Count != 1) {
         throw new Exception ("right argument may only contain a single name");
       }
       RCValue result = left.Get (right[0]);
-      if (result == null)
-      {
+      if (result == null) {
         throw new RCException (closure, RCErrors.Name, "Unable to resolve name " + right[0]);
       }
       runner.Yield (closure, result);
@@ -318,13 +311,11 @@ namespace RCL.Core
     [RCVerb ("get")]
     public void EvalGet (RCRunner runner, RCClosure closure, RCString left, RCBlock right)
     {
-      if (left.Count != 1)
-      {
+      if (left.Count != 1) {
         throw new Exception ("left argument may only contain a single name");
       }
       RCValue result = right.Get (left[0]);
-      if (result == null)
-      {
+      if (result == null) {
         throw new RCException (closure, RCErrors.Name, "Unable to resolve name " + left[0]);
       }
       runner.Yield (closure, result);
@@ -333,21 +324,17 @@ namespace RCL.Core
     [RCVerb ("get")]
     public void EvalGet (RCRunner runner, RCClosure closure, RCBlock left, RCSymbol right)
     {
-      if (right.Count != 1)
-      {
+      if (right.Count != 1) {
         throw new Exception ("right argument may only contain a single name");
       }
       object obj = right[0].Part (0);
-      if (obj is long)
-      {
+      if (obj is long) {
         runner.Yield (closure, left.Get ((long) obj));
       }
-      else if (obj is string)
-      {
+      else if (obj is string) {
         runner.Yield (closure, left.Get ((string) obj));
       }
-      else
-      {
+      else {
         throw new Exception ("invalid symbol: " + right[0].ToString ());
       }
     }
@@ -363,7 +350,7 @@ namespace RCL.Core
       RCArray<T> results = new RCArray<T> (right.Count);
       for (int i = 1; i < right.Count; ++i)
       {
-        results.Write (right[i]);  
+        results.Write (right[i]);
       }
       return results;
     }

@@ -15,7 +15,7 @@ namespace RCL.Core
     [RCVerb ("set")]
     public virtual void EvalSet (RCRunner runner, RCClosure closure, RCBlock left, RCBlock right)
     {
-      //We are going to need a faster version of this at some point.
+      // We are going to need a faster version of this at some point.
       RCBlock result = RCBlock.Empty;
       HashSet<string> handled = new HashSet<string> ();
       bool leftHasNames = left.HasNamedVariables ();
@@ -23,31 +23,26 @@ namespace RCL.Core
       {
         RCBlock lname = left.GetName (i);
         RCBlock rname;
-        if (!leftHasNames)
-        {
+        if (!leftHasNames) {
           // In this case left and right must have equal count or else BOOM.
           rname = right.GetName (i);
         }
-        else
-        {
+        else {
           rname = right.GetName (lname.Name);
         }
-        //rname.Value is null in the case of the empty block
-        if (rname != null && rname.Value != null)
-        {
+        // rname.Value is null in the case of the empty block
+        if (rname != null && rname.Value != null) {
           result = new RCBlock (result, rname.Name, rname.Evaluator, rname.Value);
           handled.Add (rname.Name);
         }
-        else
-        {
+        else {
           result = new RCBlock (result, lname.Name, lname.Evaluator, lname.Value);
         }
       }
       for (int i = 0; i < right.Count; ++i)
       {
         RCBlock rname = right.GetName (i);
-        if (!handled.Contains (rname.Name))
-        {
+        if (!handled.Contains (rname.Name)) {
           result = new RCBlock (result, rname.Name, rname.Evaluator, rname.Value);
         }
       }
@@ -68,52 +63,46 @@ namespace RCL.Core
       {
         RCBlock lname = left.GetName (i);
         RCBlock rname;
-        if (lname.Name == "")
-        {
+        if (lname.Name == "") {
           rname = right.GetName (i);
         }
-        else
-        {
+        else {
           rname = right.GetName (lname.Name);
         }
-        //rname.Value is null in the case of the empty block
-        if (rname != null && rname.Value != null)
-        {
-          if (rname.Value is RCBlock)
-          {
-            if (lname.Value is RCBlock)
-            {
+        // rname.Value is null in the case of the empty block
+        if (rname != null && rname.Value != null) {
+          if (rname.Value is RCBlock) {
+            if (lname.Value is RCBlock) {
               RCBlock lblock = (RCBlock) lname.Value;
               RCBlock rblock = (RCBlock) rname.Value;
-              result = new RCBlock (result, rname.Name, rname.Evaluator, InnerMerge (lblock, rblock));
+              result = new RCBlock (result,
+                                    rname.Name,
+                                    rname.Evaluator,
+                                    InnerMerge (lblock, rblock));
               handled.Add (rname.Name);
             }
-            else if (lname.Value is RCOperator)
-            {
+            else if (lname.Value is RCOperator) {
               result = new RCBlock (result, rname.Name, rname.Evaluator, rname.Value);
               handled.Add (rname.Name);
             }
-            else
-            {
-              throw new Exception (rname.Name + " must be a block. Was type " + lname.Value.TypeName + ".");
+            else {
+              throw new Exception (rname.Name + " must be a block. Was type " +
+                                   lname.Value.TypeName + ".");
             }
           }
-          else
-          {
+          else {
             result = new RCBlock (result, rname.Name, rname.Evaluator, rname.Value);
             handled.Add (rname.Name);
           }
         }
-        else
-        {
+        else {
           result = new RCBlock (result, lname.Name, lname.Evaluator, lname.Value);
         }
       }
       for (int i = 0; i < right.Count; ++i)
       {
         RCBlock rname = right.GetName (i);
-        if (!handled.Contains (rname.Name))
-        {
+        if (!handled.Contains (rname.Name)) {
           result = new RCBlock (result, rname.Name, rname.Evaluator, rname.Value);
         }
       }

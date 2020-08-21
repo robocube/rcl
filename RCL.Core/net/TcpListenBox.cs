@@ -21,17 +21,14 @@ namespace RCL.Core
       RCAsyncState state = null;
       lock (m_lock)
       {
-        if (m_requests.Count > 0)
-        {
+        if (m_requests.Count > 0) {
           state = m_requests.Dequeue ();
         }
-        else
-        {
+        else {
           m_messages.Enqueue (message);
         }
       }
-      if (state != null)
-      {
+      if (state != null) {
         runner.Yield (state.Closure, message);
       }
     }
@@ -41,17 +38,14 @@ namespace RCL.Core
       RCValue message = null;
       lock (m_lock)
       {
-        if (m_messages.Count > 0)
-        {
+        if (m_messages.Count > 0) {
           message = m_messages.Dequeue ();
         }
-        else
-        {
+        else {
           m_requests.Enqueue (new RCAsyncState (runner, closure, null));
         }
       }
-      if (message != null)
-      {
+      if (message != null) {
         runner.Yield (closure, message);
       }
     }

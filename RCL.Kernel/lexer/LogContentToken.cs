@@ -3,23 +3,27 @@ namespace RCL.Kernel
 {
   public class EndOfLine : RCTokenType
   {
-    public override RCToken TryParseToken (string code, int start, int index, int line, RCToken previous)
+    public override RCToken TryParseToken (string code,
+                                           int start,
+                                           int index,
+                                           int line,
+                                           RCToken
+                                           previous)
     {
       int current = start;
-      if (code[current] == '\r')
-      {
+      if (code[current] == '\r') {
         ++current;
       }
-      if (current < code.Length && code[current] == '\n')
-      {
+      if (current < code.Length && code[current] == '\n') {
         ++current;
       }
-      if (current > start)
-      {
+      if (current > start) {
         string text = code.Substring (start, current - start);
         return new RCToken (text, this, start, index, line, 1);
       }
-      else return null;
+      else {
+        return null;
+      }
     }
 
     public override void Accept (RCParser parser, RCToken token)
@@ -35,12 +39,16 @@ namespace RCL.Kernel
 
   public class LogEntryHeader : RCTokenType
   {
-    public override RCToken TryParseToken (string code, int start, int index, int line, RCToken previous)
+    public override RCToken TryParseToken (string code,
+                                           int start,
+                                           int index,
+                                           int line,
+                                           RCToken
+                                           previous)
     {
       int current = start;
-      if (code[current] >= '0' && code[current] <= '9')
-      {
-        //it's either a timestamp or a bot number at the beginning of a line.
+      if (code[current] >= '0' && code[current] <= '9') {
+        // it's either a timestamp or a bot number at the beginning of a line.
         while (current < code.Length && code[current] != '\r' && code[current] != '\n')
         {
           ++current;
@@ -64,14 +72,18 @@ namespace RCL.Kernel
 
   public class LogEntryRawLine : RCTokenType
   {
-    public override RCToken TryParseToken (string code, int start, int index, int line, RCToken previous)
+    public override RCToken TryParseToken (string code,
+                                           int start,
+                                           int index,
+                                           int line,
+                                           RCToken
+                                           previous)
     {
       int current;
       int lines = 0;
       for (current = start; start < code.Length; ++current)
       {
-        if (code[current] == '\r' || code[current] == '\n')
-        {
+        if (code[current] == '\r' || code[current] == '\n') {
           lines = 1;
           break;
         }
@@ -91,52 +103,22 @@ namespace RCL.Kernel
     }
   }
 
-  /*
-  public class LogEntryMessage : RCTokenType
+  public class LogEntryBody : RCTokenType
   {
     public override RCToken TryParseToken (string code,
                                            int start,
                                            int index,
-                                           RCToken previous)
-    {
-      int current = start;
-      if (code[current] == ' ')
-      {
-        while (current < code.Length && code[current] != '\n')
-        {
-          ++current;
-        }
-        if (current < code.Length && code[current] == '\n')
-        {
-          ++current;
-        }
-        string text = code.Substring (start, current - start);
-        return new RCToken (text, this, start, index);
-      }
-      return null;
-    }
-
-    public override void Accept (RCParser parser, RCToken token)
-    {
-      parser.AcceptLogEntryMessage (token);
-    }
-
-    public override string TypeName
-    {
-      get { return "logentrymessage"; }
-    }
-  }
-  */
-
-  public class LogEntryBody : RCTokenType
-  {
-    public override RCToken TryParseToken (string code, int start, int index, int line, RCToken previous)
+                                           int line,
+                                           RCToken
+                                           previous)
     {
       int current = start;
       while (current < code.Length && code[current] == ' ')
       {
         ++current;
-        if (!(current < code.Length && code[current] == ' ')) return null;
+        if (!(current < code.Length && code[current] == ' ')) {
+          return null;
+        }
         ++current;
         while (current < code.Length && !(code[current] == '\r' || code[current] == '\n'))
         {

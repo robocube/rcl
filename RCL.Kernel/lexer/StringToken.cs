@@ -9,18 +9,24 @@ namespace RCL.Kernel
 {
   public class StringToken : RCTokenType
   {
-    public override RCToken TryParseToken (string text, int startPos, int index, int line, RCToken previous)
+    public override RCToken TryParseToken (string text,
+                                           int startPos,
+                                           int index,
+                                           int line,
+                                           RCToken
+                                           previous)
     {
       int length = LengthOfEnclosedLiteral (text, startPos, '"');
-      if (length < 0)
-      {
+      if (length < 0) {
         return null;
       }
       string result = text.Substring (startPos, length);
       return new RCToken (result, this, startPos, index, line, 0);
     }
 
-    public override bool IsEnclosedLiteral { get { return true; } }
+    public override bool IsEnclosedLiteral {
+      get { return true; }
+    }
 
     public override void Accept (RCParser parser, RCToken token)
     {
@@ -46,11 +52,15 @@ namespace RCL.Kernel
 
   public class XMLStringToken : RCTokenType
   {
-    public override RCToken TryParseToken (string text, int startPos, int index, int line, RCToken previous)
+    public override RCToken TryParseToken (string text,
+                                           int startPos,
+                                           int index,
+                                           int line,
+                                           RCToken
+                                           previous)
     {
       int current = startPos;
-      if (text[current] == '"')
-      {
+      if (text[current] == '"') {
         ++current;
         while (text[current] != '"')
         {
@@ -58,8 +68,7 @@ namespace RCL.Kernel
         }
         ++current;
       }
-      else if (text[current] == '\'')
-      {
+      else if (text[current] == '\'') {
         ++current;
         while (text[current] != '\'')
         {
@@ -67,15 +76,16 @@ namespace RCL.Kernel
         }
         ++current;
       }
-      else
-      {
+      else {
         return null;
       }
       string result = text.Substring (startPos, current - startPos);
       return new RCToken (result, this, startPos, index, line, 0);
     }
 
-    public override bool IsEnclosedLiteral { get { return true; } }
+    public override bool IsEnclosedLiteral {
+      get { return true; }
+    }
 
     public override void Accept (RCParser parser, RCToken token)
     {
@@ -91,7 +101,7 @@ namespace RCL.Kernel
     {
       string undelim = token.Text.Substring (1, token.Text.Length - 2);
       return undelim;
-      //return UnescapeControlChars (undelim, '"');
+      // return UnescapeControlChars (undelim, '"');
     }
 
     public override object Parse (RCLexer lexer, RCToken token)

@@ -9,15 +9,18 @@ namespace RCL.Kernel
 {
   public class NameToken : RCTokenType
   {
-    public override RCToken TryParseToken (string text, int start, int index, int line, RCToken previous)
+    public override RCToken TryParseToken (string text,
+                                           int start,
+                                           int index,
+                                           int line,
+                                           RCToken
+                                           previous)
     {
-      if (start < text.Length && text[start] >= '0' && text[start] <= '9')
-      {
+      if (start < text.Length && text[start] >= '0' && text[start] <= '9') {
         return null;
       }
       int length = LengthOfDelimitedName (text, start, '.');
-      if (length < 0)
-      {
+      if (length < 0) {
         return null;
       }
       string token = text.Substring (start, length);
@@ -42,15 +45,18 @@ namespace RCL.Kernel
 
   public class XMLNameToken : RCTokenType
   {
-    public override RCToken TryParseToken (string text, int start, int index, int line, RCToken previous)
+    public override RCToken TryParseToken (string text,
+                                           int start,
+                                           int index,
+                                           int line,
+                                           RCToken
+                                           previous)
     {
-      if (start < text.Length && text[start] >= '0' && text[start] <= '9')
-      {
+      if (start < text.Length && text[start] >= '0' && text[start] <= '9') {
         return null;
       }
       int length = LengthOfDelimitedName (text, start, ':');
-      if (length < 0)
-      {
+      if (length < 0) {
         return null;
       }
       string token = text.Substring (start, length);

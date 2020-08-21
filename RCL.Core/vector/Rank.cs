@@ -82,7 +82,9 @@ namespace RCL.Core
     [RCVerb ("rank")]
     public void EvalRank (RCRunner runner, RCClosure closure, RCSymbol left, RCTime right)
     {
-      runner.Yield (closure, new RCLong (RankUtils.DoRank<RCTimeScalar> (Sort.ToDir (left), right)));
+      runner.Yield (closure,
+                    new RCLong (RankUtils.DoRank<RCTimeScalar> (Sort.ToDir (left),
+                                                                right)));
     }
   }
 }

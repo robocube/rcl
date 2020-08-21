@@ -10,14 +10,20 @@ namespace RCL.Kernel
   public class CubeToken : RCTokenType
   {
     public static readonly char[] CUBE = new char[] { '[', ']' };
-    public override RCToken TryParseToken (string code, int start, int index, int line, RCToken previous)
+    public override RCToken TryParseToken (string code,
+                                           int start,
+                                           int index,
+                                           int line,
+                                           RCToken
+                                           previous)
     {
-      if (IsIn (code[start], CUBE))
-      {
+      if (IsIn (code[start], CUBE)) {
         string token = code.Substring (start, 1);
         return new RCToken (token, this, start, index, line, 0);
       }
-      else return null;
+      else {
+        return null;
+      }
     }
 
     public override void Accept (RCParser parser, RCToken token)

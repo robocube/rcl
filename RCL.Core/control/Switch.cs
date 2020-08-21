@@ -6,7 +6,7 @@ namespace RCL.Core
 {
   public class Switch : RCOperator
   {
-    protected delegate RCValue Picker<T>(T val, out bool eval);
+    protected delegate RCValue Picker<T> (T val, out bool eval);
 
     [RCVerb ("switch")]
     public void EvalSwitch (RCRunner runner, RCClosure closure, RCBoolean left, RCBlock right)
@@ -37,7 +37,7 @@ namespace RCL.Core
     [RCVerb ("switch")]
     public void EvalSwitch (RCRunner runner, RCClosure closure, RCLong left, RCBlock right)
     {
-      //What on earth was I thinking... we need to make this work.
+      // What on earth was I thinking... we need to make this work.
       Picker<long> picker = delegate (long val, out bool eval)
       {
         RCBlock variable = right.GetName (val);
@@ -52,21 +52,19 @@ namespace RCL.Core
     {
       Picker<RCSymbolScalar> picker = delegate (RCSymbolScalar val, out bool eval)
       {
-        if (val.Length > 1)
-        {
+        if (val.Length > 1) {
           throw new Exception (
-            "switch only supports block lookups using tuples of count 1.  But this could change.");
+                  "switch only supports block lookups using tuples of count 1.  But this could change.");
         }
         RCBlock variable = right.GetName ((string) val.Key);
         RCValue code;
-        // This behavior is sketchy and should be reevaluated - this should be an exception
-        if (variable == null)
-        {
+        // This behavior is sketchy and should be reevaluated - this should be an
+        // exception
+        if (variable == null) {
           code = RCBlock.Empty;
           eval = true;
         }
-        else
-        {
+        else {
           code = variable.Value;
           eval = !variable.Evaluator.Pass;
         }
@@ -82,14 +80,13 @@ namespace RCL.Core
       {
         RCBlock variable = right.GetName (val);
         RCValue code;
-        // This behavior is sketchy and should be reevaluated - this should be an exception
-        if (variable == null)
-        {
+        // This behavior is sketchy and should be reevaluated - this should be an
+        // exception
+        if (variable == null) {
           code = RCBlock.Empty;
           eval = true;
         }
-        else
-        {
+        else {
           code = variable.Value;
           eval = !variable.Evaluator.Pass;
         }
@@ -101,11 +98,9 @@ namespace RCL.Core
     [RCVerb ("then")]
     public void EvalThen (RCRunner runner, RCClosure closure, RCBoolean left, RCBlock right)
     {
-      if (left[0])
-      {
+      if (left[0]) {
         int i = closure.Index - 2;
-        if (i < left.Count)
-        {
+        if (i < left.Count) {
           RCClosure child = new RCClosure (closure,
                                            closure.Bot,
                                            right,
@@ -114,13 +109,11 @@ namespace RCL.Core
                                            0);
           right.Eval (runner, child);
         }
-        else
-        {
+        else {
           runner.Yield (closure, closure.Parent.Result);
         }
       }
-      else
-      {
+      else {
         runner.Yield (closure, RCBoolean.False);
       }
     }
@@ -132,12 +125,10 @@ namespace RCL.Core
                                         Picker<T> picker)
     {
       int i = closure.Index - 2;
-      if (i < left.Count)
-      {
+      if (i < left.Count) {
         bool eval;
         RCValue code = picker (left[i], out eval);
-        if (eval)
-        {
+        if (eval) {
           RCClosure child = new RCClosure (closure,
                                            closure.Bot,
                                            code,
@@ -146,19 +137,17 @@ namespace RCL.Core
                                            0);
           code.Eval (runner, child);
         }
-        else
-        {
-          //In this case the "code" can be a value, normally part of a generated program
+        else {
+          // In this case the "code" can be a value, normally part of a generated program
           runner.Yield (closure, code);
         }
       }
-      else
-      {
+      else {
         runner.Yield (closure, closure.Parent.Result);
       }
     }
 
-    //This higher order thingy needs to go away it makes no sense.
+    // This higher order thingy needs to go away it makes no sense.
     public override bool IsHigherOrder ()
     {
       return false;
@@ -166,12 +155,10 @@ namespace RCL.Core
 
     public override bool IsLastCall (RCClosure closure, RCClosure arg)
     {
-      if (arg == null)
-      {
+      if (arg == null) {
         return base.IsLastCall (closure, arg);
       }
-      if (!base.IsLastCall (closure, arg))
-      {
+      if (!base.IsLastCall (closure, arg)) {
         return false;
       }
       bool isBeforeLastCall = arg.Code.IsBeforeLastCall (arg);

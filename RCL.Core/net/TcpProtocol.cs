@@ -8,7 +8,7 @@ namespace RCL.Core
   {
     public override byte[] Serialize (Tcp.Client client, RCValue message)
     {
-      //Hey we should try using ToByte in here.
+      // Hey we should try using ToByte in here.
       return Encoding.ASCII.GetBytes (message.ToString ());
     }
 

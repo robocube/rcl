@@ -7,7 +7,6 @@ using System.Globalization;
 
 namespace RCL.Kernel
 {
-
   /// <summary>
   /// Represents a single token within an RCL source document.
   /// </summary>
@@ -115,7 +114,7 @@ namespace RCL.Kernel
 
     public override string ToString ()
     {
-      //This is for easier debugging.
+      // This is for easier debugging.
       return Text + " - " + Type.TypeName;
     }
   }

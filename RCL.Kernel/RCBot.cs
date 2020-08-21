@@ -21,25 +21,25 @@ namespace RCL.Kernel
       RCSystem.Activator.InjectState (this);
     }
 
-    //Deprecated: Only used by Tcp api.
+    // Deprecated: Only used by Tcp api.
     public long New ()
     {
       return m_handle = Interlocked.Increment (ref m_handle);
     }
 
-    //Deprecated: Only used by Tcp api.
+    // Deprecated: Only used by Tcp api.
     public object Get (long handle)
     {
       return m_descriptors[handle];
     }
 
-    //Deprecated: Only used by Tcp api.
+    // Deprecated: Only used by Tcp api.
     public void Put (long handle, object descriptor)
     {
       m_descriptors[handle] = descriptor;
     }
 
-    //Deprecated: Only used by Tcp api.
+    // Deprecated: Only used by Tcp api.
     public void Delete (long handle)
     {
       m_descriptors.Remove (handle);
@@ -47,8 +47,8 @@ namespace RCL.Kernel
 
     public void PutModule (Type type)
     {
-      ConstructorInfo ctor = type.GetConstructor (new Type[]{});
-      object module = ctor.Invoke (new object[]{});
+      ConstructorInfo ctor = type.GetConstructor (new Type[] {});
+      object module = ctor.Invoke (new object[] {});
       m_modules.Add (type, module);
     }
 
@@ -75,47 +75,46 @@ namespace RCL.Kernel
       return module.IsFiberDone (fiber);
     }
 
-    //This does not really implement the dispose pattern it just
-    //calls dispose on the objects that do.
+    // This does not really implement the dispose pattern it just
+    // calls dispose on the objects that do.
     public void Dispose ()
     {
       foreach (KeyValuePair <Type, object> kv in m_modules)
       {
         IDisposable module = kv.Value as IDisposable;
-        if (module != null)
-        {
+        if (module != null) {
           module.Dispose ();
         }
       }
     }
 
     /*
-    /// <summary>
-    /// Reset all of the modules except for Fiber which is needed by the runner
-    /// </summary>
-    public void Reset ()
-    {
-      List<Type> typeList = new List<Type> ();
-      foreach (KeyValuePair <Type, object> kv in m_modules)
-      {
+       /// <summary>
+       /// Reset all of the modules except for Fiber which is needed by the runner
+       /// </summary>
+       public void Reset ()
+       {
+       List<Type> typeList = new List<Type> ();
+       foreach (KeyValuePair <Type, object> kv in m_modules)
+       {
         IDisposable module = kv.Value as IDisposable;
         if (module != null && !(kv.Value is Fiber))
         {
           module.Dispose ();
           typeList.Add (kv.Key);
         }
-      }
-      for (int i = 0; i < typeList.Count; ++i)
-      {
+       }
+       for (int i = 0; i < typeList.Count; ++i)
+       {
         m_modules.Remove (typeList[i]);
-      }
-      for (int i = 0; i < typeList.Count; ++i)
-      {
+       }
+       for (int i = 0; i < typeList.Count; ++i)
+       {
         PutModule (typeList[i]);
-      }
-      Console.WriteLine("Done resetting bot");
-    }
-    */
+       }
+       Console.WriteLine("Done resetting bot");
+       }
+     */
   }
 }
 

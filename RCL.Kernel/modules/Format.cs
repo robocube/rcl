@@ -15,76 +15,64 @@ namespace RCL.Kernel
     [RCVerb ("format")]
     public void EvalFormat (RCRunner runner, RCClosure closure, object left, object right)
     {
-      //eventually should support xml and json, maybe csv?
+      // eventually should support xml and json, maybe csv?
       string which = "default";
       RCSymbol format = (RCSymbol) left;
       RCValue content = (RCValue) right;
       which = format[0].Part (0).ToString ();
       string result = null;
-      if (which.Equals ("default"))
-      {
+      if (which.Equals ("default")) {
         result = content.Format (RCFormat.Default);
       }
-      else if (which.Equals ("pretty"))
-      {
+      else if (which.Equals ("pretty")) {
         result = content.Format (RCFormat.Pretty);
       }
-      else if (which.Equals ("defaultnot"))
-      {
+      else if (which.Equals ("defaultnot")) {
         result = content.Format (RCFormat.DefaultNoT);
       }
-      else if (which.Equals ("canonical"))
-      {
+      else if (which.Equals ("canonical")) {
         result = content.Format (RCFormat.Canonical);
       }
-      else if (which.Equals ("testcanonical"))
-      {
+      else if (which.Equals ("testcanonical")) {
         result = content.Format (RCFormat.TestCanonical);
       }
-      else if (which.Equals ("fragment"))
-      {
+      else if (which.Equals ("fragment")) {
         result = content.Format (RCFormat.EditorFragment);
       }
-      else if (which.Equals ("html"))
-      {
-        //content must be a cube
+      else if (which.Equals ("html")) {
+        // content must be a cube
         result = content.Format (RCFormat.Html);
       }
-      else if (which.Equals ("csv"))
-      {
-        //content must be a cube
+      else if (which.Equals ("csv")) {
+        // content must be a cube
         result = content.Format (RCFormat.Csv);
       }
-      else if (which.Equals ("log"))
-      {
-        //content must be a cube containing expected logging fields
+      else if (which.Equals ("log")) {
+        // content must be a cube containing expected logging fields
         result = content.Format (RCFormat.Log);
       }
-      else if (which.Equals ("json"))
-      {
+      else if (which.Equals ("json")) {
         result = content.Format (RCFormat.Json);
       }
-      else if (which.Equals ("text"))
-      {
+      else if (which.Equals ("text")) {
         result = DoTextFormat (right, Environment.NewLine);
       }
-      else if (which.Equals ("textcrlf"))
-      {
+      else if (which.Equals ("textcrlf")) {
         result = DoTextFormat (right, "\r\n");
       }
-      else if (which.Equals ("textlf"))
-      {
+      else if (which.Equals ("textlf")) {
         result = DoTextFormat (right, "\n");
       }
-      else throw new Exception ("Unknown format:" + which);
+      else {
+        throw new Exception ("Unknown format:" + which);
+      }
       runner.Yield (closure, new RCString (result));
     }
 
     public static string DoTextFormat (object right, string newline)
     {
       RCString text = right as RCString;
-      if (text == null)
-      {
+      if (text == null) {
         throw new Exception ("text format can only format strings");
       }
       StringBuilder builder = new StringBuilder ();
@@ -96,108 +84,107 @@ namespace RCL.Kernel
       return builder.ToString ();
     }
 
-    public static void DoFormat<T> (RCVector<T> vector, StringBuilder builder, RCFormat args, RCColmap colmap, int level)
+    public static void DoFormat<T> (RCVector<T> vector,
+                                    StringBuilder builder,
+                                    RCFormat args,
+                                    RCColmap colmap,
+                                    int level)
     {
-      if (vector.Count == 0)
-      {
+      if (vector.Count == 0) {
         builder.Append ("~");
         builder.Append (vector.TypeCode);
       }
-      else
-      {
+      else {
         for (int i = 0; i < vector.Count; ++i)
         {
           vector.ScalarToString (builder, vector[i]);
-          if (i < vector.Count - 1)
-          {
+          if (i < vector.Count - 1) {
             builder.Append (" ");
           }
-          else builder.Append (vector.Suffix);
+          else {
+            builder.Append (vector.Suffix);
+          }
         }
       }
     }
 
-    public static void DoFormat (RCOperator op, StringBuilder builder, RCFormat args, RCColmap colmap, int level)
+    public static void DoFormat (RCOperator op,
+                                 StringBuilder builder,
+                                 RCFormat args,
+                                 RCColmap
+                                 colmap,
+                                 int level)
     {
-      if (op.Left != null)
-      {
-        if (op.Left.IsOperator)
-        {
+      if (op.Left != null) {
+        if (op.Left.IsOperator) {
           builder.Append ("(");
           op.Left.Format (builder, args, colmap, level);
           builder.Append (")");
         }
-        else
-        {
+        else {
           op.Left.Format (builder, args, colmap, level);
         }
         builder.Append (" ");
       }
       op.BodyToString (builder, args, level);
       builder.Append (" ");
-      //Note Right is not allowed to be null.
+      // Note Right is not allowed to be null.
       op.Right.Format (builder, args, colmap, level);
     }
 
-    public static void DoFormat (RCBlock block, StringBuilder builder, RCFormat args, RCColmap colmap, int level)
+    public static void DoFormat (RCBlock block,
+                                 StringBuilder builder,
+                                 RCFormat args,
+                                 RCColmap
+                                 colmap,
+                                 int level)
     {
-      if (block.Count == 0)
-      {
-        if (!args.Fragment)
-        {
+      if (block.Count == 0) {
+        if (!args.Fragment) {
           builder.Append ("{}");
         }
         return;
       }
-      if (level > 0 || !args.Fragment)
-      {
+      if (level > 0 || !args.Fragment) {
         builder.Append ("{");
         builder.Append (args.Newline);
       }
       ++level;
-      //Note the indexer requires a linear search backwards.
-      //Maybe a custom iterator is in order?
-      //It would also be useful for evaluation and other algorithms.
+      // Note the indexer requires a linear search backwards.
+      // Maybe a custom iterator is in order?
+      // It would also be useful for evaluation and other algorithms.
       for (int i = 0; i < block.Count; ++i)
       {
         RCBlock child = block.GetName (i);
-        if (level > 1 || !args.Fragment)
-        {
+        if (level > 1 || !args.Fragment) {
           for (int tab = args.Fragment ? 1 : 0; tab < level; ++tab)
           {
             builder.Append (args.Indent);
           }
         }
-        if (args.Syntax == "JSON")
-        {
+        if (args.Syntax == "JSON") {
           builder.AppendFormat ("\"{0}\"", child.RawName);
         }
-        else if (child.EscapeName)
-        {
+        else if (child.EscapeName) {
           builder.Append (child.Name);
         }
-        else
-        {
+        else {
           builder.Append (child.Name);
         }
         builder.Append (child.Evaluator.Symbol);
-        if (child.Value != null)
-        {
+        if (child.Value != null) {
           child.Value.Format (builder, args, colmap, level);
         }
-        else //Only the empty block has no value.
-        {
+        else { // Only the empty block has no value.
           builder.Append ("{}");
         }
-        if (i < block.Count - 1)
-        {
+        if (i < block.Count - 1) {
           builder.Append (args.RowDelimeter);
         }
       }
       builder.Append (args.Newline);
       --level;
-      if (level > 0 || !args.Fragment)
-      {
+      if (level > 0 || !args.Fragment) {
         for (int tab = args.Fragment ? 1 : 0; tab < level; ++tab)
         {
           builder.Append (args.Indent);
@@ -206,16 +193,20 @@ namespace RCL.Kernel
       }
     }
 
-    public static void DoFormat (RCTemplate template, StringBuilder builder, RCFormat args, RCColmap colmap, int level)
+    public static void DoFormat (RCTemplate template,
+                                 StringBuilder builder,
+                                 RCFormat args,
+                                 RCColmap
+                                 colmap,
+                                 int level)
     {
-      //templates need to follow the same indenting rules as everyone else please.
+      // templates need to follow the same indenting rules as everyone else please.
       builder.Append ("[");
       builder.Append ('?', template.EscapeCount);
-      //Use AppendLine not args.Newline, because the newline is signficant
+      // Use AppendLine not args.Newline, because the newline is signficant
       //  and needs to be there no matter what.  Otherwise when we parse it again
       ++level;
-      if (template.Multiline)
-      {
+      if (template.Multiline) {
         builder.Append ("\n");
         for (int tab = args.Fragment ? 1 : 0; tab < level; ++tab)
         {
@@ -226,21 +217,18 @@ namespace RCL.Kernel
       {
         RCValue child = template.Get (i);
         RCString str = child as RCString;
-        if (str != null && i % 2 == 0)
-        {
+        if (str != null && i % 2 == 0) {
           for (int j = 0; j < str.Count; ++j)
           {
-            //Now go through str one char at a time to find the newlines.
+            // Now go through str one char at a time to find the newlines.
             int start = 0, end = 0;
-            for (;end < str[j].Length; ++end)
+            for (; end < str[j].Length; ++end)
             {
-              if (str[j][end] == '\n')
-              {
+              if (str[j][end] == '\n') {
                 string line = str[j].Substring (start, end - start);
                 builder.Append (line);
                 builder.Append ("\n");
-                if (i < template.Count - 2 || end < str[j].Length - 1)
-                {
+                if (i < template.Count - 2 || end < str[j].Length - 1) {
                   for (int tab = args.Fragment ? 1 : 0; tab < level; ++tab)
                   {
                     builder.Append (args.Indent);
@@ -248,40 +236,37 @@ namespace RCL.Kernel
                 }
                 start = end + 1;
               }
-              else if (end == str[j].Length - 1)
-              {
+              else if (end == str[j].Length - 1) {
                 builder.Append (str[j].Substring (start, 1 + end - start));
               }
             }
           }
         }
-        else
-        {
-          if (template.Multiline)
-          {
-            //for (int tab = 0; tab < level; ++tab)
-            //{
+        else {
+          if (template.Multiline) {
+            // for (int tab = 0; tab < level; ++tab)
+            // {
             //  builder.Append (args.Indent);
-            //}
+            // }
             /*
-            int k = builder.Length - 1;
-            while (k >= 0)
-            {
-              if (builder[k] == '\n')
-              {
+               int k = builder.Length - 1;
+               while (k >= 0)
+               {
+               if (builder[k] == '\n')
+               {
                 for (int tab = 0; tab < level; ++tab)
                 {
                   builder.Append (args.Indent);
                 }
                 break;
-              }
-              else if (builder[k] != ' ')
-              {
+               }
+               else if (builder[k] != ' ')
+               {
                 break;
-              }
-              --k;
-            }
-            */
+               }
+               --k;
+               }
+             */
           }
           builder.Append ("[");
           builder.Append ('!', template.EscapeCount);
@@ -293,8 +278,7 @@ namespace RCL.Kernel
         }
       }
       --level;
-      if (template.Multiline)
-      {
+      if (template.Multiline) {
         for (int tab = args.Fragment ? 1 : 0; tab < level; ++tab)
         {
           builder.Append (args.Indent);
@@ -304,7 +288,11 @@ namespace RCL.Kernel
       builder.Append ("]");
     }
 
-    public static void DoFormat (RCReference reference, StringBuilder builder, RCFormat args, RCColmap colmap, int level)
+    public static void DoFormat (RCReference reference,
+                                 StringBuilder builder,
+                                 RCFormat args,
+                                 RCColmap colmap,
+                                 int level)
     {
       builder.Append ("$");
       builder.Append (reference.Name);

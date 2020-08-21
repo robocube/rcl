@@ -11,11 +11,13 @@ namespace RCL.Kernel
   {
     internal static readonly char[] WhiteChars = new char[] { ' ', '\t', '\r', '\n', '\a' };
     internal static readonly char[] NumTypes = new char[] { 'd', 'l', 'i', 'f', 'm' };
-    internal static readonly char[] TypeChars = new char[] { 'd', 'l', 'm', 'y', 'i', 'f', 's', 'c', 't', 'z', 'n', 'b', 'x' };
-    internal static string[] SpecialOperators = { "-", "+", "*", "/", "%", "&", "<=", ">=", "<", ">", "==", "!=", "=", "!" };
-    //The order of tests matters here.
+    internal static readonly char[] TypeChars = new char[] { 'd', 'l', 'm', 'y', 'i', 'f', 's', 'c',
+                                                             't', 'z', 'n', 'b', 'x' };
+    internal static string[] SpecialOperators = { "-", "+", "*", "/", "%", "&", "<=", ">=", "<",
+                                                  ">", "==", "!=", "=", "!" };
+    // The order of tests matters here.
     internal static string[] Evaluators = { "::", ":", "<-:", "<--", "<-" };
-    
+
     /// <summary>
     /// Would life be better if i let you use shorthand like tttffftttfff
     /// </summary>
@@ -46,6 +48,9 @@ namespace RCL.Kernel
     /// </summary>
     public static readonly RCTokenType Block = new BlockToken ();
 
+    /// <summary>
+    /// Text content found within a template.
+    /// </summary>
     public static readonly RCTokenType Content = new ContentToken ();
 
     /// <summary>
@@ -101,7 +106,7 @@ namespace RCL.Kernel
     /// <summary>
     /// RC's caught exceptions appear as errors
     /// </summary>
-    //public static readonly RCTokenType Error = new RCErrorToken();
+    // public static readonly RCTokenType Error = new RCErrorToken();
 
     public static readonly RCTokenType Time = new TimeToken ();
     /// <summary>
@@ -112,22 +117,22 @@ namespace RCL.Kernel
     /// </summary>
     public static readonly RCTokenType Junk = new JunkToken ();
 
-    //For CSV Files only.
+    // For CSV Files only.
     public static readonly RCTokenType CSVSeparator = new SeparatorToken ();
 
     public static readonly RCTokenType CSVContent = new ColumnDataToken (',', '\r', '\n');
 
-    //For JSON Files only.
+    // For JSON Files only.
     public static readonly RCTokenType Null = new NullToken ();
 
-    //For XML Files only.
+    // For XML Files only.
     public static readonly RCTokenType XmlBracket = new XMLBracketToken ();
     public static readonly RCTokenType XmlContent = new XMLContentToken ();
     public static readonly RCTokenType XmlDeclaration = new XMLDeclarationToken ();
     public static readonly RCTokenType XmlName = new XMLNameToken ();
     public static readonly RCTokenType XmlString = new XMLStringToken ();
 
-    //For RCL log files only.
+    // For RCL log files only.
     public static readonly RCTokenType EndOfLine = new EndOfLine ();
     public static readonly RCTokenType LogEntryRawLine = new LogEntryRawLine ();
     public static readonly RCTokenType LogEntryHeader = new LogEntryHeader ();
@@ -151,8 +156,13 @@ namespace RCL.Kernel
     /// Is this the right spot for a visitor? not really sure...
     /// </summary>
     public abstract void Accept (RCParser parser, RCToken token);
-    
-    public abstract RCToken TryParseToken (string code, int startPos, int index, int line, RCToken previous);
+
+    public abstract RCToken TryParseToken (string code,
+                                           int startPos,
+                                           int index,
+                                           int line,
+                                           RCToken
+                                           previous);
 
     public virtual bool IsTerminalOf (RCToken token)
     {
@@ -164,8 +174,7 @@ namespace RCL.Kernel
       int result = 0;
       for (int i = start; i < end; ++i)
       {
-        if (code[i] == '\n')
-        {
+        if (code[i] == '\n') {
           ++result;
         }
       }
@@ -176,8 +185,7 @@ namespace RCL.Kernel
     {
       for (int i = 0; i < allowed.Length; ++i)
       {
-        if (character == allowed[i])
-        {
+        if (character == allowed[i]) {
           return true;
         }
       }
@@ -189,24 +197,21 @@ namespace RCL.Kernel
       if ((character >= 'a' && character <= 'z') ||
           (character >= 'A' && character <= 'Z') ||
           (character >= '0' && character <= '9') ||
-          (character == '_'))
-      {
+          (character == '_')) {
         return true;
       }
-      else
-      {
+      else {
         return false;
       }
     }
 
     public static int LengthOfDelimitedName (string text, int start, char delimiter)
     {
-      //Check for one of the special ops like + - * etc...
+      // Check for one of the special ops like + - * etc...
       for (int i = 0; i < SpecialOperators.Length; ++i)
       {
         int length = LengthOfKeyword (text, start, SpecialOperators[i]);
-        if (length > 0)
-        {
+        if (length > 0) {
           return length;
         }
       }
@@ -214,15 +219,15 @@ namespace RCL.Kernel
       while (true)
       {
         int length = LengthOfIdentifier (text, end);
-        if (length > 0)
-        {
+        if (length > 0) {
           end += length;
         }
-        if ((end < text.Length - 1) && text[end] == delimiter)
-        {
+        if ((end < text.Length - 1) && text[end] == delimiter) {
           ++end;
         }
-        else break;
+        else {
+          break;
+        }
       }
       return end > start ? end - start : -1;
     }
@@ -230,13 +235,12 @@ namespace RCL.Kernel
     public static int LengthOfIdentifier (string text, int start)
     {
       int length, end = -1;
-      //Check for an escaped string
+      // Check for an escaped string
       length = LengthOfEnclosedLiteral (text, start, '\'');
-      if (length > 0)
-      {
+      if (length > 0) {
         return length;
       }
-      //Check for a regular old vanilla name.
+      // Check for a regular old vanilla name.
       end = start;
       while (end < text.Length && IsIdentifierChar (text[end]))
       {
@@ -247,10 +251,9 @@ namespace RCL.Kernel
 
     public static int LengthOfStrictIdentifier (string text, int start)
     {
-      //Check for a regular old vanilla name.
+      // Check for a regular old vanilla name.
       int end = start;
-      if (end < text.Length && text[end] >= '0' && text[end] <= '9')
-      {
+      if (end < text.Length && text[end] >= '0' && text[end] <= '9') {
         return -1;
       }
       while (end < text.Length && IsIdentifierChar (text[end]))
@@ -265,84 +268,73 @@ namespace RCL.Kernel
       int end = start;
       while (end < text.Length)
       {
-        if (IsIdentifierChar (text[end]))
-        {
+        if (IsIdentifierChar (text[end])) {
           ++end;
         }
-        else if (text[end] == delimiter)
-        {
+        else if (text[end] == delimiter) {
           ++end;
         }
-        else if (text[end] == '-' && (end == start || text[end-1] == delimiter))
-        {
+        else if (text[end] == '-' && (end == start || text[end - 1] == delimiter)) {
           ++end;
         }
-        else if (text[end] == '\'') 
-        {
+        else if (text[end] == '\'') {
           ++end;
-          while (end < text.Length && text[end] != '\'') 
+          while (end < text.Length && text[end] != '\'')
           {
             ++end;
           }
           ++end;
-          if (end < text.Length && IsIn (text[end], WhiteChars))
-          {
+          if (end < text.Length && IsIn (text[end], WhiteChars)) {
             break;
           }
         }
-        else if (text[end] == '\\')
-        {
+        else if (text[end] == '\\') {
           ++end;
         }
-        else if (text[end] == '*' || text[end] == '.')
-        {
+        else if (text[end] == '*' || text[end] == '.') {
           ++end;
         }
-        else break;
+        else {
+          break;
+        }
       }
       return end - start;
     }
 
     public static int LengthOfEnclosedLiteral (string text, int start, char delimeter)
     {
-      if (start >= text.Length)
-      {
+      if (start >= text.Length) {
         return -1;
       }
-      if (text[start] != delimeter)
-      {
+      if (text[start] != delimeter) {
         return -1;
       }
       int current = start + 1;
       int escapeCount = 0;
       while (current < text.Length)
       {
-        if (text[current] == delimeter)
-        {
-          if (text[current - 1] != '\\')
-          {
+        if (text[current] == delimeter) {
+          if (text[current - 1] != '\\') {
             break;
           }
-          else if (text[current - 2] == '\\')
-          {
+          else if (text[current - 2] == '\\') {
             int lookback = current - 2;
             while (lookback >= 0 && text[lookback] == '\\')
             {
               ++escapeCount;
               --lookback;
             }
-            if (escapeCount % 2 == 1)
-            {
+            if (escapeCount % 2 == 1) {
               break;
             }
           }
           /*
-          if (text[current - 1] != '\\' ||
+             if (text[current - 1] != '\\' ||
               text[current - 1] == '\\' && text[current-2] == '\\')
-          {
-            break;
-          }
-          */
+             {
+             break;
+             }
+           */
         }
         ++current;
       }
@@ -359,8 +351,7 @@ namespace RCL.Kernel
       int i = 0;
       while ((start + i) < text.Length && word[i] == text[start + i])
       {
-        if (i == word.Length - 1)
-        {
+        if (i == word.Length - 1) {
           return word.Length;
         }
         ++i;
@@ -382,32 +373,28 @@ namespace RCL.Kernel
       for (int i = 0; i < str.Length; ++i)
       {
         char current = str[i];
-        if (current == '\n')
-        {
+        if (current == '\n') {
           builder.Append ("\\n");
         }
-        else if (current == '\r')
-        {
+        else if (current == '\r') {
           builder.Append ("\\r");
         }
-        else if (current == '\t')
-        {
+        else if (current == '\t') {
           builder.Append ("\\t");
         }
-        else if (current == '\a')
-        {
+        else if (current == '\a') {
           builder.Append ("\\a");
         }
-        else if (current == '\\')
-        {
+        else if (current == '\\') {
           builder.Append ("\\\\");
         }
-        else if (current == delimeter)
-        {
+        else if (current == delimeter) {
           builder.Append ("\\");
           builder.Append (delimeter);
         }
-        else builder.Append (current);
+        else {
+          builder.Append (current);
+        }
       }
       return builder.ToString ();
     }
@@ -420,59 +407,59 @@ namespace RCL.Kernel
       StringBuilder builder = new StringBuilder ();
       for (int i = 0; i < str.Length; ++i)
       {
-        // This code block should be used instead of the one above, 
+        // This code block should be used instead of the one above,
         // but it needs a test to be written first.
-        if (str[i] == '\\')
-        {
-          if (i < str.Length - 1)
-          {
+        if (str[i] == '\\') {
+          if (i < str.Length - 1) {
             char next = str[i + 1];
-            if (next == '\\')
-            {
+            if (next == '\\') {
               builder.Append ('\\');
             }
-            else if (next == 'n')
-            {
+            else if (next == 'n') {
               builder.Append ('\n');
             }
-            else if (next == 'r')
-            {
+            else if (next == 'r') {
               builder.Append ('\r');
             }
-            else if (next == 't')
-            {
+            else if (next == 't') {
               builder.Append ('\t');
             }
-            else if (next == 'a')
-            {
+            else if (next == 'a') {
               builder.Append ('\a');
             }
-            else if (next == 'u')
-            {
-              builder.Append ((char) ushort.Parse (str.Substring (i+2, 4), NumberStyles.AllowHexSpecifier));
-              i+=4;
+            else if (next == 'u') {
+              builder.Append ((char) ushort.Parse (str.Substring (i + 2, 4),
+                                                   NumberStyles.AllowHexSpecifier));
+              i += 4;
             }
-            else if (next == '/')
-            {
+            else if (next == '/') {
               builder.Append ('/');
             }
-            else if (next == delimiter)
-            {
+            else if (next == delimiter) {
               builder.Append (delimiter);
             }
-            else throw new Exception ("unescaped backslash at position " + i + " within \"" + str + "\"");
-            //skip over the additional character.
+            else {
+              throw new Exception ("unescaped backslash at position " + i + " within \"" + str +
+                                   "\"");
+            }
+            // skip over the additional character.
             ++i;
           }
         }
-        else builder.Append (str[i]);
+        else {
+          builder.Append (str[i]);
+        }
       }
       return builder.ToString ();
     }
-    
-    public virtual bool IsEnclosedLiteral { get { return false; } }
 
-    public abstract string TypeName { get; }
+    public virtual bool IsEnclosedLiteral {
+      get { return false; }
+    }
+
+    public abstract string TypeName {
+      get;
+    }
 
     public virtual object Parse (RCLexer lexer, RCToken token)
     {

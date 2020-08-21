@@ -9,15 +9,17 @@ using System.Reflection;
 namespace RCL.Kernel
 {
   /// <summary>
-  /// There are a few things are accessible on a global basis: the log, the arguments to Program, and the activator.
-  /// It is possible to have multiple runners operating within an appDomain, so a RCRunner instance is not available this way.
+  /// There are a few things are accessible on a global basis: the log, the arguments to
+  /// Program, and the activator.
+  /// It is possible to have multiple runners operating within an appDomain, so a RCRunner
+  /// instance is not available this way.
   /// </summary>
   public class RCSystem
   {
     static RCSystem ()
     {
       Args = RCLArgv.Instance;
-      //Setup the logger first in case the Activator throws an exception
+      // Setup the logger first in case the Activator throws an exception
       Log = new RCLogger (Args.NoKeys, Args.Show, Args.Hide);
       Log.SetVerbosity (Args.OutputEnum);
       Activator = RCActivator.CreateDefault ();
@@ -30,8 +32,7 @@ namespace RCL.Kernel
     public static bool IsMono ()
     {
       bool result = false;
-      if (Type.GetType ("Mono.Runtime") != null)
-      {
+      if (Type.GetType ("Mono.Runtime") != null) {
         result = true;
       }
       return result;
@@ -48,7 +49,7 @@ namespace RCL.Kernel
       RCParser parser = new RCLParser (Activator);
       RCArray<RCToken> tokens = new RCArray<RCToken> ();
       parser.Lex (code, tokens);
-      RCValue result = parser.Parse (tokens, out fragment, canonical:false);
+      RCValue result = parser.Parse (tokens, out fragment, canonical: false);
       RCAssert.IsNotNull (result, "The result of parser.Parse() was null.");
       return result;
     }
@@ -59,7 +60,7 @@ namespace RCL.Kernel
       RCArray<RCToken> tokens = new RCArray<RCToken> ();
       parser.Lex (code, tokens);
       bool fragment;
-      RCValue result = parser.Parse (tokens, out fragment, canonical:false);
+      RCValue result = parser.Parse (tokens, out fragment, canonical: false);
       RCAssert.IsNotNull (result, "The result of parser.Parse() was null.");
       return result;
     }
@@ -80,25 +81,27 @@ namespace RCL.Kernel
       result.ReserveColumn ("method");
       result.ReserveColumn ("left");
       result.ReserveColumn ("right");
-      foreach (KeyValuePair<RCActivator.OverloadKey, RCActivator.OverloadValue> kv in Activator.m_dispatch)
+      foreach (KeyValuePair<RCActivator.OverloadKey,
+                            RCActivator.OverloadValue> kv in Activator.m_dispatch)
       {
         RCSymbolScalar sym;
-        if (kv.Key.Left == null)
-        {
-          sym = RCSymbolScalar.From ("operator", kv.Value.Module.Name, kv.Key.Name,
+        if (kv.Key.Left == null) {
+          sym = RCSymbolScalar.From ("operator",
+                                     kv.Value.Module.Name,
+                                     kv.Key.Name,
                                      RCValue.TypeNameForType (kv.Key.Right));
         }
-        else
-        {
-          sym = RCSymbolScalar.From ("operator", kv.Value.Module.Name, kv.Key.Name,
+        else {
+          sym = RCSymbolScalar.From ("operator",
+                                     kv.Value.Module.Name,
+                                     kv.Key.Name,
                                      RCValue.TypeNameForType (kv.Key.Left),
                                      RCValue.TypeNameForType (kv.Key.Right));
         }
         result.WriteCell ("name", sym, kv.Key.Name);
         result.WriteCell ("module", sym, kv.Value.Module.Name);
         result.WriteCell ("method", sym, kv.Value.Implementation.Name);
-        if (kv.Key.Left != null)
-        {
+        if (kv.Key.Left != null) {
           result.WriteCell ("left", sym, RCValue.TypeNameForType (kv.Key.Left));
         }
         result.WriteCell ("right", sym, RCValue.TypeNameForType (kv.Key.Right));
@@ -108,39 +111,39 @@ namespace RCL.Kernel
     }
 
     /*
-    /// <summary>
-    /// This is a way to listen on debug messages in an isolated appdomain
-    /// We don't currently need it because we aren't using Debug.Write,
-    /// but that should change.
-    /// </summary>
-    private class DelegateTraceListener : TraceListener
-    {
-      private Action<string> _write;
+       /// <summary>
+       /// This is a way to listen on debug messages in an isolated appdomain
+       /// We don't currently need it because we aren't using Debug.Write,
+       /// but that should change.
+       /// </summary>
+       private class DelegateTraceListener : TraceListener
+       {
+       private Action<string> _write;
 
-      public DelegateTraceListener (Action<string> write)
-      {
+       public DelegateTraceListener (Action<string> write)
+       {
         _write = write;
-      }
+       }
 
-      public override void Write (string message)
-      {
+       public override void Write (string message)
+       {
         _write (message);
-      }
+       }
 
-      public override void WriteLine (string message)
-      {
+       public override void WriteLine (string message)
+       {
         Write (message + Environment.NewLine);
-      }
-    }
+       }
+       }
 
-    public class CrossDomainTraceHelper : MarshalByRefObject
-    {
-      private CrossDomainTraceHelper m_parentDomain;
+       public class CrossDomainTraceHelper : MarshalByRefObject
+       {
+       private CrossDomainTraceHelper m_parentDomain;
 
-      public CrossDomainTraceHelper () {}
+       public CrossDomainTraceHelper () {}
 
-      public static void StartListening (AppDomain domain)
-      {
+       public static void StartListening (AppDomain domain)
+       {
         var listenerType = typeof (CrossDomainTraceHelper);
         // Create a remote instance
         var remoteHelper = (CrossDomainTraceHelper) domain.CreateInstanceAndUnwrap (
@@ -150,28 +153,28 @@ namespace RCL.Kernel
         var localHelper = new CrossDomainTraceHelper ();
         // Register the local helper in the remote domain
         remoteHelper.Register (localHelper);
-      }
+       }
 
-      private void Register (CrossDomainTraceHelper parentDomain)
-      {
+       private void Register (CrossDomainTraceHelper parentDomain)
+       {
         // Store the parent domain to pass messages to later
         m_parentDomain = parentDomain;
         // Create and register the delegate trace listener
         var listener = new DelegateTraceListener (Write);
         Debug.Listeners.Add (listener);
-      }
+       }
 
-      private void Write (string message)
-      {
+       private void Write (string message)
+       {
         // Send the message to the parent domain
         m_parentDomain.RemoteWrite (message);
-      }
+       }
 
-      private void RemoteWrite (string message)
-      {
+       private void RemoteWrite (string message)
+       {
         Debug.Write (message);
-      }
-    }
-    */
+       }
+       }
+     */
   }
 }

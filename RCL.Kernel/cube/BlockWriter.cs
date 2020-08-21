@@ -25,23 +25,21 @@ namespace RCL.Kernel
 
     public override void BeforeRow (long e, RCTimeScalar t, RCSymbolScalar symbol, int row)
     {
-      if (m_source.Axis.Has ("G"))
-      {
+      if (m_source.Axis.Has ("G")) {
         m_row = new RCBlock (RCBlock.Empty, "G", ":", new RCLong (m_source.Axis.Global[row]));
       }
-      if (m_source.Axis.Has ("E"))
-      {
+      if (m_source.Axis.Has ("E")) {
         m_row = new RCBlock (m_row, "E", ":", new RCLong (m_source.Axis.Event[row]));
       }
-      if (m_source.Axis.Has ("T"))
-      {
+      if (m_source.Axis.Has ("T")) {
         m_row = new RCBlock (m_row, "T", ":", new RCTime (m_source.Axis.Time[row]));
       }
-      if (m_source.Axis.Has ("S"))
-      {
-        // Include S as both a field on the row blocks and as the names of the rows themselves
+      if (m_source.Axis.Has ("S")) {
+        // Include S as both a field on the row blocks and as the names of the rows
+        // themselves
         // This is so that you can get back to what you had with "flip block $my_cube"
-        // While also being able to treat the result of "block $my_cube" as a dictionary if you wish
+        // While also being able to treat the result of "block $my_cube" as a dictionary
+        // if you wish
         m_row = new RCBlock (m_row, "S", ":", new RCSymbol (m_source.Axis.Symbol[row]));
         m_rowName = m_source.Axis.Symbol[row].Key.ToString ();
       }
@@ -49,8 +47,10 @@ namespace RCL.Kernel
 
     public override void VisitScalar<T> (string name, Column<T> column, int row)
     {
-      m_row = new RCBlock (m_row, name, ":",
-                           RCVectorBase.FromArray (new RCArray<T>(column.Data[row])));
+      m_row = new RCBlock (m_row,
+                           name,
+                           ":",
+                           RCVectorBase.FromArray (new RCArray<T> (column.Data[row])));
     }
 
     public override void AfterRow (long e, RCTimeScalar t, RCSymbolScalar s, int row)

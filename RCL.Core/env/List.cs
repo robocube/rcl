@@ -20,46 +20,48 @@ namespace RCL.Core
     {
       HashSet<RCSymbolScalar> options = new HashSet<RCSymbolScalar> (left);
       string target = (string) right[0].Part (0);
-      if (target == "" || target == "work")
-      {
-        BeginListFilesCube (runner, closure,
-                            new ListArgs (right[0], options.Contains (all), options.Contains (deep)));
+      if (target == "" || target == "work") {
+        BeginListFilesCube (runner,
+                            closure,
+                            new ListArgs (right[0],
+                                          options.Contains (all),
+                                          options.Contains (deep)));
       }
-      else if (target == "home")
-      {
-        BeginListFilesCube (runner, closure,
-                            new ListArgs (right[0], options.Contains (all), options.Contains (deep)));
+      else if (target == "home") {
+        BeginListFilesCube (runner,
+                            closure,
+                            new ListArgs (right[0],
+                                          options.Contains (all),
+                                          options.Contains (deep)));
       }
-      else if (target == "root")
-      {
-        BeginListFilesCube (runner, closure,
-                            new ListArgs (right[0], options.Contains (all), options.Contains (deep)));
+      else if (target == "root") {
+        BeginListFilesCube (runner,
+                            closure,
+                            new ListArgs (right[0],
+                                          options.Contains (all),
+                                          options.Contains (deep)));
       }
-      else if (target == "fibers")
-      {
+      else if (target == "fibers") {
         ListFibers (runner, closure);
       }
-      else if (target == "vars")
-      {
+      else if (target == "vars") {
         ListVars (runner, closure);
       }
-      else if (target == "urls")
-      {
+      else if (target == "urls") {
         ListUrls (runner, closure);
       }
-      else if (target == "request")
-      {
+      else if (target == "request") {
         ListRequest (runner, closure);
       }
-      else if (target == "sockets")
-      {
+      else if (target == "sockets") {
         ListSockets (runner, closure);
       }
-      else if (target == "exec")
-      {
+      else if (target == "exec") {
         ListExec (runner, closure);
       }
-      else throw new Exception ("Unknown target for list: " + target);
+      else {
+        throw new Exception ("Unknown target for list: " + target);
+      }
     }
 
     [RCVerb ("list")]
@@ -72,9 +74,12 @@ namespace RCL.Core
     [RCVerb ("show_special_folders")]
     public void ShowSpecialFolders (RCRunner runner, RCClosure closure, RCSymbol right)
     {
-      foreach(Environment.SpecialFolder folder in Enum.GetValues(typeof(Environment.SpecialFolder)))
+      foreach (Environment.SpecialFolder folder in Enum.GetValues (typeof (
+                                                                     Environment.SpecialFolder)))
       {
-        Console.WriteLine(string.Format("{0}\t\t\t{1}", folder.ToString(), Environment.GetFolderPath(folder)));
+        Console.WriteLine (string.Format ("{0}\t\t\t{1}",
+                                          folder.ToString (),
+                                          Environment.GetFolderPath (folder)));
       }
       runner.Yield (closure, right);
     }
@@ -126,13 +131,11 @@ namespace RCL.Core
         string[] topParts = top.Split (Path.DirectorySeparatorChar);
         int startPart;
         RCSymbolScalar prefix;
-        if (args.Spec != null)
-        {
+        if (args.Spec != null) {
           startPart = (int) (topParts.Length - args.Spec.Length) + 1;
           prefix = RCSymbolScalar.From (args.Spec.Part (0));
         }
-        else
-        {
+        else {
           startPart = 1;
           prefix = RCSymbolScalar.From (topParts[0]);
         }
@@ -143,36 +146,45 @@ namespace RCL.Core
           string[] files = Directory.GetFiles (path);
           for (int i = 0; i < files.Length; ++i)
           {
-            FileInfo file = new FileInfo (files [i]);
-            if (args.All || file.Name[0] != '.')
-            {
+            FileInfo file = new FileInfo (files[i]);
+            if (args.All || file.Name[0] != '.') {
               string [] parts = files[i].Split (Path.DirectorySeparatorChar);
               RCSymbolScalar symbol = RCSymbolScalar.From (startPart, prefix, parts);
               result.WriteCell ("name", symbol, file.Name);
               result.WriteCell ("size", symbol, file.Length);
               result.WriteCell ("type", symbol, "f");
               result.WriteCell ("ext", symbol, file.Extension);
-              result.WriteCell ("access", symbol, new RCTimeScalar (file.LastAccessTime, RCTimeType.Datetime));
-              result.WriteCell ("write", symbol, new RCTimeScalar (file.LastWriteTime, RCTimeType.Datetime));
+              result.WriteCell ("access",
+                                symbol,
+                                new RCTimeScalar (file.LastAccessTime,
+                                                  RCTimeType.Datetime));
+              result.WriteCell ("write",
+                                symbol,
+                                new RCTimeScalar (file.LastWriteTime,
+                                                  RCTimeType.Datetime));
               result.Axis.Write (symbol);
             }
           }
           RCArray<string> dirs = new RCArray<string> (Directory.GetDirectories (path));
           for (int i = 0; i < dirs.Count; ++i)
           {
-            DirectoryInfo dir = new DirectoryInfo (dirs [i]);
-            if (args.All || dir.Name[0] != '.')
-            {
+            DirectoryInfo dir = new DirectoryInfo (dirs[i]);
+            if (args.All || dir.Name[0] != '.') {
               string [] parts = dirs[i].Split (Path.DirectorySeparatorChar);
               RCSymbolScalar symbol = RCSymbolScalar.From (startPart, prefix, parts);
               result.WriteCell ("name", symbol, dir.Name);
               result.WriteCell ("type", symbol, "d");
-              result.WriteCell ("access", symbol, new RCTimeScalar (dir.LastAccessTime, RCTimeType.Datetime));
-              result.WriteCell ("write", symbol, new RCTimeScalar (dir.LastWriteTime, RCTimeType.Datetime));
+              result.WriteCell ("access",
+                                symbol,
+                                new RCTimeScalar (dir.LastAccessTime,
+                                                  RCTimeType.Datetime));
+              result.WriteCell ("write",
+                                symbol,
+                                new RCTimeScalar (dir.LastWriteTime,
+                                                  RCTimeType.Datetime));
               result.Axis.Write (symbol);
-              if (args.Deep)
-              {
-                todo.Enqueue (dirs [i]);
+              if (args.Deep) {
+                todo.Enqueue (dirs[i]);
               }
             }
           }
@@ -182,7 +194,8 @@ namespace RCL.Core
       catch (DirectoryNotFoundException ex)
       {
         state.Runner.Finish (state.Closure,
-                             new RCException (state.Closure, RCErrors.File, ex.Message), 1);
+                             new RCException (state.Closure, RCErrors.File, ex.Message),
+                             1);
       }
       catch (Exception ex)
       {
@@ -191,23 +204,23 @@ namespace RCL.Core
     }
 
     /*
-    public static void ListFibers (RCRunner runner, RCClosure closure)
-    {
-      RCArray<Fiber> modules = new RCArray<Fiber> ();
-      RCArray<long> keys = new RCArray<long> ();
-      lock (runner.m_botLock)
-      {
+       public static void ListFibers (RCRunner runner, RCClosure closure)
+       {
+       RCArray<Fiber> modules = new RCArray<Fiber> ();
+       RCArray<long> keys = new RCArray<long> ();
+       lock (runner.m_botLock)
+       {
         foreach (KeyValuePair<long, RCBot> kv in runner.m_bots)
         {
           keys.Write (kv.Key);
           modules.Write ((Fiber) runner.m_bots[kv.Key].GetModule (typeof (Fiber)));
         }
-      }
-      RCArray<long> bots = new RCArray<long> ();
-      RCArray<long> fibers = new RCArray<long> ();
-      RCArray<string> states = new RCArray<string> ();
-      for (int i = 0; i < modules.Count; ++i)
-      {
+       }
+       RCArray<long> bots = new RCArray<long> ();
+       RCArray<long> fibers = new RCArray<long> ();
+       RCArray<string> states = new RCArray<string> ();
+       for (int i = 0; i < modules.Count; ++i)
+       {
         lock (modules[i].m_fiberLock)
         {
           foreach (KeyValuePair<long, Fiber.FiberState> kv in modules[i].m_fibers)
@@ -217,18 +230,18 @@ namespace RCL.Core
             states.Write (kv.Value.State);
           }
         }
-      }
-      RCBlock result = RCBlock.Empty;
-      if (states.Count > 0)
-      {
+       }
+       RCBlock result = RCBlock.Empty;
+       if (states.Count > 0)
+       {
         result = new RCBlock (result, "bot", ":", new RCLong (bots));
         result = new RCBlock (result, "fiber", ":", new RCLong (fibers));
         result = new RCBlock (result, "state", ":", new RCString (states));
-      }
+       }
 
-      runner.Yield (closure, result);
-    }
-    */
+       runner.Yield (closure, result);
+       }
+     */
 
     public static void ListFibers (RCRunner runner, RCClosure closure)
     {
@@ -249,7 +262,7 @@ namespace RCL.Core
         {
           foreach (KeyValuePair<long, Fiber.FiberState> kv in modules[i].m_fibers)
           {
-            RCSymbolScalar sym = RCSymbolScalar.From ("fiber", keys[i], kv.Key); 
+            RCSymbolScalar sym = RCSymbolScalar.From ("fiber", keys[i], kv.Key);
             result.WriteCell ("bot", sym, keys[i]);
             result.WriteCell ("fiber", sym, kv.Key);
             result.WriteCell ("state", sym, kv.Value.State);
@@ -277,7 +290,8 @@ namespace RCL.Core
       {
         lock (modules[i].m_lock)
         {
-          foreach (KeyValuePair<object, Dictionary<RCSymbolScalar, RCValue>> section in modules[i].m_sections)
+          foreach (KeyValuePair<object, Dictionary<RCSymbolScalar,
+                                                   RCValue>> section in modules[i].m_sections)
           {
             RCSymbolScalar botsym = RCSymbolScalar.From ("var", keys[i]);
             foreach (KeyValuePair<RCSymbolScalar, RCValue> kv in section.Value)

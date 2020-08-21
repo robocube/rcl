@@ -28,8 +28,8 @@ namespace RCL.Core
     {
       string path = PathSymbolToString (Path.DirectorySeparatorChar, symbol);
       // I think I might need to do something with GetPathRoot
-      //string root = Path.GetPathRoot (path);
-      //return root + path;
+      // string root = Path.GetPathRoot (path);
+      // return root + path;
       return path;
     }
 
@@ -39,39 +39,34 @@ namespace RCL.Core
       string path = "";
       string zero = parts[0].ToString ();
       int startIndex = 0;
-      if (zero == "home")
-      {
+      if (zero == "home") {
         string home = Environment.GetEnvironmentVariable ("RCL_HOME");
-        if (home == null)
-        {
-          home = Environment.GetFolderPath (Environment.SpecialFolder.UserProfile) + separator + "dev";
+        if (home == null) {
+          home = Environment.GetFolderPath (Environment.SpecialFolder.UserProfile) + separator +
+                 "dev";
         }
         path += home;
-        if (parts.Length > 1)
-        {
+        if (parts.Length > 1) {
           path += separator;
         }
         startIndex = 1;
       }
-      else if (zero == "root")
-      {         
+      else if (zero == "root") {
         path += separator;
         startIndex = 1;
       }
-      else if (zero == "work")
-      {
+      else if (zero == "work") {
         path += parts.Length == 1 ? "." : "";
         startIndex = 1;
       }
-      //Need to handle windows drive letter.
-      //There is a function called "GetPathRoot."
-      //I think it can be used to obtain the drive letter prefix,
-      //but only if you have a path.
+      // Need to handle windows drive letter.
+      // There is a function called "GetPathRoot."
+      // I think it can be used to obtain the drive letter prefix,
+      // but only if you have a path.
       for (int i = startIndex; i < parts.Length; ++i)
       {
         path += parts[i].ToString ();
-        if (i < parts.Length - 1)
-        {
+        if (i < parts.Length - 1) {
           path += separator;
         }
       }
@@ -174,14 +169,14 @@ namespace RCL.Core
     {
       string code = File.ReadAllText (right[0], Encoding.UTF8);
       code = code.Replace ("\r", "");
-      //I want to change this to split lines.
+      // I want to change this to split lines.
       runner.Yield (closure, new RCString (code));
     }
 
     [RCVerb ("load")]
     public void EvalLoad (RCRunner runner, RCClosure closure, RCSymbol right)
     {
-      //Need check for windows drive letter
+      // Need check for windows drive letter
       string path = PathSymbolToLocalString (right[0]);
       string code = File.ReadAllText (path, Encoding.UTF8);
       code = code.Replace ("\r", "");
@@ -191,7 +186,7 @@ namespace RCL.Core
     [RCVerb ("rm")]
     public void EvalRm (RCRunner runner, RCClosure closure, RCString right)
     {
-      //All of this stuff HASTA HASTA HASTA be ASYNC!
+      // All of this stuff HASTA HASTA HASTA be ASYNC!
       for (int i = 0; i < right.Count; ++i)
       {
         File.Delete (right[i]);
@@ -202,7 +197,7 @@ namespace RCL.Core
     [RCVerb ("mkdir")]
     public void EvalMkdir (RCRunner runner, RCClosure closure, RCString right)
     {
-      //All of this stuff HASTA HASTA HASTA be ASYNC!
+      // All of this stuff HASTA HASTA HASTA be ASYNC!
       Directory.CreateDirectory (right[0]);
       runner.Yield (closure, right);
     }
@@ -217,7 +212,7 @@ namespace RCL.Core
     [RCVerb ("mkdir")]
     public void EvalMkdir (RCRunner runner, RCClosure closure, RCSymbol right)
     {
-      //All of this stuff HASTA HASTA HASTA be ASYNC!
+      // All of this stuff HASTA HASTA HASTA be ASYNC!
       string path = PathSymbolToLocalString (right[0]);
       Directory.CreateDirectory (path);
       runner.Yield (closure, right);
@@ -226,7 +221,7 @@ namespace RCL.Core
     [RCVerb ("rmdir")]
     public void EvalRmdir (RCRunner runner, RCClosure closure, RCSymbol right)
     {
-      //All of this stuff HASTA HASTA HASTA be ASYNC!
+      // All of this stuff HASTA HASTA HASTA be ASYNC!
       string path = PathSymbolToLocalString (right[0]);
       Directory.Delete (path);
       runner.Yield (closure, right);
@@ -239,7 +234,7 @@ namespace RCL.Core
     {
       Save (runner, closure, PathSymbolToLocalString (left[0]), right.ToArray ());
     }
-      
+
     [RCVerb ("save")]
     public void EvalSave (RCRunner runner, RCClosure closure, RCString left, RCString right)
     {
@@ -248,23 +243,27 @@ namespace RCL.Core
 
     protected void Save (RCRunner runner, RCClosure closure, string path, string[] lines)
     {
-      //BRIAN READ THIS WHEN YOU GET BACK HERE.
-      //Should not be doing sync io like this.
-      //The least I can do is use a thread pool thread.
-      //The endgame is for load, save, delete and so on to be replaced with
-      //getf, putf, delf and lsf.
-      //These operators should be properly async.
-      //Also return RCValues just like getm, putm and so on.
-      //Also use a symbols system for paths so programs do not contain RC dependent paths.
-      //And provide path abstraction which should help with security.
-      //getf, putf, delf should always store values in the text files.
-      //Then we need some way to store binary files.
-      //But I will still need some way to work with raw text files that might not be RC syntax.
-      //So I guess I WILL need operators like save and load, huh.
-      //And I also guess that those should work on string arrays as lines...
-      //Then I could use writeAllLines and readAllLines to get around the terminal line issue.
-      //But that would mean changing that parser to interpret string breaks as line breaks.
-      //So, not today.
+      // BRIAN READ THIS WHEN YOU GET BACK HERE.
+      // Should not be doing sync io like this.
+      // The least I can do is use a thread pool thread.
+      // The endgame is for load, save, delete and so on to be replaced with
+      // getf, putf, delf and lsf.
+      // These operators should be properly async.
+      // Also return RCValues just like getm, putm and so on.
+      // Also use a symbols system for paths so programs do not contain RC dependent
+      // paths.
+      // And provide path abstraction which should help with security.
+      // getf, putf, delf should always store values in the text files.
+      // Then we need some way to store binary files.
+      // But I will still need some way to work with raw text files that might not be RC
+      // syntax.
+      // So I guess I WILL need operators like save and load, huh.
+      // And I also guess that those should work on string arrays as lines...
+      // Then I could use writeAllLines and readAllLines to get around the terminal line
+      // issue.
+      // But that would mean changing that parser to interpret string breaks as line
+      // breaks.
+      // So, not today.
       try
       {
         WriteAllLinesBetter (path, lines);
@@ -278,20 +277,22 @@ namespace RCL.Core
         throw new RCException (closure, RCErrors.File, ex.Message);
       }
 
-      RCSystem.Log.Record (closure, "save", Interlocked.Increment (ref m_handle), path, new RCString (lines));
-      //ideally this should return a symbol right?
+      RCSystem.Log.Record (closure,
+                           "save",
+                           Interlocked.Increment (ref m_handle),
+                           path,
+                           new RCString (lines));
+      // ideally this should return a symbol right?
       runner.Yield (closure, new RCString (path));
     }
 
-    //http://stackoverflow.com/questions/11689337/net-file-writealllines-leaves-empty-line-at-the-end-of-file
+    // http://stackoverflow.com/questions/11689337/net-file-writealllines-leaves-empty-line-at-the-end-of-file
     public static void WriteAllLinesBetter (string path, params string[] lines)
     {
-      if (path == null)
-      {
+      if (path == null) {
         throw new ArgumentNullException ("path");
       }
-      if (lines == null)
-      {
+      if (lines == null) {
         throw new ArgumentNullException ("lines");
       }
 
@@ -299,8 +300,7 @@ namespace RCL.Core
       {
         using (StreamWriter writer = new StreamWriter (stream))
         {
-          if (lines.Length > 0)
-          {
+          if (lines.Length > 0) {
             for (int i = 0; i < lines.Length - 1; i++)
             {
               writer.WriteLine (lines[i]);
@@ -315,16 +315,16 @@ namespace RCL.Core
     public void EvalLoadbin (RCRunner runner, RCClosure closure, RCString right)
     {
       byte[] bytes = File.ReadAllBytes (right[0]);
-      //I want to change this to split lines.
+      // I want to change this to split lines.
       runner.Yield (closure, new RCByte (bytes));
     }
 
     [RCVerb ("savebin")]
     public void EvalSavebin (RCRunner runner, RCClosure closure, RCString left, RCByte right)
     {
-      //BRIAN READ THIS WHEN YOU GET BACK HERE.
-      //Should not be doing sync io like this.
-      //The least I can do is use a thread pool thread.
+      // BRIAN READ THIS WHEN YOU GET BACK HERE.
+      // Should not be doing sync io like this.
+      // The least I can do is use a thread pool thread.
       try
       {
         File.WriteAllBytes (left[0], right.ToArray ());
@@ -344,9 +344,9 @@ namespace RCL.Core
     [RCVerb ("delete")]
     public void EvalDelete (RCRunner runner, RCClosure closure, RCString right)
     {
-      //It kind of sucks that if one file can not be deleted
-      //it could leave the disk in an inconsistent state.
-      //Todo: worry about it
+      // It kind of sucks that if one file can not be deleted
+      // it could leave the disk in an inconsistent state.
+      // Todo: worry about it
       for (int i = 0; i < right.Count; ++i)
       {
         File.Delete (right[i]);
@@ -367,8 +367,7 @@ namespace RCL.Core
     [RCVerb ("cd")]
     public void EvalCd (RCRunner runner, RCClosure closure, RCString right)
     {
-      if (right.Count > 1)
-      {
+      if (right.Count > 1) {
         throw new Exception ("cd can only change into one directory");
       }
       Environment.CurrentDirectory = right[0];
@@ -378,8 +377,7 @@ namespace RCL.Core
     [RCVerb ("cd")]
     public void EvalCd (RCRunner runner, RCClosure closure, RCSymbol right)
     {
-      if (right.Count > 1)
-      {
+      if (right.Count > 1) {
         throw new Exception ("cd can only change into one directory");
       }
       Environment.CurrentDirectory = Command.PathSymbolToLocalString (right[0]);
@@ -402,8 +400,7 @@ namespace RCL.Core
     public void EvalOptions (RCRunner runner, RCClosure closure, RCString left, RCString right)
     {
       RCValue result = RCSystem.Args.Options.Get (right[0]);
-      if (result == null)
-      {
+      if (result == null) {
         result = left;
       }
       runner.Yield (closure, result);
@@ -427,8 +424,7 @@ namespace RCL.Core
     public void EvalOptions (RCRunner runner, RCClosure closure, RCString right)
     {
       RCValue result = RCSystem.Args.Options.Get (right[0]);
-      if (result == null)
-      {
+      if (result == null) {
         throw new Exception ("No such option:" + right[0]);
       }
       runner.Yield (closure, result);
@@ -437,65 +433,67 @@ namespace RCL.Core
     [RCVerb ("info")]
     public void EvalInfo (RCRunner runner, RCClosure closure, RCSymbol right)
     {
-      if (right.Count > 1)
-      {
-        throw new Exception ("info can only provide one value at a time. info #help gives a list of valid values.");
+      if (right.Count > 1) {
+        throw new Exception (
+                "info can only provide one value at a time. info #help gives a list of valid values.");
       }
-      Info (runner, closure, right[0].Part(0).ToString ());
+      Info (runner, closure, right[0].Part (0).ToString ());
     }
 
     [RCVerb ("info")]
     public void EvalInfo (RCRunner runner, RCClosure closure, RCString right)
     {
-      if (right.Count > 1)
-      {
-        throw new Exception ("info can only provide one value at a time. info #help gives a list of valid values.");
+      if (right.Count > 1) {
+        throw new Exception (
+                "info can only provide one value at a time. info #help gives a list of valid values.");
       }
       Info (runner, closure, right[0]);
     }
 
     protected void Info (RCRunner runner, RCClosure closure, string value)
     {
-      if (value == "arguments")
-      {
+      if (value == "arguments") {
         runner.Yield (closure, RCSystem.Args.Arguments);
       }
-      else if (value == "options")
-      {
+      else if (value == "options") {
         runner.Yield (closure, RCSystem.Args.Options);
       }
-      else if (value == "directory")
-      {
+      else if (value == "directory") {
         runner.Yield (closure, new RCString (Environment.CurrentDirectory));
       }
-      else if (value == "drives")
-      {
+      else if (value == "drives") {
         runner.Yield (closure, new RCString (Environment.GetLogicalDrives ()));
       }
-      else if (value == "host")
-      {
+      else if (value == "host") {
         runner.Yield (closure, new RCString (Environment.MachineName));
       }
-      else if (value == "newline")
-      {
+      else if (value == "newline") {
         runner.Yield (closure, new RCString (Environment.NewLine));
       }
-      else if (value == "osname")
-      {
+      else if (value == "osname") {
         OperatingSystem os = Environment.OSVersion;
         runner.Yield (closure, new RCString (os.VersionString));
       }
-      else if (value == "platform")
-      {
+      else if (value == "platform") {
         PlatformID platform = Environment.OSVersion.Platform;
         string platformName = platform.ToString ();
         runner.Yield (closure, new RCString (platformName));
       }
-      else if (value == "help")
-      {
-        runner.Yield (closure, new RCString ("arguments", "options", "directory", "drives", "host", "newline", "osname", "platform", "help"));
+      else if (value == "help") {
+        runner.Yield (closure,
+                      new RCString ("arguments",
+                                    "options",
+                                    "directory",
+                                    "drives",
+                                    "host",
+                                    "newline",
+                                    "osname",
+                                    "platform",
+                                    "help"));
       }
-      else throw new Exception (string.Format ("Unsupported argument for info: {0}", value));
+      else {
+        throw new Exception (string.Format ("Unsupported argument for info: {0}", value));
+      }
     }
 
     [RCVerb ("codebase")]
@@ -514,12 +512,10 @@ namespace RCL.Core
       for (int i = 0; i < right.Count; ++i)
       {
         string variable = Environment.GetEnvironmentVariable (right[i]);
-        if (variable == null)
-        {
+        if (variable == null) {
           variable = ConfigurationManager.AppSettings[right[i]];
         }
-        if (variable == null)
-        {
+        if (variable == null) {
           throw new Exception ("No environment variable set: " + right[i]);
         }
         result.Write (variable);
@@ -534,8 +530,7 @@ namespace RCL.Core
       for (int i = 0; i < right.Count; ++i)
       {
         string variable = Environment.GetEnvironmentVariable (right[i]);
-        if (variable == null)
-        {
+        if (variable == null) {
           variable = left[i];
         }
         result.Write (variable);
@@ -577,8 +572,7 @@ namespace RCL.Core
       }
 
       [RCVerb ("print")]
-      public void EvalPrint (
-        RCRunner runner, RCClosure closure, RCString left, RCString right)
+      public void EvalPrint (RCRunner runner, RCClosure closure, RCString left, RCString right)
       {
         RCSystem.Log.Record (closure, "print", 0, left[0], right);
         runner.Yield (closure, right);
@@ -592,30 +586,31 @@ namespace RCL.Core
     public void EvalModule (RCRunner runner, RCClosure closure, RCBlock right)
     {
       RCArray<RCReference> references = new RCArray<RCReference> ();
-      RCBlock result = (RCBlock) right.Edit (runner, delegate (RCValue val)
+      RCBlock result = (RCBlock) right.Edit (runner,
+                                             delegate (RCValue val)
       {
         RCReference reference = val as RCReference;
-        if (reference != null)
-        {
+        if (reference != null) {
           RCReference r = new RCReference (reference.Name);
           references.Write (r);
           return r;
         }
         UserOperator op = val as UserOperator;
-        if (op != null)
-        {
+        if (op != null) {
           RCReference r = new RCReference (op.Name);
           references.Write (r);
           UserOperator outop = new UserOperator (r);
           outop.Init (op.Name, op.Left, op.Right);
           return outop;
         }
-        else return null;
+        else {
+          return null;
+        }
       });
-      //Ugh there must be some better way than this.
-      //But sometimes you just need to modify a value after allocation.
-      //We can use the Lock() mechanism to tighten this up at least.
-      //SetStatic will throw an exception if you call it after Lock().
+      // Ugh there must be some better way than this.
+      // But sometimes you just need to modify a value after allocation.
+      // We can use the Lock() mechanism to tighten this up at least.
+      // SetStatic will throw an exception if you call it after Lock().
       for (int i = 0; i < references.Count; ++i)
       {
         references[i].SetStatic (result);
@@ -633,7 +628,7 @@ namespace RCL.Core
     /// <summary>
     /// colout modifies the format used when printing cubes to customize
     /// the appearance of columns, especially number columns.
-    /// It is no fun crunching numbers at the command line if they don't 
+    /// It is no fun crunching numbers at the command line if they don't
     /// look right.
     /// </summary>
     [RCVerb ("displayFormat")]
@@ -642,15 +637,16 @@ namespace RCL.Core
       RCArray<string> column = right.DoColof<string> ("column", "");
       RCArray<string> format = right.DoColof<string> ("format", "");
       RCSystem.Log.UpdateColmap (column, format);
-      //RCSystem.Log.Record (runner, closure, "display", 0, "format", "set to " + right[0]);
+      // RCSystem.Log.Record (runner, closure, "display", 0, "format", "set to " +
+      // right[0]);
       runner.Yield (closure, right);
     }
 
     [RCVerb ("displayFormat")]
     public void DisplayFormat (RCRunner runner, RCClosure closure, RCBlock right)
     {
-      //RCArray<string> column = right.DoColof<string> ("column", "");
-      //RCArray<string> format = right.DoColof<string> ("format", "");
+      // RCArray<string> column = right.DoColof<string> ("column", "");
+      // RCArray<string> format = right.DoColof<string> ("format", "");
       throw new NotImplementedException ("This should yield a cube describing the defined formats");
     }
 
@@ -660,8 +656,9 @@ namespace RCL.Core
       RCTime.DisplayTimeZone = TimeZoneInfo.FindSystemTimeZoneById (right[0]);
       RCSystem.Log.Record (closure, "display", 0, "timezone", "set to " + right[0]);
       runner.Yield (closure, right);
-      //TimeZoneInfo timezone = TimeZoneInfo.FindSystemTimeZoneById (displayTimezone);
-      //displayTime = TimeZoneInfo.ConvertTimeFromUtc (new DateTime (scalar.Ticks), DisplayTimeZone);
+      // TimeZoneInfo timezone = TimeZoneInfo.FindSystemTimeZoneById (displayTimezone);
+      // displayTime = TimeZoneInfo.ConvertTimeFromUtc (new DateTime (scalar.Ticks),
+      // DisplayTimeZone);
     }
 
     [RCVerb ("displayTimezone")]
@@ -707,15 +704,14 @@ namespace RCL.Core
     private static RCBlock m_options = null;
     public static void SetOptions (RCBlock options)
     {
-      if (m_options != null)
-      {
+      if (m_options != null) {
         throw new Exception ("Set options called more than once.");
       }
       m_options = options;
     }
 
-    public void EvalOption (RCRunner runner, 
-                            RCClosure closure, 
+    public void EvalOption (RCRunner runner,
+                            RCClosure closure,
                             RCString right)
     {
       runner.Yield (closure, m_options.Get (right[0]));

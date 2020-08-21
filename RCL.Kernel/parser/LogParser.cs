@@ -50,10 +50,8 @@ namespace RCL.Kernel
         tokens[i].Type.Accept (this, tokens[i]);
       }
 
-      if (m_bot != null)
-      {
-        if (m_builder.Length > 0)
-        {
+      if (m_bot != null) {
+        if (m_builder.Length > 0) {
           m_document = m_builder.ToString ();
         }
         AppendEntry ();
@@ -63,10 +61,8 @@ namespace RCL.Kernel
 
     public override void AcceptLogEntryHeader (RCToken token)
     {
-      if (m_bot != null)
-      {
-        if (m_builder.Length > 0)
-        {
+      if (m_bot != null) {
+        if (m_builder.Length > 0) {
           m_document = m_builder.ToString ();
         }
         AppendEntry ();
@@ -74,80 +70,67 @@ namespace RCL.Kernel
 
       int current = 0;
       m_time = RCTokenType.Time.TryParseToken (token.Text, current, 0, 0, null);
-      if (m_time != null)
-      {
+      if (m_time != null) {
         current += m_time.Text.Length;
-        //skip the single space. Do not validate.
-        //This requires log files to only use single spaces between header values.
+        // skip the single space. Do not validate.
+        // This requires log files to only use single spaces between header values.
         ++current;
       }
 
       m_bot = RCTokenType.Number.TryParseToken (token.Text, current, 0, 0, null);
-      if (m_bot != null)
-      {
+      if (m_bot != null) {
         current += m_bot.Text.Length;
       }
       ++current;
 
       m_fiber = RCTokenType.Number.TryParseToken (token.Text, current, 0, 0, null);
-      if (m_fiber != null)
-      {
+      if (m_fiber != null) {
         current += m_fiber.Text.Length;
       }
       ++current;
 
       m_module = RCTokenType.Name.TryParseToken (token.Text, current, 0, 0, null);
-      if (m_module != null)
-      {
+      if (m_module != null) {
         current += m_module.Text.Length;
       }
       ++current;
 
       m_instance = RCTokenType.Number.TryParseToken (token.Text, current, 0, 0, null);
-      if (m_instance != null)
-      {
+      if (m_instance != null) {
         current += m_instance.Text.Length;
       }
       ++current;
 
       m_event = RCTokenType.Name.TryParseToken (token.Text, current, 0, 0, null);
-      if (m_event != null)
-      {
+      if (m_event != null) {
         current += m_event.Text.Length;
       }
       ++current;
 
-      if (current <= token.Text.Length)
-      {
+      if (current <= token.Text.Length) {
         m_message = token.Text.Substring (current);
       }
-      else
-      {
+      else {
         m_message = null;
       }
       m_builder.Clear ();
     }
 
-    public override void AcceptEndOfLine (RCToken token)
-    {
-      
-    }
+    public override void AcceptEndOfLine (RCToken token) {}
 
     public override void AcceptLogEntryBody (RCToken token)
     {
       m_builder.Append (token.Text.Substring (2));
-      //Prevent inconsistent string content on Windows.
-      //Only write CRLFs when persisting text.
+      // Prevent inconsistent string content on Windows.
+      // Only write CRLFs when persisting text.
       m_builder.Append ("\n");
     }
 
     protected readonly static char[] TRIM_CHARS = new char[] { '\r', '\n' };
     public override void AcceptLogEntryRawLine (RCToken token)
     {
-      if (m_bot != null)
-      {
-        if (m_builder.Length > 0)
-        {
+      if (m_bot != null) {
+        if (m_builder.Length > 0) {
           m_document = m_builder.ToString ();
         }
         AppendEntry ();
@@ -166,61 +149,48 @@ namespace RCL.Kernel
 
     protected void AppendEntry ()
     {
-      if (m_time != null)
-      {
+      if (m_time != null) {
         m_result.WriteCell ("time", null, m_time.ParseTime (m_lexer));
       }
-      if (m_bot != null)
-      {
+      if (m_bot != null) {
         m_result.WriteCell ("bot", null, m_bot.ParseLong (m_lexer));
       }
-      else
-      {
+      else {
         m_result.WriteCell ("bot", null, (long) -1);
       }
-      if (m_fiber != null)
-      {
+      if (m_fiber != null) {
         m_result.WriteCell ("fiber", null, m_fiber.ParseLong (m_lexer));
       }
-      else
-      {
+      else {
         m_result.WriteCell ("fiber", null, (long) -1);
       }
-      if (m_module != null)
-      {
+      if (m_module != null) {
         m_result.WriteCell ("module", null, m_module.Text);
       }
-      else
-      {
+      else {
         m_result.WriteCell ("module", null, "");
       }
-      if (m_instance != null)
-      {
+      if (m_instance != null) {
         m_result.WriteCell ("instance", null, m_instance.ParseLong (m_lexer));
       }
-      else
-      {
+      else {
         m_result.WriteCell ("instance", null, (long) -1);
       }
-      if (m_event != null)
-      {
+      if (m_event != null) {
         m_result.WriteCell ("event", null, m_event.Text);
       }
-      else
-      {
+      else {
         m_result.WriteCell ("event", null, "");
       }
-      if (m_message != null)
-      {
+      if (m_message != null) {
         m_result.WriteCell ("message", null, m_message);
       }
-      if (m_document != null)
-      {
+      if (m_document != null) {
         m_result.WriteCell ("document", null, m_document);
       }
       m_result.Axis.Write ();
 
-      //Reset everything for the next log entry.
+      // Reset everything for the next log entry.
       m_time = null;
       m_bot = null;
       m_fiber = null;

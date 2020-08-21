@@ -16,23 +16,24 @@ namespace RCL.Kernel
       CanonicalFormatProvider.NumberGroupSeparator = "";
     }
 
-    public RCDouble (params double[] data) : base (data) { }
-    public RCDouble (RCArray<double> data) : base (data) { }
+    public RCDouble (params double[] data) : base (data) {
+    }
+    public RCDouble (RCArray<double> data) : base (data) {
+    }
 
-    public override Type ScalarType { get { return typeof (double); } }
+    public override Type ScalarType {
+      get { return typeof (double); }
+    }
 
     public static bool DoubleScalarEquals (double x, double y, double threshold)
     {
-      if (Math.Abs (x - y) < threshold)
-      {
+      if (Math.Abs (x - y) < threshold) {
         return true;
       }
-      else if (double.IsNaN (x) && double.IsNaN (y))
-      {
+      else if (double.IsNaN (x) && double.IsNaN (y)) {
         return true;
       }
-      else
-      {
+      else {
         return false;
       }
     }
@@ -74,13 +75,11 @@ namespace RCL.Kernel
 
     public static string FormatScalar (string format, double scalar)
     {
-      if (format == null)
-      {
+      if (format == null) {
         // https://stackoverflow.com/questions/8184068/decimal-tostring-formatting-which-gives-at-least-1-digit-no-upper-limit
         return scalar.ToString ("0.0###########################", CanonicalFormatProvider);
       }
-      else
-      {
+      else {
         return scalar.ToString (format);
       }
     }

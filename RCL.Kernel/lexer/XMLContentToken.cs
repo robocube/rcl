@@ -12,31 +12,38 @@ namespace RCL.Kernel
   /// </summary>
   public class XMLContentToken : RCTokenType
   {
-    public override RCToken TryParseToken (string code, int startPos, int index, int line, RCToken previous)
+    public override RCToken TryParseToken (string code,
+                                           int startPos,
+                                           int index,
+                                           int line,
+                                           RCToken
+                                           previous)
     {
-      if (previous == null)
-      {
+      if (previous == null) {
         return null;
       }
 
-      if (!previous.Text.Equals (">"))
-      {
+      if (!previous.Text.Equals (">")) {
         return null;
       }
 
       for (int current = startPos; current < code.Length; ++current)
       {
-        if (code[current] == '<')
-        {
-          if (code[current + 1] != '/')
-          {
+        if (code[current] == '<') {
+          if (code[current + 1] != '/') {
             return null;
           }
-          if (current > startPos)
-          {
-            return new RCToken (code.Substring (startPos, current - startPos), this, startPos, index, line, 0);
+          if (current > startPos) {
+            return new RCToken (code.Substring (startPos, current - startPos),
+                                this,
+                                startPos,
+                                index,
+                                line,
+                                0);
           }
-          else return null;
+          else {
+            return null;
+          }
         }
       }
 
@@ -50,7 +57,7 @@ namespace RCL.Kernel
 
     public override string ParseString (RCLexer lexer, RCToken token)
     {
-      //Need to handle xml escape characters here, this is incomplete.
+      // Need to handle xml escape characters here, this is incomplete.
       return token.Text;
     }
 
@@ -65,20 +72,28 @@ namespace RCL.Kernel
   /// </summary>
   public class XMLDeclarationToken : RCTokenType
   {
-    public override RCToken TryParseToken (string code, int startPos, int index, int line, RCToken previous)
+    public override RCToken TryParseToken (string code,
+                                           int startPos,
+                                           int index,
+                                           int line,
+                                           RCToken
+                                           previous)
     {
       int current = startPos;
-      if (code[current] != '<') return null;
+      if (code[current] != '<') {
+        return null;
+      }
       ++current;
-      if (code[current] != '?') return null;
+      if (code[current] != '?') {
+        return null;
+      }
       ++current;
       while (code[current] != '?')
       {
         ++current;
       }
       ++current;
-      if (code[current] == '>')
-      {
+      if (code[current] == '>') {
         string result = code.Substring (startPos, current - startPos);
         return new RCToken (result, this, startPos, index, line, 0);
       }

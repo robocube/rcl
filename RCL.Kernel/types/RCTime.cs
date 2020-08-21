@@ -17,7 +17,7 @@ namespace RCL.Kernel
     /// The timezone to use for display purposes only.
     /// Note this is a non-volatile multithreaded read.
     /// The intent is to avoid slowing down FormatScalar on the memory barrier.
-    /// A slowdown would be worse than having a stale read since displayTimezone is 
+    /// A slowdown would be worse than having a stale read since displayTimezone is
     /// expected to be set at program launch and not changed.
     /// </summary>
     public static TimeZoneInfo DisplayTimeZone = TimeZoneInfo.Utc;
@@ -36,15 +36,15 @@ namespace RCL.Kernel
     /// Defines formats for each type of RCTimeScalar.
     /// </summary>
     public static readonly string[] ALLOWED_FORMATS = new string[] {
-      //date
+      // date
       "yyyy.MM.dd",
-      //daytime
+      // daytime
       "HH:mm",
       "HH:mm:ss",
-      //datetime
+      // datetime
       "yyyy.MM.dd HH:mm",
       "yyyy.MM.dd HH:mm:ss",
-      //timestamp
+      // timestamp
       "yyyy.MM.dd HH:mm:ss.ffffff",
       "yyyy.MM.dd HH:mm:ss.fffffff",
       "yyyy.MM.dd HH:mm:ss.fffff",
@@ -82,7 +82,9 @@ namespace RCL.Kernel
     /// <summary>
     /// The ScalarType of the vector is used for operator dispatch.
     /// </summary>
-    public override Type ScalarType { get { return typeof (RCTimeScalar); } }
+    public override Type ScalarType {
+      get { return typeof (RCTimeScalar); }
+    }
 
     /// <summary>
     /// Equality for time data.
@@ -137,43 +139,36 @@ namespace RCL.Kernel
     /// </summary>
     public static string FormatScalar (string format, RCTimeScalar scalar)
     {
-      if (format == null)
-      {
-        if (scalar.Type == RCTimeType.Timespan)
-        {
+      if (format == null) {
+        if (scalar.Type == RCTimeType.Timespan) {
           TimeSpan ts = new TimeSpan (scalar.Ticks);
           int micros = ((int) (scalar.Ticks % TimeSpan.TicksPerSecond)) / 10;
           string result = string.Format ("{0}.{1:00}:{2:00}:{3:00}.{4:000000}",
-                                ts.Days,
-                                Math.Abs (ts.Hours),
-                                Math.Abs (ts.Minutes),
-                                Math.Abs (ts.Seconds),
-                                Math.Abs (micros));
+                                         ts.Days,
+                                         Math.Abs (ts.Hours),
+                                         Math.Abs (ts.Minutes),
+                                         Math.Abs (ts.Seconds),
+                                         Math.Abs (micros));
           return result;
         }
-        else if (scalar.Type == RCTimeType.Date)
-        {
+        else if (scalar.Type == RCTimeType.Date) {
           return new DateTime (scalar.Ticks).ToString (DEFAULT_FORMATS[(int) scalar.Type]);
         }
-        else
-        {
+        else {
           DateTime displayTime = TimeZoneInfo.ConvertTimeFromUtc (new DateTime (scalar.Ticks),
                                                                   RCTime.DisplayTimeZone);
           return displayTime.ToString (DEFAULT_FORMATS[(int) scalar.Type]);
         }
       }
-      else
-      {
-        if (scalar.Type == RCTimeType.Timespan)
-        {
-          throw new NotImplementedException ("Custom formats for RCTimeType.Timespan are not implemented. Please fix.");
+      else {
+        if (scalar.Type == RCTimeType.Timespan) {
+          throw new NotImplementedException (
+                  "Custom formats for RCTimeType.Timespan are not implemented. Please fix.");
         }
-        else if (scalar.Type == RCTimeType.Date)
-        {
+        else if (scalar.Type == RCTimeType.Date) {
           return new DateTime (scalar.Ticks).ToString (format);
         }
-        else
-        {
+        else {
           DateTime displayTime = TimeZoneInfo.ConvertTimeFromUtc (new DateTime (scalar.Ticks),
                                                                   RCTime.DisplayTimeZone);
           return displayTime.ToString (format);

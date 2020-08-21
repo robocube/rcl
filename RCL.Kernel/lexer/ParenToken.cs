@@ -10,14 +10,20 @@ namespace RCL.Kernel
   public class ParenToken : RCTokenType
   {
     public static readonly char[] PAREN = new char[] { '(', ')' };
-    public override RCToken TryParseToken (string code, int start, int index, int line, RCToken previous)
+    public override RCToken TryParseToken (string code,
+                                           int start,
+                                           int index,
+                                           int line,
+                                           RCToken
+                                           previous)
     {
-      if (IsIn (code[start], PAREN))
-      {
+      if (IsIn (code[start], PAREN)) {
         string token = code.Substring (start, 1);
         return new RCToken (token, this, start, index, line, 0);
       }
-      else return null;
+      else {
+        return null;
+      }
     }
 
     public override void Accept (RCParser parser, RCToken token)
