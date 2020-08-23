@@ -927,8 +927,7 @@ namespace nicTest {
     public void diff_mainTest () {
       diff_match_patchTest dmp = new diff_match_patchTest ();
       // Perform a trivial diff.
-      List<Diff> diffs = new List<Diff> {
-      };
+      List<Diff> diffs = new List<Diff> {};
       CollectionAssert.AreEqual (diffs, dmp.diff_main ("", "", false), "diff_main: Null case.");
 
       diffs = new List<Diff> {

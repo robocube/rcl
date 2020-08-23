@@ -125,8 +125,7 @@ namespace RCL.Core
     // This is only for the logging on dispose, so that the bot number will be accurate.
     protected long m_bot = 0;
 
-    public HttpServer () {
-    }
+    public HttpServer () {}
 
     public class RequestInfo
     {

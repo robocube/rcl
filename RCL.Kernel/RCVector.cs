@@ -202,8 +202,7 @@ namespace RCL.Kernel
       get { return (T) m_vector[i]; }
     }
 
-    public void Dispose () {
-    }
+    public void Dispose () {}
 
     object System.Collections.IEnumerator.Current
     {

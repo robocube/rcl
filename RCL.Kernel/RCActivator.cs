@@ -460,7 +460,10 @@ namespace RCL.Kernel
     // Or maybe we need a lexer extension abstraction as well.
     public abstract class ParserExtension
     {
-      public abstract RCValue BinaryParse (RCActivator activator, RCArray<byte> data, ref int start);
+      public abstract RCValue BinaryParse (RCActivator activator,
+                                           RCArray<byte> data,
+                                           ref int
+                                           start);
       public abstract ParserState StartParsing (bool canonical);
       public abstract void AcceptName (object state, RCToken token);
       public abstract void AcceptScalar (object state, RCToken token, RCLexer lexer);
@@ -469,9 +472,7 @@ namespace RCL.Kernel
     }
 
     public class ParserState
-    {
-
-    }
+    {}
 
     public ParserExtension ExtensionFor (string token)
     {

@@ -3024,8 +3024,9 @@ namespace RCL.Core
     public void NamesOp (RCRunner runner, RCClosure closure, RCCube right)
     {
       string[] result = new string[right.Cols];
-      for (int i = 0; i < result.Length; ++i)
+      for (int i = 0; i < result.Length; ++i) {
         result[i] = right.NameAt (i);
+      }
       runner.Yield (closure, new RCString (result));
     }
 
@@ -3245,8 +3246,7 @@ namespace RCL.Core
                 s = cube.Axis.Symbol != null ? cube.Axis.Symbol[rowInUnsorted] :
                     RCSymbolScalar.Empty;
               }
-              else if (comparison > 0) {
-              }
+              else if (comparison > 0) {}
               else if (comparison == 0) {
                 cubesWithCurrentRow.Enqueue (i);
               }

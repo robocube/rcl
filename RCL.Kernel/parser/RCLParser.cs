@@ -354,8 +354,7 @@ namespace RCL.Kernel
     }
 
     public override void AcceptWhitespace (RCToken token)
-    {
-    }
+    {}
 
     public override void AcceptCube (RCToken token)
     {
@@ -620,9 +619,7 @@ GETLINE:
     }
 
     public void AcceptError (RCToken token)
-    {
-
-    }
+    {}
 
     public override void AcceptNumber (RCToken token)
     {
@@ -672,9 +669,7 @@ GETLINE:
     }
 
     public override void AcceptJunk (RCToken token)
-    {
-
-    }
+    {}
 
     protected void MakeExpression ()
     {

@@ -71,7 +71,8 @@ namespace RCL.Kernel
                                      fragment: true,
                                      useDisplayCols: false);
 
-      // Purist multiline format. Similar to pretty format but doesn't incorporate display cols.
+      // Purist multiline format. Similar to pretty format but doesn't incorporate display
+      // cols.
       Canonical = new RCFormat ("RCL",
                                 "  ",
                                 "\n",

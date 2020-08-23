@@ -83,8 +83,7 @@ namespace RCL.Kernel
     public readonly bool NoResolve;
 
     public RCClosure (long bot, RCValue code)
-      : this (bot, 0, null, null, code, null, null, 0, null, null, false, false) {
-    }
+      : this (bot, 0, null, null, code, null, null, 0, null, null, false, false) {}
 
     public RCClosure (RCClosure parent,
                       long bot,
@@ -92,8 +91,7 @@ namespace RCL.Kernel
                       RCValue left,
                       RCBlock result,
                       int index)
-      : this (parent, bot, code, left, result, index, null, null) {
-    }
+      : this (parent, bot, code, left, result, index, null, null) {}
 
     public RCClosure (RCClosure parent,
                       long bot,

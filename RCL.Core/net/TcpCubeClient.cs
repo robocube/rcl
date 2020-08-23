@@ -38,8 +38,9 @@ namespace RCL.Core
       }
 
       FileInfo[] files = m_dir.GetFiles ();
-      for (int i = 0; i < files.Length; ++i)
+      for (int i = 0; i < files.Length; ++i) {
         m_files.Add (files[i].Name, files[i].Open (FileMode.Open, FileAccess.Read));
+      }
 
       runner.Yield (closure, new RCLong (m_handle));
     }
@@ -86,8 +87,7 @@ namespace RCL.Core
     }
 
     protected virtual void WriteToFiles (RCRunner runner, RCClosure closure, RCValue val)
-    {
-    }
+    {}
 
     protected virtual void WriteToFiles (RCRunner runner,
                                          RCClosure closure,
@@ -132,8 +132,7 @@ namespace RCL.Core
                                           RCClosure closure,
                                           RCSymbol symbol,
                                           RCLong rows)
-    {
-    }
+    {}
 
     public override void Receive (TcpCollector gatherer, RCSymbolScalar token)
     {

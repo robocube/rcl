@@ -41,8 +41,7 @@ namespace RCL.Kernel
     }
 
     public RCArray (RCArray<T> source)
-      : this (source.ToArray ()) {
-    }
+      : this (source.ToArray ()) {}
 
     public int Count
     {
@@ -216,8 +215,9 @@ namespace RCL.Kernel
         // linear growth.
         long length = NextPowerOf2 (count);
         T[] source = new T[length];
-        for (long i = 0; i < m_count; ++i)
+        for (long i = 0; i < m_count; ++i) {
           source[i] = m_source[i];
+        }
         m_source = source;
       }
     }
@@ -290,8 +290,7 @@ namespace RCL.Kernel
       get { return (T) m_array[i]; }
     }
 
-    public void Dispose () {
-    }
+    public void Dispose () {}
 
     object System.Collections.IEnumerator.Current
     {

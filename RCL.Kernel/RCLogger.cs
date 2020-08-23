@@ -17,8 +17,7 @@ namespace RCL.Kernel
     protected static HashSet<string> m_hide;
     protected static RCColmap m_colmap = new RCColmap ();
 
-    public RCLogger () : this (true, new string[] {"*"}, new string[] {}) {
-    }
+    public RCLogger () : this (true, new string[] {"*"}, new string[] {}) {}
 
     public RCLogger (bool nokeys, string[] whiteList, string[] blacklist)
     {

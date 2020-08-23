@@ -43,8 +43,7 @@ namespace RCL.Kernel
 
     // Sometimes you want to create a cube starting with a prexisting timeline.
     public RCCube (Timeline timeline)
-      : this (timeline, new RCArray<string> (), new RCArray<ColumnBase> ()) {
-    }
+      : this (timeline, new RCArray<string> (), new RCArray<ColumnBase> ()) {}
 
     public RCCube (RCCube cube)
     {
@@ -181,12 +180,10 @@ namespace RCL.Kernel
 
     public class ColumnOfNothing : Column<object>
     {
-      public ColumnOfNothing (Timeline timeline) : base (timeline) {
-      }
+      public ColumnOfNothing (Timeline timeline) : base (timeline) {}
 
       public ColumnOfNothing (Timeline timeline, RCArray<int> index, object data)
-        : base (timeline, index, data) {
-      }
+        : base (timeline, index, data) {}
 
       public override bool Write (RCSymbolScalar key, int index, object box, bool force)
       {
@@ -261,14 +258,12 @@ namespace RCL.Kernel
     public class ColumnOfByte : Column<byte>
     {
       public ColumnOfByte (Timeline timeline)
-        : base (timeline) {
-      }
+        : base (timeline) {}
 
       public ColumnOfByte (Timeline timeline,
                            RCArray<int> index,
                            object data)
-        : base (timeline, index, data) {
-      }
+        : base (timeline, index, data) {}
 
       public override string ScalarToString (string format, int i)
       {
@@ -288,14 +283,12 @@ namespace RCL.Kernel
     public class ColumnOfLong : Column<long>
     {
       public ColumnOfLong (Timeline timeline)
-        : base (timeline) {
-      }
+        : base (timeline) {}
 
       public ColumnOfLong (Timeline timeline,
                            RCArray<int> index,
                            object data)
-        : base (timeline, index, data) {
-      }
+        : base (timeline, index, data) {}
 
       public override string ScalarToString (string format, int i)
       {
@@ -314,14 +307,12 @@ namespace RCL.Kernel
 
     public class ColumnOfDouble : Column<double>
     {
-      public ColumnOfDouble (Timeline timeline) : base (timeline) {
-      }
+      public ColumnOfDouble (Timeline timeline) : base (timeline) {}
 
       public ColumnOfDouble (Timeline timeline,
                              RCArray<int> index,
                              object data)
-        : base (timeline, index, data) {
-      }
+        : base (timeline, index, data) {}
 
       public override string ScalarToString (string format, int i)
       {
@@ -340,14 +331,12 @@ namespace RCL.Kernel
 
     public class ColumnOfDecimal : Column<decimal>
     {
-      public ColumnOfDecimal (Timeline timeline) : base (timeline) {
-      }
+      public ColumnOfDecimal (Timeline timeline) : base (timeline) {}
 
       public ColumnOfDecimal (Timeline timeline,
                               RCArray<int> index,
                               object data)
-        : base (timeline, index, data) {
-      }
+        : base (timeline, index, data) {}
 
       public override string ScalarToString (string format, int i)
       {
@@ -366,14 +355,12 @@ namespace RCL.Kernel
 
     public class ColumnOfBool : Column<bool>
     {
-      public ColumnOfBool (Timeline timeline) : base (timeline) {
-      }
+      public ColumnOfBool (Timeline timeline) : base (timeline) {}
 
       public ColumnOfBool (Timeline timeline,
                            RCArray<int> index,
                            object data)
-        : base (timeline, index, data) {
-      }
+        : base (timeline, index, data) {}
 
       public override string ScalarToString (string format, int i)
       {
@@ -392,14 +379,12 @@ namespace RCL.Kernel
 
     public class ColumnOfString : Column<string>
     {
-      public ColumnOfString (Timeline timeline) : base (timeline) {
-      }
+      public ColumnOfString (Timeline timeline) : base (timeline) {}
 
       public ColumnOfString (Timeline timeline,
                              RCArray<int> index,
                              object data)
-        : base (timeline, index, data) {
-      }
+        : base (timeline, index, data) {}
 
       public override string ScalarToString (string format, int i)
       {
@@ -418,14 +403,12 @@ namespace RCL.Kernel
 
     public class ColumnOfSymbol : Column<RCSymbolScalar>
     {
-      public ColumnOfSymbol (Timeline timeline) : base (timeline) {
-      }
+      public ColumnOfSymbol (Timeline timeline) : base (timeline) {}
 
       public ColumnOfSymbol (Timeline timeline,
                              RCArray<int> index,
                              object data)
-        : base (timeline, index, data) {
-      }
+        : base (timeline, index, data) {}
 
       public override string ScalarToString (string format, int i)
       {
@@ -444,14 +427,12 @@ namespace RCL.Kernel
 
     public class ColumnOfTime : Column<RCTimeScalar>
     {
-      public ColumnOfTime (Timeline timeline) : base (timeline) {
-      }
+      public ColumnOfTime (Timeline timeline) : base (timeline) {}
 
       public ColumnOfTime (Timeline timeline,
                            RCArray<int> index,
                            object data)
-        : base (timeline, index, data) {
-      }
+        : base (timeline, index, data) {}
 
       public override string ScalarToString (string format, int i)
       {
@@ -470,14 +451,12 @@ namespace RCL.Kernel
 
     public class ColumnOfIncr : Column<RCIncrScalar>
     {
-      public ColumnOfIncr (Timeline timeline) : base (timeline) {
-      }
+      public ColumnOfIncr (Timeline timeline) : base (timeline) {}
 
       public ColumnOfIncr (Timeline timeline,
                            RCArray<int> index,
                            object data)
-        : base (timeline, index, data) {
-      }
+        : base (timeline, index, data) {}
 
       public override string ScalarToString (string format, int i)
       {
@@ -1812,8 +1791,7 @@ LOOP:
 
   public class ETSCubeProto : CubeProto
   {
-    public ETSCubeProto (Timeline axis) : base (axis) {
-    }
+    public ETSCubeProto (Timeline axis) : base (axis) {}
 
     public override int CompareAxisRows (Timeline axis1, int i1, Timeline axis2, int i2)
     {
@@ -1841,8 +1819,7 @@ LOOP:
 
   public class TSCubeProto : CubeProto
   {
-    public TSCubeProto (Timeline axis) : base (axis) {
-    }
+    public TSCubeProto (Timeline axis) : base (axis) {}
 
     public override int CompareAxisRows (Timeline axis1, int i1, Timeline axis2, int i2)
     {
@@ -1864,8 +1841,7 @@ LOOP:
 
   public class SCubeProto : CubeProto
   {
-    public SCubeProto (Timeline axis) : base (axis) {
-    }
+    public SCubeProto (Timeline axis) : base (axis) {}
 
     public override int CompareAxisRows (Timeline axis1, int i1, Timeline axis2, int i2)
     {
@@ -1877,8 +1853,7 @@ LOOP:
 
   public class RectCubeProto : CubeProto
   {
-    public RectCubeProto (Timeline axis) : base (axis) {
-    }
+    public RectCubeProto (Timeline axis) : base (axis) {}
     public override int CompareAxisRows (Timeline axis1, int i1, Timeline axis2, int i2)
     {
       return i1.CompareTo (i2);
@@ -1938,7 +1913,7 @@ LOOP:
       Comparison<long> comparison;
       switch (direction)
       {
-      case SortDirection.asc: comparison = new Comparison<long> (state.Asc); break;
+      case SortDirection.asc : comparison = new Comparison<long> (state.Asc); break;
       case SortDirection.desc: comparison = new Comparison<long> (state.Desc); break;
       case SortDirection.absasc: comparison = new Comparison<long> (state.AbsAsc); break;
       case SortDirection.absdesc: comparison = new Comparison<long> (state.AbsDesc); break;

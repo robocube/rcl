@@ -98,8 +98,9 @@ namespace RCL.Core
     {
       RCSymbolScalar result = l;
       object[] keys = r.ToArray ();
-      for (int i = 0; i < keys.Length; ++i)
+      for (int i = 0; i < keys.Length; ++i) {
         result = new RCSymbolScalar (result, keys[i]);
+      }
       return result;
     }
 
@@ -1936,8 +1937,9 @@ namespace RCL.Core
     public static RCSymbolScalar Part (PartContext<long> c, RCSymbolScalar r)
     {
       RCSymbolScalar o = null;
-      for (int i = 0; i < c.p.Count; ++i)
+      for (int i = 0; i < c.p.Count; ++i) {
         o = new RCSymbolScalar (o, r.Part (c.p[i]));
+      }
       return o;
     }
 

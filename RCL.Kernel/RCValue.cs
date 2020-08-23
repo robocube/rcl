@@ -47,8 +47,7 @@ namespace RCL.Kernel
 
     protected bool m_lock = false;
 
-    public RCValue () {
-    }
+    public RCValue () {}
 
     /// <summary>
     /// Operators are important parts of speech in RC and there are several
@@ -240,8 +239,7 @@ namespace RCL.Kernel
       m_lock = true;
     }
 
-    public virtual void Cubify (RCCube target, Stack<object> names) {
-    }
+    public virtual void Cubify (RCCube target, Stack<object> names) {}
 
     public bool IsLocked {
       get { return m_lock; }
