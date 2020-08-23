@@ -9,10 +9,10 @@ namespace RCL.Kernel
 {
   public class ColumnDataToken : RCTokenType
   {
-    protected readonly char[] m_separator;
+    protected readonly char[] _separator;
     public ColumnDataToken (params char[] separator)
     {
-      m_separator = separator;
+      _separator = separator;
     }
 
     public override RCToken TryParseToken (string code,
@@ -24,7 +24,7 @@ namespace RCL.Kernel
     {
       int current = start;
       bool quoted = false;
-      while (quoted || (current < code.Length && !IsIn (code[current], m_separator)))
+      while (quoted || (current < code.Length && !IsIn (code[current], _separator)))
       {
         // What if there are an uneven number of "'s?
         // I think this is a bug.

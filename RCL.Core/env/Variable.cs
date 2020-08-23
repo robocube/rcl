@@ -11,12 +11,12 @@ namespace RCL.Core
 {
   public class Variable
   {
-    protected internal object m_lock = new object ();
-    protected internal Dictionary<object, Dictionary<RCSymbolScalar, RCValue>> m_sections;
+    protected internal object _lock = new object ();
+    protected internal Dictionary<object, Dictionary<RCSymbolScalar, RCValue>> _sections;
 
     public Variable ()
     {
-      m_sections = new Dictionary<object, Dictionary<RCSymbolScalar, RCValue>> ();
+      _sections = new Dictionary<object, Dictionary<RCSymbolScalar, RCValue>> ();
     }
 
     protected Dictionary<RCSymbolScalar, RCValue> GetSection (RCSymbol symbol)
@@ -24,9 +24,9 @@ namespace RCL.Core
       // This assumes that all symbols in symbol have the same first part!
       object key = symbol[0].Part (0);
       Dictionary<RCSymbolScalar, RCValue> section;
-      if (!m_sections.TryGetValue (key, out section)) {
+      if (!_sections.TryGetValue (key, out section)) {
         section = new Dictionary<RCSymbolScalar, RCValue> ();
-        m_sections[key] = section;
+        _sections[key] = section;
       }
       return section;
     }
@@ -35,7 +35,7 @@ namespace RCL.Core
     public void Getm (RCRunner runner, RCClosure closure, RCSymbol key)
     {
       RCValue result;
-      lock (m_lock)
+      lock (_lock)
       {
         Dictionary<RCSymbolScalar, RCValue> store = GetSection (key);
         if (!store.TryGetValue (key[0], out result)) {
@@ -52,7 +52,7 @@ namespace RCL.Core
     public void Hasm (RCRunner runner, RCClosure closure, RCSymbol key)
     {
       RCBoolean result;
-      lock (m_lock)
+      lock (_lock)
       {
         Dictionary<RCSymbolScalar, RCValue> store = GetSection (key);
         if (!store.ContainsKey (key[0])) {
@@ -69,7 +69,7 @@ namespace RCL.Core
     public void Getms (RCRunner runner, RCClosure closure, RCSymbol key)
     {
       RCBlock result = RCBlock.Empty;
-      lock (m_lock)
+      lock (_lock)
       {
         // Stick to the rule that all keys must start on the same page.
         Dictionary<RCSymbolScalar, RCValue> store = GetSection (key);
@@ -95,7 +95,7 @@ namespace RCL.Core
         return;
        }
        RCBlock result = RCBlock.Empty;
-       lock (m_lock)
+       lock (_lock)
        {
         RCSymbol vars = (RCSymbol) right.GetSimpleVector (0);
         Dictionary<RCSymbolScalar, RCValue> store = GetSection (vars);
@@ -114,7 +114,7 @@ namespace RCL.Core
     [RCVerb ("putm")]
     public void Putm (RCRunner runner, RCClosure closure, RCSymbol key, object val)
     {
-      lock (m_lock)
+      lock (_lock)
       {
         Dictionary<RCSymbolScalar, RCValue> store = GetSection (key);
         store[key[0]] = (RCValue) val;
@@ -125,7 +125,7 @@ namespace RCL.Core
     [RCVerb ("putms")]
     public void Putms (RCRunner runner, RCClosure closure, RCSymbol keys, RCBlock values)
     {
-      lock (m_lock)
+      lock (_lock)
       {
         Dictionary<RCSymbolScalar, RCValue> store = GetSection (keys);
         for (int i = 0; i < values.Count; ++i)
@@ -139,7 +139,7 @@ namespace RCL.Core
     [RCVerb ("delm")]
     public void Deletem (RCRunner runner, RCClosure closure, RCSymbol key)
     {
-      lock (m_lock)
+      lock (_lock)
       {
         Dictionary<RCSymbolScalar, RCValue> store = GetSection (key);
         store.Remove (key[0]);
@@ -151,7 +151,7 @@ namespace RCL.Core
     public void List (RCRunner runner, RCClosure closure, RCSymbol key)
     {
       RCSymbolScalar[] array;
-      lock (m_lock)
+      lock (_lock)
       {
         Dictionary<RCSymbolScalar, RCValue> store = GetSection (key);
         array = new RCSymbolScalar[store.Keys.Count];
@@ -163,11 +163,11 @@ namespace RCL.Core
     [RCVerb ("clearm")]
     public void Clear (RCRunner runner, RCClosure closure, RCSymbol key)
     {
-      lock (m_lock)
+      lock (_lock)
       {
         for (int i = 0; i < key.Count; ++i)
         {
-          m_sections.Remove (key[i].Part (0));
+          _sections.Remove (key[i].Part (0));
         }
       }
       runner.Yield (closure, key);

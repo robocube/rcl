@@ -57,7 +57,7 @@ namespace RCL.Kernel
 
     public override void Write (object box)
     {
-      m_data.Write ((bool) box);
+      _data.Write ((bool) box);
     }
   }
 }

@@ -6,63 +6,63 @@ namespace RCL.Kernel
 {
   public class Writer : Visitor
   {
-    protected RCCube m_target;
-    protected RCCube m_source;
-    protected ReadCounter m_counter;
-    protected HashSet<RCSymbolScalar> m_result = new HashSet<RCSymbolScalar> ();
-    protected bool m_writeAxis;
-    protected bool m_keepIncrs;
-    protected bool m_force;
-    protected bool m_delete;
-    protected long m_initg;
-    protected long m_e;
+    protected RCCube _target;
+    protected RCCube _source;
+    protected ReadCounter _counter;
+    protected HashSet<RCSymbolScalar> _result = new HashSet<RCSymbolScalar> ();
+    protected bool _writeAxis;
+    protected bool _keepIncrs;
+    protected bool _force;
+    protected bool _delete;
+    protected long _initg;
+    protected long _e;
 
     public Writer (RCCube target, ReadCounter counter, bool keepIncrs, bool force, long initg)
     {
       // counter may be null;
       // If the counter is null then Timeline won't increment the counter on Writes.
       // Cube created using merge don't have counters, maybe this should change.
-      m_initg = initg;
-      m_target = target;
-      m_counter = counter;
-      m_keepIncrs = keepIncrs;
-      m_force = force;
+      _initg = initg;
+      _target = target;
+      _counter = counter;
+      _keepIncrs = keepIncrs;
+      _force = force;
     }
 
     public RCArray<RCSymbolScalar> Write (RCCube source)
     {
-      m_source = source;
+      _source = source;
       // This controls the value E will take if it is not provided by source.
-      if (m_target.Axis.Event != null && m_target.Axis.Event.Count > 0) {
-        m_e = m_target.Axis.Event[m_target.Axis.Event.Count - 1] + 1;
+      if (_target.Axis.Event != null && _target.Axis.Event.Count > 0) {
+        _e = _target.Axis.Event[_target.Axis.Event.Count - 1] + 1;
       }
       else {
-        m_e = m_target.Count;
+        _e = _target.Count;
       }
-      m_source.VisitCellsForward (this, 0, m_source.Count);
-      return new RCArray<RCSymbolScalar> (m_result);
+      _source.VisitCellsForward (this, 0, _source.Count);
+      return new RCArray<RCSymbolScalar> (_result);
     }
 
     public override void BeforeRow (long e, RCTimeScalar t, RCSymbolScalar s, int row)
     {
-      m_writeAxis = false;
-      m_delete = false;
+      _writeAxis = false;
+      _delete = false;
     }
 
     public override void AfterRow (long e, RCTimeScalar t, RCSymbolScalar symbol, int row)
     {
-      if (!m_writeAxis) {
+      if (!_writeAxis) {
         return;
       }
-      long g = m_initg + row;
+      long g = _initg + row;
       // I think this needs to change to a sequence number. 2015.06.03
-      e = m_e;
+      e = _e;
       // I need a unit test for not incrementing this after each row.
-      ++m_e;
+      ++_e;
       // This needs to change to a sequence number but
-      // the m_e logic is not quite right yet. 2015.09.17
-      if (m_source.Axis.Has ("E")) {
-        e = m_source.Axis.Event[row];
+      // the _e logic is not quite right yet. 2015.09.17
+      if (_source.Axis.Has ("E")) {
+        e = _source.Axis.Event[row];
       }
       // Things I do not understand, why doesn't every row have the same g?
       // Why does G reset to zero after clearing, even though initg > 0?
@@ -71,49 +71,49 @@ namespace RCL.Kernel
       // No it's even worse than that, there isn't and never has been any G row at all on
       // the
       // blackboard cubes. Wow.
-      // So to solve this initially I can add m_initg to row to get g.
+      // So to solve this initially I can add _initg to row to get g.
       // But ultimately we need to make G truly global.
       long targetLastG = -1;
-      if (m_target.Axis.Global != null && m_target.Axis.Global.Count > 0) {
-        targetLastG = Math.Abs (m_target.Axis.Global[m_target.Axis.Global.Count - 1]);
+      if (_target.Axis.Global != null && _target.Axis.Global.Count > 0) {
+        targetLastG = Math.Abs (_target.Axis.Global[_target.Axis.Global.Count - 1]);
       }
-      if (m_source.Axis.Has ("G")) {
+      if (_source.Axis.Has ("G")) {
         // This means force specific G values into the blackboard.
         // This could be good or bad.
-        if (m_source.Axis.Global[row] <= targetLastG) {
+        if (_source.Axis.Global[row] <= targetLastG) {
           throw new Exception ("G values may not be written out of order.");
         }
-        g = m_source.Axis.Global[row];
+        g = _source.Axis.Global[row];
       }
       else if (targetLastG > -1) {
         g = targetLastG + 1;
       }
-      if (m_delete) {
+      if (_delete) {
         g = -g;
       }
       // I just moved this from the top of the function to the bottom
       // The tests are ok but I keep this note til all the concurrency examples run
-      if (m_counter != null) {
-        m_counter.Write (symbol, (int) g);
+      if (_counter != null) {
+        _counter.Write (symbol, (int) g);
       }
-      m_target.Axis.Write (g, e, t, symbol);
+      _target.Axis.Write (g, e, t, symbol);
     }
 
     public override void VisitScalar<T> (string name, Column<T> column, int i)
     {
       // Can I turn this into WriteCell<T> and get rid of the boxing?
       bool delete;
-      RCSymbolScalar result = m_target.WriteCell (name,
-                                                  m_source.Axis.SymbolAt (column.Index[i]),
-                                                  column.Data[i],
-                                                  -1,
-                                                  m_keepIncrs,
-                                                  m_force,
-                                                  out delete);
-      m_delete = m_delete || delete;
-      if (result != null || m_target.Axis.ColCount == 0) {
-        m_result.Add (result);
-        m_writeAxis = true;
+      RCSymbolScalar result = _target.WriteCell (name,
+                                                 _source.Axis.SymbolAt (column.Index[i]),
+                                                 column.Data[i],
+                                                 -1,
+                                                 _keepIncrs,
+                                                 _force,
+                                                 out delete);
+      _delete = _delete || delete;
+      if (result != null || _target.Axis.ColCount == 0) {
+        _result.Add (result);
+        _writeAxis = true;
       }
     }
   }

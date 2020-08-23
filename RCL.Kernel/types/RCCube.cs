@@ -9,36 +9,36 @@ namespace RCL.Kernel
   {
     public static readonly RCCube Empty = new RCCube ();
     public readonly Timeline Axis;
-    protected RCArray<string> m_names;
-    protected RCArray<ColumnBase> m_columns;
+    protected RCArray<string> _names;
+    protected RCArray<ColumnBase> _columns;
 
     // These variables are not always initialized in the ctor.
     // It's a little messy, is there something we can do?
-    protected Reader m_reader;
-    protected long m_lines;
+    protected Reader _reader;
+    protected long _lines;
 
     public RCCube ()
     {
-      m_names = new RCArray<string> ();
+      _names = new RCArray<string> ();
       Axis = new Timeline (null,
                            new RCArray<long> (),
                            null,
                            new RCArray<RCSymbolScalar> ());
-      m_columns = new RCArray<ColumnBase> ();
+      _columns = new RCArray<ColumnBase> ();
     }
 
     public RCCube (params string[] tlcolnames)
     {
-      m_names = new RCArray<string> ();
+      _names = new RCArray<string> ();
       Axis = new Timeline (tlcolnames);
-      m_columns = new RCArray<ColumnBase> ();
+      _columns = new RCArray<ColumnBase> ();
     }
 
     public RCCube (RCArray<string> tlcolnames)
     {
-      m_names = new RCArray<string> ();
+      _names = new RCArray<string> ();
       Axis = new Timeline (tlcolnames);
-      m_columns = new RCArray<ColumnBase> ();
+      _columns = new RCArray<ColumnBase> ();
     }
 
     // Sometimes you want to create a cube starting with a prexisting timeline.
@@ -49,8 +49,8 @@ namespace RCL.Kernel
     {
       Axis = cube.Axis.Match ();
       Axis.Count = cube.Count;
-      m_names = new RCArray<string> ();
-      m_columns = new RCArray<ColumnBase> ();
+      _names = new RCArray<string> ();
+      _columns = new RCArray<ColumnBase> ();
       if (Axis.Global != null) {
         Axis.Global.Write (cube.Axis.Global);
       }
@@ -69,8 +69,8 @@ namespace RCL.Kernel
         ColumnBase newcol = ColumnBase.FromArray (Axis,
                                                   oldcol.Index,
                                                   oldcol.Array);
-        m_columns.Write (newcol);
-        m_names.Write (cube.NameAt (i));
+        _columns.Write (newcol);
+        _names.Write (cube.NameAt (i));
       }
     }
 
@@ -88,8 +88,8 @@ namespace RCL.Kernel
         throw new ArgumentNullException ("columns");
       }
       Axis = timeline;
-      m_names = names;
-      m_columns = columns;
+      _names = names;
+      _columns = columns;
     }
 
     /// <summary>
@@ -115,12 +115,12 @@ namespace RCL.Kernel
         }
         result = new RCBlock ("", ":", axis);
       }
-      for (int i = 0; i < m_columns.Count; ++i)
+      for (int i = 0; i < _columns.Count; ++i)
       {
         RCBlock column = RCBlock.Empty;
-        column = new RCBlock (column, "index", ":", RCVectorBase.FromArray (m_columns[i].Index));
-        column = new RCBlock (column, "array", ":", RCVectorBase.FromArray (m_columns[i].Array));
-        result = new RCBlock (result, m_names[i], ":", column);
+        column = new RCBlock (column, "index", ":", RCVectorBase.FromArray (_columns[i].Index));
+        column = new RCBlock (column, "array", ":", RCVectorBase.FromArray (_columns[i].Array));
+        result = new RCBlock (result, _names[i], ":", column);
       }
       return result;
     }
@@ -130,11 +130,11 @@ namespace RCL.Kernel
       get
       {
         int first = 0;
-        for (int i = 0; i < m_columns.Count; ++i)
+        for (int i = 0; i < _columns.Count; ++i)
         {
-          if (m_columns[i] != null && m_columns[i].Count > 0) {
-            if (m_columns[i].Index[0] < first) {
-              first = m_columns[i].Index[0];
+          if (_columns[i] != null && _columns[i].Count > 0) {
+            if (_columns[i].Index[0] < first) {
+              first = _columns[i].Index[0];
             }
           }
         }
@@ -146,14 +146,14 @@ namespace RCL.Kernel
     {
       get
       {
-        if (m_columns.Count == 0) {
+        if (_columns.Count == 0) {
           return -1;
         }
         int last = 0;
-        for (int i = 0; i < m_columns.Count; ++i)
+        for (int i = 0; i < _columns.Count; ++i)
         {
-          if (m_columns[i] != null && m_columns[i].Count > 0) {
-            int lastInCol = m_columns[i].Index[m_columns[i].Count - 1];
+          if (_columns[i] != null && _columns[i].Count > 0) {
+            int lastInCol = _columns[i].Index[_columns[i].Count - 1];
             if (lastInCol > last) {
               last = lastInCol;
             }
@@ -187,8 +187,8 @@ namespace RCL.Kernel
 
       public override bool Write (RCSymbolScalar key, int index, object box, bool force)
       {
-        m_data.Write (box);
-        m_index.Write (index);
+        _data.Write (box);
+        _index.Write (index);
         return true;
       }
 
@@ -199,14 +199,14 @@ namespace RCL.Kernel
 
       public override void Lock ()
       {
-        m_data.Lock ();
-        m_index.Lock ();
+        _data.Lock ();
+        _index.Lock ();
       }
 
       public override void ReverseInPlace (int tlcount)
       {
-        m_data.ReverseInPlace ();
-        // m_index.ReverseInPlace ();
+        _data.ReverseInPlace ();
+        // _index.ReverseInPlace ();
       }
 
       public override void Accept (string name, Visitor visitor, int i)
@@ -242,13 +242,13 @@ namespace RCL.Kernel
         return null;
       }
       public override object Array {
-        get { return m_data; }
+        get { return _data; }
       }
       public override RCArray<int> Index {
-        get { return m_index; }
+        get { return _index; }
       }
       public new RCArray<object> Data {
-        get { return m_data; }
+        get { return _data; }
       }
       public override int Count {
         get { return 0; }
@@ -267,7 +267,7 @@ namespace RCL.Kernel
 
       public override string ScalarToString (string format, int i)
       {
-        return RCByte.FormatScalar (m_data[i]);
+        return RCByte.FormatScalar (_data[i]);
       }
 
       public override string ScalarToCsvString (string format, int i)
@@ -292,7 +292,7 @@ namespace RCL.Kernel
 
       public override string ScalarToString (string format, int i)
       {
-        return RCLong.FormatScalar (m_data[i]);
+        return RCLong.FormatScalar (_data[i]);
       }
 
       public override string ScalarToCsvString (string format, int i)
@@ -316,7 +316,7 @@ namespace RCL.Kernel
 
       public override string ScalarToString (string format, int i)
       {
-        return RCDouble.FormatScalar (format, m_data[i]);
+        return RCDouble.FormatScalar (format, _data[i]);
       }
 
       public override string ScalarToCsvString (string format, int i)
@@ -340,7 +340,7 @@ namespace RCL.Kernel
 
       public override string ScalarToString (string format, int i)
       {
-        return RCDecimal.FormatScalar (format, m_data[i]) + "m";
+        return RCDecimal.FormatScalar (format, _data[i]) + "m";
       }
 
       public override string ScalarToCsvString (string format, int i)
@@ -364,7 +364,7 @@ namespace RCL.Kernel
 
       public override string ScalarToString (string format, int i)
       {
-        return RCBoolean.FormatScalar (format, m_data[i]);
+        return RCBoolean.FormatScalar (format, _data[i]);
       }
 
       public override string ScalarToCsvString (string format, int i)
@@ -388,12 +388,12 @@ namespace RCL.Kernel
 
       public override string ScalarToString (string format, int i)
       {
-        return RCString.FormatScalar (format, m_data[i]);
+        return RCString.FormatScalar (format, _data[i]);
       }
 
       public override string ScalarToCsvString (string format, int i)
       {
-        return m_data[i].ToString ();
+        return _data[i].ToString ();
       }
 
       public override char TypeCode {
@@ -412,12 +412,12 @@ namespace RCL.Kernel
 
       public override string ScalarToString (string format, int i)
       {
-        return RCSymbol.FormatScalar (m_data[i]);
+        return RCSymbol.FormatScalar (_data[i]);
       }
 
       public override string ScalarToCsvString (string format, int i)
       {
-        return m_data[i].ToCsvString ();
+        return _data[i].ToCsvString ();
       }
 
       public override char TypeCode {
@@ -436,7 +436,7 @@ namespace RCL.Kernel
 
       public override string ScalarToString (string format, int i)
       {
-        return RCTime.FormatScalar (format, m_data[i]);
+        return RCTime.FormatScalar (format, _data[i]);
       }
 
       public override string ScalarToCsvString (string format, int i)
@@ -460,7 +460,7 @@ namespace RCL.Kernel
 
       public override string ScalarToString (string format, int i)
       {
-        return RCIncr.FormatScalar (format, m_data[i]);
+        return RCIncr.FormatScalar (format, _data[i]);
       }
 
       public override string ScalarToCsvString (string format, int i)
@@ -496,17 +496,17 @@ namespace RCL.Kernel
     public override void Lock ()
     {
       Axis.Lock ();
-      if (m_reader != null) {
-        m_reader.Lock ();
+      if (_reader != null) {
+        _reader.Lock ();
       }
       RCArray<int> missingCols = new RCArray<int> ();
-      for (int i = 0; i < m_columns.Count; ++i)
+      for (int i = 0; i < _columns.Count; ++i)
       {
-        if (m_columns[i] == null) {
-          m_columns.Write (i, new ColumnOfNothing (Axis));
+        if (_columns[i] == null) {
+          _columns.Write (i, new ColumnOfNothing (Axis));
         }
         else {
-          m_columns[i].Lock ();
+          _columns[i].Lock ();
         }
       }
       // This happens because of the way cubes are parsed,
@@ -516,12 +516,12 @@ namespace RCL.Kernel
       // things happen.
       for (int i = missingCols.Count - 1; i >= 0; --i)
       {
-        m_columns.RemoveAt (missingCols[i]);
-        m_names.RemoveAt (missingCols[i]);
+        _columns.RemoveAt (missingCols[i]);
+        _names.RemoveAt (missingCols[i]);
       }
-      m_columns.Lock ();
-      m_names.Lock ();
-      base.m_lock = true;
+      _columns.Lock ();
+      _names.Lock ();
+      base._lock = true;
     }
 
     public override int GetHashCode ()
@@ -531,24 +531,24 @@ namespace RCL.Kernel
 
     public string ColumnAt (int i)
     {
-      return m_names[i];
+      return _names[i];
     }
 
     public long Lines
     {
-      get { return m_lines; }
+      get { return _lines; }
     }
 
     // This returns the line numbers from the source data set.
     public RCArray<int> AcceptedLines
     {
-      get { return m_reader.AcceptedLines; }
+      get { return _reader.AcceptedLines; }
     }
 
     // This returns the actual symbols represented in the result set.
     public RCArray<RCSymbolScalar> AcceptedSymbols
     {
-      get { return m_reader.AcceptedSymbols; }
+      get { return _reader.AcceptedSymbols; }
     }
 
     public override void Format (StringBuilder builder, RCFormat args, int level)
@@ -612,38 +612,38 @@ namespace RCL.Kernel
       if (Axis.Symbol != null) {
         Binary.WriteVectorSymbol (result, Axis.Symbol);
       }
-      Binary.WriteVectorString (result, m_names);
-      for (int i = 0; i < m_columns.Count; ++i)
+      Binary.WriteVectorString (result, _names);
+      for (int i = 0; i < _columns.Count; ++i)
       {
-        result.Write ((byte) m_columns[i].TypeCode);
-        Binary.WriteVector<int> (result, m_columns[i].Index, sizeof (int));
-        switch (m_columns[i].TypeCode)
+        result.Write ((byte) _columns[i].TypeCode);
+        Binary.WriteVector<int> (result, _columns[i].Index, sizeof (int));
+        switch (_columns[i].TypeCode)
         {
         case 'x':
-          Binary.WriteVector<byte> (result, ((Column<byte>)m_columns[i]).Data, sizeof (byte));
+          Binary.WriteVector<byte> (result, ((Column<byte>)_columns[i]).Data, sizeof (byte));
           break;
         case 'd':
-          Binary.WriteVector<double> (result, ((Column<double>)m_columns[i]).Data, sizeof (double));
+          Binary.WriteVector<double> (result, ((Column<double>)_columns[i]).Data, sizeof (double));
           break;
         case 'l':
-          Binary.WriteVector<long> (result, ((Column<long>)m_columns[i]).Data, sizeof (long));
+          Binary.WriteVector<long> (result, ((Column<long>)_columns[i]).Data, sizeof (long));
           break;
         case 'm':
-          Binary.WriteVectorDecimal (result, ((Column<decimal>)m_columns[i]).Data);
+          Binary.WriteVectorDecimal (result, ((Column<decimal>)_columns[i]).Data);
           break;
         case 'b':
-          Binary.WriteVector<bool> (result, ((Column<bool>)m_columns[i]).Data, sizeof (bool));
+          Binary.WriteVector<bool> (result, ((Column<bool>)_columns[i]).Data, sizeof (bool));
           break;
         case 'n':
-          Binary.WriteVectorIncr (result, ((Column<RCIncrScalar>)m_columns[i]).Data);
+          Binary.WriteVectorIncr (result, ((Column<RCIncrScalar>)_columns[i]).Data);
           break;
         case 's':
-          Binary.WriteVectorString (result, ((Column<string>)m_columns[i]).Data);
+          Binary.WriteVectorString (result, ((Column<string>)_columns[i]).Data);
           break;
         case 'y':
-          Binary.WriteVectorSymbol (result, ((Column<RCSymbolScalar>)m_columns[i]).Data);
+          Binary.WriteVectorSymbol (result, ((Column<RCSymbolScalar>)_columns[i]).Data);
           break;
-        default: throw new Exception ("Cannot WriteVector with type " + m_columns[i].TypeCode);
+        default: throw new Exception ("Cannot WriteVector with type " + _columns[i].TypeCode);
         }
       }
     }
@@ -660,7 +660,7 @@ namespace RCL.Kernel
 
     public RCValue Get (string name)
     {
-      int column = m_names.IndexOf (RCName.Get (name));
+      int column = _names.IndexOf (RCName.Get (name));
       if (column < 0) {
         // Special columns in the timeline.
         // We need tests for G and E
@@ -689,17 +689,17 @@ namespace RCL.Kernel
         // at the points referenced by the selected column.
         return new RCCube (Axis,
                            new RCArray<string> (name),
-                           new RCArray<ColumnBase> (m_columns[column]));
+                           new RCArray<ColumnBase> (_columns[column]));
       }
     }
 
     public ColumnBase GetColumn (string name)
     {
-      int column = m_names.IndexOf (RCName.Get (name));
+      int column = _names.IndexOf (RCName.Get (name));
       if (column < 0) {
         return null;
       }
-      return m_columns[column];
+      return _columns[column];
     }
 
     public RCValue Get (long index)
@@ -710,17 +710,17 @@ namespace RCL.Kernel
 
     public ColumnBase GetColumn (int index)
     {
-      if (index < 0 || index >= m_columns.Count) {
+      if (index < 0 || index >= _columns.Count) {
         return null;
       }
       else {
-        return m_columns[index];
+        return _columns[index];
       }
     }
 
     public Type GetType (int index)
     {
-      return m_columns[index].GetElementType ();
+      return _columns[index].GetElementType ();
     }
 
     public RCArray<T> DoColof<T> (string name, T def)
@@ -768,12 +768,12 @@ namespace RCL.Kernel
     {
       // We need to create vectors to wrap these arrays because
       // you cannot pass an array to an operator (since it isn't an RCValue).
-      return RCVectorBase.FromArray (m_columns[index].Array);
+      return RCVectorBase.FromArray (_columns[index].Array);
     }
 
     public RCArray<int> GetIndex<T> (int index)
     {
-      return ((Column<T>)m_columns[index]).Index;
+      return ((Column<T>)_columns[index]).Index;
     }
 
     /// <summary>
@@ -785,13 +785,13 @@ namespace RCL.Kernel
     {
       // Twould be cool if I could get rid of this cast.
       // But don't know how.
-      return ((Column<T>)m_columns[index]).Data;
+      return ((Column<T>)_columns[index]).Data;
     }
 
     public char GetTypeCode (string name)
     {
-      int column = m_names.IndexOf (name);
-      if (m_columns.Count < 0) {
+      int column = _names.IndexOf (name);
+      if (_columns.Count < 0) {
         if (name == "G") {
           return 'l';
         }
@@ -808,22 +808,22 @@ namespace RCL.Kernel
           throw new Exception ("Unknown column \"" + name + "\"");
         }
       }
-      if (column >= m_columns.Count) {
+      if (column >= _columns.Count) {
         throw new Exception (string.Format ("Column with name {0} not found in cube.", name));
       }
       else {
-        if (m_columns[column] == null) {
+        if (_columns[column] == null) {
           return '~';
         }
         else {
-          return m_columns[column].TypeCode;
+          return _columns[column].TypeCode;
         }
       }
     }
 
     public int FindColumn (string name)
     {
-      return m_names.IndexOf (name);
+      return _names.IndexOf (name);
     }
 
     public bool Has (string name)
@@ -856,12 +856,12 @@ namespace RCL.Kernel
 
     public long Cols
     {
-      get { return m_names.Count; }
+      get { return _names.Count; }
     }
 
     public string NameAt (int i)
     {
-      return m_names[i];
+      return _names[i];
     }
 
     public RCSymbolScalar SymbolAt (int i)
@@ -871,12 +871,12 @@ namespace RCL.Kernel
 
     public RCArray<string> Names
     {
-      get { return m_names; }
+      get { return _names; }
     }
 
     public RCArray<ColumnBase> Columns
     {
-      get { return m_columns; }
+      get { return _columns; }
     }
 
     public RCCube Untl ()
@@ -918,29 +918,29 @@ namespace RCL.Kernel
       RCArray<long> E = cols.Contains ("E") ? Axis.Event : null;
       RCArray<RCTimeScalar> T = cols.Contains ("T") ? Axis.Time : null;
       RCArray<RCSymbolScalar> S = cols.Contains ("S") ? Axis.Symbol : null;
-      for (int i = 0; i < m_columns.Count; ++i)
+      for (int i = 0; i < _columns.Count; ++i)
       {
-        if (m_names[i] == "G" && cols.Contains ("G")) {
-          G = (RCArray<long>)m_columns[i].Array;
+        if (_names[i] == "G" && cols.Contains ("G")) {
+          G = (RCArray<long>)_columns[i].Array;
         }
-        else if (m_names[i] == "E" && cols.Contains ("E")) {
-          E = (RCArray<long>)m_columns[i].Array;
+        else if (_names[i] == "E" && cols.Contains ("E")) {
+          E = (RCArray<long>)_columns[i].Array;
         }
-        else if (m_names[i] == "T" && cols.Contains ("T")) {
-          T = (RCArray<RCTimeScalar>)m_columns[i].Array;
+        else if (_names[i] == "T" && cols.Contains ("T")) {
+          T = (RCArray<RCTimeScalar>)_columns[i].Array;
         }
-        else if (m_names[i] == "S" && cols.Contains ("S")) {
-          S = (RCArray<RCSymbolScalar>)m_columns[i].Array;
+        else if (_names[i] == "S" && cols.Contains ("S")) {
+          S = (RCArray<RCSymbolScalar>)_columns[i].Array;
         }
       }
       Timeline axis = new Timeline (G, E, T, S);
-      for (int i = 0; i < m_columns.Count; ++i)
+      for (int i = 0; i < _columns.Count; ++i)
       {
-        if (!tlcols.Contains (m_names[i])) {
-          ColumnBase oldcol = m_columns[i];
+        if (!tlcols.Contains (_names[i])) {
+          ColumnBase oldcol = _columns[i];
           ColumnBase newcol = ColumnBase.FromArray (axis, oldcol.Index, oldcol.Array);
           columns.Write (newcol);
-          names.Write (m_names[i]);
+          names.Write (_names[i]);
         }
       }
       return new RCCube (axis, names, columns);
@@ -961,12 +961,12 @@ namespace RCL.Kernel
       // Always include the G column when reading from the blackboard.
       Reader reader = new Reader (this, spec, counter, forceg, end);
       RCCube result = reader.Read ();
-      result.m_reader = reader;
+      result._reader = reader;
       if (result.Axis.Global != null && result.Axis.Global.Count > 0) {
-        result.m_lines = result.Axis.Global[result.Axis.Global.Count - 1] + 1;
+        result._lines = result.Axis.Global[result.Axis.Global.Count - 1] + 1;
       }
       else {
-        result.m_lines = Count;
+        result._lines = Count;
       }
       return result;
     }
@@ -1025,24 +1025,24 @@ namespace RCL.Kernel
 
     public void UnreserveColumn (string name)
     {
-      int index = m_names.IndexOf (name);
-      if (m_names.IndexOf (name) < 0) {
+      int index = _names.IndexOf (name);
+      if (_names.IndexOf (name) < 0) {
         throw new Exception (string.Format ("Unknown column name: {0}", name));
       }
-      m_columns.Write (index, (ColumnBase) null);
+      _columns.Write (index, (ColumnBase) null);
     }
 
     // This method is used to Reserve a spot in the column order
     // for a column whose first row is null.
     public void ReserveColumn (string name, bool canonical)
     {
-      if (m_names.IndexOf (name) < 0) {
-        m_names.Write (name);
+      if (_names.IndexOf (name) < 0) {
+        _names.Write (name);
         if (canonical) {
-          m_columns.Write (new ColumnOfNothing (Axis));
+          _columns.Write (new ColumnOfNothing (Axis));
         }
         else {
-          m_columns.Write ((ColumnBase) null);
+          _columns.Write ((ColumnBase) null);
         }
       }
     }
@@ -1096,9 +1096,9 @@ namespace RCL.Kernel
       }
       ColumnBase old = null;
       delete = false;
-      int col = m_names.IndexOf (name);
+      int col = _names.IndexOf (name);
       if (col > -1) {
-        old = m_columns[col];
+        old = _columns[col];
       }
       // Not pretty, and this is going to make it harder to get rid
       // of the boxing at some later stage.
@@ -1165,10 +1165,10 @@ namespace RCL.Kernel
           }
           // Actually delete (note that +~ incrop also increments the column like ++)
           if (incr == RCIncrScalar.Delete) {
-            for (int i = 0; i < m_columns.Count; ++i)
+            for (int i = 0; i < _columns.Count; ++i)
             {
-              if (m_columns[i] != null) {
-                m_columns[i].Delete (symbol);
+              if (_columns[i] != null) {
+                _columns[i].Delete (symbol);
               }
             }
             delete = true;
@@ -1213,13 +1213,13 @@ namespace RCL.Kernel
         }
 
         if (col > -1) {
-          m_columns.Write (col, column);
+          _columns.Write (col, column);
         }
         else {
-          m_columns.Write (column);
-          m_names.Write (name);
+          _columns.Write (column);
+          _names.Write (name);
           // the Name would have been populated by ReserveColumn in this case.
-          // m_names.Write (index, name);
+          // _names.Write (index, name);
         }
         return column.Write (symbol, index >= 0 ? index : Axis.Count, box, force) ? symbol : null;
       }
@@ -1234,10 +1234,10 @@ namespace RCL.Kernel
     // This will be done before returning the newly created cube.
     internal void ReverseInPlace ()
     {
-      for (int i = 0; i < m_columns.Count; ++i)
+      for (int i = 0; i < _columns.Count; ++i)
       {
-        if (m_columns[i] != null) {
-          m_columns[i].ReverseInPlace (Axis.Count);
+        if (_columns[i] != null) {
+          _columns[i].ReverseInPlace (Axis.Count);
         }
       }
       Axis.ReverseInPlace ();
@@ -1559,12 +1559,12 @@ LOOP:
     /// </summary>
     public virtual long VisitCellsForward (Visitor visitor, int start, int end)
     {
-      return VisitCellsForward (Axis, visitor, m_names, m_columns, start, end, false);
+      return VisitCellsForward (Axis, visitor, _names, _columns, start, end, false);
     }
 
     public virtual long VisitCellsCanonical (Visitor visitor, int start, int end)
     {
-      return VisitCellsForward (Axis, visitor, m_names, m_columns, start, end, true);
+      return VisitCellsForward (Axis, visitor, _names, _columns, start, end, true);
     }
 
     public static long VisitCellsBackward (Timeline timeline,
@@ -1712,7 +1712,7 @@ LOOP:
     /// </summary>
     public virtual long VisitCellsBackward (Visitor visitor, int start, int end)
     {
-      return VisitCellsBackward (Axis, visitor, m_names, m_columns, start, end);
+      return VisitCellsBackward (Axis, visitor, _names, _columns, start, end);
     }
   }
 
@@ -1752,34 +1752,34 @@ LOOP:
       }
     }
 
-    protected Timeline m_axis;
+    protected Timeline _axis;
     public CubeProto (Timeline axis)
     {
       if (axis == null) {
         throw new ArgumentNullException ("axis");
       }
-      m_axis = axis;
+      _axis = axis;
     }
 
     public abstract int CompareAxisRows (Timeline axis1, int i1, Timeline axis2, int i2);
     public virtual int CompareAxisRows (int i1, int i2)
     {
-      return CompareAxisRows (m_axis, i1, m_axis, i2);
+      return CompareAxisRows (_axis, i1, _axis, i2);
     }
 
     public Timeline Sort ()
     {
-      if (m_axis.Proto.IsAxisSorted ()) {
-        return m_axis;
+      if (_axis.Proto.IsAxisSorted ()) {
+        return _axis;
       }
       else {
-        return RankUtils.ApplyAxisRank (m_axis, RankUtils.DoAxisRank (m_axis));
+        return RankUtils.ApplyAxisRank (_axis, RankUtils.DoAxisRank (_axis));
       }
     }
 
     public bool IsAxisSorted ()
     {
-      for (int i = 1; i < m_axis.Count; ++i)
+      for (int i = 1; i < _axis.Count; ++i)
       {
         if (CompareAxisRows (i - 1, i) > 0) {
           return false;
@@ -2051,95 +2051,95 @@ LOOP:
 
   public class RankState<T> where T : IComparable<T>
   {
-    protected static readonly Dictionary<char, object> m_absmap = new Dictionary<char, object> ();
-    protected RCVector<T> m_data;
-    protected AbsoluteValue<T> m_abs;
+    protected static readonly Dictionary<char, object> _absmap = new Dictionary<char, object> ();
+    protected RCVector<T> _data;
+    protected AbsoluteValue<T> _abs;
 
     static RankState ()
     {
-      m_absmap['l'] = new LongAbs ();
-      m_absmap['d'] = new DoubleAbs ();
-      m_absmap['m'] = new DecimalAbs ();
+      _absmap['l'] = new LongAbs ();
+      _absmap['d'] = new DoubleAbs ();
+      _absmap['m'] = new DecimalAbs ();
     }
 
     public RankState (RCVector<T> data)
     {
-      m_data = data;
+      _data = data;
       object abs = null;
-      m_absmap.TryGetValue (data.TypeCode, out abs);
+      _absmap.TryGetValue (data.TypeCode, out abs);
       if (abs == null) {
-        m_abs = new AbsoluteValue<T> ();
+        _abs = new AbsoluteValue<T> ();
       }
       else {
-        m_abs = (AbsoluteValue<T>)abs;
+        _abs = (AbsoluteValue<T>)abs;
       }
     }
 
     public virtual int Asc (long x, long y)
     {
-      return m_data[(int) x].CompareTo (m_data[(int) y]);
+      return _data[(int) x].CompareTo (_data[(int) y]);
     }
 
     public virtual int Desc (long x, long y)
     {
-      return m_data[(int) y].CompareTo (m_data[(int) x]);
+      return _data[(int) y].CompareTo (_data[(int) x]);
     }
 
     public virtual int AbsAsc (long x, long y)
     {
-      return m_abs.Abs (m_data[(int) x]).CompareTo (m_abs.Abs (m_data[(int) y]));
+      return _abs.Abs (_data[(int) x]).CompareTo (_abs.Abs (_data[(int) y]));
     }
 
     public virtual int AbsDesc (long x, long y)
     {
-      return m_abs.Abs (m_data[(int) y]).CompareTo (m_abs.Abs (m_data[(int) x]));
+      return _abs.Abs (_data[(int) y]).CompareTo (_abs.Abs (_data[(int) x]));
     }
   }
 
   public class RankStateArray<T> where T : IComparable<T>
   {
-    protected static readonly Dictionary<char, object> m_absmap = new Dictionary<char, object> ();
-    protected RCArray<T> m_data;
-    protected AbsoluteValue<T> m_abs;
+    protected static readonly Dictionary<char, object> _absmap = new Dictionary<char, object> ();
+    protected RCArray<T> _data;
+    protected AbsoluteValue<T> _abs;
 
     static RankStateArray ()
     {
-      m_absmap['l'] = new LongAbs ();
-      m_absmap['d'] = new DoubleAbs ();
-      m_absmap['m'] = new DecimalAbs ();
+      _absmap['l'] = new LongAbs ();
+      _absmap['d'] = new DoubleAbs ();
+      _absmap['m'] = new DecimalAbs ();
     }
 
     public RankStateArray (RCArray<T> data, char typeCode)
     {
-      m_data = data;
+      _data = data;
       object abs = null;
-      m_absmap.TryGetValue (typeCode, out abs);
+      _absmap.TryGetValue (typeCode, out abs);
       if (abs == null) {
-        m_abs = new AbsoluteValue<T> ();
+        _abs = new AbsoluteValue<T> ();
       }
       else {
-        m_abs = (AbsoluteValue<T>)abs;
+        _abs = (AbsoluteValue<T>)abs;
       }
     }
 
     public virtual int Asc (long x, long y)
     {
-      return m_data[(int) x].CompareTo (m_data[(int) y]);
+      return _data[(int) x].CompareTo (_data[(int) y]);
     }
 
     public virtual int Desc (long x, long y)
     {
-      return m_data[(int) y].CompareTo (m_data[(int) x]);
+      return _data[(int) y].CompareTo (_data[(int) x]);
     }
 
     public virtual int AbsAsc (long x, long y)
     {
-      return m_abs.Abs (m_data[(int) x]).CompareTo (m_abs.Abs (m_data[(int) y]));
+      return _abs.Abs (_data[(int) x]).CompareTo (_abs.Abs (_data[(int) y]));
     }
 
     public virtual int AbsDesc (long x, long y)
     {
-      return m_abs.Abs (m_data[(int) y]).CompareTo (m_abs.Abs (m_data[(int) x]));
+      return _abs.Abs (_data[(int) y]).CompareTo (_abs.Abs (_data[(int) x]));
     }
   }
 }

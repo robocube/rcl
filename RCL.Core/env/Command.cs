@@ -227,7 +227,7 @@ namespace RCL.Core
       runner.Yield (closure, right);
     }
 
-    protected long m_handle = -1;
+    protected long _handle = -1;
 
     [RCVerb ("save")]
     public void EvalSave (RCRunner runner, RCClosure closure, RCSymbol left, RCString right)
@@ -279,7 +279,7 @@ namespace RCL.Core
 
       RCSystem.Log.Record (closure,
                            "save",
-                           Interlocked.Increment (ref m_handle),
+                           Interlocked.Increment (ref _handle),
                            path,
                            new RCString (lines));
       // ideally this should return a symbol right?
@@ -337,7 +337,7 @@ namespace RCL.Core
       {
         throw new RCException (closure, RCErrors.File, ex.Message);
       }
-      RCSystem.Log.Record (closure, "save", Interlocked.Increment (ref m_handle), left[0], right);
+      RCSystem.Log.Record (closure, "save", Interlocked.Increment (ref _handle), left[0], right);
       runner.Yield (closure, new RCString (left[0]));
     }
 
@@ -701,20 +701,20 @@ namespace RCL.Core
       runner.Yield (closure, result);
     }
 
-    private static RCBlock m_options = null;
+    private static RCBlock _options = null;
     public static void SetOptions (RCBlock options)
     {
-      if (m_options != null) {
+      if (_options != null) {
         throw new Exception ("Set options called more than once.");
       }
-      m_options = options;
+      _options = options;
     }
 
     public void EvalOption (RCRunner runner,
                             RCClosure closure,
                             RCString right)
     {
-      runner.Yield (closure, m_options.Get (right[0]));
+      runner.Yield (closure, _options.Get (right[0]));
     }
   }
 }

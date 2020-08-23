@@ -12,7 +12,7 @@ namespace RCL.Core
 {
   public class Rand
   {
-    protected static Random m_random = new Random ();
+    protected static Random _random = new Random ();
 
     [RCVerb ("randomd")]
     public void EvalRandomd (RCRunner runner, RCClosure closure, RCLong left, RCLong right)
@@ -33,11 +33,11 @@ namespace RCL.Core
     {
       long count = right[0];
       double[] result = new double[count];
-      lock (m_random)
+      lock (_random)
       {
         for (long i = 0; i < count; ++i)
         {
-          result[i] = m_random.NextDouble ();
+          result[i] = _random.NextDouble ();
         }
       }
       runner.Yield (closure, new RCDouble (result));
@@ -63,18 +63,18 @@ namespace RCL.Core
     public void EvalRandoml (RCRunner runner, RCClosure closure, RCLong right)
     {
       // Make sure we use a different seed each time this operator is called.
-      // int seed = Interlocked.Increment(ref m_seed);
+      // int seed = Interlocked.Increment(ref _seed);
       // Random random = new Random(seed);
 
       long count = right[0];
       int min = (int) right[1];
       int max = (int) right[2];
       long[] result = new long[count];
-      lock (m_random)
+      lock (_random)
       {
         for (long i = 0; i < count; ++i)
         {
-          result[i] = m_random.Next (min, max);
+          result[i] = _random.Next (min, max);
         }
       }
       runner.Yield (closure, new RCLong (result));

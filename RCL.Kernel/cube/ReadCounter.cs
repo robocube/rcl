@@ -7,13 +7,13 @@ namespace RCL.Kernel
 {
   public class ReadCounter
   {
-    protected readonly Dictionary<RCSymbolScalar, CountRecord> m_records =
+    protected readonly Dictionary<RCSymbolScalar, CountRecord> _records =
       new Dictionary<RCSymbolScalar, CountRecord> ();
-    protected readonly Dictionary<RCSymbolScalar, CountRecord> m_abstracts =
+    protected readonly Dictionary<RCSymbolScalar, CountRecord> _abstracts =
       new Dictionary<RCSymbolScalar, CountRecord> ();
 
     // A null here will indicate that the counter is for reading not dispatching.
-    protected readonly List<bool> m_dispatched = new List<bool> ();
+    protected readonly List<bool> _dispatched = new List<bool> ();
 
     public ReadCounter () {}
     public ReadCounter (RCCube cube)
@@ -50,7 +50,7 @@ namespace RCL.Kernel
         else {
           // In this case we know there is no data so any search should begin
           // from the end of time.
-          result.Add (symbol[i], m_dispatched.Count, limit);
+          result.Add (symbol[i], _dispatched.Count, limit);
         }
       }
       return result;
@@ -70,10 +70,10 @@ namespace RCL.Kernel
     {
       CountRecord result;
       if (!scalar.Key.Equals ("*")) {
-        m_records.TryGetValue (scalar, out result);
+        _records.TryGetValue (scalar, out result);
       }
       else {
-        m_abstracts.TryGetValue (scalar.Previous, out result);
+        _abstracts.TryGetValue (scalar.Previous, out result);
       }
       return result;
     }
@@ -82,17 +82,17 @@ namespace RCL.Kernel
     {
       CountRecord result;
       if (spec.Concrete) {
-        m_records.TryGetValue (spec.symbol, out result);
+        _records.TryGetValue (spec.symbol, out result);
       }
       else {
-        m_abstracts.TryGetValue (spec.symbol, out result);
+        _abstracts.TryGetValue (spec.symbol, out result);
       }
       return result;
     }
 
     public void Dispatch (RCSymbolScalar scalar, long line)
     {
-      Dictionary<RCSymbolScalar, CountRecord> map = m_records;
+      Dictionary<RCSymbolScalar, CountRecord> map = _records;
       while (scalar != null)
       {
         // I assume you wouldn't try to dispatch if the symbol was not represented...
@@ -102,9 +102,9 @@ namespace RCL.Kernel
         }
         --record.count;
         scalar = scalar.Previous;
-        map = m_abstracts;
+        map = _abstracts;
       }
-      m_dispatched[(int) line] = true;
+      _dispatched[(int) line] = true;
     }
 
     public void Dispatch (RCCube target, RCArray<int> lines)
@@ -119,7 +119,7 @@ namespace RCL.Kernel
     public void Write (RCSymbolScalar scalar, int line)
     {
       CountRecord record;
-      Dictionary<RCSymbolScalar, CountRecord> map = m_records;
+      Dictionary<RCSymbolScalar, CountRecord> map = _records;
       // It's a delete
       if (line < 0) {
         if (map.TryGetValue (scalar, out record)) {
@@ -141,7 +141,7 @@ namespace RCL.Kernel
         while (scalar != null)
         {
           if (!map.TryGetValue (scalar, out record)) {
-            record = new CountRecord (scalar, map == m_records);
+            record = new CountRecord (scalar, map == _records);
             map[scalar] = record;
             record.start = line;
           }
@@ -151,16 +151,16 @@ namespace RCL.Kernel
           ++record.total;
           record.end = line;
           scalar = scalar.Previous;
-          map = m_abstracts;
+          map = _abstracts;
         }
-        m_dispatched.Add (false);
+        _dispatched.Add (false);
       }
     }
 
     public RCSymbol ConcreteSymbols (RCSymbol symbol, bool showDeleted)
     {
       RCArray<RCSymbolScalar> result = new RCArray<RCSymbolScalar> (8);
-      foreach (CountRecord count in m_records.Values)
+      foreach (CountRecord count in _records.Values)
       {
         if (count.deleted && !showDeleted) {
           continue;
@@ -192,7 +192,7 @@ namespace RCL.Kernel
 
     public bool WasDispatched (long line)
     {
-      return m_dispatched[(int) line];
+      return _dispatched[(int) line];
     }
 
     public Satisfy CanSatisfy (ReadSpec spec)

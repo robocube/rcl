@@ -7,36 +7,36 @@ namespace RCL.Kernel
 {
   public abstract class Column<T> : ColumnBase
   {
-    protected RCArray<T> m_data;
-    protected RCArray<int> m_index;
-    protected Dictionary<RCSymbolScalar, T> m_last;
-    protected int m_tlcount;
+    protected RCArray<T> _data;
+    protected RCArray<int> _index;
+    protected Dictionary<RCSymbolScalar, T> _last;
+    protected int _tlcount;
 
     protected Column (Timeline timeline, RCArray<int> index, object data)
     {
-      m_tlcount = timeline.Count;
+      _tlcount = timeline.Count;
       RCArray<T> original = (RCArray<T>)data;
       if (original.Locked ()) {
-        m_data = new RCArray<T> (original.Count);
-        m_index = new RCArray<int> (original.Count);
+        _data = new RCArray<T> (original.Count);
+        _index = new RCArray<int> (original.Count);
         for (int i = 0; i < original.Count; ++i)
         {
-          m_data.Write (original[i]);
-          m_index.Write (index[i]);
+          _data.Write (original[i]);
+          _index.Write (index[i]);
         }
       }
       else {
-        m_data = (RCArray<T>)data;
-        m_index = index;
+        _data = (RCArray<T>)data;
+        _index = index;
       }
       if (timeline.Has ("S")) {
-        m_last = new Dictionary<RCSymbolScalar, T> ();
-        for (int i = 0; i < m_data.Count; ++i)
+        _last = new Dictionary<RCSymbolScalar, T> ();
+        for (int i = 0; i < _data.Count; ++i)
         {
           RCSymbolScalar key = timeline.Symbol[index[i]];
-          T val = m_data[i];
-          if (m_last != null) {
-            m_last[key] = val;
+          T val = _data[i];
+          if (_last != null) {
+            _last[key] = val;
           }
         }
       }
@@ -44,13 +44,13 @@ namespace RCL.Kernel
 
     protected Column (Timeline timeline)
     {
-      m_tlcount = timeline.Count;
+      _tlcount = timeline.Count;
       // This ctor is used while writing data into the blackboard.
-      // Always instantiate m_last because these cubes will always have a symbol column.
-      m_data = new RCArray<T> ();
-      m_index = new RCArray<int> ();
+      // Always instantiate _last because these cubes will always have a symbol column.
+      _data = new RCArray<T> ();
+      _index = new RCArray<int> ();
       if (timeline.Has ("S")) {
-        m_last = new Dictionary<RCSymbolScalar, T> ();
+        _last = new Dictionary<RCSymbolScalar, T> ();
       }
     }
 
@@ -59,26 +59,26 @@ namespace RCL.Kernel
       T val = (T) box;
       T old;
       // The key may be null if there is no timeline.
-      if (m_last != null && key != null) {
-        if (!force && m_last.TryGetValue (key, out old)) {
+      if (_last != null && key != null) {
+        if (!force && _last.TryGetValue (key, out old)) {
           if (Comparer<T>.Default.Compare (val, old) == 0) {
             return false;
           }
         }
-        m_last[key] = val;
+        _last[key] = val;
       }
-      if (m_index.Count == 0 || m_index[m_index.Count - 1] < index) {
-        m_data.Write (val);
-        m_index.Write (index);
+      if (_index.Count == 0 || _index[_index.Count - 1] < index) {
+        _data.Write (val);
+        _index.Write (index);
       }
       else {
         // Do we need to look for this?
         bool found;
-        int existing = m_index.BinarySearch (index, out found);
+        int existing = _index.BinarySearch (index, out found);
         if (existing < 0) {
           throw new Exception ("Invalid index " + index);
         }
-        m_data.Write (existing, val);
+        _data.Write (existing, val);
       }
       return true;
     }
@@ -90,18 +90,18 @@ namespace RCL.Kernel
 
     public override void Lock ()
     {
-      m_data.Lock ();
-      m_index.Lock ();
+      _data.Lock ();
+      _index.Lock ();
     }
 
     public override void ReverseInPlace (int tlcount)
     {
-      m_data.ReverseInPlace ();
-      m_index.ReverseInPlace ();
+      _data.ReverseInPlace ();
+      _index.ReverseInPlace ();
       int last = tlcount - 1;
-      for (int i = 0; i < m_index.Count; ++i)
+      for (int i = 0; i < _index.Count; ++i)
       {
-        m_index.Write (i, Math.Abs (m_index[i] - last));
+        _index.Write (i, Math.Abs (_index[i] - last));
       }
     }
 
@@ -130,28 +130,28 @@ namespace RCL.Kernel
 
     public bool Last (RCSymbolScalar key, out T val)
     {
-      return m_last.TryGetValue (key, out val);
+      return _last.TryGetValue (key, out val);
     }
 
     public override bool Delete (RCSymbolScalar key)
     {
-      return m_last.Remove (key);
+      return _last.Remove (key);
     }
 
     public override object BoxCell (int i) {
-      return m_data[i];
+      return _data[i];
     }
     public override object Array {
-      get { return m_data; }
+      get { return _data; }
     }
     public override RCArray<int> Index {
-      get { return m_index; }
+      get { return _index; }
     }
     public RCArray<T> Data {
-      get { return m_data; }
+      get { return _data; }
     }
     public override int Count {
-      get { return m_data.Count; }
+      get { return _data.Count; }
     }
   }
 }

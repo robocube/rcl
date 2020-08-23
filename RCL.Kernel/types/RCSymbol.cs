@@ -64,7 +64,7 @@ namespace RCL.Kernel
 
     public override void Write (object box)
     {
-      m_data.Write ((RCSymbolScalar) box);
+      _data.Write ((RCSymbolScalar) box);
     }
   }
 }

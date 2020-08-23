@@ -16,8 +16,8 @@ namespace RCL.Core
     public readonly RCClosure Closure;
     public readonly RCSymbol Ids;
 
-    protected readonly object m_lock = new object ();
-    protected Dictionary<RCSymbolScalar, RCValue> m_results =
+    protected readonly object _lock = new object ();
+    protected Dictionary<RCSymbolScalar, RCValue> _results =
       new Dictionary<RCSymbolScalar, RCValue> ();
 
     public TcpCollector (RCRunner runner, RCClosure closure, RCSymbol ids)
@@ -40,12 +40,12 @@ namespace RCL.Core
     public void Accept (RCSymbolScalar id, RCValue message)
     {
       RCBlock result = null;
-      lock (m_lock)
+      lock (_lock)
       {
-        m_results.Add (id, message);
+        _results.Add (id, message);
         // Console.Out.WriteLine("id:{0},Ids:{1}", id.ToString (), Ids.ToString());
-        if (m_results.Count >= Ids.Count) {
-          foreach (RCValue val in m_results.Values)
+        if (_results.Count >= Ids.Count) {
+          foreach (RCValue val in _results.Values)
           {
             result = new RCBlock (result, "", ":", val);
           }

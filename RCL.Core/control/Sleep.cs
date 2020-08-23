@@ -45,10 +45,10 @@ namespace RCL.Core
 
     public class Wakeup
     {
-      protected RCAsyncState m_state;
+      protected RCAsyncState _state;
       public Wakeup (RCAsyncState state)
       {
-        m_state = state;
+        _state = state;
       }
 
       public virtual void Continue (Object obj)
@@ -56,11 +56,11 @@ namespace RCL.Core
         Timer timer = (Timer) obj;
         try
         {
-          m_state.Runner.Yield (m_state.Closure, (RCValue) m_state.Other);
+          _state.Runner.Yield (_state.Closure, (RCValue) _state.Other);
         }
         catch (Exception ex)
         {
-          m_state.Runner.Report (m_state.Closure, ex);
+          _state.Runner.Report (_state.Closure, ex);
         }
         finally
         {

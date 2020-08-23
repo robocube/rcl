@@ -14,9 +14,9 @@ namespace RCL.Core
 {
   public class Exec : IDisposable
   {
-    protected internal object m_lock = new object ();
-    protected long m_handle = 0;
-    protected internal Dictionary <long, ChildProcess> m_process = new Dictionary<long,
+    protected internal object _lock = new object ();
+    protected long _handle = 0;
+    protected internal Dictionary <long, ChildProcess> _process = new Dictionary<long,
                                                                                   ChildProcess> ();
     protected bool disposed;
 
@@ -44,19 +44,19 @@ namespace RCL.Core
     protected long CreateHandle ()
     {
       long handle;
-      lock (m_lock)
+      lock (_lock)
       {
-        handle = m_handle;
-        ++m_handle;
+        handle = _handle;
+        ++_handle;
       }
       return handle;
     }
 
     protected void RegisterProcess (ChildProcess process)
     {
-      lock (m_lock)
+      lock (_lock)
       {
-        m_process.Add (process.Handle, process);
+        _process.Add (process.Handle, process);
       }
     }
 
@@ -78,9 +78,9 @@ namespace RCL.Core
     public virtual void EvalWritex (RCRunner runner, RCClosure closure, RCLong left, RCString right)
     {
       ChildProcess child;
-      lock (m_lock)
+      lock (_lock)
       {
-        if (!m_process.TryGetValue (left[0], out child)) {
+        if (!_process.TryGetValue (left[0], out child)) {
           throw new Exception ("Unknown child process: " + left[0]);
         }
       }
@@ -92,9 +92,9 @@ namespace RCL.Core
     public virtual void EvalReadx (RCRunner runner, RCClosure closure, RCString left, RCLong right)
     {
       ChildProcess child;
-      lock (m_lock)
+      lock (_lock)
       {
-        if (!m_process.TryGetValue (right[0], out child)) {
+        if (!_process.TryGetValue (right[0], out child)) {
           throw new Exception ("Unknown child process: " + right[0]);
         }
       }
@@ -106,9 +106,9 @@ namespace RCL.Core
     public virtual void EvalWaitx (RCRunner runner, RCClosure closure, RCLong right)
     {
       ChildProcess child;
-      lock (m_lock)
+      lock (_lock)
       {
-        if (!m_process.TryGetValue (right[0], out child)) {
+        if (!_process.TryGetValue (right[0], out child)) {
           throw new Exception ("Unknown child process: " + right[0]);
         }
       }
@@ -120,9 +120,9 @@ namespace RCL.Core
     public virtual void EvalKillx (RCRunner runner, RCClosure closure, RCLong left, RCLong right)
     {
       ChildProcess child;
-      lock (m_lock)
+      lock (_lock)
       {
-        if (!m_process.TryGetValue (left[0], out child)) {
+        if (!_process.TryGetValue (left[0], out child)) {
           throw new Exception ("Unknown child process: " + left[0]);
         }
       }
@@ -134,9 +134,9 @@ namespace RCL.Core
     public virtual void EvalClosex (RCRunner runner, RCClosure closure, RCLong right)
     {
       ChildProcess child;
-      lock (m_lock)
+      lock (_lock)
       {
-        if (!m_process.TryGetValue (right[0], out child)) {
+        if (!_process.TryGetValue (right[0], out child)) {
           throw new Exception ("Unknown child process: " + right[0]);
         }
       }
@@ -148,12 +148,12 @@ namespace RCL.Core
     public virtual void EvalDelx (RCRunner runner, RCClosure closure, RCLong right)
     {
       ChildProcess child;
-      lock (m_lock)
+      lock (_lock)
       {
-        if (!m_process.TryGetValue (right[0], out child)) {
+        if (!_process.TryGetValue (right[0], out child)) {
           throw new Exception ("Unknown child process: " + right[0]);
         }
-        m_process.Remove (right[0]);
+        _process.Remove (right[0]);
       }
       runner.Yield (closure, right);
     }
@@ -168,9 +168,9 @@ namespace RCL.Core
     {
       if (!disposed) {
         if (disposing) {
-          lock (m_lock)
+          lock (_lock)
           {
-            foreach (KeyValuePair<long, ChildProcess> kv in m_process)
+            foreach (KeyValuePair<long, ChildProcess> kv in _process)
             {
               kv.Value.Close ();
             }
@@ -184,66 +184,66 @@ namespace RCL.Core
     {
       public readonly long Handle;
       protected readonly Exec Module;
-      protected RCArray<string> m_result = new RCArray<string> ();
-      protected Queue<string> m_lines = new Queue<string> ();
-      protected Queue<RCAsyncState> m_outputReaders = new Queue<RCAsyncState> ();
-      protected Queue<RCAsyncState> m_waiters = new Queue<RCAsyncState> ();
-      protected int m_readLines = 0;
-      protected int[] m_checkedLines = new int[16];
-      protected Timer m_timer;
-      protected RCAsyncState m_state;
-      protected Process m_process;
-      protected bool m_yieldOnExit;
-      protected bool m_outputDone = false;
-      protected bool m_errorDone = false;
-      protected bool m_exited = false;
-      protected bool m_finished = false;
-      protected bool m_killing = false;
-      protected internal long m_exitCode = -1;
-      protected internal string m_program;
-      protected internal string m_arguments;
-      protected internal long m_pid = -1;
+      protected RCArray<string> _result = new RCArray<string> ();
+      protected Queue<string> _lines = new Queue<string> ();
+      protected Queue<RCAsyncState> _outputReaders = new Queue<RCAsyncState> ();
+      protected Queue<RCAsyncState> _waiters = new Queue<RCAsyncState> ();
+      protected int _readLines = 0;
+      protected int[] _checkedLines = new int[16];
+      protected Timer _timer;
+      protected RCAsyncState _state;
+      protected Process _process;
+      protected bool _yieldOnExit;
+      protected bool _outputDone = false;
+      protected bool _errorDone = false;
+      protected bool _exited = false;
+      protected bool _finished = false;
+      protected bool _killing = false;
+      protected internal long _exitCode = -1;
+      protected internal string _program;
+      protected internal string _arguments;
+      protected internal long _pid = -1;
 
       public ChildProcess (Exec module, long handle, RCAsyncState state, bool yieldWhenDone)
       {
         Handle = handle;
         Module = module;
-        m_state = state;
-        m_yieldOnExit = yieldWhenDone;
-        RCString command = (RCString) m_state.Other;
+        _state = state;
+        _yieldOnExit = yieldWhenDone;
+        RCString command = (RCString) _state.Other;
         // It seems that this is the one api in the entire bcl that does
         // not offer some way to pass custom arguments asyncly.
         string line = command[0].TrimStart (' ');
         int split = line.IndexOf (' ');
         if (split >= 0) {
-          m_program = line.Substring (0, split);
-          m_arguments = line.Substring (split + 1);
+          _program = line.Substring (0, split);
+          _arguments = line.Substring (split + 1);
         }
         else {
-          m_program = line;
-          m_arguments = "";
+          _program = line;
+          _arguments = "";
         }
 
-        m_process = new Process ();
-        m_process.StartInfo = new ProcessStartInfo (m_program, m_arguments);
-        m_process.EnableRaisingEvents = true;
-        m_process.StartInfo.CreateNoWindow = true;
-        m_process.StartInfo.UseShellExecute = false;
-        m_process.StartInfo.ErrorDialog = false;
-        m_process.StartInfo.RedirectStandardOutput = true;
-        m_process.OutputDataReceived += HandleProcessOutputDataReceived;
-        m_process.ErrorDataReceived += HandleProcessErrorDataReceived;
-        m_process.StartInfo.RedirectStandardError = true;
-        m_process.StartInfo.RedirectStandardInput = true;
-        m_process.Exited += process_Exited;
-        m_timer = new Timer (TimerCallback, null, 200, Timeout.Infinite);
+        _process = new Process ();
+        _process.StartInfo = new ProcessStartInfo (_program, _arguments);
+        _process.EnableRaisingEvents = true;
+        _process.StartInfo.CreateNoWindow = true;
+        _process.StartInfo.UseShellExecute = false;
+        _process.StartInfo.ErrorDialog = false;
+        _process.StartInfo.RedirectStandardOutput = true;
+        _process.OutputDataReceived += HandleProcessOutputDataReceived;
+        _process.ErrorDataReceived += HandleProcessErrorDataReceived;
+        _process.StartInfo.RedirectStandardError = true;
+        _process.StartInfo.RedirectStandardInput = true;
+        _process.Exited += process_Exited;
+        _timer = new Timer (TimerCallback, null, 200, Timeout.Infinite);
       }
 
       void process_Exited (object sender, EventArgs e)
       {
         lock (this)
         {
-          m_exited = true;
+          _exited = true;
         }
         Finish (null);
       }
@@ -254,10 +254,10 @@ namespace RCL.Core
         {
           lock (this)
           {
-            m_process.Start ();
-            m_pid = m_process.Id;
-            m_process.BeginOutputReadLine ();
-            m_process.BeginErrorReadLine ();
+            _process.Start ();
+            _pid = _process.Id;
+            _process.BeginOutputReadLine ();
+            _process.BeginErrorReadLine ();
             // This guys says that if we are not using the standard input it should be
             // closed immediately, but I cannot find any information about why. I
             // introduced this
@@ -266,20 +266,20 @@ namespace RCL.Core
             // now.
             // http://csharptest.net/321/how-to-use-systemdiagnosticsprocess-correctly/
             // {:{<-startx "sleep 1"} each 0l to 1000l <-exit 0l}
-            // if (!m_yieldOnExit)
+            // if (!_yieldOnExit)
             // {
-            //  m_process.StandardInput.Close ();
+            //  _process.StandardInput.Close ();
             // }
           }
-          RCSystem.Log.Record (m_state.Closure,
+          RCSystem.Log.Record (_state.Closure,
                                "exec",
                                Handle,
                                "start",
-                               string.Format ("{0} {1}", m_program, m_arguments));
+                               string.Format ("{0} {1}", _program, _arguments));
         }
         catch (Exception ex)
         {
-          m_state.Runner.Report (m_state.Closure, ex);
+          _state.Runner.Report (_state.Closure, ex);
           throw;
         }
       }
@@ -292,54 +292,54 @@ namespace RCL.Core
         RCAsyncState[] waiters;
         lock (this)
         {
-          if (m_finished) {
+          if (_finished) {
             if (waiter == null) {
               return;
             }
-            else if (m_exitCode != 0) {
-              m_state.Runner.Finish (waiter.Closure,
+            else if (_exitCode != 0) {
+              _state.Runner.Finish (waiter.Closure,
                                      new RCException (waiter.Closure,
                                                       RCErrors.Exec,
-                                                      "exit status " + m_exitCode,
-                                                      new RCString (m_result)),
-                                     m_exitCode);
+                                                      "exit status " + _exitCode,
+                                                      new RCString (_result)),
+                                     _exitCode);
             }
             else {
-              waiter.Runner.Yield (waiter.Closure, new RCString (m_result));
+              waiter.Runner.Yield (waiter.Closure, new RCString (_result));
             }
             return;
           }
           if (waiter != null) {
-            m_waiters.Enqueue (waiter);
+            _waiters.Enqueue (waiter);
           }
-          // When m_killing is set, do not wait for last null from stdout and stderr.
-          if (!m_killing && !(m_exited && m_outputDone && m_errorDone)) {
+          // When _killing is set, do not wait for last null from stdout and stderr.
+          if (!_killing && !(_exited && _outputDone && _errorDone)) {
             return;
           }
-          exitCode = m_process.ExitCode;
-          m_exitCode = exitCode;
-          m_timer.Dispose ();
-          waiters = m_waiters.ToArray ();
-          m_waiters.Clear ();
-          m_finished = true;
+          exitCode = _process.ExitCode;
+          _exitCode = exitCode;
+          _timer.Dispose ();
+          waiters = _waiters.ToArray ();
+          _waiters.Clear ();
+          _finished = true;
         }
-        RCSystem.Log.Record (m_state.Closure, "exec", Handle, "done", exitCode);
+        RCSystem.Log.Record (_state.Closure, "exec", Handle, "done", exitCode);
         RCString lines = null;
         lock (this)
         {
-          if (m_lines.Count > 0) {
-            lines = new RCString (m_lines.ToArray ());
-            m_lines.Clear ();
+          if (_lines.Count > 0) {
+            lines = new RCString (_lines.ToArray ());
+            _lines.Clear ();
           }
         }
         if (lines != null) {
-          RCSystem.Log.Record (m_state.Closure, "exec", Handle, "line", lines, forceDoc: true);
+          RCSystem.Log.Record (_state.Closure, "exec", Handle, "line", lines, forceDoc: true);
         }
-        RCString result = new RCString (m_result);
+        RCString result = new RCString (_result);
         for (int i = 0; i < waiters.Length; ++i)
         {
           if (exitCode != 0) {
-            m_state.Runner.Finish (waiters[i].Closure,
+            _state.Runner.Finish (waiters[i].Closure,
                                    new RCException (waiters[i].Closure,
                                                     RCErrors.Exec,
                                                     "exit status " + exitCode,
@@ -350,25 +350,25 @@ namespace RCL.Core
             waiters[i].Runner.Yield (waiters[i].Closure, result);
           }
         }
-        if (m_yieldOnExit) {
+        if (_yieldOnExit) {
           if (exitCode != 0) {
-            m_state.Runner.Finish (m_state.Closure,
-                                   new RCException (m_state.Closure,
+            _state.Runner.Finish (_state.Closure,
+                                   new RCException (_state.Closure,
                                                     RCErrors.Exec,
                                                     "exit status " + exitCode,
                                                     result),
                                    exitCode);
           }
           else {
-            m_state.Runner.Yield (m_state.Closure, result);
+            _state.Runner.Yield (_state.Closure, result);
           }
-          lock (Module.m_lock)
+          lock (Module._lock)
           {
-            Module.m_process.Remove ((int) Handle);
+            Module._process.Remove ((int) Handle);
           }
           lock (this)
           {
-            m_process.Dispose ();
+            _process.Dispose ();
           }
         }
       }
@@ -384,10 +384,10 @@ namespace RCL.Core
           {
       #if __MonoCS__
             Mono.Unix.Native.Syscall.kill (
-              (int) m_pid,
+              (int) _pid,
               (Mono.Unix.Native.Signum)signal[0]);
       #else
-            KillById ((int) m_pid);
+            KillById ((int) _pid);
       #endif
           }
           state.Runner.Yield (state.Closure, signal);
@@ -432,14 +432,14 @@ namespace RCL.Core
         // If it's an rcl process it should cleanly close sockets, files, other procs etc.
         // See signal handling in Process.cs
         string message =
-          m_program + (m_arguments.Length > 0 ? " " : "") + m_arguments + " (" + m_pid + ")";
+          _program + (_arguments.Length > 0 ? " " : "") + _arguments + " (" + _pid + ")";
         RCSystem.Log.Record (null, "exec", Handle, "closing", message);
         lock (this)
         {
-          if (m_pid >= 0 && !m_finished) {
+          if (_pid >= 0 && !_finished) {
       #if __MonoCS__
             Mono.Unix.Native.Syscall.kill (
-              (int) m_pid,
+              (int) _pid,
               Mono.Unix.Native.Signum.SIGTERM);
       #else
             Console.Out.WriteLine ("Closing exec'd processes is not implemented on Windows");
@@ -455,7 +455,7 @@ namespace RCL.Core
         {
           lock (this)
           {
-            if (m_finished) {
+            if (_finished) {
               RCSystem.Log.Record (null, "exec", Handle, "finished", "soft");
               return;
             }
@@ -464,16 +464,16 @@ namespace RCL.Core
         // Then ask not nicely and wait forever.
         lock (this)
         {
-          if (!m_finished) {
-            m_killing = true;
-            m_process.Kill ();
+          if (!_finished) {
+            _killing = true;
+            _process.Kill ();
           }
         }
         while (true)
         {
           lock (this)
           {
-            if (m_finished) {
+            if (_finished) {
               RCSystem.Log.Record (null, "exec", Handle, "finished", "hard");
               return;
             }
@@ -510,12 +510,12 @@ namespace RCL.Core
           byte[] message = Encoding.UTF8.GetBytes (text);
           lock (this)
           {
-            if (m_outputDone || m_errorDone || m_exited) {
+            if (_outputDone || _errorDone || _exited) {
               Exception ex = new Exception (
                 "Cannot write to standard input, process has already exited or is in the process of exiting.");
               state.Runner.Finish (state.Closure, ex, 1);
             }
-            m_process.StandardInput.BaseStream.BeginWrite (message,
+            _process.StandardInput.BaseStream.BeginWrite (message,
                                                            0,
                                                            message.Length,
                                                            EndWrite,
@@ -542,8 +542,8 @@ namespace RCL.Core
         {
           lock (this)
           {
-            m_process.StandardInput.BaseStream.EndWrite (result);
-            m_process.StandardInput.BaseStream.Flush ();
+            _process.StandardInput.BaseStream.EndWrite (result);
+            _process.StandardInput.BaseStream.Flush ();
           }
           state.Runner.Yield (state.Closure, new RCLong (right.Count));
         }
@@ -564,10 +564,10 @@ namespace RCL.Core
           char termChar = left[0][0];
           lock (this)
           {
-            if (m_readLines < m_result.Count) {
+            if (_readLines < _result.Count) {
               if (termChar == '\n') {
-                line = m_result[m_readLines];
-                ++m_readLines;
+                line = _result[_readLines];
+                ++_readLines;
               }
               else {
                 throw new NotImplementedException ();
@@ -579,22 +579,22 @@ namespace RCL.Core
                 // processes only once.
                 // Commenting this code for now to fix the warning.
                 /*
-                   for (int i = m_checkedLines[termChar]; i < m_result.Count; ++i)
+                   for (int i = _checkedLines[termChar]; i < _result.Count; ++i)
                    {
-                   int termPos = m_result[i].IndexOf (termChar);
+                   int termPos = _result[i].IndexOf (termChar);
                    if (termPos >= 0)
                    {
                     //when the term char is found go BACK to read lines to read them.
                     StringBuilder text = new StringBuilder ();
-                    for (int j = m_readLines; j < i; ++j)
+                    for (int j = _readLines; j < i; ++j)
                     {
-                      text.AppendLine (m_result[j]);
+                      text.AppendLine (_result[j]);
                     }
                     line = text.ToString ();
                     //If the term char is midline we need to do some more work here.
-                    m_readLines = i;
+                    _readLines = i;
                    }
-                 ++m_checkedLines[termChar];
+                 ++_checkedLines[termChar];
                    }
                  */
               }
@@ -605,7 +605,7 @@ namespace RCL.Core
             state.Runner.Yield (state.Closure, new RCString (line));
           }
           else {
-            m_outputReaders.Enqueue (state);
+            _outputReaders.Enqueue (state);
           }
         }
         catch (Exception ex)
@@ -621,23 +621,23 @@ namespace RCL.Core
           RCString output = null;
           lock (this)
           {
-            if (m_lines.Count > 0) {
-              output = new RCString (m_lines.ToArray ());
-              m_lines.Clear ();
+            if (_lines.Count > 0) {
+              output = new RCString (_lines.ToArray ());
+              _lines.Clear ();
             }
           }
           if (output != null) {
-            RCSystem.Log.Record (m_state.Closure, "exec", Handle, "line", output, forceDoc: true);
+            RCSystem.Log.Record (_state.Closure, "exec", Handle, "line", output, forceDoc: true);
           }
           try
           {
-            m_timer.Change (200, Timeout.Infinite);
+            _timer.Change (200, Timeout.Infinite);
           }
           catch (ObjectDisposedException) { }
         }
         catch (Exception ex)
         {
-          m_state.Runner.Report (m_state.Closure, ex);
+          _state.Runner.Report (_state.Closure, ex);
         }
       }
 
@@ -660,10 +660,10 @@ namespace RCL.Core
             lock (this)
             {
               if (output) {
-                m_outputDone = true;
+                _outputDone = true;
               }
               else {
-                m_errorDone = true;
+                _errorDone = true;
               }
             }
             Finish (null);
@@ -671,10 +671,10 @@ namespace RCL.Core
           else {
             lock (this)
             {
-              m_result.Write (line);
-              m_lines.Enqueue (line);
-              readers = m_outputReaders.ToArray ();
-              m_outputReaders.Clear ();
+              _result.Write (line);
+              _lines.Enqueue (line);
+              readers = _outputReaders.ToArray ();
+              _outputReaders.Clear ();
             }
             for (int i = 0; i < readers.Length; i++)
             {
@@ -684,7 +684,7 @@ namespace RCL.Core
         }
         catch (Exception ex)
         {
-          m_state.Runner.Report (m_state.Closure, ex);
+          _state.Runner.Report (_state.Closure, ex);
         }
       }
     }

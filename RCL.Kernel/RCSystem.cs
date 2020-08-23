@@ -82,7 +82,7 @@ namespace RCL.Kernel
       result.ReserveColumn ("left");
       result.ReserveColumn ("right");
       foreach (KeyValuePair<RCActivator.OverloadKey,
-                            RCActivator.OverloadValue> kv in Activator.m_dispatch)
+                            RCActivator.OverloadValue> kv in Activator._dispatch)
       {
         RCSymbolScalar sym;
         if (kv.Key.Left == null) {
@@ -138,7 +138,7 @@ namespace RCL.Kernel
 
        public class CrossDomainTraceHelper : MarshalByRefObject
        {
-       private CrossDomainTraceHelper m_parentDomain;
+       private CrossDomainTraceHelper _parentDomain;
 
        public CrossDomainTraceHelper () {}
 
@@ -158,7 +158,7 @@ namespace RCL.Kernel
        private void Register (CrossDomainTraceHelper parentDomain)
        {
         // Store the parent domain to pass messages to later
-        m_parentDomain = parentDomain;
+        _parentDomain = parentDomain;
         // Create and register the delegate trace listener
         var listener = new DelegateTraceListener (Write);
         Debug.Listeners.Add (listener);
@@ -167,7 +167,7 @@ namespace RCL.Kernel
        private void Write (string message)
        {
         // Send the message to the parent domain
-        m_parentDomain.RemoteWrite (message);
+        _parentDomain.RemoteWrite (message);
        }
 
        private void RemoteWrite (string message)

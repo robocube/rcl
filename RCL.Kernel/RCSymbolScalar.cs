@@ -19,12 +19,12 @@ namespace RCL.Kernel
     public readonly RCVectorBase Type;
     public readonly object Key;
     public readonly long Length;
-    protected readonly string m_string;
-    protected readonly bool m_leadingStar = false;
+    protected readonly string _string;
+    protected readonly bool _leadingStar = false;
 
     protected RCSymbolScalar ()
     {
-      m_string = "#";
+      _string = "#";
       Key = "";
     }
 
@@ -120,15 +120,15 @@ namespace RCL.Kernel
         Length = 1;
         string part = Type.IdShorthand (Key);
         string prefix = part.Length > 0 && part[0] == '#' ? "" : "#";
-        m_string = prefix + part + Type.Suffix;
+        _string = prefix + part + Type.Suffix;
       }
       else {
         Length = previous.Length + 1;
-        m_string = previous.ToString () + "," +
+        _string = previous.ToString () + "," +
                    Type.IdShorthand (Key) + Type.Suffix;
       }
       if (Previous.Key.Equals ("*")) {
-        m_leadingStar = true;
+        _leadingStar = true;
       }
     }
 
@@ -233,12 +233,12 @@ namespace RCL.Kernel
 
     public override string ToString ()
     {
-      return m_string;
+      return _string;
     }
 
     public string ToCsvString ()
     {
-      return m_string.Substring (1);
+      return _string.Substring (1);
     }
 
     public void ToByte (RCArray<byte> result)
@@ -320,7 +320,7 @@ namespace RCL.Kernel
         return false;
       }
       RCSymbolScalar current = this;
-      return current.m_string == other.m_string;
+      return current._string == other._string;
     }
 
     public int CompareTo (object obj)
@@ -333,7 +333,7 @@ namespace RCL.Kernel
         return 1;
       }
       return MultiCompareSymbolParts (this.ToArray (), other.ToArray ());
-      // return m_string.CompareTo (other.m_string);
+      // return _string.CompareTo (other._string);
     }
 
     public int CompareTo (RCSymbolScalar other)
@@ -342,7 +342,7 @@ namespace RCL.Kernel
         return 1;
       }
       return MultiCompareSymbolParts (this.ToArray (), other.ToArray ());
-      // return m_string.CompareTo (other.m_string);
+      // return _string.CompareTo (other._string);
     }
 
     public static int MultiCompareSymbolParts (object[] left, object[] right)

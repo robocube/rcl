@@ -7,11 +7,11 @@ namespace RCL.Kernel
 {
   public abstract class RCParser
   {
-    protected RCLexer m_lexer;
+    protected RCLexer _lexer;
 
     public virtual void Lex (string code, RCArray<RCToken> tokens)
     {
-      m_lexer.Lex (code, tokens);
+      _lexer.Lex (code, tokens);
     }
 
     public virtual RCArray<RCToken> Lex (string code)

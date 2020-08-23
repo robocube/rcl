@@ -189,7 +189,7 @@ namespace RCL.Kernel
     /// </summary>
     public override void Write (object box)
     {
-      m_data.Write ((RCTimeScalar) box);
+      _data.Write ((RCTimeScalar) box);
     }
   }
 }

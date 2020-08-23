@@ -52,9 +52,9 @@ namespace RCL.Core
     {
       // This requires special access to runner.
       RCBot bot;
-      lock (runner.m_botLock)
+      lock (runner._botLock)
       {
-        bot = runner.m_bots[handle];
+        bot = runner._bots[handle];
       }
       Blackboard other = (Blackboard) bot.GetModule (typeof (Blackboard));
       return other.Dump ();

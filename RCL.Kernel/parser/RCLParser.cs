@@ -14,7 +14,7 @@ namespace RCL.Kernel
   /// </summary>
   public class RCLParser : RCParser
   {
-    protected internal static RCLexer m_o2Lexer;
+    protected internal static RCLexer _o2Lexer;
     static RCLParser ()
     {
       RCArray<RCTokenType> types = new RCArray<RCTokenType> ();
@@ -36,7 +36,7 @@ namespace RCL.Kernel
       types.Write (RCTokenType.Spacer);
       types.Write (RCTokenType.Name);
       types.Write (RCTokenType.Junk);
-      m_o2Lexer = new RCLexer (types);
+      _o2Lexer = new RCLexer (types);
     }
 
     public RCLParser (RCActivator activator)
@@ -44,10 +44,10 @@ namespace RCL.Kernel
       if (activator == null) {
         throw new ArgumentNullException ("activator");
       }
-      m_activator = activator;
-      m_lefts.Push (new Stack<RCValue> ());
-      m_operators.Push (new Stack<RCValue> ());
-      m_lexer = m_o2Lexer;
+      _activator = activator;
+      _lefts.Push (new Stack<RCValue> ());
+      _operators.Push (new Stack<RCValue> ());
+      _lexer = _o2Lexer;
     }
 
     /// <summary>
@@ -55,7 +55,7 @@ namespace RCL.Kernel
     /// </summary>
     public override RCValue Parse (RCArray<RCToken> tokens, out bool fragment, bool canonical)
     {
-      m_canonical = canonical;
+      _canonical = canonical;
       int i = 0;
       try
       {
@@ -67,19 +67,19 @@ namespace RCL.Kernel
         {
           tokens[i].Type.Accept (this, tokens[i]);
         }
-        if (m_vector != null || m_reference != null) {
+        if (_vector != null || _reference != null) {
           FinishValue (false);
         }
-        if (m_operators.Peek ().Count > 0) {
+        if (_operators.Peek ().Count > 0) {
           MakeExpression ();
         }
         fragment = FinishBlock ();
         CheckForUnfinishedWork (tokens[tokens.Count - 1]);
-        if (m_block != null) {
-          return m_block;
+        if (_block != null) {
+          return _block;
         }
         else {
-          return m_result;
+          return _result;
         }
       }
       catch (RCLSyntaxException)
@@ -105,27 +105,27 @@ namespace RCL.Kernel
     /// <summary>
     /// The expression currently being appended to.
     /// </summary>
-    protected RCValue m_result;
+    protected RCValue _result;
 
     /// <summary>
     /// Activator is used to create operator instances.
     /// </summary>
-    protected RCActivator m_activator;
+    protected RCActivator _activator;
 
     /// <summary>
     /// The block currently under construction.
     /// </summary>
-    protected RCBlock m_block;
+    protected RCBlock _block;
 
     /// <summary>
     /// The most recently seen variable name.
     /// </summary>
-    protected string m_variable;
+    protected string _variable;
 
     /// <summary>
     /// The most recently seen evaluator.
     /// </summary>
-    protected RCEvaluator m_evaluator;
+    protected RCEvaluator _evaluator;
 
     /// <summary>
     /// While constructing a nested block we need these explicit stacks
@@ -135,67 +135,67 @@ namespace RCL.Kernel
     /// messy garbage-wise.  I also didn't want to create blocks empty and fill
     /// in the values with assignment later on.
     /// </summary>
-    protected Stack<string> m_variables = new Stack<string> ();
-    protected Stack<RCEvaluator> m_evaluators = new Stack<RCEvaluator> ();
+    protected Stack<string> _variables = new Stack<string> ();
+    protected Stack<RCEvaluator> _evaluators = new Stack<RCEvaluator> ();
 
     /// <summary>
     /// The parents of the block currently under construction,
-    /// to which m_block will be added when it is done.
+    /// to which _block will be added when it is done.
     /// </summary>
-    protected Stack<RCBlock> m_blocks = new Stack<RCBlock> ();
+    protected Stack<RCBlock> _blocks = new Stack<RCBlock> ();
 
     /// <summary>
     /// The vector currently being read, if any.
     /// </summary>
-    protected RCArray<RCToken> m_vector;
+    protected RCArray<RCToken> _vector;
 
     /// <summary>
     /// The reference currently being read, if any.
     /// </summary>
-    protected RCToken m_reference;
+    protected RCToken _reference;
 
     /// <summary>
     /// The text of a symbol that could either be an operator or a variable.
     /// </summary>
-    protected string m_maybeOperator;
+    protected string _maybeOperator;
 
     /// <summary>
     /// The left argument of an expression being processed.
     /// </summary>
-    protected RCValue m_left;
+    protected RCValue _left;
 
     /// <summary>
     /// Similar to the way blocks are parsed, we need two stacks to
     /// store the left arguments and the names of the operators as we are
     /// descending an expression tree.
     /// </summary>
-    protected Stack<Stack<RCValue>> m_lefts = new Stack<Stack<RCValue>> ();
-    protected Stack<Stack<RCValue>> m_operators = new Stack<Stack<RCValue>> ();
+    protected Stack<Stack<RCValue>> _lefts = new Stack<Stack<RCValue>> ();
+    protected Stack<Stack<RCValue>> _operators = new Stack<Stack<RCValue>> ();
 
-    protected bool m_canonical = false;
+    protected bool _canonical = false;
 
     protected class TemplateVars
     {
-      public bool m_multilineTemplate = false;
-      public int m_minSpaces = int.MaxValue;
+      public bool _multilineTemplate = false;
+      public int _minSpaces = int.MaxValue;
     }
     // This stack holds a few extra variables required for parsing nested templates.
-    protected Stack<TemplateVars> m_templates = new Stack<TemplateVars> ();
+    protected Stack<TemplateVars> _templates = new Stack<TemplateVars> ();
 
-    protected RCActivator.ParserExtension m_extension = null;
-    protected RCActivator.ParserState m_extarg = null;
+    protected RCActivator.ParserExtension _extension = null;
+    protected RCActivator.ParserState _extarg = null;
 
     public override void AcceptName (RCToken token)
     {
-      if (m_extension != null) {
-        m_extension.AcceptName (m_extarg, token);
+      if (_extension != null) {
+        _extension.AcceptName (_extarg, token);
       }
       else {
-        if (m_maybeOperator != null) {
+        if (_maybeOperator != null) {
           PushArgument ();
         }
         PushExpression ();
-        m_maybeOperator = token.Text;
+        _maybeOperator = token.Text;
         FinishValue (true);
       }
     }
@@ -204,7 +204,7 @@ namespace RCL.Kernel
     {
       PushArgument ();
       PushExpression ();
-      m_reference = token;
+      _reference = token;
     }
 
     public override void AcceptParen (RCToken token)
@@ -213,14 +213,14 @@ namespace RCL.Kernel
         // ( Oddly has no meaning.
         PushArgument ();
         PushExpression ();
-        m_lefts.Push (new Stack<RCValue> ());
-        m_operators.Push (new Stack<RCValue> ());
+        _lefts.Push (new Stack<RCValue> ());
+        _operators.Push (new Stack<RCValue> ());
       }
       else if (token.Text == ")") {
         FinishValue (true);
         MakeExpression ();
-        m_lefts.Pop ();
-        m_operators.Pop ();
+        _lefts.Pop ();
+        _operators.Pop ();
       }
       else {
         throw new ArgumentException (token.Text);
@@ -229,17 +229,17 @@ namespace RCL.Kernel
 
     public override void AcceptScalar (RCToken token)
     {
-      if (m_extension != null) {
-        m_extension.AcceptScalar (m_extarg, token, m_lexer);
+      if (_extension != null) {
+        _extension.AcceptScalar (_extarg, token, _lexer);
       }
       else {
         PushInlineMonadicOperator ();
         PushArgument ();
         PushExpression ();
-        if (m_vector == null) {
-          m_vector = new RCArray<RCToken> ();
+        if (_vector == null) {
+          _vector = new RCArray<RCToken> ();
         }
-        m_vector.Write (token);
+        _vector.Write (token);
       }
     }
 
@@ -247,37 +247,37 @@ namespace RCL.Kernel
     {
       // Any right argument that was already created must
       // actually be a left argument.
-      if (m_result != null) {
-        m_left = m_result;
-        m_result = null;
+      if (_result != null) {
+        _left = _result;
+        _result = null;
       }
     }
 
     protected void PushExpression ()
     {
       // Any symbol seen before this must be an operator.
-      if (m_maybeOperator != null) {
-        m_operators.Peek ().Push (new RCReference (m_maybeOperator));
-        m_lefts.Peek ().Push (m_left);
-        m_maybeOperator = null;
-        m_left = null;
+      if (_maybeOperator != null) {
+        _operators.Peek ().Push (new RCReference (_maybeOperator));
+        _lefts.Peek ().Push (_left);
+        _maybeOperator = null;
+        _left = null;
       }
     }
 
     protected void PushInlineDyadicOperator ()
     {
-      if (m_left != null) {
-        m_lefts.Peek ().Push (m_left);
-        m_left = null;
+      if (_left != null) {
+        _lefts.Peek ().Push (_left);
+        _left = null;
       }
     }
 
     protected void PushInlineMonadicOperator ()
     {
-      if (m_result != null && m_maybeOperator == null && m_result is RCBlock) {
-        m_operators.Peek ().Push (m_result);
-        m_maybeOperator = null;
-        m_left = null;
+      if (_result != null && _maybeOperator == null && _result is RCBlock) {
+        _operators.Peek ().Push (_result);
+        _maybeOperator = null;
+        _left = null;
       }
     }
 
@@ -293,17 +293,17 @@ namespace RCL.Kernel
     protected void FinishValue (bool flush)
     {
       // instantiate vectors
-      if (m_vector != null) {
-        m_result = MakeVector (m_vector);
+      if (_vector != null) {
+        _result = MakeVector (_vector);
         if (flush) {
-          m_vector = null;
+          _vector = null;
         }
       }
       // instantiate references
-      else if (m_reference != null) {
-        m_result = MakeReference ();
+      else if (_reference != null) {
+        _result = MakeReference ();
         if (flush) {
-          m_reference = null;
+          _reference = null;
         }
       }
     }
@@ -311,18 +311,18 @@ namespace RCL.Kernel
     protected bool FinishBlock ()
     {
       // instantiate blocks
-      if (m_variable != null && m_result != null) {
-        m_block = new RCBlock (m_block, m_variable, m_evaluator, m_result);
-        m_variable = null;
+      if (_variable != null && _result != null) {
+        _block = new RCBlock (_block, _variable, _evaluator, _result);
+        _variable = null;
         return true;
-        // m_evaluator = null;
+        // _evaluator = null;
       }
       return false;
     }
 
     protected void CheckForUnfinishedWork (RCToken token)
     {
-      if (m_maybeOperator != null) {
+      if (_maybeOperator != null) {
         throw new RCLSyntaxException (token, "Unfinished operator expression.");
       }
     }
@@ -334,23 +334,23 @@ namespace RCL.Kernel
       // When this applies there is no actual opening bracket defining the block.
       // This happens in the shell.
       // I call it an "implied" block.
-      if (m_block == null) {
-        m_block = RCBlock.Empty;
+      if (_block == null) {
+        _block = RCBlock.Empty;
       }
       FinishBlock ();
-      if (m_maybeOperator != null) {
-        // m_maybeOp is not an operator, its a variable.
-        m_variable = m_maybeOperator;
-        m_maybeOperator = null;
+      if (_maybeOperator != null) {
+        // _maybeOp is not an operator, its a variable.
+        _variable = _maybeOperator;
+        _maybeOperator = null;
       }
-      if (m_variable == null) {
+      if (_variable == null) {
         // It is an unnamed block.
-        m_variable = "";
+        _variable = "";
       }
       // If anything was left over on the right, it doesn't belong here.
       // Should this be an invalid state for the parser?
-      m_result = null;
-      m_evaluator = RCEvaluator.For (token.Text);
+      _result = null;
+      _evaluator = RCEvaluator.For (token.Text);
     }
 
     public override void AcceptWhitespace (RCToken token)
@@ -362,12 +362,12 @@ namespace RCL.Kernel
         FinishValue (true);
         PushArgument ();
         PushExpression ();
-        m_extension = m_activator.ExtensionFor (token.Text);
-        m_extarg = m_extension.StartParsing (m_canonical);
+        _extension = _activator.ExtensionFor (token.Text);
+        _extarg = _extension.StartParsing (_canonical);
       }
       else if (token.Text == "]") {
-        m_result = m_extension.EndParsing (m_extarg);
-        m_extension = null;
+        _result = _extension.EndParsing (_extarg);
+        _extension = null;
       }
       else {
         throw new ArgumentException (token.Text);
@@ -384,64 +384,64 @@ namespace RCL.Kernel
         PushArgument ();
         PushExpression ();
         PushInlineDyadicOperator ();
-        m_lefts.Push (new Stack<RCValue> ());
-        m_operators.Push (new Stack<RCValue> ());
+        _lefts.Push (new Stack<RCValue> ());
+        _operators.Push (new Stack<RCValue> ());
         if (isStartTemplate) {
-          m_templates.Push (new TemplateVars ());
+          _templates.Push (new TemplateVars ());
         }
-        if (m_block != null) {
-          m_variables.Push (m_variable);
-          m_evaluators.Push (m_evaluator);
-          m_variable = null;
+        if (_block != null) {
+          _variables.Push (_variable);
+          _evaluators.Push (_evaluator);
+          _variable = null;
         }
-        m_blocks.Push (m_block);
-        m_block = RCBlock.Empty;
+        _blocks.Push (_block);
+        _block = RCBlock.Empty;
       }
       else if (token.Text == "}" || isEndTemplate) {
         FinishValue (true);
         MakeExpression ();
         FinishBlock ();
-        if (m_variables.Count > 0) {
-          m_variable = m_variables.Pop ();
-          m_evaluator = m_evaluators.Pop ();
+        if (_variables.Count > 0) {
+          _variable = _variables.Pop ();
+          _evaluator = _evaluators.Pop ();
           if (isEndTemplate) {
             FinishTemplate (escapeCount);
-            m_templates.Pop ();
+            _templates.Pop ();
           }
           else {
-            m_result = m_block;
+            _result = _block;
           }
-          m_block = m_blocks.Pop ();
+          _block = _blocks.Pop ();
         }
         else {
           if (isEndTemplate) {
             FinishTemplate (escapeCount);
-            m_templates.Pop ();
+            _templates.Pop ();
           }
           else {
-            m_result = m_block;
+            _result = _block;
           }
-          m_block = null;
+          _block = null;
         }
-        m_lefts.Pop ();
-        m_operators.Pop ();
+        _lefts.Pop ();
+        _operators.Pop ();
         // If the stack contains a null on top, that is the signal
         // that this block should be used as an operator.
-        Stack<RCValue> operators = m_operators.Peek ();
+        Stack<RCValue> operators = _operators.Peek ();
         if (operators.Count > 0 && operators.Peek () == null) {
           operators.Pop ();
-          operators.Push (m_result);
+          operators.Push (_result);
         }
       }
       else if (token.Text.StartsWith ("[!")) {
         FinishBlock ();
-        m_result = null;
+        _result = null;
       }
       else if (token.Text.EndsWith ("!]")) {
         FinishValue (true);
         MakeExpression ();
-        m_variable = "";
-        m_evaluator = RCEvaluator.Let;
+        _variable = "";
+        _evaluator = RCEvaluator.Let;
         FinishBlock ();
       }
       else {
@@ -452,11 +452,11 @@ namespace RCL.Kernel
     protected void FinishTemplate (int escapeCount)
     {
       RCString section;
-      TemplateVars template = m_templates.Peek ();
-      if (template.m_multilineTemplate) {
-        for (int i = 0; i < m_block.Count; ++i)
+      TemplateVars template = _templates.Peek ();
+      if (template._multilineTemplate) {
+        for (int i = 0; i < _block.Count; ++i)
         {
-          RCBlock current = m_block.GetName (i);
+          RCBlock current = _block.GetName (i);
           section = current.Value as RCString;
           if (section != null && i % 2 == 0) {
             string content = section[0];
@@ -476,7 +476,7 @@ namespace RCL.Kernel
               }
               else if (content[j] == '\n') {
                 if (j > 0) {
-                  template.m_minSpaces = Math.Min (template.m_minSpaces, spaces);
+                  template._minSpaces = Math.Min (template._minSpaces, spaces);
                 }
                 spaces = 0;
                 broken = false;
@@ -489,11 +489,11 @@ namespace RCL.Kernel
             if (content.Length > 0 &&
                 content[content.Length - 1] != '\n' &&
                 hasLine &&
-                i < m_block.Count - 1) {
-              template.m_minSpaces = Math.Min (template.m_minSpaces, spaces);
+                i < _block.Count - 1) {
+              template._minSpaces = Math.Min (template._minSpaces, spaces);
             }
-            if (template.m_minSpaces == int.MaxValue) {
-              template.m_minSpaces = 0;
+            if (template._minSpaces == int.MaxValue) {
+              template._minSpaces = 0;
             }
           }
         }
@@ -501,9 +501,9 @@ namespace RCL.Kernel
         RCBlock final = RCBlock.Empty;
         // strip indentation (spaces only) from the lines in the content.
         // Ignore the first and last sections.
-        for (int i = 0; i < m_block.Count; ++i)
+        for (int i = 0; i < _block.Count; ++i)
         {
-          RCBlock current = m_block.GetName (i);
+          RCBlock current = _block.GetName (i);
           section = current.Value as RCString;
           if (section != null && i % 2 == 0) {
             string content = section[0];
@@ -539,7 +539,7 @@ namespace RCL.Kernel
             end = start;
 
 GETLINE:
-            start = end + template.m_minSpaces;
+            start = end + template._minSpaces;
 
             while (end < content.Length)
             {
@@ -579,10 +579,10 @@ GETLINE:
             final = new RCBlock (final, current.Name, current.Evaluator, current.Value);
           }
         }
-        m_result = new RCTemplate (final, escapeCount, true);
+        _result = new RCTemplate (final, escapeCount, true);
       }
       else {
-        m_result = new RCTemplate (m_block, escapeCount, false);
+        _result = new RCTemplate (_block, escapeCount, false);
       }
 
       // The template must either be all on one line,
@@ -593,29 +593,29 @@ GETLINE:
       // first non-white character is.
 
       // Reset state for the possible next template.
-      // m_multilineTemplate = false;
-      // m_parsingContent = false;
-      // m_minSpaces = 0;
+      // _multilineTemplate = false;
+      // _parsingContent = false;
+      // _minSpaces = 0;
     }
 
-    // protected bool m_parsingContent = false;
-    // protected bool m_multilineTemplate = false;
-    // protected int m_minSpaces = 0;
+    // protected bool _parsingContent = false;
+    // protected bool _multilineTemplate = false;
+    // protected int _minSpaces = 0;
     protected static char[] CRLF = new char[] {'\r', '\n'};
     public override void AcceptContent (RCToken token)
     {
-      TemplateVars template = m_templates.Peek ();
+      TemplateVars template = _templates.Peek ();
       int firstNewline = token.Text.IndexOfAny (CRLF);
       if (firstNewline > -1) {
-        template.m_multilineTemplate = true;
+        template._multilineTemplate = true;
       }
       // I want it to be AS IF we saw something like {:"foo bar with newlines"}
       // AcceptEvaluator (new RCToken (":", RCTokenType.Evaluator, token.Start,
       // token.Index));
       // soo...
-      m_variable = "";
-      m_evaluator = RCEvaluator.Let;
-      m_result = new RCString (token.Text);
+      _variable = "";
+      _evaluator = RCEvaluator.Let;
+      _result = new RCString (token.Text);
     }
 
     public void AcceptError (RCToken token)
@@ -660,7 +660,7 @@ GETLINE:
       // If another pipe appears later then the first one was intended
       // for the time column.
       if (token.Text == "|") {
-        m_extension.AcceptSpacer (m_extarg, token);
+        _extension.AcceptSpacer (_extarg, token);
       }
       // I think a null should really be its own type of token.
       else if (token.Text == "--") {
@@ -673,17 +673,17 @@ GETLINE:
 
     protected void MakeExpression ()
     {
-      while (m_operators.Peek ().Count > 0)
+      while (_operators.Peek ().Count > 0)
       {
-        RCValue op = m_operators.Peek ().Pop ();
-        RCValue left = m_lefts.Peek ().Count > 0 ? m_lefts.Peek ().Pop () : null;
-        m_result = op.AsOperator (m_activator, left, m_result);
+        RCValue op = _operators.Peek ().Pop ();
+        RCValue left = _lefts.Peek ().Count > 0 ? _lefts.Peek ().Pop () : null;
+        _result = op.AsOperator (_activator, left, _result);
       }
     }
 
     protected RCValue MakeReference ()
     {
-      string[] typeAndName = m_reference.Text.Split ('$');
+      string[] typeAndName = _reference.Text.Split ('$');
       // I want to change the reference syntax a little so that
       // you can use the characters before the $ to tell the
       // parser what kind of type the reference resolves to.
@@ -697,7 +697,7 @@ GETLINE:
       return new RCReference (typeAndName[1]);
       // if (type.Length == 0)
       // {
-      //  Type realType = InferType(name, m_reference.Text);
+      //  Type realType = InferType(name, _reference.Text);
       //  return new RCReference(realType, name);
       // }
       // else
@@ -713,15 +713,15 @@ GETLINE:
        RCValue target = null;
 
        //Try the block under construction.
-       if (m_block != null)
+       if (_block != null)
        {
-       target = m_block.Get(name);
+       target = _block.Get(name);
        }
 
        //Try to find it higher up the stack.
        if (target == null)
        {
-       RCBlock[] parents = m_blocks.ToArray();
+       RCBlock[] parents = _blocks.ToArray();
        //When you ToArray the stack items come out in the same order
        //you would have taken them off the stack.
        for (int i = 0; i < parents.Length; ++i)
@@ -764,28 +764,28 @@ GETLINE:
       if (vector[0].Type == RCTokenType.Symbol) {
         RCArray<RCSymbolScalar> list = new RCArray<RCSymbolScalar> (vector.Count);
         for (int i = 0; i < vector.Count; ++i) {
-          list.Write (vector[i].ParseSymbol (m_lexer));
+          list.Write (vector[i].ParseSymbol (_lexer));
         }
         result = new RCSymbol (list);
       }
       else if (vector[0].Type == RCTokenType.String) {
         RCArray<string> list = new RCArray<string> (vector.Count);
         for (int i = 0; i < vector.Count; ++i) {
-          list.Write (vector[i].ParseString (m_lexer));
+          list.Write (vector[i].ParseString (_lexer));
         }
         result = new RCString (list);
       }
       else if (vector[0].Type == RCTokenType.Boolean) {
         RCArray<bool> list = new RCArray<bool> (vector.Count);
         for (int i = 0; i < vector.Count; ++i) {
-          list.Write (vector[i].ParseBoolean (m_lexer));
+          list.Write (vector[i].ParseBoolean (_lexer));
         }
         result = new RCBoolean (list);
       }
       else if (vector[0].Type == RCTokenType.Incr) {
         RCArray<RCIncrScalar> list = new RCArray<RCIncrScalar> (vector.Count);
         for (int i = 0; i < vector.Count; ++i) {
-          list.Write (vector[i].ParseIncr (m_lexer));
+          list.Write (vector[i].ParseIncr (_lexer));
         }
         result = new RCIncr (list);
       }
@@ -796,7 +796,7 @@ GETLINE:
         case 'x':
           RCArray<byte> list = new RCArray<byte> (vector.Count);
           for (int i = 0; i < vector.Count; ++i) {
-            list.Write (vector[i].ParseByte (m_lexer));
+            list.Write (vector[i].ParseByte (_lexer));
           }
           result = new RCByte (list);
           break;
@@ -806,7 +806,7 @@ GETLINE:
       else if (vector[0].Type == RCTokenType.Time) {
         RCArray<RCTimeScalar> list = new RCArray<RCTimeScalar> (vector.Count);
         for (int i = 0; i < vector.Count; ++i) {
-          list.Write (vector[i].ParseTime (m_lexer));
+          list.Write (vector[i].ParseTime (_lexer));
         }
         result = new RCTime (list);
       }
@@ -819,21 +819,21 @@ GETLINE:
         if (type == 'l') {
           RCArray<long> list = new RCArray<long> (vector.Count);
           for (int i = 0; i < vector.Count; ++i) {
-            list.Write (vector[i].ParseLong (m_lexer));
+            list.Write (vector[i].ParseLong (_lexer));
           }
           result = new RCLong (list);
         }
         if (type == 'd') {
           RCArray<double> list = new RCArray<double> (vector.Count);
           for (int i = 0; i < vector.Count; ++i) {
-            list.Write (vector[i].ParseDouble (m_lexer));
+            list.Write (vector[i].ParseDouble (_lexer));
           }
           result = new RCDouble (list);
         }
         else if (type == 'm') {
           RCArray<decimal> list = new RCArray<decimal> (vector.Count);
           for (int i = 0; i < vector.Count; ++i) {
-            list.Write (vector[i].ParseDecimal (m_lexer));
+            list.Write (vector[i].ParseDecimal (_lexer));
           }
           result = new RCDecimal (list);
         }
@@ -841,14 +841,14 @@ GETLINE:
           if (vector[0].Text.IndexOf ('.') > -1 || vector[0].Text == "NaN") {
             RCArray<double> list = new RCArray<double> (vector.Count);
             for (int i = 0; i < vector.Count; ++i) {
-              list.Write (vector[i].ParseDouble (m_lexer));
+              list.Write (vector[i].ParseDouble (_lexer));
             }
             result = new RCDouble (list);
           }
           else {
             RCArray<long> list = new RCArray<long> (vector.Count);
             for (int i = 0; i < vector.Count; ++i) {
-              list.Write (vector[i].ParseLong (m_lexer));
+              list.Write (vector[i].ParseLong (_lexer));
             }
             result = new RCLong (list);
           }

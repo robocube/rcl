@@ -45,7 +45,7 @@ namespace RCL.Kernel
       }
     }
 
-    protected bool m_lock = false;
+    protected bool _lock = false;
 
     public RCValue () {}
 
@@ -236,13 +236,13 @@ namespace RCL.Kernel
     // Types that have child objects need to override this and lock the children.
     public virtual void Lock ()
     {
-      m_lock = true;
+      _lock = true;
     }
 
     public virtual void Cubify (RCCube target, Stack<object> names) {}
 
     public bool IsLocked {
-      get { return m_lock; }
+      get { return _lock; }
     }
     public abstract string TypeName {
       get;

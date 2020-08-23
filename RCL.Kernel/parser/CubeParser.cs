@@ -13,79 +13,79 @@ namespace RCL.Kernel
       /// <summary>
       /// Names of the columns in a cube being read.
       /// </summary>
-      public RCArray<string> m_tnames = new RCArray<string> ();
+      public RCArray<string> _tnames = new RCArray<string> ();
 
       /// <summary>
       /// The column of the current token.
       /// </summary>
-      public int m_tcolumn = 0;
+      public int _tcolumn = 0;
 
       // The actual data of the cube being read.
-      public RCCube m_cube;
+      public RCCube _cube;
 
       // The current timestamp for parsing a cube.
-      public RCTimeScalar m_time = new RCTimeScalar (new DateTime (0), RCTimeType.Timestamp);
+      public RCTimeScalar _time = new RCTimeScalar (new DateTime (0), RCTimeType.Timestamp);
 
       // The current symbol for parsing a cube.
-      public RCSymbolScalar m_symbol;
+      public RCSymbolScalar _symbol;
 
       // The value in the G column.
-      public long m_global = -1;
+      public long _global = -1;
 
       // The value in the E column.
-      public long m_event = -1;
+      public long _event = -1;
 
       // True if the cube contains column T.
-      public bool m_hasT = false;
+      public bool _hasT = false;
 
       // True if the cube contains column S.
-      public bool m_hasS = false;
+      public bool _hasS = false;
 
       // True if the cube has a timeline.
-      public bool m_hasTimeline = false;
+      public bool _hasTimeline = false;
 
       // True if cube should contain rows and columns consisting entirely of nulls
-      public bool m_canonical = false;
+      public bool _canonical = false;
 
       // In the canonical case, use this to unsure empty rows are not skipped over.
-      // public bool m_forceAxisWrite = false;
+      // public bool _forceAxisWrite = false;
 
-      public RCArray<string> m_tlcolnames = new RCArray<string> ();
+      public RCArray<string> _tlcolnames = new RCArray<string> ();
     }
 
     public override RCActivator.ParserState StartParsing (bool canonical)
     {
       State state = new State ();
-      state.m_canonical = canonical;
+      state._canonical = canonical;
       return state;
     }
 
     public override RCValue EndParsing (object state)
     {
       State s = (State) state;
-      if (s.m_cube == null) {
+      if (s._cube == null) {
         return new RCCube ();
       }
-      if (!s.m_hasTimeline && s.m_cube.Axis.Exists) {
-        return s.m_cube.Untl ();
+      if (!s._hasTimeline && s._cube.Axis.Exists) {
+        return s._cube.Untl ();
       }
       else {
-        return s.m_cube;
+        return s._cube;
       }
     }
 
     public override void AcceptName (object state, RCToken token)
     {
       State s = (State) state;
-      s.m_tnames.Write (token.Text);
-      s.m_tcolumn = (s.m_tcolumn + 1) % s.m_tnames.Count;
+      s._tnames.Write (token.Text);
+      s._tcolumn = (s._tcolumn + 1) % s._tnames.Count;
       if (token.Text == "E") {
-        s.m_tlcolnames.Write ("E");
-        s.m_hasT = true;
+        s._tlcolnames.Write ("E");
+        s._hasT = true;
       }
       else if (token.Text == "G" || token.Text == "T" || token.Text == "S") {
-        s.m_hasS = false;
-        s.m_tlcolnames.Write (token.Text);
+        s._hasS = false;
+        s._tlcolnames.Write (token.Text);
       }
     }
 
@@ -93,27 +93,27 @@ namespace RCL.Kernel
     {
       State s = (State) state;
       // Move the column number forward.
-      s.m_tcolumn = (s.m_tcolumn + 1) % s.m_tnames.Count;
+      s._tcolumn = (s._tcolumn + 1) % s._tnames.Count;
       // Create the cube if necessary.
-      if (s.m_cube == null) {
-        s.m_cube = new RCCube (s.m_tlcolnames);
+      if (s._cube == null) {
+        s._cube = new RCCube (s._tlcolnames);
       }
-      if (s.m_tcolumn < s.m_tlcolnames.Count) {
-        string colname = s.m_tnames[s.m_tcolumn];
+      if (s._tcolumn < s._tlcolnames.Count) {
+        string colname = s._tnames[s._tcolumn];
         char letter = colname[0];
         switch (letter)
         {
         case 'G':
-          s.m_global = token.ParseLong (lexer);
+          s._global = token.ParseLong (lexer);
           break;
         case 'E':
-          s.m_event = token.ParseLong (lexer);
+          s._event = token.ParseLong (lexer);
           break;
         case 'T':
-          s.m_time = token.ParseTime (lexer);
+          s._time = token.ParseTime (lexer);
           break;
         case 'S':
-          s.m_symbol = token.ParseSymbol (lexer);
+          s._symbol = token.ParseSymbol (lexer);
           break;
         default: throw new Exception (
                   "Unknown timeline column with letter: " + letter);
@@ -122,25 +122,25 @@ namespace RCL.Kernel
       else {
         object val = token.Parse (lexer);
         if (val != null) {
-          ColumnBase column = s.m_cube.GetColumn (s.m_tnames[s.m_tcolumn]);
-          if (s.m_canonical && column != null && column is RCCube.ColumnOfNothing) {
-            s.m_cube.UnreserveColumn (s.m_tnames[s.m_tcolumn]);
+          ColumnBase column = s._cube.GetColumn (s._tnames[s._tcolumn]);
+          if (s._canonical && column != null && column is RCCube.ColumnOfNothing) {
+            s._cube.UnreserveColumn (s._tnames[s._tcolumn]);
           }
-          s.m_cube.WriteCell (s.m_tnames[s.m_tcolumn], s.m_symbol, val, -1, true, true);
+          s._cube.WriteCell (s._tnames[s._tcolumn], s._symbol, val, -1, true, true);
         }
         else {
-          s.m_cube.ReserveColumn (s.m_tnames[s.m_tcolumn], canonical: s.m_canonical);
+          s._cube.ReserveColumn (s._tnames[s._tcolumn], canonical: s._canonical);
         }
       }
-      // if (s.m_forceAxisWrite || s.m_tcolumn == s.m_tnames.Count - 1)
-      if (s.m_tcolumn == s.m_tnames.Count - 1) {
+      // if (s._forceAxisWrite || s._tcolumn == s._tnames.Count - 1)
+      if (s._tcolumn == s._tnames.Count - 1) {
         // If there is no time column in the source text then create a
         // series of ascending integers.
-        if (!s.m_hasT) {
-          ++s.m_event;
+        if (!s._hasT) {
+          ++s._event;
         }
-        s.m_cube.Axis.Write (s.m_global, s.m_event, s.m_time, s.m_symbol);
-        // s.m_forceAxisWrite = false;
+        s._cube.Axis.Write (s._global, s._event, s._time, s._symbol);
+        // s._forceAxisWrite = false;
       }
     }
 
@@ -148,7 +148,7 @@ namespace RCL.Kernel
     {
       State s = (State) state;
       if (token.Text == "|") {
-        s.m_hasTimeline = true;
+        s._hasTimeline = true;
       }
     }
 

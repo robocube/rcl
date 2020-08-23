@@ -22,14 +22,14 @@ namespace RCL.Core
   public class Take
   {
     // The fibers waiting to take each symbol.
-    public Dictionary<RCSymbolScalar, HashSet<long>> m_takeFibers = new Dictionary<RCSymbolScalar,
+    public Dictionary<RCSymbolScalar, HashSet<long>> _takeFibers = new Dictionary<RCSymbolScalar,
                                                                                    HashSet<long>> ();
     // The order in which the take commands were issued.
-    public List<RCClosure> m_takeOrder = new List<RCClosure> ();
-    // Any access to m_takenSymbols, m_takeFibers or m_takeOrder needs m_takeLock.
-    public readonly object m_takeLock = new object ();
+    public List<RCClosure> _takeOrder = new List<RCClosure> ();
+    // Any access to _takenSymbols, _takeFibers or _takeOrder needs _takeLock.
+    public readonly object _takeLock = new object ();
     // The fibers that have taken each symbol.
-    public Dictionary<RCSymbolScalar, long> m_takeSymbols = new Dictionary<RCSymbolScalar, long> ();
+    public Dictionary<RCSymbolScalar, long> _takeSymbols = new Dictionary<RCSymbolScalar, long> ();
 
     public class TakeOperator : RCOperator
     {
@@ -81,7 +81,7 @@ namespace RCL.Core
                                       closure.UserOpContext,
                                       noClimb: false,
                                       noResolve: false);
-      lock (m_takeLock)
+      lock (_takeLock)
       {
         if (TryGetLocks (next)) {
           // Start evaluating the critical section.
@@ -89,15 +89,15 @@ namespace RCL.Core
         }
         else {
           // Record the order in which the waiters arrived.
-          m_takeOrder.Add (next);
+          _takeOrder.Add (next);
 
           // Remember that we want the lock when the other guy releases it.
           for (int i = 0; i < symbols.Count; ++i)
           {
             HashSet<long> fibers;
-            if (!m_takeFibers.TryGetValue (symbols[i], out fibers)) {
+            if (!_takeFibers.TryGetValue (symbols[i], out fibers)) {
               fibers = new HashSet<long> ();
-              m_takeFibers[symbols[i]] = fibers;
+              _takeFibers[symbols[i]] = fibers;
             }
             fibers.Add (closure.Fiber);
           }
@@ -116,12 +116,12 @@ namespace RCL.Core
                 "There were supposed to be locks on this closure.");
       }
 
-      lock (m_takeLock)
+      lock (_takeLock)
       {
         // Free all of the locks.
         for (int i = 0; i < head.Locks.Count; ++i)
         {
-          m_takeSymbols.Remove (head.Locks[i]);
+          _takeSymbols.Remove (head.Locks[i]);
         }
 
         // List of all fibers waiting for any of the symbols just released.
@@ -129,21 +129,21 @@ namespace RCL.Core
         for (int i = 0; i < head.Locks.Count; ++i)
         {
           HashSet<long> waiters;
-          if (m_takeFibers.TryGetValue (head.Locks[i], out waiters)) {
+          if (_takeFibers.TryGetValue (head.Locks[i], out waiters)) {
             candidates.UnionWith (waiters);
           }
         }
 
         // Go through the waiters in the order they came in.
         // Can any of them go now?
-        for (int i = 0; i < m_takeOrder.Count; ++i)
+        for (int i = 0; i < _takeOrder.Count; ++i)
         {
-          RCClosure candidate = m_takeOrder[i];
+          RCClosure candidate = _takeOrder[i];
           if (TryGetLocks (candidate)) {
             // A Little ineffecient but whatevs.
             // In MapQueue I used a queue instead of a list to avoid the O(n) removals.
             // This makes the overall algorithm linear instead of quadratic.
-            m_takeOrder.RemoveAt (i);
+            _takeOrder.RemoveAt (i);
             runner.Continue (null, candidate);
             break;
           }
@@ -157,7 +157,7 @@ namespace RCL.Core
       for (int i = 0; i < closure.Locks.Count; ++i)
       {
         long holder;
-        if (m_takeSymbols.TryGetValue (closure.Locks[i], out holder)) {
+        if (_takeSymbols.TryGetValue (closure.Locks[i], out holder)) {
           if (holder != closure.Fiber) {
             allfree = false;
             break;
@@ -167,7 +167,7 @@ namespace RCL.Core
       if (allfree) {
         for (int i = 0; i < closure.Locks.Count; ++i)
         {
-          m_takeSymbols[closure.Locks[i]] = closure.Fiber;
+          _takeSymbols[closure.Locks[i]] = closure.Fiber;
         }
       }
       return allfree;

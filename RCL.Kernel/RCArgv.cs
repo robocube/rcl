@@ -7,21 +7,21 @@ namespace RCL.Kernel
 {
   public class RCLArgv
   {
-    public static volatile RCLArgv m_instance = new RCLArgv ();
-    public static volatile bool m_initInvoked = false;
+    public static volatile RCLArgv _instance = new RCLArgv ();
+    public static volatile bool _initInvoked = false;
     public static RCLArgv Init (string[] argv)
     {
-      if (m_initInvoked) {
+      if (_initInvoked) {
         throw new InvalidOperationException ("RCLArgv.Init may only be invoked once per appDomain");
       }
-      m_instance = new RCLArgv (argv);
-      m_initInvoked = true;
-      return m_instance;
+      _instance = new RCLArgv (argv);
+      _initInvoked = true;
+      return _instance;
     }
 
     public static RCLArgv Instance
     {
-      get { return m_instance; }
+      get { return _instance; }
     }
 
     public readonly RCBlock Options;

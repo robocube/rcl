@@ -6,7 +6,7 @@ namespace RCL.Core
 {
   public class Sort
   {
-    protected static Dictionary<char, Dictionary<SortDirection, object>> m_comparers =
+    protected static Dictionary<char, Dictionary<SortDirection, object>> _comparers =
       new Dictionary<char, Dictionary<SortDirection, object>> ();
 
     static Sort ()
@@ -30,7 +30,7 @@ namespace RCL.Core
       {
         return 0 - Math.Abs (x).CompareTo (Math.Abs (y));
       });
-      m_comparers.Add ('x', comparers);
+      _comparers.Add ('x', comparers);
 
       comparers = new Dictionary<SortDirection, object> ();
       comparers[SortDirection.asc] = new Comparison<long> (delegate (long x, long y)
@@ -49,7 +49,7 @@ namespace RCL.Core
       {
         return 0 - Math.Abs (x).CompareTo (Math.Abs (y));
       });
-      m_comparers.Add ('l', comparers);
+      _comparers.Add ('l', comparers);
 
       comparers = new Dictionary<SortDirection, object> ();
       comparers[SortDirection.asc] = new Comparison<double> (delegate (double x, double y)
@@ -68,7 +68,7 @@ namespace RCL.Core
       {
         return 0 - Math.Abs (x).CompareTo (Math.Abs (y));
       });
-      m_comparers.Add ('d', comparers);
+      _comparers.Add ('d', comparers);
 
       comparers = new Dictionary<SortDirection, object> ();
       comparers[SortDirection.asc] = new Comparison<decimal> (delegate (decimal x, decimal y)
@@ -87,7 +87,7 @@ namespace RCL.Core
       {
         return 0 - Math.Abs (x).CompareTo (Math.Abs (y));
       });
-      m_comparers.Add ('m', comparers);
+      _comparers.Add ('m', comparers);
 
       comparers = new Dictionary<SortDirection, object> ();
       comparers[SortDirection.asc] = new Comparison<bool> (delegate (bool x, bool y)
@@ -106,7 +106,7 @@ namespace RCL.Core
       {
         return 0 - x.CompareTo (y);
       });
-      m_comparers.Add ('b', comparers);
+      _comparers.Add ('b', comparers);
 
       comparers = new Dictionary<SortDirection, object> ();
       comparers[SortDirection.asc] = new Comparison<string> (delegate (string x, string y)
@@ -125,7 +125,7 @@ namespace RCL.Core
       {
         return 0 - x.CompareTo (y);
       });
-      m_comparers.Add ('s', comparers);
+      _comparers.Add ('s', comparers);
 
       comparers = new Dictionary<SortDirection, object> ();
       comparers[SortDirection.asc] = new Comparison<RCTimeScalar> (delegate (RCTimeScalar x,
@@ -148,7 +148,7 @@ namespace RCL.Core
       {
         return 0 - x.CompareTo (y);
       });
-      m_comparers.Add ('t', comparers);
+      _comparers.Add ('t', comparers);
 
       comparers = new Dictionary<SortDirection, object> ();
       comparers[SortDirection.asc] = new Comparison<RCSymbolScalar> (delegate (RCSymbolScalar x,
@@ -171,7 +171,7 @@ namespace RCL.Core
       {
         return 0 - x.CompareTo (y);
       });
-      m_comparers.Add ('y', comparers);
+      _comparers.Add ('y', comparers);
     }
 
     [RCVerb ("sort")]
@@ -496,7 +496,7 @@ namespace RCL.Core
 
     protected virtual T[] DoSort<T> (SortDirection direction, RCVector<T> vector)
     {
-      Comparison<T> comparison = (Comparison<T>)m_comparers[vector.TypeCode][direction];
+      Comparison<T> comparison = (Comparison<T>)_comparers[vector.TypeCode][direction];
       T[] array = vector.ToArray ();
       Array.Sort (array, comparison);
       return array;
