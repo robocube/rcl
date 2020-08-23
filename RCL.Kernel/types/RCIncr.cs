@@ -73,7 +73,7 @@ namespace RCL.Kernel
 
     public override void Write (object box)
     {
-      m_data.Write ((RCIncrScalar) box);
+      _data.Write ((RCIncrScalar) box);
     }
   }
 }

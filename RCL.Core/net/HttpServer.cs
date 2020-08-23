@@ -109,21 +109,21 @@ namespace RCL.Core
 
   public class HttpServer : IDisposable
   {
-    protected internal object m_lock = new object ();
-    protected int m_listener = 0;
-    protected internal Dictionary<int, HttpListener> m_listeners =
+    protected internal object _lock = new object ();
+    protected int _listener = 0;
+    protected internal Dictionary<int, HttpListener> _listeners =
       new Dictionary<int, HttpListener> ();
 
     // I'm sticking to the terminology of the api here but the context
     // is really a request.  And we have to keep them as mutable state
     // in order to respond through the http listener.
-    protected int m_context = 0;
-    protected internal readonly Dictionary<int, RequestInfo> m_contexts =
+    protected int _context = 0;
+    protected internal readonly Dictionary<int, RequestInfo> _contexts =
       new Dictionary<int, RequestInfo> ();
-    protected int m_client = 0;
+    protected int _client = 0;
 
     // This is only for the logging on dispose, so that the bot number will be accurate.
-    protected long m_bot = 0;
+    protected long _bot = 0;
 
     public HttpServer () {}
 
@@ -149,17 +149,17 @@ namespace RCL.Core
       }
       listener.Start ();
       int handle;
-      lock (m_lock)
+      lock (_lock)
       {
-        ++m_listener;
-        handle = m_listener;
-        m_listeners.Add (handle, listener);
+        ++_listener;
+        handle = _listener;
+        _listeners.Add (handle, listener);
         // set these to optimal for MONO and .NET
         // lgsp.Expect100Continue = false;
         // lgsp.UseNagleAlgorithm = true;
         // lgsp.MaxIdleTime = 100000;
         RCSystem.Log.Record (closure, "http", handle, "start", right);
-        m_bot = closure.Bot;
+        _bot = closure.Bot;
       }
       runner.Yield (closure, new RCLong (handle));
     }
@@ -167,15 +167,15 @@ namespace RCL.Core
     [RCVerb ("httpstop")]
     public void EvalHttpStop (RCRunner runner, RCClosure closure, RCLong right)
     {
-      lock (m_lock)
+      lock (_lock)
       {
         for (int i = 0; i < right.Count; ++i)
         {
-          HttpListener listener = m_listeners[(int) right[i]];
+          HttpListener listener = _listeners[(int) right[i]];
           // I should be ok calling this in a lock right?
           listener.Close ();
           RCSystem.Log.Record (closure, "http", right[i], "stop", "");
-          // Shouldn't I remove this from the m_listeners?
+          // Shouldn't I remove this from the _listeners?
           // Wait I want to see if retaining it fixes the object disposed exception.
         }
       }
@@ -191,9 +191,9 @@ namespace RCL.Core
         throw new Exception ("Can only httprecv from one listener per call");
       }
 
-      lock (m_lock)
+      lock (_lock)
       {
-        listener = m_listeners[(int) right[0]];
+        listener = _listeners[(int) right[0]];
         listener.BeginGetContext (new AsyncCallback (Process),
                                   new RCAsyncState (runner, closure, listener));
       }
@@ -212,9 +212,9 @@ namespace RCL.Core
         throw new Exception (
                 "Left argument must have the form \"id\" \"SESSION_ID1\" \"SESSION_ID2\"");
       }
-      lock (m_lock)
+      lock (_lock)
       {
-        info = m_contexts[(int) right[0]];
+        info = _contexts[(int) right[0]];
       }
       cookie = info.Context.Request.Cookies[left[0]];
       bool cookieCheckPassed = false;
@@ -307,9 +307,9 @@ namespace RCL.Core
       if (right.Count > 1) {
         throw new Exception ("Can only get one httpcookie per call");
       }
-      lock (m_lock)
+      lock (_lock)
       {
-        info = m_contexts[(int) right[0]];
+        info = _contexts[(int) right[0]];
       }
       RCBlock result = RCBlock.Empty;
       for (int i = 0; i < info.Context.Request.Cookies.Count; ++i)
@@ -328,12 +328,12 @@ namespace RCL.Core
       {
         int handle;
         HttpListenerContext context;
-        lock (m_lock)
+        lock (_lock)
         {
           context = listener.EndGetContext (result);
-          m_context++;
-          handle = m_context;
-          m_contexts.Add (handle, new RequestInfo (context, DateTime.UtcNow));
+          _context++;
+          handle = _context;
+          _contexts.Add (handle, new RequestInfo (context, DateTime.UtcNow));
         }
         RCSystem.Log.Record (state.Closure,
                              "http",
@@ -362,9 +362,9 @@ namespace RCL.Core
       }
 
       RequestInfo info;
-      lock (m_lock)
+      lock (_lock)
       {
-        info = m_contexts[(int) right[0]];
+        info = _contexts[(int) right[0]];
       }
       RCBlock query = RCBlock.Empty;
       for (int i = 0; i < info.Context.Request.QueryString.Count; ++i)
@@ -385,9 +385,9 @@ namespace RCL.Core
       }
 
       RequestInfo info;
-      lock (m_lock)
+      lock (_lock)
       {
-        info = m_contexts[(int) right[0]];
+        info = _contexts[(int) right[0]];
       }
 
       RCSymbolScalar method = new RCSymbolScalar (null,
@@ -429,9 +429,9 @@ namespace RCL.Core
       }
 
       RequestInfo info;
-      lock (m_lock)
+      lock (_lock)
       {
-        info = m_contexts[(int) right[0]];
+        info = _contexts[(int) right[0]];
       }
 
       NameValueCollection values = info.Context.Request.Headers;
@@ -459,9 +459,9 @@ namespace RCL.Core
       }
 
       RequestInfo info;
-      lock (m_lock)
+      lock (_lock)
       {
-        info = m_contexts[(int) right[0]];
+        info = _contexts[(int) right[0]];
       }
       string body = new StreamReader (info.Context.Request.InputStream).ReadToEnd ();
       // ParseQueryString really means ParseUrlEncodedForm.
@@ -483,9 +483,9 @@ namespace RCL.Core
       }
 
       RequestInfo info;
-      lock (m_lock)
+      lock (_lock)
       {
-        info = m_contexts[(int) right[0]];
+        info = _contexts[(int) right[0]];
       }
       string body = new StreamReader (info.Context.Request.InputStream).ReadToEnd ();
       runner.Yield (closure, new RCString (body));
@@ -542,9 +542,9 @@ namespace RCL.Core
         for (int i = 0; i < left.Count; ++i)
         {
           RequestInfo info;
-          lock (m_lock)
+          lock (_lock)
           {
-            info = m_contexts[(int) left[i]];
+            info = _contexts[(int) left[i]];
           }
           try
           {
@@ -568,9 +568,9 @@ namespace RCL.Core
             RCSystem.Log.Record (closure, "http", left[i], "send", result);
             info.Context.Response.OutputStream.Close ();
             info.Context.Request.InputStream.Close ();
-            lock (m_lock)
+            lock (_lock)
             {
-              m_contexts.Remove ((int) left[i]);
+              _contexts.Remove ((int) left[i]);
             }
           }
         }
@@ -591,9 +591,9 @@ namespace RCL.Core
         for (int i = 0; i < left.Count; ++i)
         {
           RequestInfo info;
-          lock (m_lock)
+          lock (_lock)
           {
-            info = m_contexts[(int) left[i]];
+            info = _contexts[(int) left[i]];
           }
           try
           {
@@ -618,9 +618,9 @@ namespace RCL.Core
             RCSystem.Log.Record (closure, "http", left[i], "send", result);
             info.Context.Response.OutputStream.Close ();
             info.Context.Request.InputStream.Close ();
-            lock (m_lock)
+            lock (_lock)
             {
-              m_contexts.Remove ((int) left[i]);
+              _contexts.Remove ((int) left[i]);
             }
           }
         }
@@ -689,9 +689,9 @@ namespace RCL.Core
                 "httpsend only allows one request per call.  Maybe this can change though.");
       }
       RequestInfo info;
-      lock (m_lock)
+      lock (_lock)
       {
-        info = m_contexts[(int) left[0]];
+        info = _contexts[(int) left[0]];
       }
       try
       {
@@ -746,16 +746,16 @@ namespace RCL.Core
       GC.SuppressFinalize (this);
     }
 
-    protected bool m_disposed = false;
+    protected bool _disposed = false;
     protected virtual void Dispose (bool disposing)
     {
-      if (!m_disposed) {
+      if (!_disposed) {
         if (disposing) {
-          lock (m_lock)
+          lock (_lock)
           {
-            foreach (KeyValuePair<int, HttpServer.RequestInfo> kv in m_contexts)
+            foreach (KeyValuePair<int, HttpServer.RequestInfo> kv in _contexts)
             {
-              RCSystem.Log.Record (m_bot,
+              RCSystem.Log.Record (_bot,
                                    (long) 0,
                                    "http",
                                    (long) kv.Key,
@@ -763,20 +763,20 @@ namespace RCL.Core
                                    kv.Value.Context.Request.RawUrl);
               kv.Value.Context.Response.OutputStream.Close ();
             }
-            foreach (KeyValuePair<int, HttpListener> kv in m_listeners)
+            foreach (KeyValuePair<int, HttpListener> kv in _listeners)
             {
               // I should be ok calling this in a lock right?
               foreach (string prefix in kv.Value.Prefixes)
               {
-                RCSystem.Log.Record (m_bot, (long) 0, "http", (long) kv.Key, "close", prefix);
+                RCSystem.Log.Record (_bot, (long) 0, "http", (long) kv.Key, "close", prefix);
               }
               kv.Value.Close ();
             }
-            m_contexts.Clear ();
-            m_listeners.Clear ();
+            _contexts.Clear ();
+            _listeners.Clear ();
           }
         }
-        m_disposed = true;
+        _disposed = true;
       }
     }
   }

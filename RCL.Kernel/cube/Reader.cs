@@ -8,24 +8,24 @@ namespace RCL.Kernel
   public class Reader : Visitor
   {
     // Stuff we are given.
-    protected ReadCounter m_counter;
-    protected ReadSpec m_spec;
-    protected int m_end;
-    protected RCCube m_source;
+    protected ReadCounter _counter;
+    protected ReadSpec _spec;
+    protected int _end;
+    protected RCCube _source;
 
     // The results and information about the results.
-    protected RCCube m_target;
-    protected Dictionary<RCSymbolScalar, long> m_inSymbols =
+    protected RCCube _target;
+    protected Dictionary<RCSymbolScalar, long> _inSymbols =
       new Dictionary<RCSymbolScalar, long> ();
-    protected RCArray<int> m_inLines = new RCArray<int> ();
-    protected RCArray<int> m_acceptedLines;
-    protected RCArray<RCSymbolScalar> m_acceptedSymbols;
+    protected RCArray<int> _inLines = new RCArray<int> ();
+    protected RCArray<int> _acceptedLines;
+    protected RCArray<RCSymbolScalar> _acceptedSymbols;
 
     // State variables to be used along the way.
-    protected bool m_accept = false;
-    protected bool m_fill = false;
-    protected RCSymbolScalar m_symbol = null;
-    protected long m_initg = 0;
+    protected bool _accept = false;
+    protected bool _fill = false;
+    protected RCSymbolScalar _symbol = null;
+    protected long _initg = 0;
 
     public Reader (RCCube source, ReadSpec spec, ReadCounter counter, bool forceGCol, int end)
     {
@@ -39,71 +39,71 @@ namespace RCL.Kernel
         throw new ArgumentNullException ("counter");
       }
 
-      m_source = source;
-      m_spec = spec;
-      m_counter = counter;
-      m_end = end;
+      _source = source;
+      _spec = spec;
+      _counter = counter;
+      _end = end;
       RCArray<string> axisCols = new RCArray<string> (source.Axis.Colset);
       if (forceGCol) {
         axisCols.Write ("G");
       }
-      if (m_source.Axis.Global != null && m_source.Axis.Count > 0) {
-        m_initg = m_source.Axis.Global[0];
+      if (_source.Axis.Global != null && _source.Axis.Count > 0) {
+        _initg = _source.Axis.Global[0];
       }
-      m_target = new RCCube (axisCols);
+      _target = new RCCube (axisCols);
     }
 
     public void Lock ()
     {
-      m_acceptedLines.Lock ();
-      m_acceptedSymbols.Lock ();
-      m_inLines.Lock ();
+      _acceptedLines.Lock ();
+      _acceptedSymbols.Lock ();
+      _inLines.Lock ();
     }
 
     public RCCube Read ()
     {
-      if (m_spec.Forward) {
-        int startRow = m_spec.Start;
-        if (m_source.Axis.Global != null && m_source.Axis.Count > 0) {
+      if (_spec.Forward) {
+        int startRow = _spec.Start;
+        if (_source.Axis.Global != null && _source.Axis.Count > 0) {
           // Max prevents the row from going negative if the section has been cleared.
-          startRow -= (int) m_initg;
+          startRow -= (int) _initg;
           startRow = Math.Max (startRow, 0);
         }
-        m_source.VisitCellsForward (this, startRow, m_end);
-        m_acceptedLines = m_inLines;
+        _source.VisitCellsForward (this, startRow, _end);
+        _acceptedLines = _inLines;
       }
       else {
-        m_source.VisitCellsBackward (this, m_spec.Start, m_end);
-        m_target.ReverseInPlace ();
-        m_inLines.ReverseInPlace ();
-        m_acceptedLines = m_inLines;
+        _source.VisitCellsBackward (this, _spec.Start, _end);
+        _target.ReverseInPlace ();
+        _inLines.ReverseInPlace ();
+        _acceptedLines = _inLines;
       }
-      m_acceptedSymbols = new RCArray<RCSymbolScalar> (m_inSymbols.Keys);
-      return m_target;
+      _acceptedSymbols = new RCArray<RCSymbolScalar> (_inSymbols.Keys);
+      return _target;
     }
 
     public RCArray<int> AcceptedLines
     {
-      get { return m_acceptedLines; }
+      get { return _acceptedLines; }
     }
 
     public RCArray<RCSymbolScalar> AcceptedSymbols
     {
-      get { return m_acceptedSymbols; }
+      get { return _acceptedSymbols; }
     }
 
-    protected int m_skipCount = 0;
+    protected int _skipCount = 0;
     public override void BeforeRow (long e, RCTimeScalar t, RCSymbolScalar s, int row)
     {
-      m_accept = false;
+      _accept = false;
       // This will get any matching wild card symbol in the spec.
-      SpecRecord spec = m_spec.Get (s);
-      // If the symbol does not match anything in m_spec then move on.
+      SpecRecord spec = _spec.Get (s);
+      // If the symbol does not match anything in _spec then move on.
       if (spec == null) {
         return;
       }
       // If we are too early for the symbol then move on.
-      if ((m_initg + row) < spec.start) {
+      if ((_initg + row) < spec.start) {
         return;
       }
       // If we already have enough of this symbol then move on.
@@ -111,81 +111,81 @@ namespace RCL.Kernel
       // ReadSpec.Get is going to do this for you now.
       // if (spec.count >= spec.limit) return;
       // Was this line already read in the case of dispatch, if so move on.
-      if (m_spec.IgnoreDispatchedRows && m_counter.WasDispatched (row)) {
+      if (_spec.IgnoreDispatchedRows && _counter.WasDispatched (row)) {
         return;
       }
 
       // We need some way to break out of the loop here rather than keep going to the end.
-      if (m_inLines.Count >= m_spec.TotalLimit) {
+      if (_inLines.Count >= _spec.TotalLimit) {
         return;
       }
       // This row would be accepted but we are supposed to skip the first
-      // m_skipCount rows.
-      if (m_skipCount < m_spec.SkipFirst) {
-        ++m_skipCount;
+      // _skipCount rows.
+      if (_skipCount < _spec.SkipFirst) {
+        ++_skipCount;
         return;
       }
-      m_accept = true;
-      m_symbol = s;
-      m_inLines.Write (row);
+      _accept = true;
+      _symbol = s;
+      _inLines.Write (row);
       long inCount = 0;
-      // m_inSymbols will not be populated if there is no timeline.
+      // _inSymbols will not be populated if there is no timeline.
       if (s != null) {
-        m_inSymbols.TryGetValue (s, out inCount);
-        m_inSymbols[s] = inCount++;
+        _inSymbols.TryGetValue (s, out inCount);
+        _inSymbols[s] = inCount++;
       }
       ++spec.count;
-      m_fill = false;
+      _fill = false;
       // if inCount is one then this is the first row and we need to fill in values from
       // prior
       // states.
       // if symbol == null then every single row and column needs to be included in the
       // output.
-      if (m_spec.Fill && inCount == 1) {
-        m_fill = true;
+      if (_spec.Fill && inCount == 1) {
+        _fill = true;
       }
       else {
-        m_fill = false;
+        _fill = false;
       }
     }
 
     public override void AfterRow (long e, RCTimeScalar t, RCSymbolScalar s, int row)
     {
-      if (!m_accept) {
+      if (!_accept) {
         return;
       }
       // Do this after writing the individual cells,
       // the correct behavior of WriteCell depends on it.
       // Do not pass the counter here.
       long g = row;
-      if (m_source.Axis.Global != null) {
-        g = m_source.Axis.Global[row];
+      if (_source.Axis.Global != null) {
+        g = _source.Axis.Global[row];
       }
-      m_target.Write (g, e, t, s);
+      _target.Write (g, e, t, s);
     }
 
     public override void VisitNull<T> (string name, Column<T> column, int row)
     {
-      if (!m_accept) {
+      if (!_accept) {
         return;
       }
-      m_target.ReserveColumn (name);
-      if (!m_fill) {
+      _target.ReserveColumn (name);
+      if (!_fill) {
         return;
       }
       T last;
-      if (column.Last (m_symbol, out last)) {
-        m_target.WriteCell (name, m_symbol, last);
+      if (column.Last (_symbol, out last)) {
+        _target.WriteCell (name, _symbol, last);
       }
     }
 
     public override void VisitScalar<T> (string name, Column<T> column, int row)
     {
-      if (!m_accept) {
+      if (!_accept) {
         return;
       }
-      RCSymbolScalar symbol = m_source.Axis.SymbolAt (column.Index[row]);
-      m_target.WriteCell (name, symbol, column.Data[row], -1, false, m_spec.Force);
+      RCSymbolScalar symbol = _source.Axis.SymbolAt (column.Index[row]);
+      _target.WriteCell (name, symbol, column.Data[row], -1, false, _spec.Force);
     }
   }
 }

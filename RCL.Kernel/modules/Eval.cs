@@ -504,7 +504,7 @@ namespace RCL.Kernel
                                RCClosure closure,
                                RCReference reference)
     {
-      runner.Yield (closure, Resolve (reference.m_static, closure, reference.Parts, null));
+      runner.Yield (closure, Resolve (reference._static, closure, reference.Parts, null));
     }
 
     /// <summary>
@@ -568,13 +568,13 @@ namespace RCL.Kernel
       RCValue code = closure.UserOp;
       RCArray<RCBlock> @this = closure.UserOpContext;
       if (code == null) {
-        if (op.m_reference.Parts.Count > 1) {
+        if (op._reference.Parts.Count > 1) {
           @this = new RCArray<RCBlock> ();
         }
-        code = Resolve (op.m_reference.m_static, closure, op.m_reference.Parts, @this);
+        code = Resolve (op._reference._static, closure, op._reference.Parts, @this);
       }
       if (code == null) {
-        throw new Exception ("Cannot find definition for operator: " + op.m_reference.Name);
+        throw new Exception ("Cannot find definition for operator: " + op._reference.Name);
       }
       if (code.TypeCode == 's') {
         string name = ((RCString) code)[0];
@@ -672,7 +672,7 @@ namespace RCL.Kernel
 
     public static void DoEvalInline (RCRunner runner, RCClosure closure, InlineOperator op)
     {
-      op.m_code.Eval (runner, UserOpClosure (closure, op.m_code, null, noClimb: false));
+      op._code.Eval (runner, UserOpClosure (closure, op._code, null, noClimb: false));
     }
 
     public static void DoEvalTemplate (RCRunner runner, RCClosure closure, RCTemplate template)
@@ -928,10 +928,10 @@ namespace RCL.Kernel
       if (name == null) {
         return;
       }
-      if (name.m_reference.Parts.Count > 1) {
+      if (name._reference.Parts.Count > 1) {
         context = new RCArray<RCBlock> ();
       }
-      resolved = Resolve (null, closure.Parent, name.m_reference.Parts, context);
+      resolved = Resolve (null, closure.Parent, name._reference.Parts, context);
     }
 
     public static bool CheckForRecursion (RCValue op,

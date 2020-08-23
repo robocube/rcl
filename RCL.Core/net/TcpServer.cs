@@ -11,38 +11,38 @@ namespace RCL.Core
 {
   public class TcpServer : Tcp.Server
   {
-    protected long m_handle;
-    protected Tcp.Protocol m_protocol;
-    protected Socket m_listener;
-    protected IPEndPoint m_ip;
-    protected object m_lock = new object ();
-    protected Dictionary<long, TcpServerSession> m_clients;
-    protected TcpListenBox m_inbox;
-    protected long m_id = 0;
-    protected Dictionary<long, TcpServerSession> m_requests;
+    protected long _handle;
+    protected Tcp.Protocol _protocol;
+    protected Socket _listener;
+    protected IPEndPoint _ip;
+    protected object _lock = new object ();
+    protected Dictionary<long, TcpServerSession> _clients;
+    protected TcpListenBox _inbox;
+    protected long _id = 0;
+    protected Dictionary<long, TcpServerSession> _requests;
 
     public long Handle {
-      get { return m_handle; }
+      get { return _handle; }
     }
 
     public TcpServer (long handle, long port, Tcp.Protocol protocol)
     {
-      m_handle = handle;
-      m_protocol = protocol;
-      m_ip = new IPEndPoint (IPAddress.Any, (int) port);
-      m_listener = new Socket (m_ip.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-      m_clients = new Dictionary<long, TcpServerSession> ();
-      m_requests = new Dictionary<long, TcpServerSession> ();
-      m_inbox = new TcpListenBox ();
+      _handle = handle;
+      _protocol = protocol;
+      _ip = new IPEndPoint (IPAddress.Any, (int) port);
+      _listener = new Socket (_ip.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+      _clients = new Dictionary<long, TcpServerSession> ();
+      _requests = new Dictionary<long, TcpServerSession> ();
+      _inbox = new TcpListenBox ();
     }
 
     public override void Listen (RCRunner runner, RCClosure closure)
     {
-      m_listener.Bind (m_ip);
-      m_listener.Listen (int.MaxValue);
-      m_listener.BeginAccept (new AsyncCallback (AcceptCompleted),
+      _listener.Bind (_ip);
+      _listener.Listen (int.MaxValue);
+      _listener.BeginAccept (new AsyncCallback (AcceptCompleted),
                               new RCAsyncState (runner, closure, null));
-      runner.Yield (closure, new RCLong (m_handle));
+      runner.Yield (closure, new RCLong (_handle));
     }
 
     protected void AcceptCompleted (IAsyncResult result)
@@ -50,21 +50,21 @@ namespace RCL.Core
       RCAsyncState state = (RCAsyncState) result.AsyncState;
       try
       {
-        Socket client = m_listener.EndAccept (result);
+        Socket client = _listener.EndAccept (result);
         RCBot bot = state.Runner.GetBot (state.Closure.Bot);
         // long handle = state.Closure.Bot.New ();
         long handle = bot.New ();
         TcpServerSession session = new TcpServerSession (state,
                                                          this,
                                                          client,
-                                                         m_inbox,
+                                                         _inbox,
                                                          handle);
-        lock (m_lock)
+        lock (_lock)
         {
-          m_clients.Add (handle, session);
+          _clients.Add (handle, session);
         }
         session.Start ();
-        m_listener.BeginAccept (new AsyncCallback (AcceptCompleted), state);
+        _listener.BeginAccept (new AsyncCallback (AcceptCompleted), state);
       }
       catch (Exception ex)
       {
@@ -79,7 +79,7 @@ namespace RCL.Core
       if (limit != 1) {
         throw new Exception ("limit has to be exactly 1 currently, sorry");
       }
-      m_inbox.Remove (runner, closure);
+      _inbox.Remove (runner, closure);
     }
 
     public override TcpSendState Reply (RCRunner runner,
@@ -89,10 +89,10 @@ namespace RCL.Core
                                         RCBlock message)
     {
       TcpServerSession session;
-      lock (m_lock)
+      lock (_lock)
       {
-        session = m_requests[sid];
-        m_requests.Remove (sid);
+        session = _requests[sid];
+        _requests.Remove (sid);
       }
       return session.Send (runner, closure, cid, message);
     }
@@ -100,17 +100,17 @@ namespace RCL.Core
     public long NextId (TcpServerSession session)
     {
       long id;
-      lock (m_lock)
+      lock (_lock)
       {
-        id = m_id++;
-        m_requests.Add (id, session);
+        id = _id++;
+        _requests.Add (id, session);
       }
       return id;
     }
 
     public override byte[] Serialize (RCValue message)
     {
-      return m_protocol.Serialize (this, message);
+      return _protocol.Serialize (this, message);
     }
   }
 }

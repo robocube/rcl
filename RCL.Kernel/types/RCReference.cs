@@ -7,12 +7,12 @@ namespace RCL.Kernel
 {
   public class RCReference : RCValue
   {
-    protected static readonly Dictionary<string, Type> m_types = new Dictionary<string, Type> ();
-    protected static readonly Dictionary<Type, string> m_codes = new Dictionary<Type, string> ();
+    protected static readonly Dictionary<string, Type> _types = new Dictionary<string, Type> ();
+    protected static readonly Dictionary<Type, string> _codes = new Dictionary<Type, string> ();
 
     public readonly string Name;
     public readonly RCArray<string> Parts;
-    protected internal RCBlock m_static;
+    protected internal RCBlock _static;
 
     public RCReference (string name)
     {
@@ -104,7 +104,7 @@ namespace RCL.Kernel
                 "Attempted to modify a locked instance of RCReference.");
       }
 
-      m_static = context;
+      _static = context;
     }
 
     public override RCOperator AsOperator (RCActivator activator, RCValue left, RCValue right)

@@ -8,40 +8,40 @@ namespace RCL.Kernel
 {
   public class RCLogger
   {
-    protected static object m_lock = new object ();
-    protected static bool m_nokeys;
-    protected static TextWriter m_output;
-    protected static RCOutput m_level = RCOutput.Full;
+    protected static object _lock = new object ();
+    protected static bool _nokeys;
+    protected static TextWriter _output;
+    protected static RCOutput _level = RCOutput.Full;
     protected readonly static string TimeFormat = "yyyy.MM.dd HH:mm:ss.ffffff";
-    protected static HashSet<string> m_show;
-    protected static HashSet<string> m_hide;
-    protected static RCColmap m_colmap = new RCColmap ();
+    protected static HashSet<string> _show;
+    protected static HashSet<string> _hide;
+    protected static RCColmap _colmap = new RCColmap ();
 
     public RCLogger () : this (true, new string[] {"*"}, new string[] {}) {}
 
     public RCLogger (bool nokeys, string[] whiteList, string[] blacklist)
     {
-      m_nokeys = nokeys;
-      m_show = new HashSet<string> (whiteList);
-      m_hide = new HashSet<string> (blacklist);
-      if (!m_nokeys) {
-        m_output = Console.Error;
+      _nokeys = nokeys;
+      _show = new HashSet<string> (whiteList);
+      _hide = new HashSet<string> (blacklist);
+      if (!_nokeys) {
+        _output = Console.Error;
       }
       else {
-        m_output = Console.Out;
+        _output = Console.Out;
       }
     }
 
     public void SetVerbosity (RCOutput level)
     {
-      m_level = level;
+      _level = level;
     }
 
     public void UpdateColmap (RCArray<string> column, RCArray<string> format)
     {
-      lock (m_lock)
+      lock (_lock)
       {
-        m_colmap = m_colmap.Update (column, format);
+        _colmap = _colmap.Update (column, format);
       }
     }
 
@@ -50,26 +50,26 @@ namespace RCL.Kernel
     /// </summary>
     public RCColmap GetColmap ()
     {
-      return m_colmap;
+      return _colmap;
     }
 
     protected bool Filter (string type, string state)
     {
-      lock (m_lock)
+      lock (_lock)
       {
-        if (m_hide.Contains (type + ":" + state)) {
+        if (_hide.Contains (type + ":" + state)) {
           return false;
         }
-        else if (m_hide.Contains (type)) {
+        else if (_hide.Contains (type)) {
           return false;
         }
-        else if (m_show.Contains ("*")) {
+        else if (_show.Contains ("*")) {
           return true;
         }
-        else if (m_show.Contains (type)) {
+        else if (_show.Contains (type)) {
           return true;
         }
-        else if (m_show.Contains (type + ":" + state)) {
+        else if (_show.Contains (type + ":" + state)) {
           return true;
         }
       }
@@ -122,22 +122,22 @@ namespace RCL.Kernel
       if (!Filter (type, state)) {
         return;
       }
-      if (m_output == null) {
+      if (_output == null) {
         return;
       }
-      if (m_level == RCOutput.Quiet) {
+      if (_level == RCOutput.Quiet) {
         return;
       }
       else if (bot == 0 && instance == 0 && type == "fiber" &&
                (state == "start" || state == "done")) {
         return;
       }
-      else if (m_level == RCOutput.Single) {
+      else if (_level == RCOutput.Single) {
         string time = DateTime.UtcNow.ToString (TimeFormat);
         if (info is Exception) {
           info = "<<Reported>>";
         }
-        m_output.WriteLine ("{0} {1} {2} {3} {4} {5} {6}",
+        _output.WriteLine ("{0} {1} {2} {3} {4} {5} {6}",
                             time,
                             bot,
                             fiber,
@@ -154,7 +154,7 @@ namespace RCL.Kernel
                          state,
                          info.ToString ());
       }
-      else if (m_level == RCOutput.Systemd) {
+      else if (_level == RCOutput.Systemd) {
         // 0 Emergency: system is unusable
         // 1 Alert: action must be taken immediately
         // 2 Critical: critical conditions
@@ -192,7 +192,7 @@ namespace RCL.Kernel
           bool singleLine;
           message = IndentMessage (CreateMessage (info), false, out singleLine);
         }
-        m_output.WriteLine ("<{0}>{1} {2} {3} {4} {5} {6}",
+        _output.WriteLine ("<{0}>{1} {2} {3} {4} {5} {6}",
                             severity,
                             bot,
                             fiber,
@@ -209,13 +209,13 @@ namespace RCL.Kernel
                          state,
                          message);
       }
-      else if (m_level == RCOutput.Multi || m_level == RCOutput.Full) {
+      else if (_level == RCOutput.Multi || _level == RCOutput.Full) {
         DateTime now = TimeZoneInfo.ConvertTimeFromUtc (DateTime.UtcNow, RCTime.DisplayTimeZone);
         string time = now.ToString (TimeFormat);
         bool singleLine;
         string message = IndentMessage (CreateMessage (info), forceDoc, out singleLine);
         string optionalSpace = (singleLine && message.Length > 0) ? " " : "";
-        m_output.WriteLine ("{0} {1} {2} {3} {4} {5}{6}{7}",
+        _output.WriteLine ("{0} {1} {2} {3} {4} {5}{6}{7}",
                             time,
                             bot,
                             fiber,
@@ -234,16 +234,16 @@ namespace RCL.Kernel
                          optionalSpace,
                          message);
       }
-      else if (m_level == RCOutput.Clean && type == "print") {
+      else if (_level == RCOutput.Clean && type == "print") {
         string message = CreateMessage (info);
-        m_output.WriteLine (message);
+        _output.WriteLine (message);
         Debug.WriteLine (message);
       }
-      else if (m_level == RCOutput.Test) {
+      else if (_level == RCOutput.Test) {
         bool singleLine;
         string message = IndentMessage (CreateMessage (info), forceDoc, out singleLine);
         string optionalSpace = (singleLine && message.Length > 0) ? " " : "";
-        m_output.WriteLine ("{0} {1} {2} {3} {4}{5}{6}",
+        _output.WriteLine ("{0} {1} {2} {3} {4}{5}{6}",
                             bot,
                             fiber,
                             type,
@@ -260,7 +260,7 @@ namespace RCL.Kernel
                          optionalSpace,
                          message);
       }
-      else if (m_level == RCOutput.Trace) {
+      else if (_level == RCOutput.Trace) {
         throw new NotImplementedException ();
       }
     }
@@ -273,19 +273,19 @@ namespace RCL.Kernel
       RCBlock block = info as RCBlock;
       if (block != null) {
         if (block.Count == 1 && block.Evaluator == RCEvaluator.Yield) {
-          message = block.Format (RCFormat.Default, m_colmap);
+          message = block.Format (RCFormat.Default, _colmap);
         }
         else {
-          message = block.Format (RCFormat.Pretty, m_colmap);
+          message = block.Format (RCFormat.Pretty, _colmap);
         }
       }
       else if (info is RCCube) {
-        message = ((RCValue) info).Format (RCFormat.Pretty, m_colmap);
+        message = ((RCValue) info).Format (RCFormat.Pretty, _colmap);
       }
-      else if (info is RCException && (m_level == RCOutput.Test || m_level == RCOutput.Single)) {
+      else if (info is RCException && (_level == RCOutput.Test || _level == RCOutput.Single)) {
         message = ((RCException) info).ToTestString ();
       }
-      else if (info is Exception && (m_level == RCOutput.Test || m_level == RCOutput.Single)) {
+      else if (info is Exception && (_level == RCOutput.Test || _level == RCOutput.Single)) {
         if (RCSystem.Args.FullStack) {
           message = string.Format ("<<Reported, {0}>>", info.ToString ());
         }
@@ -329,7 +329,7 @@ namespace RCL.Kernel
       for (int i = 0; i < til; ++i)
       {
         string line = string.Format ("  {0}\n", lines[i]);
-        if (m_level == RCOutput.Multi) {
+        if (_level == RCOutput.Multi) {
           if ((chars + line.Length) > 512) {
             output.Append (
               "................................................................................");

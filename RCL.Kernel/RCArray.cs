@@ -9,14 +9,14 @@ namespace RCL.Kernel
   public class RCArray<T> : IEnumerable<T>
   {
     public static readonly RCArray<T> Empty = new RCArray<T> (0);
-    protected internal bool m_lock = false;
-    protected internal T[] m_source;
-    protected internal int m_count;
+    protected internal bool _lock = false;
+    protected internal T[] _source;
+    protected internal int _count;
 
     public RCArray (int capacity)
     {
-      m_source = new T[capacity];
-      m_count = 0;
+      _source = new T[capacity];
+      _count = 0;
     }
 
     public RCArray (params T[] source)
@@ -24,18 +24,18 @@ namespace RCL.Kernel
       if (source == null) {
         throw new ArgumentNullException ("source");
       }
-      m_source = source;
-      m_count = source.Length;
+      _source = source;
+      _count = source.Length;
     }
 
     public RCArray (ICollection<T> source)
     {
-      m_source = new T[source.Count];
-      m_count = source.Count;
+      _source = new T[source.Count];
+      _count = source.Count;
       int i = 0;
       foreach (T val in source)
       {
-        m_source[i] = val;
+        _source[i] = val;
         ++i;
       }
     }
@@ -45,12 +45,12 @@ namespace RCL.Kernel
 
     public int Count
     {
-      get { return m_count; }
+      get { return _count; }
     }
 
     public T this[int i]
     {
-      get { return m_source[i]; }
+      get { return _source[i]; }
     }
 
     public T[] ToArray ()
@@ -75,7 +75,7 @@ namespace RCL.Kernel
 
     public int IndexOf (T value)
     {
-      return Array.IndexOf<T> (m_source, value, 0, m_count);
+      return Array.IndexOf<T> (_source, value, 0, _count);
     }
 
     public override string ToString ()
@@ -86,7 +86,7 @@ namespace RCL.Kernel
       builder.Append (" ");
       builder.Append (Count);
       builder.Append ("/");
-      builder.Append (m_source.Length);
+      builder.Append (_source.Length);
       builder.Append (")");
       builder.Append ("[");
       for (int i = 0; i < Count; ++i)
@@ -128,40 +128,40 @@ namespace RCL.Kernel
 
     public void Write (T[] values)
     {
-      if (m_lock) {
+      if (_lock) {
         throw new InvalidOperationException (
                 "Attempted to Write to an RCArray after it was locked.");
       }
       Resize (values.Length, 0);
       for (int i = 0; i < values.Length; ++i)
       {
-        m_source[m_count] = values[i];
-        ++m_count;
+        _source[_count] = values[i];
+        ++_count;
       }
     }
 
     public void Write (RCArray<T> values)
     {
-      if (m_lock) {
+      if (_lock) {
         throw new InvalidOperationException (
                 "Attempted to Write to an RCArray after it was locked.");
       }
       Resize (values.Count, 0);
       for (int i = 0; i < values.Count; ++i)
       {
-        m_source[m_count] = values[i];
-        ++m_count;
+        _source[_count] = values[i];
+        ++_count;
       }
     }
 
     public void Write (T value)
     {
-      if (m_lock) {
+      if (_lock) {
         throw new Exception ("Cannot write to an RCArray after it is locked.");
       }
       Resize (1, 0);
-      m_source[m_count] = value;
-      ++m_count;
+      _source[_count] = value;
+      ++_count;
     }
 
     /// <summary>
@@ -169,75 +169,75 @@ namespace RCL.Kernel
     /// </summary>
     public void Write (int i, T value)
     {
-      if (m_lock) {
+      if (_lock) {
         throw new Exception ("Cannot write to an RCArray after it is locked.");
       }
       Resize (1, 0);
-      m_source[i] = value;
+      _source[i] = value;
     }
 
     public void RemoveAt (int i)
     {
-      if (m_lock) {
+      if (_lock) {
         throw new Exception ("Cannot write to an RCArray after it is locked");
       }
       for (; i < Count - 1; ++i)
       {
-        m_source[i] = m_source[i + 1];
+        _source[i] = _source[i + 1];
       }
-      --m_count;
+      --_count;
     }
 
     public void Clear ()
     {
-      if (m_lock) {
+      if (_lock) {
         throw new Exception ("Cannot write to an RCArray after it is locked");
       }
-      m_count = 0;
+      _count = 0;
     }
 
     public void Lock ()
     {
       RCAssert.ArrayHasNoNulls<T> (this);
-      m_lock = true;
+      _lock = true;
     }
 
     public bool Locked ()
     {
-      return m_lock;
+      return _lock;
     }
 
     public void Resize (long size, long dups)
     {
-      long count = m_count + (size - dups);
-      if (m_source.Length < count) {
+      long count = _count + (size - dups);
+      if (_source.Length < count) {
         // At some size I want it to switch from exponential to
         // linear growth.
         long length = NextPowerOf2 (count);
         T[] source = new T[length];
-        for (long i = 0; i < m_count; ++i) {
-          source[i] = m_source[i];
+        for (long i = 0; i < _count; ++i) {
+          source[i] = _source[i];
         }
-        m_source = source;
+        _source = source;
       }
     }
 
     public void ReverseInPlace ()
     {
-      if (m_lock) {
+      if (_lock) {
         throw new Exception (
                 "Cannot use ReverseInPlace on an RCArray after it has been locked.");
       }
-      Array.Reverse (m_source, 0, (int) m_count);
+      Array.Reverse (_source, 0, (int) _count);
     }
 
     public void SortInPlace ()
     {
-      if (m_lock) {
+      if (_lock) {
         throw new Exception (
                 "Cannot use SortInPlace on an RCArray<T> after it has been locked.");
       }
-      Array.Sort (m_source, 0, (int) m_count);
+      Array.Sort (_source, 0, (int) _count);
     }
 
     public int BinarySearch (T val, out bool found)
@@ -258,7 +258,7 @@ namespace RCL.Kernel
       // could be returned,
       // even if value is present in array .
       // https://docs.microsoft.com/en-us/dotnet/api/system.array.binarysearch?view=netframework-4.7.2
-      int index = Array.BinarySearch<T> (m_source, 0, (int) m_count, val);
+      int index = Array.BinarySearch<T> (_source, 0, (int) _count, val);
       if (index < 0) {
         found = false;
         return ~index;
@@ -271,36 +271,36 @@ namespace RCL.Kernel
 
     public bool Contains (T val)
     {
-      return Array.IndexOf (m_source, val, 0, (int) m_count) > -1;
+      return Array.IndexOf (_source, val, 0, (int) _count) > -1;
     }
   }
 
   public class RCArrayEnumerator<T> : IEnumerator<T>
   {
     protected int i = -1;
-    protected RCArray<T> m_array;
+    protected RCArray<T> _array;
 
     public RCArrayEnumerator (RCArray<T> array)
     {
-      m_array = array;
+      _array = array;
     }
 
     public T Current
     {
-      get { return (T) m_array[i]; }
+      get { return (T) _array[i]; }
     }
 
     public void Dispose () {}
 
     object System.Collections.IEnumerator.Current
     {
-      get { return m_array[i]; }
+      get { return _array[i]; }
     }
 
     public bool MoveNext ()
     {
       ++i;
-      return i < m_array.Count;
+      return i < _array.Count;
     }
 
     public void Reset ()

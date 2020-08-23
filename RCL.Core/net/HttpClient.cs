@@ -11,10 +11,10 @@ namespace RCL.Core
 {
   public class HttpClient
   {
-    protected object m_lock = new object ();
-    protected long m_client = 0;
-    protected long m_timeout = -1;
-    protected long m_retry = -1;
+    protected object _lock = new object ();
+    protected long _client = 0;
+    protected long _timeout = -1;
+    protected long _retry = -1;
 
     public class RestAsyncState : RCAsyncState
     {
@@ -293,9 +293,9 @@ namespace RCL.Core
     [RCVerb ("httptimeout")]
     public void HttpWait (RCRunner runner, RCClosure closure, RCLong right)
     {
-      lock (m_lock)
+      lock (_lock)
       {
-        this.m_timeout = (int) right[0];
+        this._timeout = (int) right[0];
       }
       RCSystem.Log.Record (closure, "web", 0, "httptimeout", right[0]);
       runner.Yield (closure, right);
@@ -304,9 +304,9 @@ namespace RCL.Core
     [RCVerb ("httpretry")]
     public void HttpRetry (RCRunner runner, RCClosure closure, RCLong right)
     {
-      lock (m_lock)
+      lock (_lock)
       {
-        this.m_retry = (int) right[0];
+        this._retry = (int) right[0];
       }
       RCSystem.Log.Record (closure, "web", 0, "httpretry", right[0]);
       runner.Yield (closure, right);
@@ -329,9 +329,9 @@ namespace RCL.Core
                                                  RCBlock.Empty,
                                                  new RCString (),
                                                  false,
-                                                 Interlocked.Increment (ref m_client),
-                                                 m_timeout,
-                                                 m_retry,
+                                                 Interlocked.Increment (ref _client),
+                                                 _timeout,
+                                                 _retry,
                                                  true);
        ThreadPool.QueueUserWorkItem (state.BeginWebRequest, state);
        }
@@ -350,9 +350,9 @@ namespace RCL.Core
                                                  RCBlock.Empty,
                                                  new RCString (),
                                                  false,
-                                                 Interlocked.Increment (ref m_client),
-                                                 m_timeout,
-                                                 m_retry,
+                                                 Interlocked.Increment (ref _client),
+                                                 _timeout,
+                                                 _retry,
                                                  true);
       ThreadPool.QueueUserWorkItem (state.BeginWebRequest, state);
     }
@@ -370,9 +370,9 @@ namespace RCL.Core
                                                  left,
                                                  new RCString (),
                                                  false,
-                                                 Interlocked.Increment (ref m_client),
-                                                 m_timeout,
-                                                 m_retry,
+                                                 Interlocked.Increment (ref _client),
+                                                 _timeout,
+                                                 _retry,
                                                  true);
       ThreadPool.QueueUserWorkItem (state.BeginWebRequest, state);
     }
@@ -390,9 +390,9 @@ namespace RCL.Core
                                                  RCBlock.Empty,
                                                  right,
                                                  false,
-                                                 Interlocked.Increment (ref m_client),
-                                                 m_timeout,
-                                                 m_retry,
+                                                 Interlocked.Increment (ref _client),
+                                                 _timeout,
+                                                 _retry,
                                                  true);
       ThreadPool.QueueUserWorkItem (state.BeginWebRequest, null);
     }
@@ -410,9 +410,9 @@ namespace RCL.Core
                                                  RCBlock.Empty,
                                                  right,
                                                  false,
-                                                 Interlocked.Increment (ref m_client),
-                                                 m_timeout,
-                                                 m_retry,
+                                                 Interlocked.Increment (ref _client),
+                                                 _timeout,
+                                                 _retry,
                                                  true);
       ThreadPool.QueueUserWorkItem (state.BeginWebRequest, null);
     }
@@ -432,9 +432,9 @@ namespace RCL.Core
                                                  head,
                                                  body,
                                                  false,
-                                                 Interlocked.Increment (ref m_client),
-                                                 m_timeout,
-                                                 m_retry,
+                                                 Interlocked.Increment (ref _client),
+                                                 _timeout,
+                                                 _retry,
                                                  true);
       ThreadPool.QueueUserWorkItem (state.BeginWebRequest, null);
     }
@@ -452,9 +452,9 @@ namespace RCL.Core
                                                  RCBlock.Empty,
                                                  right,
                                                  false,
-                                                 Interlocked.Increment (ref m_client),
-                                                 m_timeout,
-                                                 m_retry,
+                                                 Interlocked.Increment (ref _client),
+                                                 _timeout,
+                                                 _retry,
                                                  true);
       ThreadPool.QueueUserWorkItem (state.BeginWebRequest, null);
     }
@@ -474,9 +474,9 @@ namespace RCL.Core
                                                  head,
                                                  body,
                                                  false,
-                                                 Interlocked.Increment (ref m_client),
-                                                 m_timeout,
-                                                 m_retry,
+                                                 Interlocked.Increment (ref _client),
+                                                 _timeout,
+                                                 _retry,
                                                  true);
       ThreadPool.QueueUserWorkItem (state.BeginWebRequest, null);
     }
@@ -494,9 +494,9 @@ namespace RCL.Core
                                                  RCBlock.Empty,
                                                  new RCString (),
                                                  false,
-                                                 Interlocked.Increment (ref m_client),
-                                                 m_timeout,
-                                                 m_retry,
+                                                 Interlocked.Increment (ref _client),
+                                                 _timeout,
+                                                 _retry,
                                                  true);
       ThreadPool.QueueUserWorkItem (state.BeginWebRequest, state);
     }
@@ -514,9 +514,9 @@ namespace RCL.Core
                                                  left,
                                                  new RCString (),
                                                  false,
-                                                 Interlocked.Increment (ref m_client),
-                                                 m_timeout,
-                                                 m_retry,
+                                                 Interlocked.Increment (ref _client),
+                                                 _timeout,
+                                                 _retry,
                                                  true);
       ThreadPool.QueueUserWorkItem (state.BeginWebRequest, state);
     }
@@ -535,7 +535,7 @@ namespace RCL.Core
         // Why doesn't this follow the same Begin/End idea as every other API?
         // Is there some other lower level thing I should use?
         WebClient client = new WebClient ();
-        long handle = Interlocked.Increment (ref m_client);
+        long handle = Interlocked.Increment (ref _client);
         client.DownloadStringCompleted +=
           new DownloadStringCompletedEventHandler (client_DownloadStringCompleted);
         Uri uri = new Uri (left[i] + query);

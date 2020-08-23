@@ -9,7 +9,7 @@ namespace RCL.Core
 {
   public class CubeMath
   {
-    protected static readonly Dictionary <RCActivator.OverloadKey, Overload> m_overloads =
+    protected static readonly Dictionary <RCActivator.OverloadKey, Overload> _overloads =
       new Dictionary<RCActivator.OverloadKey, Overload> ();
 
     static CubeMath ()
@@ -42,10 +42,10 @@ namespace RCL.Core
                                   MakeGenericType (rtype, otype);
                 Delegate primop = Delegate.CreateDelegate (primoptype, method);
 
-                if (m_overloads.ContainsKey (key)) {
+                if (_overloads.ContainsKey (key)) {
                   throw new Exception ("dispatch table already contains the key:" + key);
                 }
-                m_overloads.Add (key, new Overload (vectorop, primop));
+                _overloads.Add (key, new Overload (vectorop, primop));
               }
               else if (verb.Profile == Profile.Dyadic) {
                 Type ltype = parameters[0].ParameterType;
@@ -69,7 +69,7 @@ namespace RCL.Core
                 Type scalarOpType = typeof (CubeMath).GetNestedType ("ScalarOp`3").
                                     MakeGenericType (ltype, rtype, otype);
                 Delegate scalarOp = Delegate.CreateDelegate (scalarOpType, method);
-                m_overloads.Add (key0, new Overload (cubeOp, scalarOp));
+                _overloads.Add (key0, new Overload (cubeOp, scalarOp));
                 // Problem is that all of the cube overloads will be duplicates.
                 // we could hack it by using the scalar types for the cube overloads.
                 // or we could introduce a new type of key that includes both the scalar
@@ -84,7 +84,7 @@ namespace RCL.Core
                 cubeOpMethod = typeof (CubeMath).GetMethod ("DyadicOpLeftScalar").
                                MakeGenericMethod (ltype, rtype, otype);
                 cubeOp = Delegate.CreateDelegate (cubeOpType, cubeOpMethod);
-                m_overloads.Add (key1, new Overload (cubeOp, scalarOp));
+                _overloads.Add (key1, new Overload (cubeOp, scalarOp));
 
                 RCActivator.OverloadKey key2 = new RCActivator.OverloadKey (verb.Name,
                                                                             typeof (RCCube),
@@ -95,7 +95,7 @@ namespace RCL.Core
                 cubeOpMethod = typeof (CubeMath).GetMethod ("DyadicOpRightScalar").
                                MakeGenericMethod (ltype, rtype, otype);
                 cubeOp = Delegate.CreateDelegate (cubeOpType, cubeOpMethod);
-                m_overloads.Add (key2, new Overload (cubeOp, scalarOp));
+                _overloads.Add (key2, new Overload (cubeOp, scalarOp));
               }
               else if (verb.Profile == Profile.Sequential) {
                 // The parameter is a ref parameter which is actually a different type
@@ -119,10 +119,10 @@ namespace RCL.Core
                 Type primoptype = typeof (CubeMath).GetNestedType ("SeqScalarOp`3").
                                   MakeGenericType (stype, rtype, otype);
                 Delegate primop = Delegate.CreateDelegate (primoptype, method);
-                if (m_overloads.ContainsKey (key)) {
+                if (_overloads.ContainsKey (key)) {
                   throw new Exception ("dispatch table already contains the key:" + key);
                 }
-                m_overloads.Add (key, new Overload (vectorop, primop));
+                _overloads.Add (key, new Overload (vectorop, primop));
 
                 // The dyadic version allows passing a vector on the left
                 RCActivator.OverloadKey key1 = new RCActivator.OverloadKey (verb.Name,
@@ -134,10 +134,10 @@ namespace RCL.Core
                 MethodInfo vectoropMethod1 = typeof (CubeMath).GetMethod ("SequentialOpDyadic").
                                              MakeGenericMethod (stype, rtype, otype);
                 Delegate vectorop1 = Delegate.CreateDelegate (vectoroptype1, vectoropMethod1);
-                if (m_overloads.ContainsKey (key1)) {
+                if (_overloads.ContainsKey (key1)) {
                   throw new Exception ("dispatch table already contains the key:" + key1);
                 }
-                m_overloads.Add (key1, new Overload (vectorop1, primop));
+                _overloads.Add (key1, new Overload (vectorop1, primop));
 
                 // The monadic version for BLOCKS
                 RCActivator.OverloadKey key2 = new RCActivator.OverloadKey (verb.Name,
@@ -151,10 +151,10 @@ namespace RCL.Core
                 MethodInfo blockOpMethod = typeof (CubeMath).GetMethod ("SequentialOpBlockMonadic").
                                            MakeGenericMethod (stype, rtype, otype);
                 Delegate blockOp = Delegate.CreateDelegate (blockOpType, blockOpMethod);
-                if (m_overloads.ContainsKey (key2)) {
+                if (_overloads.ContainsKey (key2)) {
                   throw new Exception ("dispatch table already contains the key:" + key2);
                 }
-                m_overloads.Add (key2, new Overload (blockOp, primop));
+                _overloads.Add (key2, new Overload (blockOp, primop));
 
                 // There is no need for a "dyadic sequential" operation like
                 // "1 sum {x:1 2 3 y:4 5 6}"
@@ -188,10 +188,10 @@ namespace RCL.Core
                                   MakeGenericType (ctype, ltype, rtype, otype);
                 Delegate primop = Delegate.CreateDelegate (primoptype, method);
 
-                if (m_overloads.ContainsKey (key)) {
+                if (_overloads.ContainsKey (key)) {
                   throw new Exception ("dispatch table already contains the key:" + key);
                 }
-                m_overloads.Add (key, new Overload (vectorop, primop));
+                _overloads.Add (key, new Overload (vectorop, primop));
               }
             }
             finally {}
@@ -1021,7 +1021,7 @@ namespace RCL.Core
                                                                  left.GetType (0),
                                                                  right.GetType (0));
       Overload overload;
-      if (!m_overloads.TryGetValue (key, out overload)) {
+      if (!_overloads.TryGetValue (key, out overload)) {
         throw RCException.Overload (closure, name, left, right);
       }
       // The result should almost always be a cube.
@@ -1042,7 +1042,7 @@ namespace RCL.Core
                                                                  left.GetType ().BaseType,
                                                                  right.GetType (0));
       Overload overload;
-      if (!m_overloads.TryGetValue (key, out overload)) {
+      if (!_overloads.TryGetValue (key, out overload)) {
         throw RCException.Overload (closure, name, left, right);
       }
       // The result should almost always be a cube.
@@ -1064,7 +1064,7 @@ namespace RCL.Core
                                                                  left.GetType (0),
                                                                  right.GetType ().BaseType);
       Overload overload;
-      if (!m_overloads.TryGetValue (key, out overload)) {
+      if (!_overloads.TryGetValue (key, out overload)) {
         throw RCException.Overload (closure, name, left, right);
       }
       // The result should almost always be a cube.
@@ -1085,7 +1085,7 @@ namespace RCL.Core
                                                                  null,
                                                                  right.GetType (0));
       Overload overload;
-      if (!m_overloads.TryGetValue (key, out overload)) {
+      if (!_overloads.TryGetValue (key, out overload)) {
         throw RCException.Overload (closure, name, right);
       }
       // The result should almost always be a cube.
@@ -1101,7 +1101,7 @@ namespace RCL.Core
                                                                  null,
                                                                  right.GetType (0));
       Overload overload;
-      if (!m_overloads.TryGetValue (key, out overload)) {
+      if (!_overloads.TryGetValue (key, out overload)) {
         throw RCException.Overload (closure, name, right);
       }
       RCValue result = (RCValue) overload.Invoke (right);
@@ -1118,7 +1118,7 @@ namespace RCL.Core
                                                                  left.GetType ().BaseType,
                                                                  right.GetType (0));
       Overload overload;
-      if (!m_overloads.TryGetValue (key, out overload)) {
+      if (!_overloads.TryGetValue (key, out overload)) {
         throw RCException.Overload (closure, name, right);
       }
       RCValue result = (RCValue) overload.Invoke (left, right);
@@ -1132,7 +1132,7 @@ namespace RCL.Core
                                                                  null,
                                                                  right.GetType (0));
       Overload overload;
-      if (!m_overloads.TryGetValue (key, out overload)) {
+      if (!_overloads.TryGetValue (key, out overload)) {
         throw RCException.Overload (closure, name, right);
       }
       RCValue result = (RCValue) overload.Invoke (right);

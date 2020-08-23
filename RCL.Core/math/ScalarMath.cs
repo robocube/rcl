@@ -2067,12 +2067,12 @@ namespace RCL.Core
 
     public class LikeContext<T> : Context<T>
     {
-      public string[] m_parts;
-      public string m_expression;
+      public string[] _parts;
+      public string _expression;
       public override void Init (RCArray<T> right)
       {
-        m_expression = right[0].ToString ();
-        m_parts = m_expression.Split ('*');
+        _expression = right[0].ToString ();
+        _parts = _expression.Split ('*');
       }
     }
 
@@ -2082,23 +2082,23 @@ namespace RCL.Core
       int start = 0;
       int part = 0;
       if (r.Length == 0) {
-        if (c.m_expression == "*" || c.m_expression == "") {
+        if (c._expression == "*" || c._expression == "") {
           return true;
         }
         return false;
       }
-      while (start < r.Length && part < c.m_parts.Length)
+      while (start < r.Length && part < c._parts.Length)
       {
-        if (c.m_parts.Length == 1) {
-          return r.Equals (c.m_parts[0]);
+        if (c._parts.Length == 1) {
+          return r.Equals (c._parts[0]);
         }
-        else if (c.m_parts[part] != "") {
-          int index = r.IndexOf (c.m_parts[part], start);
+        else if (c._parts[part] != "") {
+          int index = r.IndexOf (c._parts[part], start);
           if (part == 0 && index > 0) {
             return false;
           }
           else if (index >= 0) {
-            start += c.m_parts[part].Length;
+            start += c._parts[part].Length;
           }
           else {
             return false;

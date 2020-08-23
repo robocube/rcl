@@ -13,12 +13,12 @@ namespace RCL.Kernel
     }
 
     // For fiber module.
-    public long m_fiber = 0;
-    public object m_fiberLock = new object ();
-    public Dictionary<long, FiberState> m_fibers = new Dictionary<long, FiberState> ();
-    public Dictionary<long, Queue<RCClosure>> m_fiberWaiters =
+    public long _fiber = 0;
+    public object _fiberLock = new object ();
+    public Dictionary<long, FiberState> _fibers = new Dictionary<long, FiberState> ();
+    public Dictionary<long, Queue<RCClosure>> _fiberWaiters =
       new Dictionary<long, Queue<RCClosure>> ();
-    public Dictionary<long, RCValue> m_fiberResults = new Dictionary<long, RCValue> ();
+    public Dictionary<long, RCValue> _fiberResults = new Dictionary<long, RCValue> ();
 
     [RCVerb ("fiber")]
     public void EvalFiber (RCRunner runner, RCClosure closure, RCBlock right)
@@ -29,7 +29,7 @@ namespace RCL.Kernel
 
     protected long DoFiber (RCRunner runner, RCClosure closure, RCValue code)
     {
-      long fiber = Interlocked.Increment (ref m_fiber);
+      long fiber = Interlocked.Increment (ref _fiber);
       RCBot bot = runner.GetBot (closure.Bot);
       RCClosure next = FiberClosure (bot, fiber, closure, code);
       bot.ChangeFiberState (fiber, "start");
@@ -163,20 +163,20 @@ namespace RCL.Kernel
 
     public bool IsFiberDone (long fiber)
     {
-      lock (m_fiberLock)
+      lock (_fiberLock)
       {
-        return m_fiberResults.ContainsKey (fiber);
+        return _fiberResults.ContainsKey (fiber);
       }
     }
 
     public void ChangeFiberState (long handle, string state)
     {
       FiberState fiberState;
-      lock (m_fiberLock)
+      lock (_fiberLock)
       {
-        if (!m_fibers.TryGetValue (handle, out fiberState)) {
+        if (!_fibers.TryGetValue (handle, out fiberState)) {
           fiberState = new FiberState ();
-          m_fibers.Add (handle, fiberState);
+          _fibers.Add (handle, fiberState);
         }
         fiberState.State = state;
       }
@@ -186,25 +186,25 @@ namespace RCL.Kernel
     {
       Queue<RCClosure> waiters;
       RCValue botResult = null;
-      lock (m_fiberLock)
+      lock (_fiberLock)
       {
-        if (m_fiberWaiters.TryGetValue (fiber, out waiters)) {
-          m_fiberWaiters.Remove (fiber);
+        if (_fiberWaiters.TryGetValue (fiber, out waiters)) {
+          _fiberWaiters.Remove (fiber);
         }
-        if (!m_fiberResults.ContainsKey (fiber)) {
-          m_fiberResults.Add (fiber, result);
+        if (!_fiberResults.ContainsKey (fiber)) {
+          _fiberResults.Add (fiber, result);
         }
         else {
           // I wanted to draw a hard line and ensure this method was
           // called only once for each fiber, by the fiber or bot operator.
           // But it has to also be called from within try when there is nothing
           // to do next.
-          if (!m_fiberResults[fiber].Equals (result)) {
+          if (!_fiberResults[fiber].Equals (result)) {
             throw new Exception ("Conflicting results for fiber " + fiber);
           }
         }
-        if (m_fiberResults.Count == m_fibers.Count) {
-          botResult = m_fiberResults[0L];
+        if (_fiberResults.Count == _fibers.Count) {
+          botResult = _fiberResults[0L];
         }
       }
       if (waiters != null) {

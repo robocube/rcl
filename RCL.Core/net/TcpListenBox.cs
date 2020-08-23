@@ -12,20 +12,20 @@ namespace RCL.Core
 {
   public class TcpListenBox
   {
-    protected object m_lock = new object ();
-    protected Queue<RCAsyncState> m_requests = new Queue<RCAsyncState> ();
-    protected Queue<RCValue> m_messages = new Queue<RCValue> ();
+    protected object _lock = new object ();
+    protected Queue<RCAsyncState> _requests = new Queue<RCAsyncState> ();
+    protected Queue<RCValue> _messages = new Queue<RCValue> ();
 
     public void Add (RCRunner runner, RCValue message)
     {
       RCAsyncState state = null;
-      lock (m_lock)
+      lock (_lock)
       {
-        if (m_requests.Count > 0) {
-          state = m_requests.Dequeue ();
+        if (_requests.Count > 0) {
+          state = _requests.Dequeue ();
         }
         else {
-          m_messages.Enqueue (message);
+          _messages.Enqueue (message);
         }
       }
       if (state != null) {
@@ -36,13 +36,13 @@ namespace RCL.Core
     public void Remove (RCRunner runner, RCClosure closure)
     {
       RCValue message = null;
-      lock (m_lock)
+      lock (_lock)
       {
-        if (m_messages.Count > 0) {
-          message = m_messages.Dequeue ();
+        if (_messages.Count > 0) {
+          message = _messages.Dequeue ();
         }
         else {
-          m_requests.Enqueue (new RCAsyncState (runner, closure, null));
+          _requests.Enqueue (new RCAsyncState (runner, closure, null));
         }
       }
       if (message != null) {

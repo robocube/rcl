@@ -32,7 +32,7 @@ namespace RCL.Core
       // ThreadPool.QueueUserWorkItem (BeginWebRequest,
       //                              new RestAsyncState (runner, closure, request, new
       // RCString (),
-      // false, Interlocked.Increment (ref m_client)));
+      // false, Interlocked.Increment (ref _client)));
     }
   }
 }

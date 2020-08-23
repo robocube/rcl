@@ -8,7 +8,7 @@ namespace RCL.Core
 {
   public class VectorMath
   {
-    protected static readonly Dictionary <RCActivator.OverloadKey, Overload> m_overloads =
+    protected static readonly Dictionary <RCActivator.OverloadKey, Overload> _overloads =
       new Dictionary<RCActivator.OverloadKey, Overload> ();
 
     static VectorMath ()
@@ -40,10 +40,10 @@ namespace RCL.Core
                               MakeGenericType (rtype, otype);
             Delegate primop = Delegate.CreateDelegate (primoptype, method);
 
-            if (m_overloads.ContainsKey (key)) {
+            if (_overloads.ContainsKey (key)) {
               throw new Exception ("dispatch table already contains the key:" + key);
             }
-            m_overloads.Add (key, new Overload (vectorop, primop));
+            _overloads.Add (key, new Overload (vectorop, primop));
           }
           else if (verb.Profile == Profile.Dyadic) {
             Type ltype = parameters[0].ParameterType;
@@ -64,10 +64,10 @@ namespace RCL.Core
             Type primoptype = typeof (VectorMath).GetNestedType ("ScalarOp`3").
                               MakeGenericType (ltype, rtype, otype);
             Delegate primop = Delegate.CreateDelegate (primoptype, method);
-            if (m_overloads.ContainsKey (key)) {
+            if (_overloads.ContainsKey (key)) {
               throw new Exception ("dispatch table already contains the key:" + key);
             }
-            m_overloads.Add (key, new Overload (vectorop, primop));
+            _overloads.Add (key, new Overload (vectorop, primop));
           }
           else if (verb.Profile == Profile.Cumulative) {
             // The parameter is a ref parameter which is actually a different type than
@@ -92,10 +92,10 @@ namespace RCL.Core
             Delegate cumop = Delegate.CreateDelegate (cumoptype, cumopMethod);
             Delegate primop = Delegate.CreateDelegate (primoptype, method);
 
-            if (m_overloads.ContainsKey (key)) {
+            if (_overloads.ContainsKey (key)) {
               throw new Exception ("dispatch table already contains the key:" + key);
             }
-            m_overloads.Add (key, new Overload (cumop, primop));
+            _overloads.Add (key, new Overload (cumop, primop));
           }
           else if (verb.Profile == Profile.Sequential) {
             // The parameter is a ref parameter which is actually a different type than
@@ -121,10 +121,10 @@ namespace RCL.Core
                               MakeGenericType (stype, rtype, otype);
             Delegate primop = Delegate.CreateDelegate (primoptype, method);
 
-            if (m_overloads.ContainsKey (key)) {
+            if (_overloads.ContainsKey (key)) {
               throw new Exception ("dispatch table already contains the key:" + key);
             }
-            m_overloads.Add (key, new Overload (vectorop, primop));
+            _overloads.Add (key, new Overload (vectorop, primop));
           }
           else if (verb.Profile == Profile.Contextual) {
             // The parameter is a ref parameter which is actually a different type than
@@ -152,10 +152,10 @@ namespace RCL.Core
                               MakeGenericType (ctype, ltype, rtype, otype);
             Delegate primop = Delegate.CreateDelegate (primoptype, method);
 
-            if (m_overloads.ContainsKey (key)) {
+            if (_overloads.ContainsKey (key)) {
               throw new Exception ("dispatch table already contains the key:" + key);
             }
-            m_overloads.Add (key, new Overload (vectorop, primop));
+            _overloads.Add (key, new Overload (vectorop, primop));
           }
         }
       }
@@ -278,7 +278,7 @@ namespace RCL.Core
                                                                  left.ScalarType,
                                                                  right.ScalarType);
       Overload overload;
-      if (!m_overloads.TryGetValue (key, out overload)) {
+      if (!_overloads.TryGetValue (key, out overload)) {
         throw RCException.Overload (closure, name, left, right);
       }
       object array = overload.Invoke (left.Array, right.Array);
@@ -292,7 +292,7 @@ namespace RCL.Core
                                                                  null,
                                                                  right.ScalarType);
       Overload overload;
-      if (!m_overloads.TryGetValue (key, out overload)) {
+      if (!_overloads.TryGetValue (key, out overload)) {
         throw RCException.Overload (closure, name, right);
       }
       object array = overload.Invoke (right.Array);
@@ -306,7 +306,7 @@ namespace RCL.Core
                                                                  null,
                                                                  right.ScalarType);
       Overload overload;
-      if (!m_overloads.TryGetValue (key, out overload)) {
+      if (!_overloads.TryGetValue (key, out overload)) {
         throw RCException.Overload (closure, name, right);
       }
       object array = overload.Invoke (right.Array);

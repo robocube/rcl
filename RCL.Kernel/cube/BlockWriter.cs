@@ -7,47 +7,47 @@ namespace RCL.Kernel
 {
   public class BlockWriter : Visitor
   {
-    protected RCCube m_source;
-    protected RCBlock m_target = RCBlock.Empty;
-    protected RCBlock m_row = RCBlock.Empty;
-    protected string m_rowName = "";
+    protected RCCube _source;
+    protected RCBlock _target = RCBlock.Empty;
+    protected RCBlock _row = RCBlock.Empty;
+    protected string _rowName = "";
 
     public BlockWriter (RCCube source)
     {
-      m_source = source;
+      _source = source;
     }
 
     public RCBlock Write ()
     {
-      m_source.VisitCellsForward (this, 0, m_source.Count);
-      return m_target;
+      _source.VisitCellsForward (this, 0, _source.Count);
+      return _target;
     }
 
     public override void BeforeRow (long e, RCTimeScalar t, RCSymbolScalar symbol, int row)
     {
-      if (m_source.Axis.Has ("G")) {
-        m_row = new RCBlock (RCBlock.Empty, "G", ":", new RCLong (m_source.Axis.Global[row]));
+      if (_source.Axis.Has ("G")) {
+        _row = new RCBlock (RCBlock.Empty, "G", ":", new RCLong (_source.Axis.Global[row]));
       }
-      if (m_source.Axis.Has ("E")) {
-        m_row = new RCBlock (m_row, "E", ":", new RCLong (m_source.Axis.Event[row]));
+      if (_source.Axis.Has ("E")) {
+        _row = new RCBlock (_row, "E", ":", new RCLong (_source.Axis.Event[row]));
       }
-      if (m_source.Axis.Has ("T")) {
-        m_row = new RCBlock (m_row, "T", ":", new RCTime (m_source.Axis.Time[row]));
+      if (_source.Axis.Has ("T")) {
+        _row = new RCBlock (_row, "T", ":", new RCTime (_source.Axis.Time[row]));
       }
-      if (m_source.Axis.Has ("S")) {
+      if (_source.Axis.Has ("S")) {
         // Include S as both a field on the row blocks and as the names of the rows
         // themselves
         // This is so that you can get back to what you had with "flip block $my_cube"
         // While also being able to treat the result of "block $my_cube" as a dictionary
         // if you wish
-        m_row = new RCBlock (m_row, "S", ":", new RCSymbol (m_source.Axis.Symbol[row]));
-        m_rowName = m_source.Axis.Symbol[row].Key.ToString ();
+        _row = new RCBlock (_row, "S", ":", new RCSymbol (_source.Axis.Symbol[row]));
+        _rowName = _source.Axis.Symbol[row].Key.ToString ();
       }
     }
 
     public override void VisitScalar<T> (string name, Column<T> column, int row)
     {
-      m_row = new RCBlock (m_row,
+      _row = new RCBlock (_row,
                            name,
                            ":",
                            RCVectorBase.FromArray (new RCArray<T> (column.Data[row])));
@@ -55,9 +55,9 @@ namespace RCL.Kernel
 
     public override void AfterRow (long e, RCTimeScalar t, RCSymbolScalar s, int row)
     {
-      m_target = new RCBlock (m_target, m_rowName, ":", m_row);
-      m_row = RCBlock.Empty;
-      m_rowName = "";
+      _target = new RCBlock (_target, _rowName, ":", _row);
+      _row = RCBlock.Empty;
+      _rowName = "";
     }
   }
 }

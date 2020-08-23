@@ -13,8 +13,8 @@ namespace RCL.Kernel
     {
       for (int i = 0; i < data.Length; ++i)
       {
-        if (m_data[i] == null) {
-          m_data.Write (i, "");
+        if (_data[i] == null) {
+          _data.Write (i, "");
         }
       }
     }
@@ -105,7 +105,7 @@ namespace RCL.Kernel
 
     public override void Write (object box)
     {
-      m_data.Write ((string) box);
+      _data.Write ((string) box);
     }
   }
 }

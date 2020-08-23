@@ -8,20 +8,20 @@ namespace RCL.Kernel
 {
   public abstract class RCVectorBase : RCValue
   {
-    protected readonly static Dictionary<string, RCVectorBase> m_types =
+    protected readonly static Dictionary<string, RCVectorBase> _types =
       new Dictionary<string, RCVectorBase> ();
 
     static RCVectorBase ()
     {
-      m_types.Add (typeof (byte).Name, new RCByte ());
-      m_types.Add (typeof (double).Name, new RCDouble ());
-      m_types.Add (typeof (long).Name, new RCLong ());
-      m_types.Add (typeof (decimal).Name, new RCDecimal ());
-      m_types.Add (typeof (string).Name, new RCString ());
-      m_types.Add (typeof (bool).Name, new RCBoolean ());
-      m_types.Add (typeof (RCSymbolScalar).Name, new RCSymbol ());
-      m_types.Add (typeof (RCTimeScalar).Name, new RCTime ());
-      m_types.Add (typeof (RCIncrScalar).Name, new RCIncr ());
+      _types.Add (typeof (byte).Name, new RCByte ());
+      _types.Add (typeof (double).Name, new RCDouble ());
+      _types.Add (typeof (long).Name, new RCLong ());
+      _types.Add (typeof (decimal).Name, new RCDecimal ());
+      _types.Add (typeof (string).Name, new RCString ());
+      _types.Add (typeof (bool).Name, new RCBoolean ());
+      _types.Add (typeof (RCSymbolScalar).Name, new RCSymbol ());
+      _types.Add (typeof (RCTimeScalar).Name, new RCTime ());
+      _types.Add (typeof (RCIncrScalar).Name, new RCIncr ());
     }
 
     /// <summary>
@@ -115,7 +115,7 @@ namespace RCL.Kernel
 
     public static RCVectorBase EmptyOf (Type type)
     {
-      return m_types[type.Name];
+      return _types[type.Name];
     }
 
     public abstract void Write (object box);

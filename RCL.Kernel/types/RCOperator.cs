@@ -26,10 +26,10 @@ namespace RCL.Kernel
 
   public class RCOperator : RCValue
   {
-    protected RCValue m_left;
-    protected RCValue m_right;
-    protected string m_name;
-    protected int m_count = 0;
+    protected RCValue _left;
+    protected RCValue _right;
+    protected string _name;
+    protected int _count = 0;
 
     public virtual void Init (string name, RCValue left, RCValue right)
     {
@@ -45,14 +45,14 @@ namespace RCL.Kernel
       /*
          if (left == null)
          {
-         m_impl =
+         _impl =
           new RCBlock (
             new RCBlock ("0", ":", right),
                           "", "~", new RCString (name));
          }
          else
          {
-         m_impl =
+         _impl =
           new RCBlock (
             new RCBlock (
               new RCBlock ("0", ":", left),
@@ -61,36 +61,36 @@ namespace RCL.Kernel
          }
        */
 
-      m_name = name;
-      m_left = left;
-      m_right = right;
-      m_count += m_right.IsOperator ? m_right.Count : 1;
-      if (m_left != null) {
-        m_count += m_left.IsOperator ? m_left.Count : 1;
+      _name = name;
+      _left = left;
+      _right = right;
+      _count += _right.IsOperator ? _right.Count : 1;
+      if (_left != null) {
+        _count += _left.IsOperator ? _left.Count : 1;
       }
     }
 
     public override void Lock ()
     {
-      if (m_left != null) {
-        m_left.Lock ();
+      if (_left != null) {
+        _left.Lock ();
       }
-      m_right.Lock ();
+      _right.Lock ();
     }
 
     public RCValue Left
     {
-      get { return m_left; }
+      get { return _left; }
     }
 
     public RCValue Right
     {
-      get { return m_right; }
+      get { return _right; }
     }
 
     public string Name
     {
-      get { return m_name; }
+      get { return _name; }
     }
 
     public override string TypeName
@@ -115,7 +115,7 @@ namespace RCL.Kernel
 
     public override int Count
     {
-      get { return m_count; }
+      get { return _count; }
     }
 
     protected static readonly Type[] CTOR = new Type[] {};
@@ -126,18 +126,18 @@ namespace RCL.Kernel
         return result;
       }
       RCValue left = null;
-      if (m_left != null) {
-        left = m_left.Edit (runner, editor);
+      if (_left != null) {
+        left = _left.Edit (runner, editor);
       }
-      RCValue right = m_right.Edit (runner, editor);
+      RCValue right = _right.Edit (runner, editor);
       if (left != null || right != null) {
         if (left == null) {
-          left = m_left;
+          left = _left;
         }
         if (right == null) {
-          right = m_right;
+          right = _right;
         }
-        result = runner.New (m_name, left, right);
+        result = runner.New (_name, left, right);
         return result;
       }
       else {
@@ -219,14 +219,14 @@ namespace RCL.Kernel
   /// </summary>
   public class UserOperator : RCOperator
   {
-    protected internal RCReference m_reference;
+    protected internal RCReference _reference;
 
     public UserOperator (RCReference reference)
     {
       if (reference == null) {
         throw new ArgumentNullException ("reference");
       }
-      m_reference = reference;
+      _reference = reference;
     }
 
     public override void EvalOperator (RCRunner runner, RCClosure closure)
@@ -254,14 +254,14 @@ namespace RCL.Kernel
   /// </summary>
   public class InlineOperator : RCOperator
   {
-    protected internal RCValue m_code;
+    protected internal RCValue _code;
 
     public InlineOperator (RCValue code)
     {
       if (code == null) {
         throw new ArgumentNullException ("code");
       }
-      m_code = code;
+      _code = code;
     }
 
     public override void EvalOperator (RCRunner runner, RCClosure closure)
@@ -271,7 +271,7 @@ namespace RCL.Kernel
 
     public override void BodyToString (StringBuilder builder, RCFormat args, int level)
     {
-      m_code.Format (builder, args, level);
+      _code.Format (builder, args, level);
     }
   }
 
@@ -279,15 +279,15 @@ namespace RCL.Kernel
   {
     // I am going to need to store this number but I would like
     // to move it into the block somehow.
-    protected readonly int m_escapeCount;
-    protected readonly bool m_multiline;
-    protected readonly bool m_cr;
+    protected readonly int _escapeCount;
+    protected readonly bool _multiline;
+    protected readonly bool _cr;
 
     public RCTemplate (RCBlock definition, int escapeCount, bool multiline)
       : base (definition, "", RCEvaluator.Expand, new RCLong (escapeCount))
     {
-      m_escapeCount = escapeCount;
-      m_multiline = multiline;
+      _escapeCount = escapeCount;
+      _multiline = multiline;
     }
 
     /// <summary>
@@ -362,12 +362,12 @@ namespace RCL.Kernel
 
     public int EscapeCount
     {
-      get { return m_escapeCount; }
+      get { return _escapeCount; }
     }
 
     public bool Multiline
     {
-      get { return m_multiline; }
+      get { return _multiline; }
     }
 
     public override bool IsTemplate

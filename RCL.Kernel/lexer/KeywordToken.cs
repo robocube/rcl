@@ -9,13 +9,13 @@ namespace RCL.Kernel
 {
   public abstract class KeywordLexer : RCTokenType
   {
-    protected string[] m_keywords;
+    protected string[] _keywords;
     public KeywordLexer (params string[] keywords)
     {
       if (keywords == null) {
         throw new ArgumentNullException ("keywords");
       }
-      m_keywords = keywords;
+      _keywords = keywords;
     }
 
     public override RCToken TryParseToken (string text,
@@ -35,9 +35,9 @@ namespace RCL.Kernel
 
     protected int LengthOfOperator (string text, int start)
     {
-      for (int i = 0; i < m_keywords.Length; ++i)
+      for (int i = 0; i < _keywords.Length; ++i)
       {
-        int length = LengthOfKeyword (text, start, m_keywords[i]);
+        int length = LengthOfKeyword (text, start, _keywords[i]);
         // Make sure we don't include == as an evaluator, it should be an operator.
         if (length > 0) {
           return length;

@@ -77,8 +77,8 @@ namespace RCL.Kernel
       int length = (int) array.Count * size;
       WriteScalarInt (result, array.Count);
       result.Resize (length, 0);
-      Buffer.BlockCopy (array.m_source, 0, result.m_source, (int) result.m_count, length);
-      result.m_count += length;
+      Buffer.BlockCopy (array._source, 0, result._source, (int) result._count, length);
+      result._count += length;
     }
 
     public static void WriteVectorDecimal (RCArray<byte> result, RCVector<decimal> vector)
@@ -103,11 +103,11 @@ namespace RCL.Kernel
         Buffer.BlockCopy (
           bits,
           0,
-          result.m_source,
-          (int) result.m_count + i * sizeof (decimal),
+          result._source,
+          (int) result._count + i * sizeof (decimal),
           sizeof (decimal));
       }
-      result.m_count += data.Count * sizeof (decimal);
+      result._count += data.Count * sizeof (decimal);
     }
 
     public static void WriteScalarDecimal (decimal val, RCArray<byte> result)
@@ -289,7 +289,7 @@ namespace RCL.Kernel
 
     public static RCBlock ReadBlock (RCActivator activator, RCArray<byte> data, ref int start)
     {
-      int count = BitConverter.ToInt32 (data.m_source, start);
+      int count = BitConverter.ToInt32 (data._source, start);
       start += sizeof (int);
       RCBlock result = null;
       for (int i = 0; i < count; ++i)
@@ -304,7 +304,7 @@ namespace RCL.Kernel
 
     public static RCOperator ReadOperator (RCActivator activator, RCArray<byte> data, ref int start)
     {
-      int count = BitConverter.ToInt32 (data.m_source, start);
+      int count = BitConverter.ToInt32 (data._source, start);
       start += sizeof (int);
 
       RCValue left = null;
@@ -332,7 +332,7 @@ namespace RCL.Kernel
                                              ref int
                                              start)
     {
-      int count = BitConverter.ToInt32 (array.m_source, start);
+      int count = BitConverter.ToInt32 (array._source, start);
       start += sizeof (int);
       string[] parts = new string[count];
       for (int i = 0; i < count; ++i) {
@@ -343,18 +343,18 @@ namespace RCL.Kernel
 
     public static RCArray<T> ReadVector<T> (RCArray<byte> array, ref int start, int size)
     {
-      int count = BitConverter.ToInt32 (array.m_source, start);
+      int count = BitConverter.ToInt32 (array._source, start);
       int length = count * size;
       start += sizeof (int);
       T[] result = new T[count];
-      Buffer.BlockCopy (array.m_source, start, result, 0, length);
+      Buffer.BlockCopy (array._source, start, result, 0, length);
       start += length;
       return new RCArray<T> (result);
     }
 
     public static RCArray<decimal> ReadVectorDecimal (RCArray<byte> data, ref int start)
     {
-      int count = BitConverter.ToInt32 (data.m_source, start);
+      int count = BitConverter.ToInt32 (data._source, start);
       start += sizeof (int);
 
       decimal[] result = new decimal[count];
@@ -369,18 +369,18 @@ namespace RCL.Kernel
 
     public static decimal ReadScalarDecimal (RCArray<byte> array, int start)
     {
-      int lo = BitConverter.ToInt32 (array.m_source, start);
-      int mid = BitConverter.ToInt32 (array.m_source, start + 4);
-      int hi = BitConverter.ToInt32 (array.m_source, start + 8);
+      int lo = BitConverter.ToInt32 (array._source, start);
+      int mid = BitConverter.ToInt32 (array._source, start + 4);
+      int hi = BitConverter.ToInt32 (array._source, start + 8);
       byte scale = array[start + 14];
-      bool negative = BitConverter.ToBoolean (array.m_source, start + 15);
+      bool negative = BitConverter.ToBoolean (array._source, start + 15);
       decimal val = new decimal (lo, mid, hi, negative, scale);
       return val;
     }
 
     public static RCArray<RCTimeScalar> ReadVectorTime (RCArray<byte> data, ref int start)
     {
-      int count = BitConverter.ToInt32 (data.m_source, start);
+      int count = BitConverter.ToInt32 (data._source, start);
       start += sizeof (int);
 
       RCTimeScalar[] result = new RCTimeScalar[count];
@@ -395,15 +395,15 @@ namespace RCL.Kernel
 
     public static RCTimeScalar ReadScalarTime (RCArray<byte> array, int start)
     {
-      long ticks = BitConverter.ToInt64 (array.m_source, start);
-      int type = BitConverter.ToInt32 (array.m_source, start + 8);
+      long ticks = BitConverter.ToInt64 (array._source, start);
+      int type = BitConverter.ToInt32 (array._source, start + 8);
       return new RCTimeScalar (new DateTime (ticks), (RCTimeType) type);
     }
 
     public static RCArray<string> ReadVectorString (RCArray<byte> array, ref int start)
     {
       // This is the count of unique elements.
-      int count = BitConverter.ToInt32 (array.m_source, start);
+      int count = BitConverter.ToInt32 (array._source, start);
       start += sizeof (int);
 
       List<string> unique = new List<string> ();
@@ -415,12 +415,12 @@ namespace RCL.Kernel
       }
 
       // This is the count of actual elements.
-      count = BitConverter.ToInt32 (array.m_source, start);
+      count = BitConverter.ToInt32 (array._source, start);
       start += sizeof (int);
       string[] result = new string[count];
       for (int i = 0; i < count; ++i)
       {
-        int index = BitConverter.ToInt32 (array.m_source, start);
+        int index = BitConverter.ToInt32 (array._source, start);
         result[i] = unique[index];
         start += sizeof (int);
       }
@@ -429,12 +429,12 @@ namespace RCL.Kernel
 
     public static string ReadScalarString (RCArray<byte> data, ref int start)
     {
-      int length = BitConverter.ToInt32 (data.m_source, start);
+      int length = BitConverter.ToInt32 (data._source, start);
       char[] chars = new char[length];
       start += sizeof (int);
       for (int j = 0; j < length; ++j)
       {
-        char c = BitConverter.ToChar (data.m_source, start);
+        char c = BitConverter.ToChar (data._source, start);
         chars[j] = c;
         start += sizeof (char);
       }
@@ -444,7 +444,7 @@ namespace RCL.Kernel
     public static RCArray<RCSymbolScalar> ReadVectorSymbol (RCArray<byte> data, ref int start)
     {
       // count of unique elements in the vector.
-      int count = BitConverter.ToInt32 (data.m_source, start);
+      int count = BitConverter.ToInt32 (data._source, start);
       start += sizeof (int);
       RCArray<RCSymbolScalar> unique = new RCArray<RCSymbolScalar> ();
       for (int i = 0; i < count; ++i)
@@ -454,12 +454,12 @@ namespace RCL.Kernel
       }
 
       // count of actual elements in the vector.
-      count = BitConverter.ToInt32 (data.m_source, start);
+      count = BitConverter.ToInt32 (data._source, start);
       start += sizeof (int);
       RCSymbolScalar[] result = new RCSymbolScalar[count];
       for (int i = 0; i < count; ++i)
       {
-        int index = BitConverter.ToInt32 (data.m_source, start);
+        int index = BitConverter.ToInt32 (data._source, start);
         result[i] = unique[index];
         start += sizeof (int);
       }
@@ -469,7 +469,7 @@ namespace RCL.Kernel
     public static RCSymbolScalar ReadScalarSymbol (RCArray<byte> data, ref int start)
     {
       RCSymbolScalar result = null;
-      int count = BitConverter.ToInt32 (data.m_source, start);
+      int count = BitConverter.ToInt32 (data._source, start);
       start += sizeof (int);
       for (int i = 0; i < count; ++i)
       {
@@ -478,11 +478,11 @@ namespace RCL.Kernel
         switch (type)
         {
         case 'l':
-          result = new RCSymbolScalar (result, BitConverter.ToInt64 (data.m_source, start));
+          result = new RCSymbolScalar (result, BitConverter.ToInt64 (data._source, start));
           start += sizeof (long);
           break;
         case 'd':
-          result = new RCSymbolScalar (result, BitConverter.ToDouble (data.m_source, start));
+          result = new RCSymbolScalar (result, BitConverter.ToDouble (data._source, start));
           start += sizeof (double);
           break;
         case 'm':
@@ -490,7 +490,7 @@ namespace RCL.Kernel
           start += sizeof (decimal);
           break;
         case 'b':
-          result = new RCSymbolScalar (result, BitConverter.ToBoolean (data.m_source, start));
+          result = new RCSymbolScalar (result, BitConverter.ToBoolean (data._source, start));
           start += sizeof (bool);
           break;
         case 's':
@@ -505,7 +505,7 @@ namespace RCL.Kernel
 
     public static RCArray<RCIncrScalar> ReadVectorIncr (RCArray<byte> array, ref int start)
     {
-      int count = BitConverter.ToInt32 (array.m_source, start);
+      int count = BitConverter.ToInt32 (array._source, start);
       start += sizeof (int);
       RCIncrScalar[] result = new RCIncrScalar[count];
       for (int i = 0; i < result.Length; ++i)

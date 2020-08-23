@@ -7,48 +7,48 @@ namespace RCL.Kernel
 {
   public class WhereLocator : Visitor
   {
-    protected readonly RCCube m_source;
-    protected readonly Column<bool> m_locator;
-    protected readonly RCCube m_target;
-    protected readonly Dictionary<RCSymbolScalar, bool> m_last;
-    protected bool m_indicator;
+    protected readonly RCCube _source;
+    protected readonly Column<bool> _locator;
+    protected readonly RCCube _target;
+    protected readonly Dictionary<RCSymbolScalar, bool> _last;
+    protected bool _indicator;
 
     public WhereLocator (RCCube source, Column<bool> locator)
     {
-      m_source = source;
-      m_locator = locator;
-      m_target = new RCCube (source.Axis.Match ());
-      m_last = new Dictionary<RCSymbolScalar, bool> ();
+      _source = source;
+      _locator = locator;
+      _target = new RCCube (source.Axis.Match ());
+      _last = new Dictionary<RCSymbolScalar, bool> ();
     }
 
     public RCCube Where ()
     {
-      m_source.VisitCellsForward (this, 0, m_source.Count);
-      return m_target;
+      _source.VisitCellsForward (this, 0, _source.Count);
+      return _target;
     }
 
     public override void BeforeRow (long e, RCTimeScalar t, RCSymbolScalar s, int row)
     {
       bool found;
-      int vrow = m_locator.Index.BinarySearch (row, out found);
-      if (found && vrow < m_locator.Index.Count) {
-        m_indicator = (bool) m_locator.BoxCell (vrow);
-        m_last[s] = m_indicator;
+      int vrow = _locator.Index.BinarySearch (row, out found);
+      if (found && vrow < _locator.Index.Count) {
+        _indicator = (bool) _locator.BoxCell (vrow);
+        _last[s] = _indicator;
       }
       else {
-        if (!m_last.TryGetValue (s, out m_indicator)) {
-          m_indicator = false;
+        if (!_last.TryGetValue (s, out _indicator)) {
+          _indicator = false;
         }
       }
     }
 
     public override void AfterRow (long e, RCTimeScalar t, RCSymbolScalar s, int row)
     {
-      if (m_indicator) {
+      if (_indicator) {
         long g = -1;
-        m_target.Write (g, e, t, s);
+        _target.Write (g, e, t, s);
       }
-      m_indicator = false;
+      _indicator = false;
     }
 
     public override void VisitNull<T> (string name, Column<T> vector, int row)
@@ -59,9 +59,9 @@ namespace RCL.Kernel
     public override void VisitScalar<T> (string name, Column<T> column, int row)
     {
       int tlrow = column.Index[row];
-      if (m_indicator) {
-        m_target.WriteCell (name,
-                            m_source.SymbolAt (tlrow),
+      if (_indicator) {
+        _target.WriteCell (name,
+                            _source.SymbolAt (tlrow),
                             column.Data[row],
                             -1,
                             true,

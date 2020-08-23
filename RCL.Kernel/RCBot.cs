@@ -11,9 +11,9 @@ namespace RCL.Kernel
   public class RCBot
   {
     public readonly long Id;
-    protected long m_handle = 0;
-    protected Dictionary<long, object> m_descriptors = new Dictionary<long, object> ();
-    protected Dictionary<Type, object> m_modules = new Dictionary<Type, object> ();
+    protected long _handle = 0;
+    protected Dictionary<long, object> _descriptors = new Dictionary<long, object> ();
+    protected Dictionary<Type, object> _modules = new Dictionary<Type, object> ();
 
     public RCBot (RCRunner runner, long id)
     {
@@ -24,37 +24,37 @@ namespace RCL.Kernel
     // Deprecated: Only used by Tcp api.
     public long New ()
     {
-      return m_handle = Interlocked.Increment (ref m_handle);
+      return _handle = Interlocked.Increment (ref _handle);
     }
 
     // Deprecated: Only used by Tcp api.
     public object Get (long handle)
     {
-      return m_descriptors[handle];
+      return _descriptors[handle];
     }
 
     // Deprecated: Only used by Tcp api.
     public void Put (long handle, object descriptor)
     {
-      m_descriptors[handle] = descriptor;
+      _descriptors[handle] = descriptor;
     }
 
     // Deprecated: Only used by Tcp api.
     public void Delete (long handle)
     {
-      m_descriptors.Remove (handle);
+      _descriptors.Remove (handle);
     }
 
     public void PutModule (Type type)
     {
       ConstructorInfo ctor = type.GetConstructor (new Type[] {});
       object module = ctor.Invoke (new object[] {});
-      m_modules.Add (type, module);
+      _modules.Add (type, module);
     }
 
     public object GetModule (Type type)
     {
-      return m_modules[type];
+      return _modules[type];
     }
 
     public void FiberDone (RCRunner runner, long bot, long fiber, RCValue result)
@@ -79,7 +79,7 @@ namespace RCL.Kernel
     // calls dispose on the objects that do.
     public void Dispose ()
     {
-      foreach (KeyValuePair <Type, object> kv in m_modules)
+      foreach (KeyValuePair <Type, object> kv in _modules)
       {
         IDisposable module = kv.Value as IDisposable;
         if (module != null) {
@@ -95,7 +95,7 @@ namespace RCL.Kernel
        public void Reset ()
        {
        List<Type> typeList = new List<Type> ();
-       foreach (KeyValuePair <Type, object> kv in m_modules)
+       foreach (KeyValuePair <Type, object> kv in _modules)
        {
         IDisposable module = kv.Value as IDisposable;
         if (module != null && !(kv.Value is Fiber))
@@ -106,7 +106,7 @@ namespace RCL.Kernel
        }
        for (int i = 0; i < typeList.Count; ++i)
        {
-        m_modules.Remove (typeList[i]);
+        _modules.Remove (typeList[i]);
        }
        for (int i = 0; i < typeList.Count; ++i)
        {

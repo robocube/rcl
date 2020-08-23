@@ -110,7 +110,7 @@ namespace RCL.Exe
         }
         catch (ArgumentException ex)
         {
-          // This is for when the action name is not in m_state.
+          // This is for when the action name is not in _state.
           RCSystem.Log.Record (0, 0, "runner", 0, "fatal", ex);
           Environment.Exit (1);
         }
@@ -226,7 +226,7 @@ namespace RCL.Exe
               line = editor.Edit (prompt, "");
             }
 
-            m_firstSigint = false;
+            _firstSigint = false;
 
             if (line != null) {
               string trimmed = line.TrimStart (' ').TrimEnd (' ');
@@ -274,7 +274,7 @@ namespace RCL.Exe
     /// <summary>
     /// True if we have already received one SIGINT.
     /// </summary>
-    protected static volatile bool m_firstSigint;
+    protected static volatile bool _firstSigint;
 
     /// <summary>
     /// Launches a background thread to listen for POSIX signals.
@@ -304,8 +304,8 @@ namespace RCL.Exe
             });
           }
           else if (signal == Mono.Unix.Native.Signum.SIGINT) {
-            if (!m_firstSigint) {
-              m_firstSigint = true;
+            if (!_firstSigint) {
+              _firstSigint = true;
               ThreadPool.QueueUserWorkItem (delegate (object state)
               {
                 RCSystem.Log.Record (0, 0, "runner", 0, "signal", "SIGINT");

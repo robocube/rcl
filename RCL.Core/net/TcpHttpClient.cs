@@ -19,52 +19,52 @@ namespace RCL.Core
       head, get, post, put, delete
     }
 
-    protected readonly long m_handle;
-    protected readonly string m_host;
-    protected readonly long m_port;
-    protected readonly WebClient m_client;
-    // protected readonly Uri m_uri;
-    protected long m_cid = 0;
-    protected TcpReceiveBox m_inbox;
+    protected readonly long _handle;
+    protected readonly string _host;
+    protected readonly long _port;
+    protected readonly WebClient _client;
+    // protected readonly Uri _uri;
+    protected long _cid = 0;
+    protected TcpReceiveBox _inbox;
 
     // I think host and port will get combined with "resource" as an RCSymbolScalar here.
     public TcpHttpClient (long handle, RCSymbolScalar hostandport)
     {
-      m_handle = handle;
-      m_host = (string) hostandport.Part (1);
-      m_port = (long) hostandport.Part (2);
-      // m_uri = new Uri("http://" + m_host + ":" + m_port.ToString ());
-      m_inbox = new TcpReceiveBox ();
-      m_client = new WebClient ();
-      m_client.UploadDataCompleted += UploadDataCompleted;
-      m_client.DownloadDataCompleted += DownloadDataCompleted;
+      _handle = handle;
+      _host = (string) hostandport.Part (1);
+      _port = (long) hostandport.Part (2);
+      // _uri = new Uri("http://" + _host + ":" + _port.ToString ());
+      _inbox = new TcpReceiveBox ();
+      _client = new WebClient ();
+      _client.UploadDataCompleted += UploadDataCompleted;
+      _client.DownloadDataCompleted += DownloadDataCompleted;
     }
 
     public long Port
     {
-      get { return m_port; }
+      get { return _port; }
     }
 
     public string Host
     {
-      get { return m_host; }
+      get { return _host; }
     }
 
     public override void Open (RCRunner runner, RCClosure closure)
     {
-      runner.Yield (closure, new RCLong (m_handle));
+      runner.Yield (closure, new RCLong (_handle));
     }
 
     public override void Close (RCRunner runner, RCClosure closure)
     {
-      m_client.Dispose ();
-      runner.Yield (closure, new RCLong (m_handle));
+      _client.Dispose ();
+      runner.Yield (closure, new RCLong (_handle));
     }
 
     public override TcpSendState Send (RCRunner runner, RCClosure closure, RCBlock message)
     {
-      long cid = Interlocked.Increment (ref m_cid);
-      RCSymbolScalar id = new RCSymbolScalar (null, m_handle);
+      long cid = Interlocked.Increment (ref _cid);
+      RCSymbolScalar id = new RCSymbolScalar (null, _handle);
       id = new RCSymbolScalar (id, cid);
 
       StringBuilder address = new StringBuilder ();
@@ -74,10 +74,10 @@ namespace RCL.Core
       object[] resource = ((RCSymbol) message.Get ("resource"))[0].ToArray ();
 
       address.Append ("http://");
-      address.Append (m_host);
-      if (m_port > 0) {
+      address.Append (_host);
+      if (_port > 0) {
         address.Append (":");
-        address.Append (m_port);
+        address.Append (_port);
       }
       address.Append ("/");
 
@@ -104,12 +104,12 @@ namespace RCL.Core
         }
       }
 
-      // byte[] payload = m_client.Encoding.GetBytes (message.Get ("body").ToString ());
+      // byte[] payload = _client.Encoding.GetBytes (message.Get ("body").ToString ());
       Uri uri = new Uri (address.ToString ());
       System.Console.Out.WriteLine (address.ToString ());
-      m_client.DownloadDataAsync (uri, new RCAsyncState (runner, closure, id));
+      _client.DownloadDataAsync (uri, new RCAsyncState (runner, closure, id));
       // runner.Yield (closure, new RCSymbol(id));
-      return new TcpSendState (m_handle, cid, message);
+      return new TcpSendState (_handle, cid, message);
     }
 
     protected void UploadDataCompleted (object sender, UploadDataCompletedEventArgs e)
@@ -119,9 +119,9 @@ namespace RCL.Core
         state.Runner.Report (state.Closure, e.Error);
       }
       RCSymbolScalar id = (RCSymbolScalar) state.Other;
-      string text = m_client.Encoding.GetString (e.Result);
+      string text = _client.Encoding.GetString (e.Result);
       // TODO: make this into a real object with headers and body and stuff.
-      m_inbox.Add (id, new RCString (text));
+      _inbox.Add (id, new RCString (text));
     }
 
     protected void DownloadDataCompleted (object sender, DownloadDataCompletedEventArgs e)
@@ -132,15 +132,15 @@ namespace RCL.Core
       }
       else {
         RCSymbolScalar id = (RCSymbolScalar) state.Other;
-        string text = m_client.Encoding.GetString (e.Result);
+        string text = _client.Encoding.GetString (e.Result);
         // TODO: make this into a real object with headers and body and stuff.
-        m_inbox.Add (id, new RCString (text));
+        _inbox.Add (id, new RCString (text));
       }
     }
 
     public override void Receive (TcpCollector gatherer, RCSymbolScalar id)
     {
-      m_inbox.Remove (id, gatherer);
+      _inbox.Remove (id, gatherer);
     }
   }
 }

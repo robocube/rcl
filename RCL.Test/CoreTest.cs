@@ -4776,7 +4776,7 @@ namespace RCL.Test
     [Test]
     public void TestTryWaitKill ()
     {
-      // Note use of sleep 0l to expose the m_queue bug.
+      // Note use of sleep 0l to expose the _queue bug.
       DoTest (
         "{b:bot {<-try {w:{:#x write {i:++} <-w $R} :fiber {<-w 0} <-wait 0}} :sleep 0 :fiber {:#y dispatch 1 <-kill $b} :#y write {i:++} r:wait $b <-#status from $r}",
         "{status:2}");

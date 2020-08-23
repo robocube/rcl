@@ -47,14 +47,14 @@ namespace RCL.Kernel
     // The list of columns on the axis.
     public readonly RCArray<string> Colset;
 
-    protected int m_count = 0;
+    protected int _count = 0;
 
     public Timeline (RCArray<RCSymbolScalar> s)
     {
       Colset = new RCArray<string> (1);
       Colset.Write ("S");
       Symbol = s;
-      m_count = Symbol.Count;
+      _count = Symbol.Count;
       Proto = CubeProto.Create (this);
     }
 
@@ -79,7 +79,7 @@ namespace RCL.Kernel
     public Timeline (int count)
     {
       Colset = new RCArray<string> (0);
-      m_count = count;
+      _count = count;
       Proto = CubeProto.Create (this);
     }
     public Timeline (RCArray<long> g,
@@ -91,22 +91,22 @@ namespace RCL.Kernel
       if (g != null) {
         Colset.Write ("G");
         Global = g;
-        m_count = Global.Count;
+        _count = Global.Count;
       }
       if (e != null) {
         Colset.Write ("E");
         Event = e;
-        m_count = Event.Count;
+        _count = Event.Count;
       }
       if (t != null) {
         Colset.Write ("T");
         Time = t;
-        m_count = Time.Count;
+        _count = Time.Count;
       }
       if (s != null) {
         Colset.Write ("S");
         Symbol = s;
-        m_count = Symbol.Count;
+        _count = Symbol.Count;
       }
       Proto = CubeProto.Create (this);
     }
@@ -160,14 +160,14 @@ namespace RCL.Kernel
     {
       get
       {
-        return m_count;
+        return _count;
       }
       set
       {
         if (Colset.Locked ()) {
           throw new Exception ("Tried to modify Count after cube was locked.");
         }
-        m_count = value;
+        _count = value;
       }
     }
 
@@ -200,7 +200,7 @@ namespace RCL.Kernel
 
     public void Write ()
     {
-      ++m_count;
+      ++_count;
     }
 
     public void Write (RCSymbolScalar s)
@@ -217,7 +217,7 @@ namespace RCL.Kernel
       if (Symbol != null) {
         Symbol.Write (s);
       }
-      ++m_count;
+      ++_count;
     }
 
     public void Write (RCTimeScalar t, RCSymbolScalar s)
@@ -229,7 +229,7 @@ namespace RCL.Kernel
       if (Symbol != null) {
         Symbol.Write (s);
       }
-      ++m_count;
+      ++_count;
     }
 
     public void Write (long g, long e, RCTimeScalar t, RCSymbolScalar s)
@@ -246,7 +246,7 @@ namespace RCL.Kernel
       if (Symbol != null) {
         Symbol.Write (s);
       }
-      ++m_count;
+      ++_count;
     }
 
     public void Write (Timeline source, int i)
@@ -263,7 +263,7 @@ namespace RCL.Kernel
       if (source.Symbol != null) {
         Symbol.Write (source.Symbol[i]);
       }
-      ++m_count;
+      ++_count;
     }
 
     public Timeline Match ()

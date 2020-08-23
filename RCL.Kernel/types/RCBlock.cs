@@ -15,21 +15,21 @@ namespace RCL.Kernel
 
   public class RCName
   {
-    protected static object m_lock = new object ();
-    protected static Dictionary<string, RCName> m_names = new Dictionary<string, RCName> ();
-    protected static RCArray<RCName> m_index = new RCArray<RCName> ();
+    protected static object _lock = new object ();
+    protected static Dictionary<string, RCName> _names = new Dictionary<string, RCName> ();
+    protected static RCArray<RCName> _index = new RCArray<RCName> ();
 
     static RCName ()
     {
       RCName empty = new RCName ("", 0, false);
-      m_names.Add ("", empty);
-      m_index.Write (empty);
+      _names.Add ("", empty);
+      _index.Write (empty);
       RCName trueLiteral = new RCName ("'true'", 1, true);
-      m_names.Add ("true", trueLiteral);
-      m_index.Write (trueLiteral);
+      _names.Add ("true", trueLiteral);
+      _index.Write (trueLiteral);
       RCName falseLiteral = new RCName ("'false'", 2, true);
-      m_names.Add ("false", falseLiteral);
-      m_index.Write (falseLiteral);
+      _names.Add ("false", falseLiteral);
+      _index.Write (falseLiteral);
     }
 
     public static RCArray<string> MultipartName (string text, char delimeter)
@@ -87,9 +87,9 @@ namespace RCL.Kernel
       string name = null;
       bool escaped = false;
       RCName result;
-      lock (m_lock)
+      lock (_lock)
       {
-        if (!m_names.TryGetValue (text, out result)) {
+        if (!_names.TryGetValue (text, out result)) {
           if (text[0] == '\'') {
             if (text.Length == 1 || text[text.Length - 1] != '\'') {
               throw new Exception ("Unmatched single quote in name: " + text);
@@ -130,15 +130,15 @@ namespace RCL.Kernel
               name = text;
             }
           }
-          if (m_names.TryGetValue (name, out result)) {
+          if (_names.TryGetValue (name, out result)) {
             // this makes it a synonym for next time
-            m_names.Add (text, result);
+            _names.Add (text, result);
             return result;
           }
           else {
-            result = new RCName (name, m_names.Count, escaped);
-            m_names.Add (result.Text, result);
-            m_index.Write (result);
+            result = new RCName (name, _names.Count, escaped);
+            _names.Add (result.Text, result);
+            _index.Write (result);
             return result;
           }
         }
@@ -259,13 +259,13 @@ namespace RCL.Kernel
 
     public readonly string Name;
     public readonly RCEvaluator Evaluator;
-    protected readonly int m_count;
+    protected readonly int _count;
 
     protected RCBlock ()
     {
       // this is the empty block.
       // all blocks are eventually rooted to the empty block.
-      m_count = 0;
+      _count = 0;
     }
 
     public static RCBlock Append (RCBlock left, RCBlock right)
@@ -290,7 +290,7 @@ namespace RCL.Kernel
       EscapeName = nameInfo.Escaped;
       Evaluator = evaluator;
       Value = val;
-      m_count = Previous.Count + 1;
+      _count = Previous.Count + 1;
     }
 
     public RCBlock (RCBlock previous, string name, string instr, params long[] val)
@@ -576,7 +576,7 @@ namespace RCL.Kernel
 
     public override int Count
     {
-      get { return m_count; }
+      get { return _count; }
     }
 
     public override void Lock ()

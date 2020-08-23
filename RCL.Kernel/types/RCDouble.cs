@@ -84,7 +84,7 @@ namespace RCL.Kernel
 
     public override void Write (object box)
     {
-      m_data.Write ((double) box);
+      _data.Write ((double) box);
     }
   }
 }

@@ -12,13 +12,13 @@ namespace RCL.Core
 {
   public class TcpServerSession
   {
-    protected TcpServer m_server;
-    protected Socket m_socket;
-    protected RCAsyncState m_listenState;
-    protected long m_handle;
-    protected TcpMessageBuffer m_buffer;
-    protected TcpListenBox m_inbox;
-    protected TcpOutBox m_outbox;
+    protected TcpServer _server;
+    protected Socket _socket;
+    protected RCAsyncState _listenState;
+    protected long _handle;
+    protected TcpMessageBuffer _buffer;
+    protected TcpListenBox _inbox;
+    protected TcpOutBox _outbox;
 
     public TcpServerSession (RCAsyncState state,
                              TcpServer server,
@@ -26,25 +26,25 @@ namespace RCL.Core
                              TcpListenBox inbox,
                              long handle)
     {
-      m_listenState = state;
-      m_server = server;
-      m_socket = socket;
-      m_handle = handle;
-      m_buffer = new TcpMessageBuffer ();
+      _listenState = state;
+      _server = server;
+      _socket = socket;
+      _handle = handle;
+      _buffer = new TcpMessageBuffer ();
       // One outbox per *session*
-      m_outbox = new TcpOutBox ();
+      _outbox = new TcpOutBox ();
       // One inbox per *server*
-      m_inbox = inbox;
+      _inbox = inbox;
     }
 
     public void Start ()
     {
-      m_socket.BeginReceive (m_buffer.RecvBuffer,
-                             m_buffer.Read,
-                             m_buffer.RecvBuffer.Length - m_buffer.Read,
-                             SocketFlags.None,
-                             new AsyncCallback (ReceiveCompleted),
-                             null);
+      _socket.BeginReceive (_buffer.RecvBuffer,
+                            _buffer.Read,
+                            _buffer.RecvBuffer.Length - _buffer.Read,
+                            SocketFlags.None,
+                            new AsyncCallback (ReceiveCompleted),
+                            null);
     }
 
     protected void ReceiveCompleted (IAsyncResult result)
@@ -52,31 +52,30 @@ namespace RCL.Core
       int count = 0;
       try
       {
-        count = m_socket.EndReceive (result);
+        count = _socket.EndReceive (result);
         if (count > 0) {
-          long sid = m_server.NextId (this);
+          long sid = _server.NextId (this);
           long cid;
-          RCValue message = m_buffer.CompleteReceive (
-            m_listenState.Runner,
-            count,
-            m_server.Handle,
-            sid,
-            out cid);
+          RCValue message = _buffer.CompleteReceive (_listenState.Runner,
+                                                     count,
+                                                     _server.Handle,
+                                                     sid,
+                                                     out cid);
           // Console.Out.WriteLine ("Server receiving {0}", cid);
           if (message != null) {
-            m_inbox.Add (m_listenState.Runner, message);
+            _inbox.Add (_listenState.Runner, message);
           }
-          m_socket.BeginReceive (m_buffer.RecvBuffer,
-                                 m_buffer.Read,
-                                 m_buffer.RecvBuffer.Length - m_buffer.Read,
-                                 SocketFlags.None,
-                                 new AsyncCallback (ReceiveCompleted),
-                                 null);
+          _socket.BeginReceive (_buffer.RecvBuffer,
+                                _buffer.Read,
+                                _buffer.RecvBuffer.Length - _buffer.Read,
+                                SocketFlags.None,
+                                new AsyncCallback (ReceiveCompleted),
+                                null);
         }
       }
       catch (Exception ex)
       {
-        m_listenState.Runner.Report (m_listenState.Closure, ex);
+        _listenState.Runner.Report (_listenState.Closure, ex);
         // Make sure we close the socket.
         count = 0;
       }
@@ -87,8 +86,8 @@ namespace RCL.Core
         if (count == 0) {
           // We need to tell the server to remove this connection from the list.
           // No need to try and close the connection.  That is already done.
-          m_socket.Close (1000);
-          RCSystem.Log.Record (m_listenState.Closure, "socket", m_handle, "closed", "");
+          _socket.Close (1000);
+          RCSystem.Log.Record (_listenState.Closure, "socket", _handle, "closed", "");
         }
       }
     }
@@ -98,18 +97,18 @@ namespace RCL.Core
                               long cid,
                               RCBlock message)
     {
-      TcpSendState correlation = new TcpSendState (m_handle, cid, message);
+      TcpSendState correlation = new TcpSendState (_handle, cid, message);
       RCAsyncState state = new RCAsyncState (runner, closure, correlation);
       byte[] payload = Encoding.ASCII.GetBytes (message.ToString ());
       // If other items are queued in the outbox Add will return false.
       // This message should be sent after the others.
-      if (m_outbox.Add (state)) {
+      if (_outbox.Add (state)) {
         // Send will add the header to the payload.
         // This is something I will probably want to change by adding some kind of
         // serializer/formatter abstraction.
-        int size = m_buffer.PrepareSend (cid, payload);
-        m_socket.BeginSend (
-          m_buffer.SendBuffer,
+        int size = _buffer.PrepareSend (cid, payload);
+        _socket.BeginSend (
+          _buffer.SendBuffer,
           0,
           size,
           SocketFlags.None,
@@ -126,15 +125,15 @@ namespace RCL.Core
       try
       {
         // Don't know what to do with the count returned... Anything?
-        m_socket.EndSend (result);
+        _socket.EndSend (result);
         // Dequeue the next item for sending on this channel.
         // if (next != null)
-        RCAsyncState next = m_outbox.Remove ();
+        RCAsyncState next = _outbox.Remove ();
         if (next != null) {
           TcpSendState correlation = (TcpSendState) next.Other;
           byte[] payload = Encoding.ASCII.GetBytes (correlation.Message.ToString ());
-          int size = m_buffer.PrepareSend (correlation.Id, payload);
-          m_socket.BeginSend (m_buffer.SendBuffer,
+          int size = _buffer.PrepareSend (correlation.Id, payload);
+          _socket.BeginSend (_buffer.SendBuffer,
                               0,
                               size,
                               SocketFlags.None,

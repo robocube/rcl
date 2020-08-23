@@ -34,9 +34,9 @@ namespace RCL.Core {
           d1 = 6 + d1;
         }
         return new Point (t,
-                          G + m_direction[d1, 0],
-                          R + m_direction[d1, 1],
-                          B + m_direction[d1, 2],
+                          G + _direction[d1, 0],
+                          R + _direction[d1, 1],
+                          B + _direction[d1, 2],
                           d1,
                           s);
 
@@ -111,7 +111,7 @@ namespace RCL.Core {
         return s;
       }
 
-      protected static int[,] m_direction = new int[, ] {
+      protected static int[,] _direction = new int[, ] {
         {  1,  -1,  0 },  // right
         {  0,  -1,  1 },  // down right
         { -1,   0,  1 },  // down left
@@ -456,7 +456,7 @@ namespace RCL.Core {
       }
     }
 
-    protected int[,] m_direction = new int[, ] {
+    protected int[,] _direction = new int[, ] {
       {  1,  -1,  0 },  // right
       {  0,  -1,  1 },  // down right
       { -1,   0,  1 },  // down left
@@ -465,7 +465,7 @@ namespace RCL.Core {
       {  1,   0, -1 }   // up right
     };
 
-    protected int[,] m_choice = new int[, ] {
+    protected int[,] _choice = new int[, ] {
       {  5,  1 },       // from right go left to upright or right to downright
       {  0,  2 },       // from down right go left to right or right to down left
       {  1,  3 },       // from down left go left to down right or right to up left
@@ -527,10 +527,10 @@ namespace RCL.Core {
       while (true) {
         // calculate the next point using the choice and direction maps.
         int choice = random.Next () % 2;
-        int d1 = m_choice[d0 % 6, choice];
-        long g1 = g0 + m_direction[d1, 0];
-        long r1 = r0 + m_direction[d1, 1];
-        long b1 = b0 + m_direction[d1, 2];
+        int d1 = _choice[d0 % 6, choice];
+        long g1 = g0 + _direction[d1, 0];
+        long r1 = r0 + _direction[d1, 1];
+        long b1 = b0 + _direction[d1, 2];
         Line c = null;
         Point p1 = new Point (g1, r1, b1);
         space.TryGetValue (p1, out c);
@@ -702,10 +702,10 @@ namespace RCL.Core {
       while (stack.Count > 0) {
         // I have to know what the initial direction is without going back to the origin!
         Line m = stack.Pop ();
-        int d1 = m_choice[m.D % 6, choice];
-        long g1 = m.P.G + m_direction[d1, 0];
-        long r1 = m.P.R + m_direction[d1, 1];
-        long b1 = m.P.B + m_direction[d1, 2];
+        int d1 = _choice[m.D % 6, choice];
+        long g1 = m.P.G + _direction[d1, 0];
+        long r1 = m.P.R + _direction[d1, 1];
+        long b1 = m.P.B + _direction[d1, 2];
         Point p1 = new Point (g1, r1, b1);
 
         // Totally unclear if this is right or even close.
@@ -773,13 +773,13 @@ namespace RCL.Core {
   }
 
   public class TriMap<K, V> {
-    protected Dictionary<K, Dictionary<K, Dictionary<K, V>>> m_x =
+    protected Dictionary<K, Dictionary<K, Dictionary<K, V>>> _x =
       new Dictionary<K, Dictionary<K, Dictionary<K, V>>> ();
 
     public V Get (K x, K y, K z) {
       V v = default (V);
       Dictionary<K, Dictionary<K, V>> Y;
-      if (m_x.TryGetValue (x, out Y)) {
+      if (_x.TryGetValue (x, out Y)) {
         Dictionary<K, V> Z;
         if (Y.TryGetValue (y, out Z)) {
           Z.TryGetValue (z, out v);
@@ -791,9 +791,9 @@ namespace RCL.Core {
     public void Put (K x, K y, K z, V v) {
       Dictionary<K, Dictionary<K, V>> Y;
       Dictionary<K, V> Z;
-      if (!m_x.TryGetValue (x, out Y)) {
+      if (!_x.TryGetValue (x, out Y)) {
         Y = new Dictionary<K, Dictionary<K, V>> ();
-        m_x.Add (x, Y);
+        _x.Add (x, Y);
       }
       if (!Y.TryGetValue (y, out Z)) {
         Z = new Dictionary<K, V> ();
@@ -811,7 +811,7 @@ namespace RCL.Core {
     public V Delete (K x, K y, K z) {
       Dictionary<K, Dictionary<K, V>> Y;
       Dictionary<K, V> Z;
-      if (m_x.TryGetValue (x, out Y)) {
+      if (_x.TryGetValue (x, out Y)) {
         V v;
         if (Y.TryGetValue (y, out Z)) {
           if (Z.TryGetValue (z, out v)) {
@@ -826,7 +826,7 @@ namespace RCL.Core {
 
     public List<V> ToArray () {
       List<V> result = new List<V> ();
-      foreach (KeyValuePair<K, Dictionary<K, Dictionary<K, V>>> Y in m_x) {
+      foreach (KeyValuePair<K, Dictionary<K, Dictionary<K, V>>> Y in _x) {
         foreach (KeyValuePair<K, Dictionary<K, V>> Z in Y.Value) {
           foreach (KeyValuePair<K, V> v in Z.Value) {
             result.Add (v.Value);
@@ -874,20 +874,20 @@ namespace RCL.Core {
     // Space
     public class Space {
 
-      protected TriMap<long, Quantum> m_end = new TriMap<long, Quantum> ();
-      protected TriMap<long, Quantum> m_start0 = new TriMap<long, Quantum> ();
-      protected TriMap<long, Quantum> m_start1 = new TriMap<long, Quantum> ();
+      protected TriMap<long, Quantum> _end = new TriMap<long, Quantum> ();
+      protected TriMap<long, Quantum> _start0 = new TriMap<long, Quantum> ();
+      protected TriMap<long, Quantum> _start1 = new TriMap<long, Quantum> ();
 
       public Quantum StartsAt (long x, long y, long z) {
-        Quantum q = m_start0.Get (x, y, z);
+        Quantum q = _start0.Get (x, y, z);
         if (q == null) {
-          q = m_start1.Get (x, y, z);
+          q = _start1.Get (x, y, z);
         }
         return q;
       }
 
       public Quantum EndsAt (long x, long y, long z) {
-        return m_end.Get (x, y, z);
+        return _end.Get (x, y, z);
       }
 
       public void Put (long t,
@@ -927,35 +927,35 @@ namespace RCL.Core {
         q.x1 = Math.Sqrt (3) * (g + b / 2d);
         q.y1 = (-3 / 2d) * b;
 
-        m_end.Put (x1, y1, z1, q);
+        _end.Put (x1, y1, z1, q);
 
-        Quantum s0 = m_start0.Get (x0, y0, z0);
+        Quantum s0 = _start0.Get (x0, y0, z0);
         if (s0 == null) {
-          m_start0.Put (x0, y0, z0, q);
+          _start0.Put (x0, y0, z0, q);
         }
         else {
-          // Quantum s1 = m_start1.Get (x0, y0, z0);
-          m_start1.Put (x0, y0, z0, q);
+          // Quantum s1 = _start1.Get (x0, y0, z0);
+          _start1.Put (x0, y0, z0, q);
         }
       }
 
       public long Delete (long x1, long y1, long z1) {
-        Quantum q = m_end.Delete (x1, y1, z1);
+        Quantum q = _end.Delete (x1, y1, z1);
         // Console.Out.WriteLine ("Deleting " + q);
-        Quantum s0 = m_start0.Get (q.g0, q.r0, q.b0);
+        Quantum s0 = _start0.Get (q.g0, q.r0, q.b0);
         if (s0 != null && s0.g1 == x1 && s0.r1 == y1 && s0.b1 == z1) {
-          m_start0.Delete (q.g0, q.r0, q.b0);
+          _start0.Delete (q.g0, q.r0, q.b0);
         }
-        Quantum s1 = m_start1.Get (q.g0, q.r0, q.b0);
+        Quantum s1 = _start1.Get (q.g0, q.r0, q.b0);
         if (s1 != null && s1.g1 == x1 && s1.r1 == y1 && s1.b1 == z1) {
-          m_start1.Delete (q.g0, q.r0, q.b0);
+          _start1.Delete (q.g0, q.r0, q.b0);
         }
         return q.T;
       }
 
       public void State (Space space, RCCube result, ref int b, int end) {
         RCSymbolScalar gen = new RCSymbolScalar (null, "gen");
-        List<Quantum> list = m_end.ToArray ();
+        List<Quantum> list = _end.ToArray ();
         for (int i = 0; i < list.Count; ++i) {
           Quantum q = list[i];
           RCSymbolScalar gent = new RCSymbolScalar (gen, q.T);
@@ -975,7 +975,7 @@ namespace RCL.Core {
       }
     }
 
-    protected long[,] m_direction = new long[, ] {
+    protected long[,] _direction = new long[, ] {
       {  1,  -1,  0 },  // right
       {  0,  -1,  1 },  // down right
       { -1,   0,  1 },  // down left
@@ -984,7 +984,7 @@ namespace RCL.Core {
       {  1,   0, -1 }   // up right
     };
 
-    protected long[,] m_choice = new long[, ] {
+    protected long[,] _choice = new long[, ] {
       {  5,  1 },       // from right go left to upright or right to downright
       {  0,  2 },       // from down right go left to right or right to down left
       {  1,  3 },       // from down left go left to down right or right to up left
@@ -1007,10 +1007,10 @@ namespace RCL.Core {
       }
 
       while (true) {
-        long d1 = m_choice[d0 % 6, choice];
-        long x1 = x0 + m_direction[d1, 0];
-        long y1 = y0 + m_direction[d1, 1];
-        long z1 = z0 + m_direction[d1, 2];
+        long d1 = _choice[d0 % 6, choice];
+        long x1 = x0 + _direction[d1, 0];
+        long y1 = y0 + _direction[d1, 1];
+        long z1 = z0 + _direction[d1, 2];
 
         if (x1 == 0 && y1 == 0 && z1 == 0) {
           d0 = d1;

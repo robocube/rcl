@@ -7,7 +7,7 @@ namespace RCL.Kernel
 {
   public class MarkdownParser : RCParser
   {
-    protected readonly static RCLexer m_markdownLexer;
+    protected readonly static RCLexer _markdownLexer;
     static MarkdownParser ()
     {
       RCArray<RCTokenType> types = new RCArray<RCTokenType> ();
@@ -24,26 +24,26 @@ namespace RCL.Kernel
       types.Write (RCTokenType.MarkdownOLItemToken);
       types.Write (RCTokenType.MarkdownLIIndentToken);
       types.Write (RCTokenType.MarkdownContentToken);
-      m_markdownLexer = new RCLexer (types);
+      _markdownLexer = new RCLexer (types);
     }
 
     public MarkdownParser ()
     {
-      m_lexer = m_markdownLexer;
+      _lexer = _markdownLexer;
     }
 
-    protected MarkdownState m_state = MarkdownState.None;
-    protected MarkdownState m_initialState = MarkdownState.None;
-    protected Stack<RCBlock> m_values = new Stack<RCBlock> ();
-    protected Stack<string> m_names = new Stack<string> ();
-    protected Stack<MarkdownState> m_states = new Stack<MarkdownState> ();
-    protected RCBlock m_value = null;
-    protected string m_name = null;
-    protected internal bool m_reentered = false;
-    protected bool m_parsingList = false;
-    protected int m_liLength = -1;
-    protected bool m_parsingParagraph = false;
-    protected bool m_blankLine = false;
+    protected MarkdownState _state = MarkdownState.None;
+    protected MarkdownState _initialState = MarkdownState.None;
+    protected Stack<RCBlock> _values = new Stack<RCBlock> ();
+    protected Stack<string> _names = new Stack<string> ();
+    protected Stack<MarkdownState> _states = new Stack<MarkdownState> ();
+    protected RCBlock _value = null;
+    protected string _name = null;
+    protected internal bool _reentered = false;
+    protected bool _parsingList = false;
+    protected int _liLength = -1;
+    protected bool _parsingParagraph = false;
+    protected bool _blankLine = false;
 
     protected enum MarkdownState
     {
@@ -60,199 +60,199 @@ namespace RCL.Kernel
 
     public override RCValue Parse (RCArray<RCToken> tokens, out bool fragment, bool canonical)
     {
-      m_initialState = m_state;
+      _initialState = _state;
       for (int i = 0; i < tokens.Count; ++i)
       {
         tokens[i].Type.Accept (this, tokens[i]);
       }
       fragment = false;
 
-      // Console.Out.WriteLine ("Done parsing. Doing cleanup ({0})", m_state);
+      // Console.Out.WriteLine ("Done parsing. Doing cleanup ({0})", _state);
       FinishQuote (true);
-      while (m_values.Count > 0)
+      while (_values.Count > 0)
       {
         EndBlock ();
       }
-      if (m_run.Length > 0) {
-        m_value = new RCBlock (m_value, "", ":", new RCString (m_run.ToString ()));
+      if (_run.Length > 0) {
+        _value = new RCBlock (_value, "", ":", new RCString (_run.ToString ()));
       }
-      else if (m_initialState == MarkdownState.Link && m_value == null) {
-        m_value = new RCBlock (null, "", ":", new RCString (""));
+      else if (_initialState == MarkdownState.Link && _value == null) {
+        _value = new RCBlock (null, "", ":", new RCString (""));
       }
-      return m_value;
+      return _value;
     }
 
-    protected StringBuilder m_run = new StringBuilder ();
+    protected StringBuilder _run = new StringBuilder ();
     public override void AcceptMarkdownContent (RCToken token)
     {
-      // Console.Out.WriteLine ("AcceptMarkdownContent({0}): '{1}'", m_state, token.Text);
-      // Console.Out.WriteLine ("m_parsingParagraph: {0}", m_parsingParagraph);
-      // Console.Out.WriteLine ("m_parsingList: {0}", m_parsingList);
-      // Console.Out.WriteLine ("m_liLength: {0}", m_liLength);
-      // Console.Out.WriteLine ("m_blankLine: {0}", m_blankLine);
+      // Console.Out.WriteLine ("AcceptMarkdownContent({0}): '{1}'", _state, token.Text);
+      // Console.Out.WriteLine ("_parsingParagraph: {0}", _parsingParagraph);
+      // Console.Out.WriteLine ("_parsingList: {0}", _parsingList);
+      // Console.Out.WriteLine ("_liLength: {0}", _liLength);
+      // Console.Out.WriteLine ("_blankLine: {0}", _blankLine);
       string text = token.Text;
-      if (m_state == MarkdownState.ListItem) {
-        WrapLITextIfNeeded (m_state);
+      if (_state == MarkdownState.ListItem) {
+        WrapLITextIfNeeded (_state);
       }
-      if (m_liLength > -1) {
+      if (_liLength > -1) {
         bool indentedlip = true;
-        for (int i = 0; i < m_liLength; ++i)
+        for (int i = 0; i < _liLength; ++i)
         {
           if (i < text.Length && text[i] != ' ') {
             indentedlip = false;
           }
         }
         if (indentedlip) {
-          WrapLITextIfNeeded (m_state);
+          WrapLITextIfNeeded (_state);
         }
       }
       FinishList ();
-      if (m_parsingList && m_parsingParagraph &&
-          m_blankLine && m_state == MarkdownState.None) {
+      if (_parsingList && _parsingParagraph &&
+          _blankLine && _state == MarkdownState.None) {
         EndBlock ();
-        m_parsingParagraph = false;
+        _parsingParagraph = false;
       }
-      // m_parsingParagraph should be sufficient, shouldn't need m_run.Length check.
-      if ((!m_parsingParagraph && m_blankLine && m_parsingList) ||
-          (!m_parsingList && !m_parsingParagraph && m_run.Length == 0 &&
-           (m_state == MarkdownState.None || m_state == MarkdownState.Newline1))) {
-        m_state = MarkdownState.Paragraph;
-        m_name = "p";
+      // _parsingParagraph should be sufficient, shouldn't need _run.Length check.
+      if ((!_parsingParagraph && _blankLine && _parsingList) ||
+          (!_parsingList && !_parsingParagraph && _run.Length == 0 &&
+           (_state == MarkdownState.None || _state == MarkdownState.Newline1))) {
+        _state = MarkdownState.Paragraph;
+        _name = "p";
         StartBlock ();
-        m_name = "";
-        m_value = RCBlock.Empty;
+        _name = "";
+        _value = RCBlock.Empty;
         text = text.TrimStart ();
-        m_parsingParagraph = true;
+        _parsingParagraph = true;
       }
-      else if (m_state == MarkdownState.Newline1 || m_state == MarkdownState.MaybeBR) {
+      else if (_state == MarkdownState.Newline1 || _state == MarkdownState.MaybeBR) {
         text = text.TrimStart ();
       }
-      UpdateTextRun (m_run, text);
+      UpdateTextRun (_run, text);
     }
 
     protected void FinishList ()
     {
-      if (m_parsingList && m_liLength <= 0 &&
-          m_state != MarkdownState.Em &&
-          m_state != MarkdownState.Bold &&
-          m_state != MarkdownState.ListItem &&
-          m_state != MarkdownState.Paragraph &&
-          m_state != MarkdownState.Link) {
+      if (_parsingList && _liLength <= 0 &&
+          _state != MarkdownState.Em &&
+          _state != MarkdownState.Bold &&
+          _state != MarkdownState.ListItem &&
+          _state != MarkdownState.Paragraph &&
+          _state != MarkdownState.Link) {
         while (true)
         {
           EndBlock ();
-          string tag = m_names.Peek ();
+          string tag = _names.Peek ();
           if (tag == "ol" || tag == "ul") {
             EndBlock ();
             break;
           }
         }
         // Console.Out.WriteLine ("Done parsing list");
-        m_parsingList = false;
-        m_parsingParagraph = false;
-        m_state = MarkdownState.None;
+        _parsingList = false;
+        _parsingParagraph = false;
+        _state = MarkdownState.None;
       }
     }
 
     protected void UpdateTextRun (StringBuilder run, string text)
     {
-      if (m_state == MarkdownState.Paragraph ||
-          m_state == MarkdownState.Em ||
-          m_state == MarkdownState.Bold ||
-          m_state == MarkdownState.Link ||
-          m_state == MarkdownState.Blockquote ||
-          m_state == MarkdownState.MaybeBR ||
-          m_state == MarkdownState.ListItem) {
+      if (_state == MarkdownState.Paragraph ||
+          _state == MarkdownState.Em ||
+          _state == MarkdownState.Bold ||
+          _state == MarkdownState.Link ||
+          _state == MarkdownState.Blockquote ||
+          _state == MarkdownState.MaybeBR ||
+          _state == MarkdownState.ListItem) {
         run.Append (text);
       }
-      else if (m_state == MarkdownState.Newline1) {
+      else if (_state == MarkdownState.Newline1) {
         text = text.TrimStart ();
-        if (m_parsingParagraph || run.Length > 0) {
+        if (_parsingParagraph || run.Length > 0) {
           run.Append (" ");
         }
         run.Append (text);
-        m_state = MarkdownState.Paragraph;
+        _state = MarkdownState.Paragraph;
       }
       else {
         run.Append (text);
       }
       if (text.EndsWith ("  ")) {
-        m_state = MarkdownState.MaybeBR;
+        _state = MarkdownState.MaybeBR;
       }
       else {
-        m_state = MarkdownState.Paragraph;
+        _state = MarkdownState.Paragraph;
       }
     }
 
     public override void AcceptEndOfLine (RCToken token)
     {
-      // Console.Out.WriteLine ("AcceptEndOfLine({0})", m_state);
-      // Console.Out.WriteLine ("  m_parsingParagraph: {0}", m_parsingParagraph);
-      // Console.Out.WriteLine ("  m_parsingList: {0}", m_parsingList);
+      // Console.Out.WriteLine ("AcceptEndOfLine({0})", _state);
+      // Console.Out.WriteLine ("  _parsingParagraph: {0}", _parsingParagraph);
+      // Console.Out.WriteLine ("  _parsingList: {0}", _parsingList);
       if (token.Index == 0) {
         return;
       }
-      if (m_state == MarkdownState.Newline1) {
-        if (m_parsingList) {
+      if (_state == MarkdownState.Newline1) {
+        if (_parsingList) {
           AppendRun ();
-          m_blankLine = true;
-          m_state = MarkdownState.None;
+          _blankLine = true;
+          _state = MarkdownState.None;
         }
-        else if (m_quoteRun.Length > 0) {
+        else if (_quoteRun.Length > 0) {
           FinishQuote (true);
           EndBlock ();
-          m_quoteLevel = 0;
-          m_parsingParagraph = false;
-          m_state = MarkdownState.None;
+          _quoteLevel = 0;
+          _parsingParagraph = false;
+          _state = MarkdownState.None;
         }
         else {
           EndBlock ();
-          m_parsingParagraph = false;
-          m_state = MarkdownState.None;
+          _parsingParagraph = false;
+          _state = MarkdownState.None;
         }
       }
-      else if (m_state == MarkdownState.MaybeBR) {
-        if (m_quoteRun.Length > 0) {
-          m_quoteRun.Append ("\n");
+      else if (_state == MarkdownState.MaybeBR) {
+        if (_quoteRun.Length > 0) {
+          _quoteRun.Append ("\n");
         }
-        if (m_run.Length >= 2) {
-          if (m_run[m_run.Length - 1] != ' ') {
+        if (_run.Length >= 2) {
+          if (_run[_run.Length - 1] != ' ') {
             return;
           }
-          if (m_run[m_run.Length - 2] != ' ') {
+          if (_run[_run.Length - 2] != ' ') {
             return;
           }
-          m_run.Remove (m_run.Length - 2, 2);
-          m_run.Append ("\n");
+          _run.Remove (_run.Length - 2, 2);
+          _run.Append ("\n");
         }
       }
-      // else if (m_state == MarkdownState.Paragraph)
+      // else if (_state == MarkdownState.Paragraph)
       // {
       //   AppendRun ();
-      //   WrapLITextIfNeeded (m_state);
-      //   m_state = MarkdownState.Newline1;
+      //   WrapLITextIfNeeded (_state);
+      //   _state = MarkdownState.Newline1;
       // }
       else {
-        m_state = MarkdownState.Newline1;
+        _state = MarkdownState.Newline1;
       }
-      m_liLength = -1;
+      _liLength = -1;
     }
 
     public override void AcceptMarkdownBeginBold (RCToken token)
     {
       // Console.Out.WriteLine ("AcceptMarkdownBeginBold: '{0}'", token.Text);
-      UpdateTextRun (m_run, "");
+      UpdateTextRun (_run, "");
       AppendRun ();
-      if (m_parsingList && m_blankLine) {
-        m_name = "p";
+      if (_parsingList && _blankLine) {
+        _name = "p";
         StartBlock ();
-        m_parsingParagraph = true;
+        _parsingParagraph = true;
       }
-      m_name = "strong";
+      _name = "strong";
       StartBlock ();
-      m_name = "";
-      m_value = RCBlock.Empty;
-      m_state = MarkdownState.Bold;
+      _name = "";
+      _value = RCBlock.Empty;
+      _state = MarkdownState.Bold;
     }
 
     public override void AcceptMarkdownEndBold (RCToken token)
@@ -263,20 +263,20 @@ namespace RCL.Kernel
 
     public override void AcceptMarkdownBeginItalic (RCToken token)
     {
-      // Console.Out.WriteLine ("AcceptMarkdownBeginItalic({0}): '{1}'", m_state,
+      // Console.Out.WriteLine ("AcceptMarkdownBeginItalic({0}): '{1}'", _state,
       // token.Text);
-      UpdateTextRun (m_run, "");
+      UpdateTextRun (_run, "");
       AppendRun ();
-      if (m_parsingList && m_blankLine) {
-        m_name = "p";
+      if (_parsingList && _blankLine) {
+        _name = "p";
         StartBlock ();
-        m_parsingParagraph = true;
+        _parsingParagraph = true;
       }
-      m_name = "em";
+      _name = "em";
       StartBlock ();
-      m_name = "";
-      m_value = RCBlock.Empty;
-      m_state = MarkdownState.Em;
+      _name = "";
+      _value = RCBlock.Empty;
+      _state = MarkdownState.Em;
     }
 
     public override void AcceptMarkdownEndItalic (RCToken token)
@@ -288,14 +288,14 @@ namespace RCL.Kernel
     public override void AcceptMarkdownLink (RCToken token)
     {
       // Console.Out.WriteLine ("AcceptMarkdownLink: '{0}'", token.Text);
-      // Console.Out.WriteLine ("m_state: " + m_state);
-      if (m_state == MarkdownState.None || m_state == MarkdownState.Blockquote) {
-        m_name = "p";
+      // Console.Out.WriteLine ("_state: " + _state);
+      if (_state == MarkdownState.None || _state == MarkdownState.Blockquote) {
+        _name = "p";
         StartBlock ();
-        m_parsingParagraph = true;
+        _parsingParagraph = true;
       }
       FinishRuns (false);
-      m_state = MarkdownState.Link;
+      _state = MarkdownState.Link;
       // [ will be at 1 in the case of ! img syntax
       int openBracket = token.Text.IndexOf ('[');
       int closingBracket = token.Text.IndexOf (']');
@@ -310,17 +310,17 @@ namespace RCL.Kernel
       bool reentered;
       RCBlock text = ParseEmbeddedRun (linkText, MarkdownState.Link, out reentered);
       if (token.Text[0] == '[') {
-        m_name = "a";
+        _name = "a";
         StartBlock ();
-        m_value = new RCBlock (RCBlock.Empty, "text", ":", text);
-        m_value = new RCBlock (m_value, "href", ":", new RCString (href));
+        _value = new RCBlock (RCBlock.Empty, "text", ":", text);
+        _value = new RCBlock (_value, "href", ":", new RCString (href));
         EndBlock ();
       }
       else if (token.Text[0] == '!') {
-        m_name = "img";
+        _name = "img";
         StartBlock ();
-        m_value = new RCBlock (RCBlock.Empty, "src", ":", new RCString (href));
-        m_value = new RCBlock (m_value, "alt", ":", text);
+        _value = new RCBlock (RCBlock.Empty, "src", ":", new RCString (href));
+        _value = new RCBlock (_value, "alt", ":", text);
         EndBlock ();
       }
       else {
@@ -332,29 +332,29 @@ namespace RCL.Kernel
     {
       // Do not break out of a p for a link
       FinishRuns (false);
-      if (m_state == MarkdownState.None) {
-        m_name = "p";
+      if (_state == MarkdownState.None) {
+        _name = "p";
         StartBlock ();
-        m_parsingParagraph = true;
+        _parsingParagraph = true;
       }
-      m_state = MarkdownState.Link;
+      _state = MarkdownState.Link;
       int openBracket = 0;
       int closeBracket = token.Text.Length - 1;
       int linkTextStart = openBracket + 1;
       int linkTextLength = closeBracket - linkTextStart;
       string linkText = token.Text.Substring (linkTextStart, linkTextLength);
-      m_name = "a";
+      _name = "a";
       StartBlock ();
       RCBlock textBlock = new RCBlock ("", ":", new RCString (linkText));
-      m_value = new RCBlock (RCBlock.Empty, "text", ":", textBlock);
-      m_value = new RCBlock (m_value, "href", ":", new RCString (linkText));
+      _value = new RCBlock (RCBlock.Empty, "text", ":", textBlock);
+      _value = new RCBlock (_value, "href", ":", new RCString (linkText));
       EndBlock ();
     }
 
     public override void AcceptMarkdownHeader (RCToken token)
     {
-      // Console.Out.WriteLine ("AcceptMarkdownHeader({0}): '{1}'", m_state, token.Text);
-      // Console.Out.WriteLine ("m_liLength: " + m_liLength);
+      // Console.Out.WriteLine ("AcceptMarkdownHeader({0}): '{1}'", _state, token.Text);
+      // Console.Out.WriteLine ("_liLength: " + _liLength);
       FinishList ();
       FinishRuns (true);
       // Do break out of a p for a header
@@ -370,17 +370,17 @@ namespace RCL.Kernel
       AppendRun ();
       bool reentered;
       RCBlock text = ParseEmbeddedRun (headerText, MarkdownState.Link, out reentered);
-      m_name = "h" + headerLevel.ToString ();
+      _name = "h" + headerLevel.ToString ();
       StartBlock ();
-      m_value = text;
+      _value = text;
       EndBlock ();
     }
 
-    protected int m_quoteLevel = 0;
-    protected StringBuilder m_quoteRun = new StringBuilder ();
+    protected int _quoteLevel = 0;
+    protected StringBuilder _quoteRun = new StringBuilder ();
     public override void AcceptMarkdownBlockquote (RCToken token)
     {
-      // Console.Out.WriteLine ("AcceptMarkdownBlockquote({0}): '{1}'", m_state,
+      // Console.Out.WriteLine ("AcceptMarkdownBlockquote({0}): '{1}'", _state,
       // token.Text);
       int firstContent = -1;
       int quoteLevel = 0;
@@ -401,23 +401,23 @@ namespace RCL.Kernel
       int contentLength = token.Text.Length - firstContent;
       string text = token.Text.Substring (firstContent, contentLength);
 
-      if (quoteLevel > m_quoteLevel) {
+      if (quoteLevel > _quoteLevel) {
         FinishQuote (false);
-        int levels = quoteLevel - m_quoteLevel;
+        int levels = quoteLevel - _quoteLevel;
         for (int level = 0; level < levels; ++level)
         {
-          m_state = MarkdownState.Paragraph;
-          m_name = "blockquote";
+          _state = MarkdownState.Paragraph;
+          _name = "blockquote";
           StartBlock ();
         }
       }
-      else if (quoteLevel < m_quoteLevel) {
+      else if (quoteLevel < _quoteLevel) {
         FinishQuote (true);
       }
-      m_state = MarkdownState.Paragraph;
-      UpdateTextRun (m_quoteRun, text);
-      m_quoteRun.AppendLine ();
-      m_quoteLevel = quoteLevel;
+      _state = MarkdownState.Paragraph;
+      UpdateTextRun (_quoteRun, text);
+      _quoteRun.AppendLine ();
+      _quoteLevel = quoteLevel;
     }
 
     public override void AcceptMarkdownOLItem (RCToken token)
@@ -432,97 +432,97 @@ namespace RCL.Kernel
 
     protected void AcceptListItem (RCToken token, string listTagName)
     {
-      // Console.Out.WriteLine ("AcceptListItem({0}): '{1}'", m_state, token.Text);
-      // Console.Out.WriteLine ("m_parsingParagraph: {0}", m_parsingParagraph);
-      // Console.Out.WriteLine ("m_parsingList: {0}", m_parsingList);
-      // Console.Out.WriteLine ("m_blankLine: {0}", m_blankLine);
-      MarkdownState oldState = m_state;
-      m_state = MarkdownState.ListItem;
-      if (m_parsingList) {
+      // Console.Out.WriteLine ("AcceptListItem({0}): '{1}'", _state, token.Text);
+      // Console.Out.WriteLine ("_parsingParagraph: {0}", _parsingParagraph);
+      // Console.Out.WriteLine ("_parsingList: {0}", _parsingList);
+      // Console.Out.WriteLine ("_blankLine: {0}", _blankLine);
+      MarkdownState oldState = _state;
+      _state = MarkdownState.ListItem;
+      if (_parsingList) {
         FinishRuns (false);
         WrapLITextIfNeeded (oldState);
-        while (m_names.Peek () != "li")
+        while (_names.Peek () != "li")
         {
           EndBlock ();
         }
         EndBlock ();
-        m_parsingParagraph = false;
+        _parsingParagraph = false;
       }
-      if (!m_parsingList && oldState == MarkdownState.None) {
-        m_parsingList = true;
-        m_name = listTagName;
+      if (!_parsingList && oldState == MarkdownState.None) {
+        _parsingList = true;
+        _name = listTagName;
         StartBlock ();
       }
-      m_name = "li";
+      _name = "li";
       // This may need to go onto the stack to do nested lists.
       StartBlock ();
     }
 
     public override void AcceptMarkdownLIIndent (RCToken token)
     {
-      // Console.Out.WriteLine ("AcceptLIIndent({0}): '{1}'", m_state, token.Text);
-      if (m_parsingList) {
-        m_liLength = token.Text.Length;
-        WrapLITextIfNeeded (m_state);
+      // Console.Out.WriteLine ("AcceptLIIndent({0}): '{1}'", _state, token.Text);
+      if (_parsingList) {
+        _liLength = token.Text.Length;
+        WrapLITextIfNeeded (_state);
       }
     }
 
     protected void WrapLITextIfNeeded (MarkdownState oldState)
     {
       // Console.WriteLine("  WrapLITextIfNeeded ({0})", oldState);
-      // Console.Out.WriteLine ("    m_parsingParagraph: {0}", m_parsingParagraph);
-      // Console.Out.WriteLine ("    m_parsingList: {0}", m_parsingList);
-      // Console.Out.WriteLine ("    m_blankLine: {0}", m_blankLine);
-      if (m_parsingList && m_blankLine && !m_parsingParagraph) {
+      // Console.Out.WriteLine ("    _parsingParagraph: {0}", _parsingParagraph);
+      // Console.Out.WriteLine ("    _parsingList: {0}", _parsingList);
+      // Console.Out.WriteLine ("    _blankLine: {0}", _blankLine);
+      if (_parsingList && _blankLine && !_parsingParagraph) {
         // insert a new item
-        // Console.WriteLine("    WrapLITextIfNeeded ITS NEEDED! m_value.Name: {0}",
-        // m_value.Name);
-        if (m_value.Name == "") { // || m_value.Name == "em" || m_value.Name == "strong")
+        // Console.WriteLine("    WrapLITextIfNeeded ITS NEEDED! _value.Name: {0}",
+        // _value.Name);
+        if (_value.Name == "") { // || _value.Name == "em" || _value.Name == "strong")
           // Console.Out.WriteLine ("    INSERTING A P");
-          m_value = new RCBlock (RCBlock.Empty, "p", ":", m_value);
+          _value = new RCBlock (RCBlock.Empty, "p", ":", _value);
         }
       }
     }
 
     protected void FinishRuns (bool endBlock)
     {
-      if (m_run.Length > 0) {
-        if (!endBlock && m_state == MarkdownState.Newline1) {
-          m_run.Append (" ");
+      if (_run.Length > 0) {
+        if (!endBlock && _state == MarkdownState.Newline1) {
+          _run.Append (" ");
         }
         AppendRun ();
         if (endBlock) {
           EndBlock ();
         }
       }
-      else if (m_value != null && m_value.Count > 0) {
+      else if (_value != null && _value.Count > 0) {
         if (endBlock) {
           EndBlock ();
         }
       }
-      if (m_quoteRun.Length > 0) {
+      if (_quoteRun.Length > 0) {
         FinishQuote (true);
       }
     }
 
     protected void FinishQuote (bool endBlock)
     {
-      if (m_quoteRun.Length > 0) {
+      if (_quoteRun.Length > 0) {
         bool reentered;
-        RCBlock embedded = ParseEmbeddedRun (m_quoteRun.ToString (),
+        RCBlock embedded = ParseEmbeddedRun (_quoteRun.ToString (),
                                              MarkdownState.Blockquote,
                                              out reentered);
         if (!reentered) {
-          m_value = new RCBlock (m_value, "p", ":", embedded);
+          _value = new RCBlock (_value, "p", ":", embedded);
           if (endBlock) {
             EndBlock (); // Blockquote
           }
         }
         else {
           // Not sure if this is right yet.
-          m_value = embedded;
+          _value = embedded;
         }
-        m_quoteRun.Clear ();
+        _quoteRun.Clear ();
       }
     }
 
@@ -530,26 +530,26 @@ namespace RCL.Kernel
                                         MarkdownState state,
                                         out bool reentered)
     {
-      m_reentered = true;
+      _reentered = true;
       RCArray<RCToken> tokens = new RCArray<RCToken> ();
-      m_lexer.Lex (text, tokens);
+      _lexer.Lex (text, tokens);
       MarkdownParser parser = new MarkdownParser ();
-      parser.m_state = state;
+      parser._state = state;
       bool fragment;
       RCBlock result = (RCBlock) parser.Parse (tokens, out fragment, canonical: false);
-      reentered = parser.m_reentered;
+      reentered = parser._reentered;
       return result;
     }
 
     protected void ShowStack (string location)
     {
-      string[] names = m_names.ToArray ();
+      string[] names = _names.ToArray ();
       Console.Out.Write ("  {0}: names: ", location);
       for (int i = 0; i < names.Length; ++i)
       {
         Console.Out.Write ("{0} ", names[i]);
       }
-      RCBlock[] values = m_values.ToArray ();
+      RCBlock[] values = _values.ToArray ();
       Console.Out.Write ("values: ");
       for (int i = 0; i < names.Length; ++i)
       {
@@ -560,45 +560,45 @@ namespace RCL.Kernel
 
     protected void StartBlock ()
     {
-      if (m_value == null) {
-        m_value = RCBlock.Empty;
+      if (_value == null) {
+        _value = RCBlock.Empty;
       }
-      if (m_name == null) {
-        m_name = "";
+      if (_name == null) {
+        _name = "";
       }
-      m_values.Push (m_value);
-      m_names.Push (m_name);
-      m_states.Push (m_state);
+      _values.Push (_value);
+      _names.Push (_name);
+      _states.Push (_state);
       // ShowStack ("StartBlock");
-      m_value = RCBlock.Empty;
-      m_name = "";
+      _value = RCBlock.Empty;
+      _name = "";
       AppendRun ();
     }
 
     protected void EndBlock ()
     {
       AppendRun ();
-      if (m_values.Count > 0) {
+      if (_values.Count > 0) {
         // ShowStack ("EndBlock");
-        RCBlock child = m_value;
-        m_name = m_names.Pop ();
-        m_value = m_values.Pop ();
-        m_state = m_states.Pop ();
-        m_value = new RCBlock (m_value, m_name, ":", child);
-        m_name = "";
-        // Console.Out.WriteLine ("  EndBlock: m_value: {0}", m_value);
+        RCBlock child = _value;
+        _name = _names.Pop ();
+        _value = _values.Pop ();
+        _state = _states.Pop ();
+        _value = new RCBlock (_value, _name, ":", child);
+        _name = "";
+        // Console.Out.WriteLine ("  EndBlock: _value: {0}", _value);
       }
     }
 
     protected void AppendRun ()
     {
-      if (m_run.Length == 0) {
+      if (_run.Length == 0) {
         return;
       }
-      RCString text = new RCString (m_run.ToString ());
-      m_run.Clear ();
-      m_value = new RCBlock (m_value, m_name, ":", text);
-      m_name = "";
+      RCString text = new RCString (_run.ToString ());
+      _run.Clear ();
+      _value = new RCBlock (_value, _name, ":", text);
+      _name = "";
     }
   }
 }

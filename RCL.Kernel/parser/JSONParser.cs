@@ -7,7 +7,7 @@ namespace RCL.Kernel
 {
   public class JSONParser : RCParser
   {
-    protected readonly static RCLexer m_jsonLexer;
+    protected readonly static RCLexer _jsonLexer;
     static JSONParser ()
     {
       RCArray<RCTokenType> types = new RCArray<RCTokenType> ();
@@ -20,20 +20,20 @@ namespace RCL.Kernel
       types.Write (RCTokenType.Null);
       types.Write (RCTokenType.CSVSeparator);
       types.Write (RCTokenType.Evaluator);
-      m_jsonLexer = new RCLexer (types);
+      _jsonLexer = new RCLexer (types);
     }
 
     public JSONParser ()
     {
-      m_lexer = m_jsonLexer;
+      _lexer = _jsonLexer;
     }
 
-    protected JSONState m_state = JSONState.Default;
-    protected Stack<RCBlock> m_values = new Stack<RCBlock> ();
-    protected Stack<string> m_names = new Stack<string> ();
-    protected Stack<JSONState> m_states = new Stack<JSONState> ();
-    protected RCBlock m_value = null;
-    protected string m_name = null;
+    protected JSONState _state = JSONState.Default;
+    protected Stack<RCBlock> _values = new Stack<RCBlock> ();
+    protected Stack<string> _names = new Stack<string> ();
+    protected Stack<JSONState> _states = new Stack<JSONState> ();
+    protected RCBlock _value = null;
+    protected string _name = null;
 
     protected enum JSONState
     {
@@ -54,37 +54,37 @@ namespace RCL.Kernel
       }
       // TODO: fragment should be interpreted as in rcl.
       fragment = false;
-      return m_value;
+      return _value;
     }
 
     public override void AcceptWhitespace (RCToken token) {}
 
     public override void AcceptString (RCToken token)
     {
-      if (m_state == JSONState.Name) {
-        m_name = token.ParseString (m_lexer);
-        m_state = JSONState.Value;
+      if (_state == JSONState.Name) {
+        _name = token.ParseString (_lexer);
+        _state = JSONState.Value;
       }
       else {
-        AppendChild (new RCString (token.ParseString (m_lexer)));
+        AppendChild (new RCString (token.ParseString (_lexer)));
       }
     }
 
     public override void AcceptNumber (RCToken token)
     {
-      AppendChild (new RCDouble (token.ParseDouble (m_lexer)));
+      AppendChild (new RCDouble (token.ParseDouble (_lexer)));
     }
 
     public override void AcceptBoolean (RCToken token)
     {
-      AppendChild (new RCBoolean (token.ParseBoolean (m_lexer)));
+      AppendChild (new RCBoolean (token.ParseBoolean (_lexer)));
     }
 
     public override void AcceptBlock (RCToken token)
     {
       if (token.Text.Equals ("{")) {
         StartBlock ();
-        m_state = JSONState.Name;
+        _state = JSONState.Name;
       }
       else if (token.Text.Equals ("}")) {
         EndBlock ();
@@ -95,7 +95,7 @@ namespace RCL.Kernel
     {
       if (token.Text.Equals ("[")) {
         StartBlock ();
-        m_state = JSONState.Default;
+        _state = JSONState.Default;
       }
       else if (token.Text.Equals ("]")) {
         EndBlock ();
@@ -111,32 +111,32 @@ namespace RCL.Kernel
 
     protected void StartBlock ()
     {
-      if (m_value != null) {
-        m_values.Push (m_value);
-        m_names.Push (m_name);
-        m_states.Push (m_state);
+      if (_value != null) {
+        _values.Push (_value);
+        _names.Push (_name);
+        _states.Push (_state);
       }
-      m_value = RCBlock.Empty;
-      m_name = "";
+      _value = RCBlock.Empty;
+      _name = "";
     }
 
     protected void EndBlock ()
     {
-      if (m_values.Count > 0) {
-        RCBlock child = m_value;
-        m_name = m_names.Pop ();
-        m_value = m_values.Pop ();
-        m_state = m_states.Pop ();
+      if (_values.Count > 0) {
+        RCBlock child = _value;
+        _name = _names.Pop ();
+        _value = _values.Pop ();
+        _state = _states.Pop ();
         AppendChild (child);
       }
     }
 
     protected void AppendChild (RCValue scalar)
     {
-      m_value = new RCBlock (m_value, m_name, ":", scalar);
-      if (m_state == JSONState.Value) {
-        m_name = "";
-        m_state = JSONState.Name;
+      _value = new RCBlock (_value, _name, ":", scalar);
+      if (_state == JSONState.Value) {
+        _name = "";
+        _state = JSONState.Name;
       }
     }
   }

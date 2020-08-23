@@ -11,14 +11,14 @@ namespace RCL.Kernel
     /// <summary>
     /// The data storage for the vector.
     /// </summary>
-    protected RCArray<T> m_data;
+    protected RCArray<T> _data;
 
     public RCVector (params T[] data)
     {
       if (data == null) {
         data = new T[0];
       }
-      m_data = new RCArray<T> (data);
+      _data = new RCArray<T> (data);
     }
 
     public RCVector (RCArray<T> data)
@@ -26,27 +26,27 @@ namespace RCL.Kernel
       if (data == null) {
         data = new RCArray<T> (new T[0]);
       }
-      m_data = data;
+      _data = data;
     }
 
     public RCArray<T> Data
     {
-      get { return m_data; }
+      get { return _data; }
     }
 
     public override object Array
     {
-      get { return m_data; }
+      get { return _data; }
     }
 
     public T this[int index]
     {
-      get { return m_data[index]; }
+      get { return _data[index]; }
     }
 
     public override int Count
     {
-      get { return m_data.Count; }
+      get { return _data.Count; }
     }
 
     /// <summary>
@@ -59,7 +59,7 @@ namespace RCL.Kernel
 
     public override object Child (int i)
     {
-      return m_data[i];
+      return _data[i];
     }
 
     public override bool Equals (object obj)
@@ -100,7 +100,7 @@ namespace RCL.Kernel
 
     public virtual T[] ToArray ()
     {
-      return m_data.ToArray ();
+      return _data.ToArray ();
     }
 
     /// <summary>
@@ -157,11 +157,11 @@ namespace RCL.Kernel
 
     protected static RCArray<T> ReadVector (RCArray<byte> array, ref int start, int size)
     {
-      int count = BitConverter.ToInt32 (array.m_source, start);
+      int count = BitConverter.ToInt32 (array._source, start);
       int length = count * size;
       start += sizeof (int);
       T[] result = new T[count];
-      Buffer.BlockCopy (array.m_source, start, result, 0, length);
+      Buffer.BlockCopy (array._source, start, result, 0, length);
       start += length;
       return new RCArray<T> (result);
     }
@@ -190,29 +190,29 @@ namespace RCL.Kernel
   public class RCVectorEnumerator<T> : IEnumerator<T>
   {
     protected int i = -1;
-    protected RCVector<T> m_vector;
+    protected RCVector<T> _vector;
 
     public RCVectorEnumerator (RCVector<T> array)
     {
-      m_vector = array;
+      _vector = array;
     }
 
     public T Current
     {
-      get { return (T) m_vector[i]; }
+      get { return (T) _vector[i]; }
     }
 
     public void Dispose () {}
 
     object System.Collections.IEnumerator.Current
     {
-      get { return m_vector[i]; }
+      get { return _vector[i]; }
     }
 
     public bool MoveNext ()
     {
       ++i;
-      return i < m_vector.Count;
+      return i < _vector.Count;
     }
 
     public void Reset ()

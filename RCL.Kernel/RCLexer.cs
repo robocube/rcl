@@ -9,11 +9,11 @@ namespace RCL.Kernel
 {
   public class RCLexer
   {
-    protected readonly RCArray<RCTokenType> m_types = new RCArray<RCTokenType> ();
+    protected readonly RCArray<RCTokenType> _types = new RCArray<RCTokenType> ();
     public RCLexer (RCArray<RCTokenType> types)
     {
       types.Lock ();
-      m_types = types;
+      _types = types;
     }
 
     public void Lex (string input, RCArray<RCToken> output)
@@ -30,7 +30,7 @@ namespace RCL.Kernel
         while (i < input.Length)
         {
           token = null;
-          foreach (RCTokenType tokenType in m_types)
+          foreach (RCTokenType tokenType in _types)
           {
             token = tokenType.TryParseToken (input, i, tokenIndex, line, previous);
             if (token != null) {
@@ -61,7 +61,7 @@ namespace RCL.Kernel
     /// </summary>
     public RCToken LexSingle (string code)
     {
-      foreach (RCTokenType tokenType in m_types)
+      foreach (RCTokenType tokenType in _types)
       {
         RCToken token = tokenType.TryParseToken (code, 0, 0, 0, null);
         if (token != null && token.Text.Length == code.Length) {
