@@ -15,8 +15,7 @@ namespace RCL.Kernel
     // A null here will indicate that the counter is for reading not dispatching.
     protected readonly List<bool> m_dispatched = new List<bool> ();
 
-    public ReadCounter () {
-    }
+    public ReadCounter () {}
     public ReadCounter (RCCube cube)
     {
       if (cube.Axis.Symbol == null) { // no S col

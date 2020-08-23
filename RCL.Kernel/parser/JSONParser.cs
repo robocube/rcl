@@ -57,8 +57,7 @@ namespace RCL.Kernel
       return m_value;
     }
 
-    public override void AcceptWhitespace (RCToken token) {
-    }
+    public override void AcceptWhitespace (RCToken token) {}
 
     public override void AcceptString (RCToken token)
     {
@@ -103,8 +102,7 @@ namespace RCL.Kernel
       }
     }
 
-    public override void AcceptEvaluator (RCToken token) {
-    }
+    public override void AcceptEvaluator (RCToken token) {}
 
     public override void AcceptNull (RCToken token)
     {

@@ -86,8 +86,7 @@ namespace RCL.Kernel
         m_text = m_default;
         m_state = XmlState.CloseTag;
       }
-      else if (token.Text.Equals ("=")) {
-      }
+      else if (token.Text.Equals ("=")) {}
     }
 
     public override void AcceptName (RCToken token)

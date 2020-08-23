@@ -1,4 +1,3 @@
 ﻿
 namespace RCL.Core
-{
-}
+{}

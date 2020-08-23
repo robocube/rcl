@@ -154,8 +154,7 @@ namespace Mono.Terminal
     static Handler[] handlers;
 
     public LineEditor (string name) : this (name, 10)
-    {
-    }
+    {}
 
     public LineEditor (string name, int histsize)
     {
@@ -222,8 +221,9 @@ namespace Mono.Terminal
 
       int max = System.Math.Max (rendered_text.Length + shown_prompt.Length, max_rendered);
 
-      for (int i = rendered_text.Length + shown_prompt.Length; i < max_rendered; i++)
+      for (int i = rendered_text.Length + shown_prompt.Length; i < max_rendered; i++) {
         Console.Write (' ');
+      }
       max_rendered = shown_prompt.Length + rendered_text.Length;
 
       // Write one more to ensure that we always wrap around properly if we are at the
@@ -247,16 +247,18 @@ namespace Mono.Terminal
       int rpos = TextToRenderPos (pos);
       int i;
 
-      for (i = rpos; i < rendered_text.Length; i++)
+      for (i = rpos; i < rendered_text.Length; i++) {
         Console.Write (rendered_text[i]);
+      }
 
       if ((shown_prompt.Length + rendered_text.Length) > max_rendered) {
         max_rendered = shown_prompt.Length + rendered_text.Length;
       }
       else {
         int max_extra = max_rendered - shown_prompt.Length;
-        for (; i < max_extra; i++)
+        for (; i < max_extra; i++) {
           Console.Write (' ');
+        }
       }
     }
 

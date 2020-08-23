@@ -129,8 +129,7 @@ namespace RCL.Kernel
       return new RCRunner (workers: 1);
     }
 
-    public RCRunner () : this (workers : 1) {
-    }
+    public RCRunner () : this (workers : 1) {}
     public RCRunner (long workers)
     {
       m_ctorThread = Thread.CurrentThread;

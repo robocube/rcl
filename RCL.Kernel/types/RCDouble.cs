@@ -16,10 +16,8 @@ namespace RCL.Kernel
       CanonicalFormatProvider.NumberGroupSeparator = "";
     }
 
-    public RCDouble (params double[] data) : base (data) {
-    }
-    public RCDouble (RCArray<double> data) : base (data) {
-    }
+    public RCDouble (params double[] data) : base (data) {}
+    public RCDouble (RCArray<double> data) : base (data) {}
 
     public override Type ScalarType {
       get { return typeof (double); }

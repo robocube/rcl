@@ -182,20 +182,23 @@ namespace RCL.Core
     {
       if (left.Count == 1) {
         RCArray<O> output = new RCArray<O> (right.Count);
-        for (int i = 0; i < right.Count; ++i)
+        for (int i = 0; i < right.Count; ++i) {
           output.Write (op (left[0], right[i]));
+        }
         return output;
       }
       else if (right.Count == 1) {
         RCArray<O> output = new RCArray<O> (left.Count);
-        for (int i = 0; i < left.Count; ++i)
+        for (int i = 0; i < left.Count; ++i) {
           output.Write (op (left[i], right[0]));
+        }
         return output;
       }
       else if (left.Count == right.Count) {
         RCArray<O> output = new RCArray<O> (left.Count);
-        for (int i = 0; i < left.Count; ++i)
+        for (int i = 0; i < left.Count; ++i) {
           output.Write (op (left[i], right[i]));
+        }
         return output;
       }
       else {
@@ -207,8 +210,9 @@ namespace RCL.Core
     public static RCArray<O> MonadicOp <R, O> (RCArray<R> right, ScalarOp<R, O> op)
     {
       RCArray<O> output = new RCArray<O> (right.Count);
-      for (int i = 0; i < right.Count; ++i)
+      for (int i = 0; i < right.Count; ++i) {
         output.Write (op (right[i]));
+      }
       return output;
     }
 
@@ -217,8 +221,9 @@ namespace RCL.Core
     {
       S s = new S ();
       O o = new O ();
-      for (int i = 0; i < right.Count; ++i)
+      for (int i = 0; i < right.Count; ++i) {
         o = op (ref s, right[i]);
+      }
       return new RCArray<O> (o);
     }
 

@@ -58,8 +58,9 @@ namespace RCL.Core
     protected RCArray<T> DoUnion<T> (RCVector<T> left, RCVector<T> right)
     {
       HashSet<T> results = new HashSet<T> (left);
-      for (int i = 0; i < right.Count; ++i)
+      for (int i = 0; i < right.Count; ++i) {
         results.Add (right[i]);
+      }
       T[] array = new T[results.Count];
       results.CopyTo (array);
       return new RCArray<T> (array);

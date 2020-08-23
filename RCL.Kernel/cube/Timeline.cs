@@ -112,8 +112,7 @@ namespace RCL.Kernel
     }
 
     public Timeline (params string[] cols)
-      : this (new RCArray<string> (cols)) {
-    }
+      : this (new RCArray<string> (cols)) {}
 
     /// <summary>
     /// For a Timeline, the standard sort order is by time column (G, E or T) followed by

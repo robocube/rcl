@@ -18,8 +18,7 @@ namespace RCL.Kernel
         }
       }
     }
-    public RCString (RCArray<string> data) : base (data) {
-    }
+    public RCString (RCArray<string> data) : base (data) {}
 
     public override char TypeCode
     {

@@ -15,8 +15,7 @@ namespace RCL.Core
     protected Dictionary<object, Section> m_sections = new Dictionary<object, Section> ();
 
     public Blackboard ()
-    {
-    }
+    {}
 
     protected class Section
     {

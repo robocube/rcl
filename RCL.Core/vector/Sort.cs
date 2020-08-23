@@ -283,16 +283,32 @@ namespace RCL.Core
       RCLong rank;
       switch (column.TypeCode)
       {
-      case 'x': rank = new RCLong (RankUtils.DoRank<byte> (direction, (RCByte) column)); break;
-      case 'l': rank = new RCLong (RankUtils.DoRank<long> (direction, (RCLong) column)); break;
-      case 'd': rank = new RCLong (RankUtils.DoRank<double> (direction, (RCDouble) column)); break;
-      case 'm': rank = new RCLong (RankUtils.DoRank<decimal> (direction, (RCDecimal) column)); break;
-      case 's': rank = new RCLong (RankUtils.DoRank<string> (direction, (RCString) column)); break;
-      case 'b': rank = new RCLong (RankUtils.DoRank<bool> (direction, (RCBoolean) column)); break;
-      case 'y': rank = new RCLong (RankUtils.DoRank<RCSymbolScalar> (direction, (RCSymbol) column));
+      case 'x':
+        rank = new RCLong (RankUtils.DoRank<byte> (direction, (RCByte) column));
         break;
-      case 't': rank = new RCLong (RankUtils.DoRank<RCTimeScalar> (direction, (RCTime) column)); break;
-      default: throw new Exception ("Type:" + column.TypeCode + " is not supported by sort");
+      case 'l':
+        rank = new RCLong (RankUtils.DoRank<long> (direction, (RCLong) column));
+        break;
+      case 'd':
+        rank = new RCLong (RankUtils.DoRank<double> (direction, (RCDouble) column));
+        break;
+      case 'm':
+        rank = new RCLong (RankUtils.DoRank<decimal> (direction, (RCDecimal) column));
+        break;
+      case 's':
+        rank = new RCLong (RankUtils.DoRank<string> (direction, (RCString) column));
+        break;
+      case 'b':
+        rank = new RCLong (RankUtils.DoRank<bool> (direction, (RCBoolean) column));
+        break;
+      case 'y':
+        rank = new RCLong (RankUtils.DoRank<RCSymbolScalar> (direction, (RCSymbol) column));
+        break;
+      case 't':
+        rank = new RCLong (RankUtils.DoRank<RCTimeScalar> (direction, (RCTime) column));
+        break;
+      default:
+        throw new Exception ("Type:" + column.TypeCode + " is not supported by sort");
       }
       RCBlock result = RCBlock.Empty;
       for (int i = 0; i < right.Count; ++i)
@@ -302,18 +318,34 @@ namespace RCL.Core
         RCValue reordered;
         switch (column.TypeCode)
         {
-        case 'x': reordered = ReorderColumn<byte> (rank, (RCVector<byte>)column); break;
-        case 'l': reordered = ReorderColumn<long> (rank, (RCVector<long>)column); break;
-        case 'd': reordered = ReorderColumn<double> (rank, (RCVector<double>)column); break;
-        case 'm': reordered = ReorderColumn<decimal> (rank, (RCVector<decimal>)column); break;
-        case 's': reordered = ReorderColumn<string> (rank, (RCVector<string>)column); break;
-        case 'b': reordered = ReorderColumn<bool> (rank, (RCVector<bool>)column); break;
-        case 'y': reordered = ReorderColumn<RCSymbolScalar> (rank,
-                                                             (RCVector<RCSymbolScalar>)column);
+        case 'x':
+          reordered = ReorderColumn<byte> (rank, (RCVector<byte>)column);
           break;
-        case 't': reordered = ReorderColumn<RCTimeScalar> (rank, (RCVector<RCTimeScalar>)column);
+        case 'l':
+          reordered = ReorderColumn<long> (rank, (RCVector<long>)column);
           break;
-        default: throw new Exception ("Type:" + column.TypeCode + " is not supported by sort");
+        case 'd':
+          reordered = ReorderColumn<double> (rank, (RCVector<double>)column);
+          break;
+        case 'm':
+          reordered = ReorderColumn<decimal> (rank, (RCVector<decimal>)column);
+          break;
+        case 's':
+          reordered = ReorderColumn<string> (rank, (RCVector<string>)column);
+          break;
+        case 'b':
+          reordered = ReorderColumn<bool> (rank, (RCVector<bool>)column);
+          break;
+        case 'y':
+          reordered = ReorderColumn<RCSymbolScalar> (rank,
+                                                     (RCVector<RCSymbolScalar>)column);
+          break;
+        case 't':
+          reordered = ReorderColumn<RCTimeScalar> (rank,
+                                                   (RCVector<RCTimeScalar>)column);
+          break;
+        default:
+          throw new Exception ("Type:" + column.TypeCode + " is not supported by sort");
         }
         result = new RCBlock (result, name.Name, ":", reordered);
       }

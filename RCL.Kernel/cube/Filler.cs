@@ -124,8 +124,7 @@ namespace RCL.Kernel
         if (m_comparer.Compare (column.Data[row], m_defaultValue) != 0) {
           m_target.WriteCell (name, scalar, column.Data[row], column.Index[row], true, true);
         }
-        else {
-        }
+        else {}
       }
       else {
         RCSymbolScalar scalar = null;

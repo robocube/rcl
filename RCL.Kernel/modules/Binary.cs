@@ -65,8 +65,9 @@ namespace RCL.Kernel
     {
       result.Write ((byte) 'r');
       WriteScalarInt (result, reference.Parts.Count);
-      for (int i = 0; i < reference.Parts.Count; ++i)
+      for (int i = 0; i < reference.Parts.Count; ++i) {
         Binary.WriteScalarString (reference.Parts[i], result);
+      }
     }
 
     // This works for vectors of types with fixed size.
@@ -112,8 +113,9 @@ namespace RCL.Kernel
     public static void WriteScalarDecimal (decimal val, RCArray<byte> result)
     {
       int[] bits = decimal.GetBits (val);
-      for (int i = 0; i < bits.Length; ++i)
+      for (int i = 0; i < bits.Length; ++i) {
         WriteScalarInt (result, bits[i]);
+      }
     }
 
     public static void WriteVectorString (RCArray<byte> result, RCVector<string> vector)
@@ -137,8 +139,9 @@ namespace RCL.Kernel
 
       int uniques = unique.Count;
       WriteScalarInt (result, uniques);
-      for (int i = 0; i < unique.Count; ++i)
+      for (int i = 0; i < unique.Count; ++i) {
         WriteScalarString (unique[i], result);
+      }
       WriteScalarInt (result, data.Count);
       for (int i = 0; i < data.Count; ++i)
       {
