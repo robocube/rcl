@@ -1,4 +1,4 @@
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -54,16 +54,60 @@
   </Target>
   -->
   <ItemGroup>
+    <Compile Include="cube\AbsoluteValue.cs" />
+    <Compile Include="cube\CubeProto.cs" />
+    <Compile Include="cube\DecimalAbs.cs" />
+    <Compile Include="cube\DoubleAbs.cs" />
+    <Compile Include="cube\LongAbs.cs" />
+    <Compile Include="cube\Plugger.cs" />
+    <Compile Include="cube\RankState.cs" />
+    <Compile Include="cube\RankStateArray.cs" />
+    <Compile Include="cube\RankUtils.cs" />
+    <Compile Include="cube\RectCubeProto.cs" />
+    <Compile Include="cube\SCubeProto.cs" />
+    <Compile Include="cube\TSCubeProto.cs" />
+    <Compile Include="cube\ETSCubeProto.cs" />
+    <Compile Include="cube\SortDirection.cs" />
+    <Compile Include="lexer\LogEndOfLine.cs" />
+    <Compile Include="lexer\LogEntryBody.cs" />
+    <Compile Include="lexer\LogEntryHeader.cs" />
+    <Compile Include="lexer\LogEntryRawLine.cs" />
+    <Compile Include="lexer\MarkdownBeginBoldToken.cs" />
+    <Compile Include="lexer\MarkdownBeginItalicToken.cs" />
+    <Compile Include="lexer\MarkdownBlockquoteToken.cs" />
+    <Compile Include="lexer\MarkdownContentToken.cs" />
+    <Compile Include="lexer\MarkdownEndBoldToken.cs" />
+    <Compile Include="lexer\MarkdownEndItalicToken.cs" />
+    <Compile Include="lexer\MarkdownHeaderToken.cs" />
+    <Compile Include="lexer\MarkdownLIIndentToken.cs" />
+    <Compile Include="lexer\MarkdownLinkToken.cs" />
+    <Compile Include="lexer\MarkdownLiteralLinkToken.cs" />
+    <Compile Include="lexer\MarkdownOLItemToken.cs" />
+    <Compile Include="lexer\MarkdownULItemToken.cs" />
+    <Compile Include="lexer\XmlDeclarationToken.cs" />
+    <Compile Include="lexer\XmlNameToken.cs" />
+    <Compile Include="lexer\XmlStringToken.cs" />
     <Compile Include="modules\Binary.cs" />
     <Compile Include="modules\Eval.cs" />
     <Compile Include="modules\Format.cs" />
     <Compile Include="modules\Parse.cs" />
     <Compile Include="modules\Assert.cs" />
     <Compile Include="RCArgv.cs" />
+    <Compile Include="RCArrayEnumerator.cs" />
     <Compile Include="RCAssert.cs" />
+    <Compile Include="RCAsyncState.cs" />
     <Compile Include="RCColmap.cs" />
+    <Compile Include="RCDebugException.cs" />
+    <Compile Include="RCEvaluator.cs" />
+    <Compile Include="RCIncrScalar.cs" />
+    <Compile Include="RCName.cs" />
+    <Compile Include="RCRefable.cs" />
+    <Compile Include="RCSyntaxException.cs" />
     <Compile Include="RCSystem.cs" />
+    <Compile Include="RCTimeType.cs" />
+    <Compile Include="RCVectorEnumerator.cs" />
     <Compile Include="types\RCBlock.cs" />
+    <Compile Include="types\RCInlineOperator.cs" />
     <Compile Include="types\RCNative.cs" />
     <Compile Include="types\RCOperator.cs" />
     <Compile Include="types\RCReference.cs" />
@@ -116,6 +160,7 @@
     <Compile Include="types\RCLong.cs" />
     <Compile Include="types\RCString.cs" />
     <Compile Include="types\RCSymbol.cs" />
+    <Compile Include="types\RCTemplate.cs" />
     <Compile Include="types\RCTime.cs" />
     <Compile Include="RCVectorBase.cs" />
     <Compile Include="RCArray.cs" />
@@ -146,11 +191,9 @@
     <Compile Include="RCException.cs" />
     <Compile Include="RCErrors.cs" />
     <Compile Include="parser\LogParser.cs" />
-    <Compile Include="lexer\LogContentToken.cs" />
-    <Compile Include="lexer\MarkdownTokens.cs" />
     <Compile Include="parser\MarkdownParser.cs" />
     <Compile Include="cube\Deltafier.cs" />
-    <Compile Include="types\O2Symbol.cs" />
+    <Compile Include="types\RCUserOperator.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

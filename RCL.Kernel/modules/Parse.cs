@@ -18,7 +18,7 @@ namespace RCL.Kernel
         result = DoParse (parser, right, false, out fragment);
         runner.Yield (closure, result);
       }
-      catch (RCLSyntaxException ex)
+      catch (RCSyntaxException ex)
       {
         throw new RCException (closure, ex, RCErrors.Syntax, ex.Message);
       }
@@ -62,7 +62,7 @@ namespace RCL.Kernel
         result = DoParse (parser, right, canonical, out fragment);
         runner.Yield (closure, result);
       }
-      catch (RCLSyntaxException ex)
+      catch (RCSyntaxException ex)
       {
         throw new RCException (closure, ex, RCErrors.Syntax, ex.Message);
       }

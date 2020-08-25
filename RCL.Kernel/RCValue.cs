@@ -218,7 +218,7 @@ namespace RCL.Kernel
 
     public virtual RCOperator AsOperator (RCActivator activator, RCValue left, RCValue right)
     {
-      RCOperator result = new InlineOperator (this);
+      RCOperator result = new RCInlineOperator (this);
       result.Init ("", left, right);
       return result;
     }

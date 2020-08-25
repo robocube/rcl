@@ -63,7 +63,7 @@ namespace RCL.Kernel
     }
 
     [RCVerb ("eval")]
-    public void EvalEval (RCRunner runner, RCClosure closure, RCBlock left, UserOperator right)
+    public void EvalEval (RCRunner runner, RCClosure closure, RCBlock left, RCUserOperator right)
     {
       // Invocation using the activator requires a perfect match on the argument type.
       EvalEval (runner, closure, left, (RCOperator) right);
@@ -537,7 +537,7 @@ namespace RCL.Kernel
       RCValue val = null;
       while (parent != null)
       {
-        IRefable result = parent.Result;
+        RCRefable result = parent.Result;
         if (result != null && !parent.NoResolve) {
           val = result.Get (name, @this);
         }
@@ -563,7 +563,7 @@ namespace RCL.Kernel
     /// <summary>
     /// Start evaluation for a user-defined operator.
     /// </summary>
-    public static void DoEvalUserOp (RCRunner runner, RCClosure closure, UserOperator op)
+    public static void DoEvalUserOp (RCRunner runner, RCClosure closure, RCUserOperator op)
     {
       RCValue code = closure.UserOp;
       RCArray<RCBlock> @this = closure.UserOpContext;
@@ -670,7 +670,7 @@ namespace RCL.Kernel
       return child;
     }
 
-    public static void DoEvalInline (RCRunner runner, RCClosure closure, InlineOperator op)
+    public static void DoEvalInline (RCRunner runner, RCClosure closure, RCInlineOperator op)
     {
       op._code.Eval (runner, UserOpClosure (closure, op._code, null, noClimb: false));
     }
@@ -924,7 +924,7 @@ namespace RCL.Kernel
     {
       // Now we just did the this context work so you know what that means.
       // We have to pass in this.
-      UserOperator name = op as UserOperator;
+      RCUserOperator name = op as RCUserOperator;
       if (name == null) {
         return;
       }
@@ -939,13 +939,13 @@ namespace RCL.Kernel
                                           ref RCValue userop,
                                           ref RCArray<RCBlock> useropContext)
     {
-      UserOperator name = op as UserOperator;
+      RCUserOperator name = op as RCUserOperator;
       if (name != null) {
         PreresolveUserOp (previous, op, ref userop, ref useropContext);
         RCClosure current = previous.Parent;
         while (current != null)
         {
-          UserOperator code = current.Code as UserOperator;
+          RCUserOperator code = current.Code as RCUserOperator;
           if (code != null) {
             if (userop == current.UserOp) {
               // Tail recursion detected
@@ -964,7 +964,7 @@ namespace RCL.Kernel
       return false;
       // We now check explicitly for the tail recursive case
       // This means less need to worry about "last call" status
-      // UserOperator is the only place where this operation might return true now.
+      // RCUserOperator is the only place where this operation might return true now.
       // There is never a need to eliminate the tail stack frame in the case of a
       // built-in.
       // Still I don't feel quite ready to excise all of this "last call" code.
@@ -1006,7 +1006,7 @@ namespace RCL.Kernel
 
     public static bool DoIsLastCall (RCClosure closure,
                                      RCClosure arg,
-                                     UserOperator op)
+                                     RCUserOperator op)
     {
       // Commenting these lines out breaks the case where the last
       // op is not really the last op. But why?

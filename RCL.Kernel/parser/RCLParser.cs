@@ -82,7 +82,7 @@ namespace RCL.Kernel
           return _result;
         }
       }
-      catch (RCLSyntaxException)
+      catch (RCSyntaxException)
       {
         // The code issue is handled manually within Parse.
         throw;
@@ -90,10 +90,10 @@ namespace RCL.Kernel
       catch (Exception ex)
       {
         if (i < tokens.Count) {
-          throw new RCLSyntaxException (tokens[i], ex);
+          throw new RCSyntaxException (tokens[i], ex);
         }
         else if (tokens.Count > 0 && i >= tokens.Count) {
-          throw new RCLSyntaxException (tokens[tokens.Count - 1], ex);
+          throw new RCSyntaxException (tokens[tokens.Count - 1], ex);
         }
         else {
           // If for some reason we cannot obtain the token that broke the parsing process.
@@ -323,7 +323,7 @@ namespace RCL.Kernel
     protected void CheckForUnfinishedWork (RCToken token)
     {
       if (_maybeOperator != null) {
-        throw new RCLSyntaxException (token, "Unfinished operator expression.");
+        throw new RCSyntaxException (token, "Unfinished operator expression.");
       }
     }
 
