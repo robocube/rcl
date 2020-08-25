@@ -595,11 +595,11 @@ namespace RCL.Core
           references.Write (r);
           return r;
         }
-        UserOperator op = val as UserOperator;
+        RCUserOperator op = val as RCUserOperator;
         if (op != null) {
           RCReference r = new RCReference (op.Name);
           references.Write (r);
-          UserOperator outop = new UserOperator (r);
+          RCUserOperator outop = new RCUserOperator (r);
           outop.Init (op.Name, op.Left, op.Right);
           return outop;
         }

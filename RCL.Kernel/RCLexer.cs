@@ -52,7 +52,7 @@ namespace RCL.Kernel
         if (previous == null) {
           previous = new RCToken (input, RCTokenType.Junk, 0, 0, 0, 0);
         }
-        throw new RCLSyntaxException (previous, ex);
+        throw new RCSyntaxException (previous, ex);
       }
     }
 

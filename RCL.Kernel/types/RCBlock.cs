@@ -4,253 +4,8 @@ using System.Collections.Generic;
 
 namespace RCL.Kernel
 {
-  // What is this garbage we should get rid of this.
-  public interface IRefable
-  {
-    RCValue Get (RCArray<string> name, RCArray<RCBlock> context);
-    RCValue Get (string[] name, RCArray<RCBlock> context);
-    RCValue Get (string name);
-    RCValue Get (long index);
-  }
-
-  public class RCName
-  {
-    protected static object _lock = new object ();
-    protected static Dictionary<string, RCName> _names = new Dictionary<string, RCName> ();
-    protected static RCArray<RCName> _index = new RCArray<RCName> ();
-
-    static RCName ()
-    {
-      RCName empty = new RCName ("", 0, false);
-      _names.Add ("", empty);
-      _index.Write (empty);
-      RCName trueLiteral = new RCName ("'true'", 1, true);
-      _names.Add ("true", trueLiteral);
-      _index.Write (trueLiteral);
-      RCName falseLiteral = new RCName ("'false'", 2, true);
-      _names.Add ("false", falseLiteral);
-      _index.Write (falseLiteral);
-    }
-
-    public static RCArray<string> MultipartName (string text, char delimeter)
-    {
-      int partStart = 0;
-      RCArray<string> result = new RCArray<string> (4);
-      for (int i = 0; i < text.Length; ++i)
-      {
-        if (i == text.Length - 1) {
-          string partString = text.Substring (partStart);
-          RCName part = GetName (partString);
-          partStart += partString.Length;
-          // Consume the delimeter
-          ++partStart;
-          result.Write (part.Text);
-        }
-        else if (text[i] == delimeter) {
-          string partString = text.Substring (partStart, i - partStart);
-          RCName part = GetName (partString);
-          partStart += partString.Length;
-          // Consume the delimeter
-          ++partStart;
-          result.Write (part.Text);
-        }
-        else if (text[i] == '\'') {
-          int matchingQuote = text.IndexOf ('\'', i + 1);
-          if (matchingQuote < 0) {
-            throw new Exception ("Unmatched single quote in name: " + text);
-          }
-          else {
-            while (matchingQuote > 0 && text[matchingQuote - 1] == '\\')
-            {
-              matchingQuote = text.IndexOf ('\'', matchingQuote + 1);
-            }
-            if (matchingQuote <= 0 || text[matchingQuote] != '\'') {
-              throw new Exception ("Unmatched single quote among escaped single quotes in name: " +
-                                   text);
-            }
-            string partString = text.Substring (partStart, 1 + (matchingQuote - partStart));
-            RCName part = GetName (partString);
-            partStart += partString.Length;
-            result.Write (part.Text);
-            i = matchingQuote;
-          }
-        }
-      }
-      return result;
-    }
-
-    public static RCName GetName (string text)
-    {
-      if (text == null) {
-        text = "";
-      }
-      string name = null;
-      bool escaped = false;
-      RCName result;
-      lock (_lock)
-      {
-        if (!_names.TryGetValue (text, out result)) {
-          if (text[0] == '\'') {
-            if (text.Length == 1 || text[text.Length - 1] != '\'') {
-              throw new Exception ("Unmatched single quote in name: " + text);
-            }
-            // Remove quotes if not necessary
-            // They are necessary when the name begins with a number
-            if (text.Length > 1 && text[1] >= '0' && text[1] <= '9') {
-              name = text;
-              escaped = true;
-            }
-            for (int i = 1; i < text.Length - 1; ++i)
-            {
-              if (!RCTokenType.IsIdentifierChar (text[i])) {
-                name = text;
-                escaped = true;
-                break;
-              }
-            }
-            if (name == null) {
-              name = text.Substring (1, text.Length - 2);
-            }
-          }
-          else if (text[0] >= '0' && text[0] <= '9') {
-            name = "'" + text + "'";
-            escaped = true;
-          }
-          else {
-            for (int i = 0; i < text.Length; ++i)
-            {
-              // add quotes if necessary
-              if (!RCTokenType.IsIdentifierChar (text[i])) {
-                name = "'" + text + "'";
-                escaped = true;
-                break;
-              }
-            }
-            if (name == null) {
-              name = text;
-            }
-          }
-          if (_names.TryGetValue (name, out result)) {
-            // this makes it a synonym for next time
-            _names.Add (text, result);
-            return result;
-          }
-          else {
-            result = new RCName (name, _names.Count, escaped);
-            _names.Add (result.Text, result);
-            _index.Write (result);
-            return result;
-          }
-        }
-        else {
-          return result;
-        }
-      }
-    }
-
-    public static string Get (string name)
-    {
-      return GetName (name).Text;
-    }
-
-    public static long Num (string name)
-    {
-      return GetName (name).Index;
-    }
-
-    public static string RawName (string name)
-    {
-      if (name == null || name.Length == 0) {
-        return "";
-      }
-      else if (name[0] == '\'') {
-        return name.Substring (1, name.Length - 2);
-      }
-      else {
-        return name;
-      }
-    }
-
-    public readonly string Text;
-    public readonly long Index;
-    public readonly bool Escaped;
-    public RCName (string text, long index, bool escaped)
-    {
-      Text = text;
-      Index = index;
-      Escaped = escaped;
-    }
-  }
-
-  public class RCEvaluator
-  {
-    public static readonly RCEvaluator Let, Quote, Yield, Yiote, Yiyi, Apply, Expand;
-
-    public readonly string Symbol;
-    public readonly bool Return;
-    public readonly bool Invoke;
-    public readonly bool Pass;
-    public readonly bool Template;
-    public readonly bool FinishBlock;
-    public readonly RCEvaluator Next;
-
-    static RCEvaluator ()
-    {
-      Let = new RCEvaluator (":", true, false, false, false, false, true, Let);
-      Quote = new RCEvaluator ("::", false, false, false, false, true, true, Let);
-      Yield = new RCEvaluator ("<-", true, true, false, false, false, false, Yield);
-      Yiote = new RCEvaluator ("<-:", false, false, false, false, true, true, Yield);
-      Yiyi = new RCEvaluator ("<--", true, false, false, false, false, true, Yield);
-      Apply = new RCEvaluator ("<+", false, false, true, false, false, false, Apply);
-      Expand = new RCEvaluator ("<&", false, true, false, true, false, false, Expand);
-    }
-
-    public RCEvaluator (string symbol,
-                        bool evaluate,
-                        bool @return,
-                        bool invoke,
-                        bool template,
-                        bool pass,
-                        bool finishBlock,
-                        RCEvaluator next)
-    {
-      Symbol = symbol;
-      Pass = pass;
-      Return = @return;
-      Invoke = invoke;
-      Template = template;
-      FinishBlock = finishBlock;
-      Next = next == null ? this : next;
-    }
-
-    public static RCEvaluator For (string symbol)
-    {
-      if (symbol.Equals (":")) {
-        return Let;
-      }
-      else if (symbol.Equals ("::")) {
-        return Quote;
-      }
-      else if (symbol.Equals ("<-")) {
-        return Yield;
-      }
-      else if (symbol.Equals ("<-:")) {
-        return Yiote;
-      }
-      else if (symbol.Equals ("<--")) {
-        return Yiyi;
-      }
-      else if (symbol.Equals ("<+")) {
-        return Apply;
-      }
-      else if (symbol.Equals ("<&")) {
-        return Expand;
-      }
-      throw new Exception ("Unknown evaluator: " + symbol);
-    }
-  }
-
-  public class RCBlock : RCValue, IRefable
+  
+  public class RCBlock : RCValue, RCRefable
   {
     public readonly static RCBlock Empty = new RCBlock ();
     public readonly RCBlock Previous;
@@ -351,12 +106,12 @@ namespace RCL.Kernel
 
     public RCValue Get (string[] name, RCArray<RCBlock> @this)
     {
-      IRefable block = this;
+      RCRefable block = this;
       RCValue value = null;
       for (int i = 0; i < name.Length; ++i)
       {
         value = block.Get (name[i]);
-        block = value as IRefable;
+        block = value as RCRefable;
         if (block == null) {
           return value;
         }
@@ -369,12 +124,12 @@ namespace RCL.Kernel
 
     public RCValue Get (RCArray<string> name, RCArray<RCBlock> @this)
     {
-      IRefable block = this;
+      RCRefable block = this;
       RCValue value = null;
       for (int i = 0; i < name.Count; ++i)
       {
         value = block.Get (name[i]);
-        block = value as IRefable;
+        block = value as RCRefable;
         if (block == null) {
           // if it is the last value return it
           if (i == name.Count - 1) {
@@ -394,7 +149,7 @@ namespace RCL.Kernel
 
     public RCValue Get (RCSymbolScalar name, RCArray<RCBlock> @this)
     {
-      IRefable block = this;
+      RCRefable block = this;
       RCValue value = null;
       object[] array = name.ToArray ();
       for (int i = 0; i < array.Length; ++i)
@@ -406,7 +161,7 @@ namespace RCL.Kernel
         else if (array[i] is string) {
           value = block.Get ((string) array[i]);
         }
-        block = value as IRefable;
+        block = value as RCRefable;
         if (block == null) {
           // if it is the last value return it
           if (i == name.Length - 1) {

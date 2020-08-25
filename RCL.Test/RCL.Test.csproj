@@ -56,6 +56,9 @@
   -->
   <ItemGroup />
   <ItemGroup>
+    <Compile Include="CoreTest1.cs" />
+    <Compile Include="CoreTest2.cs" />
+    <Compile Include="CoreTest3.cs" />
     <Compile Include="ParserTest.cs" />
     <Compile Include="RunnerTest.cs" />
     <Compile Include="BlockTest.cs" />

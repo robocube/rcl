@@ -58,7 +58,7 @@ namespace RCL.Kernel
     public readonly long Depth = 0;
 
     /// <summary>
-    /// If a UserOperator is currently being evaluated,
+    /// If a RCUserOperator is currently being evaluated,
     /// the body of the operation can be obtained here.
     /// </summary>
     public readonly RCValue UserOp;

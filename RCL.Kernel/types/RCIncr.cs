@@ -6,14 +6,7 @@ using System.Collections.Generic;
 
 namespace RCL.Kernel
 {
-  public enum RCIncrScalar
-  {
-    Increment = 0,
-    Decrement = 1,
-    Delete = 2,
-    None = 3
-  }
-
+  
   public class RCIncr : RCVector<RCIncrScalar>
   {
     public static readonly RCIncr Empty = new RCIncr ();

@@ -115,7 +115,7 @@ namespace RCL.Kernel
           // This is for operators that need to override methods on RCOperator
           // like Next for example. switch and each are good examples.
           // Having an entry in _operator is what distinguishes a built-in
-          // operator from a UserOperator implemented in RCL.
+          // operator from a RCUserOperator implemented in RCL.
           // note: a user operator may obscure a built-in operator if it has the same name
           Type optype;
           _operator.TryGetValue (verb.Name, out optype);
@@ -168,7 +168,7 @@ namespace RCL.Kernel
       string key = op;
       RCOperator result = null;
       if (!_operator.ContainsKey (key)) {
-        result = new UserOperator (new RCReference (op));
+        result = new RCUserOperator (new RCReference (op));
         result.Init (op, left, right);
       }
       else {

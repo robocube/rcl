@@ -133,7 +133,7 @@ namespace RCL.Kernel
     public static readonly RCTokenType XmlString = new XMLStringToken ();
 
     // For RCL log files only.
-    public static readonly RCTokenType EndOfLine = new EndOfLine ();
+    public static readonly RCTokenType EndOfLine = new LogEndOfLine ();
     public static readonly RCTokenType LogEntryRawLine = new LogEntryRawLine ();
     public static readonly RCTokenType LogEntryHeader = new LogEntryHeader ();
     public static readonly RCTokenType LogEntryBody = new LogEntryBody ();

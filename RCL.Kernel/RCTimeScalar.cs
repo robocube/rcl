@@ -1,20 +1,8 @@
 
 using System;
-using System.Text;
-using System.Globalization;
-using System.Collections.Generic;
 
 namespace RCL.Kernel
 {
-  public enum RCTimeType
-  {
-    Date = 0,
-    Daytime = 1,
-    Datetime = 2,
-    Timestamp = 3,
-    Timespan = 4
-  }
-
   public struct RCTimeScalar : IComparable<RCTimeScalar>, IComparable
   {
     public static RCTimeScalar Empty = new RCTimeScalar (0, RCTimeType.Date);
