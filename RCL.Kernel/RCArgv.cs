@@ -283,12 +283,24 @@ namespace RCL.Kernel
       }
     }
 
-    protected static void PrintVersion (string appDomainVersionString)
+    protected void PrintVersion (string appDomainVersionString)
     {
       Assembly assembly = Assembly.GetEntryAssembly ();
       if (assembly != null) {
         Version version = assembly.GetName ().Version;
-        Console.Out.WriteLine ("Robocube Language {0}", version.ToString ());
+        object [] attributes = assembly.GetCustomAttributes (typeof (AssemblyConfigurationAttribute), false);
+        AssemblyConfigurationAttribute configAttr = (AssemblyConfigurationAttribute) attributes[0];
+        attributes = assembly.GetCustomAttributes (typeof (AssemblyInformationalVersionAttribute), false);
+        AssemblyInformationalVersionAttribute versionAttr = (AssemblyInformationalVersionAttribute) attributes[0];
+        if (OutputEnum != RCOutput.Test) {
+          Console.Out.WriteLine ("Robocube Language {0} ({1}/{2})",
+                                 version.ToString (),
+                                 configAttr.Configuration,
+                                 versionAttr.InformationalVersion);
+        }
+        else {
+          Console.Out.WriteLine ("Robocube Language {0}", version.ToString ());
+        }
       }
       else if (appDomainVersionString != null && appDomainVersionString != "") {
         Console.Out.WriteLine ("Robocube Language {0} (isolated)", appDomainVersionString);
@@ -302,6 +314,7 @@ namespace RCL.Kernel
     {
       Console.Out.WriteLine ("Copyright (C) 2007-2015 Brian M. Andersen");
       Console.Out.WriteLine ("Copyright (C) 2015-2020 Robocube Corporation");
+      //Console.Out.WriteLine ("Copyright (C) 2020 Robocube Corporation");
     }
   }
 }
