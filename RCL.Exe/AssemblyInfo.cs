@@ -5,14 +5,8 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle ("rcl.exe")]
-[assembly: AssemblyDescription ("RCL: The Robocube Language")]
-[assembly: AssemblyConfiguration ("")]
-[assembly: AssemblyCompany ("Robocube Corporation")]
-[assembly: AssemblyProduct ("RCL")]
-[assembly: AssemblyCopyright ("Copyright © 2018 Robocube Corporation")]
-[assembly: AssemblyTrademark ("Robocube")]
-[assembly: AssemblyCulture ("")]
+[assembly: AssemblyTitle ("RCL.Exe")]
+[assembly: AssemblyDescription ("Robocube Language Exe")]
 
 // Setting ComVisible to false makes the types in this assembly not visible
 // to COM components.  If you need to access a type in this assembly from
