@@ -312,9 +312,9 @@ namespace RCL.Kernel
 
     protected static void PrintCopyright ()
     {
-      Console.Out.WriteLine ("Copyright (C) 2007-2015 Brian M. Andersen");
-      Console.Out.WriteLine ("Copyright (C) 2015-2020 Robocube Corporation");
-      //Console.Out.WriteLine ("Copyright (C) 2020 Robocube Corporation");
+      //Console.Out.WriteLine ("Copyright (C) 2007-2015 Brian M. Andersen");
+      //Console.Out.WriteLine ("Copyright (C) 2015-2020 Robocube Corporation");
+      Console.Out.WriteLine ("Copyright (C) 2020 Robocube Corporation");
     }
   }
 }
