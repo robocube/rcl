@@ -288,15 +288,23 @@ namespace RCL.Kernel
       Assembly assembly = Assembly.GetEntryAssembly ();
       if (assembly != null) {
         Version version = assembly.GetName ().Version;
-        object [] attributes = assembly.GetCustomAttributes (typeof (AssemblyConfigurationAttribute), false);
-        AssemblyConfigurationAttribute configAttr = (AssemblyConfigurationAttribute) attributes[0];
-        attributes = assembly.GetCustomAttributes (typeof (AssemblyInformationalVersionAttribute), false);
-        AssemblyInformationalVersionAttribute versionAttr = (AssemblyInformationalVersionAttribute) attributes[0];
-        if (OutputEnum != RCOutput.Test) {
-          Console.Out.WriteLine ("Robocube Language {0} ({1}/{2})",
-                                 version.ToString (),
-                                 configAttr.Configuration,
-                                 versionAttr.InformationalVersion);
+        object [] attributes = assembly.GetCustomAttributes (typeof (AssemblyConfigurationAttribute),
+                                                             false);
+        if (attributes.Length > 0) {
+          AssemblyConfigurationAttribute configAttr = (AssemblyConfigurationAttribute) attributes[0];
+          attributes = assembly.GetCustomAttributes (typeof (AssemblyInformationalVersionAttribute),
+                                                     false);
+          AssemblyInformationalVersionAttribute versionAttr =
+            (AssemblyInformationalVersionAttribute) attributes[0];
+          if (OutputEnum != RCOutput.Test) {
+            Console.Out.WriteLine ("Robocube Language {0} ({1}/{2})",
+                                   version.ToString (),
+                                   configAttr.Configuration,
+                                   versionAttr.InformationalVersion);
+          }
+          else {
+            Console.Out.WriteLine ("Robocube Language {0}", version.ToString ());
+          }
         }
         else {
           Console.Out.WriteLine ("Robocube Language {0}", version.ToString ());

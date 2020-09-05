@@ -32,6 +32,6 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugTest|AnyCPU'">
     <StartWorkingDirectory>Y:\dev\src\rcl\RCL.Test\rclkit\</StartWorkingDirectory>
-    <StartArguments>--program=rcl/rclt.rcl tests/rclt.rclt:pass --action=main</StartArguments>
+    <StartArguments>--program=rcl/rclt.rcl tests/rcl.rclt:hide_option --action=main</StartArguments>
   </PropertyGroup>
 </Project>
