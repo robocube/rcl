@@ -70,7 +70,8 @@ namespace RCL.Kernel
                               "Attempted to mutate a value after it was locked.");
     }
 
-    public RCException () {}
+    public RCException () {
+    }
 
     // Without this constructor, deserialization will fail
     protected RCException (SerializationInfo info, StreamingContext context)

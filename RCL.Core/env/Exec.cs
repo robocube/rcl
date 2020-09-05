@@ -297,6 +297,7 @@ namespace RCL.Core
               return;
             }
             else if (_exitCode != 0) {
+              StripControlChars (_result);
               _state.Runner.Finish (waiter.Closure,
                                      new RCException (waiter.Closure,
                                                       RCErrors.Exec,
@@ -305,6 +306,7 @@ namespace RCL.Core
                                      _exitCode);
             }
             else {
+              StripControlChars (_result);
               waiter.Runner.Yield (waiter.Closure, new RCString (_result));
             }
             return;
@@ -335,6 +337,7 @@ namespace RCL.Core
         if (lines != null) {
           RCSystem.Log.Record (_state.Closure, "exec", Handle, "line", lines, forceDoc: true);
         }
+        StripControlChars (_result);
         RCString result = new RCString (_result);
         for (int i = 0; i < waiters.Length; ++i)
         {
@@ -370,6 +373,17 @@ namespace RCL.Core
           {
             _process.Dispose ();
           }
+        }
+      }
+
+      protected void StripControlChars (RCArray<string> result)
+      {
+        // So far this only comes into play on Windows when using wsl to execute shell scripts.
+        // This is the output of the bash 'clear' command.
+        // Let's be minimally aggressive to start.
+        if (result.Count > 0 && result[result.Count - 1] == "\u001b[H\u001b[2J")
+        {
+          result.RemoveAt (result.Count - 1);
         }
       }
 
