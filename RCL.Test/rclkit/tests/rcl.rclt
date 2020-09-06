@@ -20,7 +20,7 @@ _rclt_teardown:{
 }
 
 :"As operators are added, starting rcl processes becomes more cpu intensive"
-___WAIT_FOR_INIT:3000
+___WAIT_FOR_INIT:5000
 
 batch_long:{
   src:{
@@ -1319,7 +1319,8 @@ missing_action:{
 hide_option:{
   src:{
     script:[?
-      rcl --batch --nokeys --show="*" --hide=print:hidden --exit --debug << 'EOF'
+      set -e
+      rcl --batch --nokeys --show="*" --hide=print:hidden --exit << 'EOF'
       :"shown" print "See me?"
       :"hidden" print "I hope you don't see me."
       <-0

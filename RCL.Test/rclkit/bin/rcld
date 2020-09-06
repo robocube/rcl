@@ -1,0 +1,9 @@
+#!/bin/sh
+SCRIPT_PATH=$(realpath "$_")
+if [ ! "$RCL_LOCAL" ]; then
+  export RCL_LOCAL="$(dirname "$(dirname "$(dirname "$SCRIPT_PATH")")")"
+fi
+if [ ! "$RCL_BIN" ]; then
+  export RCL_BIN="$RCL_LOCAL/rclkit/bin"
+fi
+"$RCL_BIN/rcl" "$@" --program="$RCL_LOCAL/rclkit/rcl/rcld.rcl" --action="$1"
