@@ -456,7 +456,7 @@ namespace RCL.Core
               (int) _pid,
               Mono.Unix.Native.Signum.SIGTERM);
       #else
-            Console.Out.WriteLine ("Closing exec'd processes is not implemented on Windows");
+            // Console.Out.WriteLine ("Closing exec'd processes is not implemented on Windows");
       #endif
           }
           else {
