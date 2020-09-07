@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+
+# Give the user control over the path where rclx scripts
+# run from within rcl (think rclt, rclz) will be found.
+if [ ! "$RCL_CLR" ]; then
+  export RCL_CLR="mono --debug"
+fi
+if [ ! "$RCL_PUB" ]; then
+  export RCL_PUB="$RCL_HOME/dst"
+fi
+if [ ! "$RCL_LOCAL" ]; then
+  export RCL_LOCAL="$RCL_PUB/rclpro"
+fi
+if [ ! "$RCL_PREFIX" ]; then
+  export RCL_PREFIX="$RCL_LOCAL/rclkit"
+fi
+if [ ! "$RCL_BIN" ]; then
+  export RCL_BIN="$RCL_PREFIX/bin"
+fi
+if [ ! "$RCL_LIB" ]; then
+  export RCL_LIB="$RCL_PREFIX/lib"
+fi
+export PATH="$RCL_BIN:$PATH"
+
+# Workaround for a Mono bug: https://github.com/mono/mono/issues/6752#issuecomment-365212655
+export TERM=xterm
+
+if [ ! "$RCL_BUILD" ]; then
+  if [ ! -f "$RCL_LIB/$RCL_OS/rcl.exe" ]; then
+    echo "For work with local rcl binaries set RCL_BUILD to \"dev\""
+    echo "For work with local rcl programs set RCL_BUILD to \"last\" and RCL_LOCAL to \"\$dev\" or \"\$src\""
+    echo "Otherwise binaries should be at $RCL_LIB/$RCL_OS/rcl.exe"
+    exit 1
+  fi
+  exec $RCL_CLR "$RCL_LIB/$RCL_OS/rcl.exe" "$@"
+fi
+
+if [ "$1" ]; then
+  case $1 in
+    ''|*[!0-9]*) if [ $1 = "dev" -o $1 = "last" ]; then RCL_BUILD=$1;shift; fi ;;
+    *) RCL_BUILD=$1;shift; ;;
+  esac
+fi
+
+if [ "$RCL_BUILD" == "last" ]; then
+  LAST=$(ls "$RCL_HOME/bin/rcl_bin" | sort -n | tail -n 1)
+  exec $RCL_CLR "$RCL_HOME/bin/rcl_bin/$LAST/lib/rcl.exe" "$@"
+fi
+if [ "$RCL_BUILD" == "dev" ]; then
+  exec $RCL_CLR "$RCL_HOME/dev/rcl/dbg/rcl.exe" "$@"
+fi
+if [ "$RCL_BUILD" == "dbg" ]; then
+  exec $RCL_CLR "$RCL_HOME/dev/rcl/dbg/rcl.exe" "$@"
+fi
+if [ "$RCL_BUILD" == "lib" ]; then
+  exec $RCL_CLR "$RCL_HOME/dev/rcl/lib/rcl.exe" "$@"
+fi
+exec $RCL_CLR "$RCL_HOME/bin/rcl_bin/$RCL_BUILD/lib/rcl.exe" "$@"
+

@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+SCRIPT_PATH=$(realpath "$_")
+if [ ! "$RCL_LOCAL" ]; then
+  export RCL_LOCAL="$(dirname "$(dirname "$(dirname "$SCRIPT_PATH")")")"
+fi
+if [ ! "$RCL_PREFIX" ]; then
+  export RCL_PREFIX="$RCL_LOCAL/rclkit"
+fi
+if [ ! "$RCL_BIN" ]; then
+  export RCL_BIN="$RCL_PREFIX/bin"
+fi
+if [ ! "$RCLT_TEST_PREFIX" ]; then
+  export RCLT_TEST_PREFIX="$RCL_PREFIX"
+fi
+exec "$RCL_BIN/rcl" "$@" --program="$RCL_PREFIX/rcl/rclt.rcl" --action=main
