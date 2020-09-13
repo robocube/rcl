@@ -19,10 +19,10 @@ code, and it is easy to convert all types of RCL values to and from a canonical
 RCL text syntax, which is equally human and machine readable.
 
 Like APL, RCL encourages iteration abstraction, which spares the programmer
-from tedious, error-prone loop-writing exersizes. In fact, there are no scalar
-types at all in RCL. Data values are always held in a vector. RCL uses
-APL-style "right-to-left" operator evaluation, with no precedence among
-operators to provide a totally consistent coding experience across all operators.
+from tedious and error-prone loop coding. In fact, there are no scalar types at
+all in RCL. Data values are always held in a vector. RCL uses APL-style
+"right-to-left" operator evaluation, with no precedence among operators to
+provide a consistent coding experience across all operators.
 
     :3 * 9 - 2
     21 (not 25)
@@ -30,14 +30,14 @@ operators to provide a totally consistent coding experience across all operators
 Unlike both LISP and APL, RCL provides a modern, JSON-like syntax, free of any
 nested parentheses or obscure mathematical symbols.
 
-RCL was developed in a world of highly asynchronous applications and workflows.
+RCL was developed in a world of asynchronous applications and workflows.
 As a result, the approach to asynchrony in RCL is unique to RCL. In most
 programming languages, subroutines execute syncronously by default, and async
 execution has to be explicitly requested by the developer using specialized
 syntax. In contrast, RCL enables any operator to complete evaluation
 asyncronously without programmer intervention.
 
-Syntactically, it is as simple to make an http request and wait for the response;
+Syntactically, it is as simple to make an http request and wait for the response...
 
     response:getw "https://mycompany.com/api/v1/mythings"
 
@@ -75,7 +75,7 @@ variable:
 
     eval {z:1 + 20} -> {z:21}
 
-Yield (&lt-) evaluates the value on the right and makes it the result of evaluation:
+Yield (&lt;-) evaluates the value on the right and makes it the result of evaluation:
 
     eval {<-1 + 20} -> 21
 
@@ -91,7 +91,7 @@ For complete control of the body of generated code blocks, two more evaluators
 are provided; these evalutors combine the behavior of yield with the behavior
 of let and quote respectively:
 
-Yield-Quote (&lt-:) skips evaluation of the value on the right and makes it the
+Yield-Quote (&lt;-:) skips evaluation of the value on the right and makes it the
 right-hand value of a Yield expression in the result:
 
     eval {x:1 y:20 <-:$x + $y} -> {x:1 y:20 <-$x + $y}
