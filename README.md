@@ -114,13 +114,16 @@ can be single-quoted:
 
 ### References
 
-In RCL, variable references are denoted with a $-prefix followed by the variable name:
+In RCL, references are values which contain the name given to another value
+within a block or a cube. References are denoted with a $-prefix followed by
+the variable name.
 
     RCL>x:1
     RCL>$x
     1
 
-References can point to a value within a block:
+References can point to a value nested within a block, using dot notation to
+separate the nested variable names.
 
     RCL>k:{x:1 y:2 z:3}
     RCL>$k.z
@@ -151,7 +154,61 @@ References can also point to a column within a cube:
       #c 30
     ]
 
-Variables names only dereferenced when they are evaluated.
+References are only dereferenced when they are evaluated.
+
+#### Reference Scope
+
+RCL uses lexical scoping to evaluate references. Wherever there is a block,
+there is a scope.
+
+When evaluating references, RCL always searches backwards and then up. The
+first matching variable name is used.
+
+The value is found in the same scope as the reference.
+
+    RCL>eval {x:1 <-$x + $x}
+    2
+
+The value is defined in the enclosing scope, but overridden in the current scope.
+
+    RCL>eval {x:10 <-eval {x:1 <-$x + $x}}
+    2
+
+The value is found in an enclosing scope.
+
+    RCL>eval {x:10 <-eval {<-$x + $x}}
+    20
+
+The referenced value is nested within a block found in an enclosing scope.
+
+    RCL>eval {numbers:{one:1 two:2 three:3} <-$numbers.one + $numbers.three}
+    4
+
+#### Overriding the root scope with eval
+
+By default, RCL will search for a value in every enclosing scope until it gets
+to the root scope. If greater isolation is desired, a clean root scope can be
+defined by passing a block into the left operand of `eval`.
+
+    RCL>x:10
+    RCL>{} eval {<-$x + $x}
+    2020.09.14 21:12:33.096883 0 0 fiber 0 failed
+      --- BEGIN STACK (bot:0,fiber:0,lines:4) ---
+      L:{}
+      R:{<-$x + $x}
+      -- {} eval {<-$x + $x}
+      -- $x + $x
+      --- END STACK ---
+      --------------------------------------------------------------------------------
+      Unable to resolve name x
+      --------------------------------------------------------------------------------
+
+The variable `$x` will only resolve successfully if it is explicitly defined in
+the scope passed to eval.
+
+    RCL>x:10
+    RCL>{x:100} eval {<-$x + $x}
+    200
 
 ### Vectors
 
@@ -341,7 +398,17 @@ implemented as a block, and then use dot notation to access them.
     -1
 
 In general, scoping and access rules for operations are identical to those for
-references.
+references. Syntactically, references to operations are identical to variable
+references without the $-prefix.
+
+#### Object-based Operations
+
+It is possible to implement primitive objects by enclosing "member" variables
+within a block that also contain defined operations.
+
+    RCL>o:{x:10 f:$x * $x}
+    RCL>o.f {}
+    100
 
 ### Cubes
 
@@ -349,6 +416,22 @@ Cubes are RCL's native tabular data structure. Cubes are intended to facilate
 advanced query and data analysis operations within RCL without the assistance
 of additional tools, infrastructure or api's.
 
-
 ### Templates
+
+Templates are a way to compose arbitrary text fragments in RCL. They are
+similar to "here docs" in other languages. Templates are used to produce
+complex, multiline documents.
+
+Suppose we have the following content in a file templates.rcl:
+
+    t:[?
+      this is where "[! $x !]" will appear!
+    ?]
+
+At the command line:
+
+    RCL>templates:parse load "templates.rcl"
+    RCL>x:"x is a string"
+    RCL>templates.t {}
+    "this is where "x is a string" will appear!\n"
 
