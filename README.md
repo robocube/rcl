@@ -3,14 +3,14 @@
 
 ## Introduction
 
-RCL is a high-level language designed specifically to meet the needs of modern
-financial decision-makers.
+RCL is a high-level language designed to meet the needs of modern financial
+decision-makers.
 
-* Eliminaties tedious loop programming.
+* Eliminates tedious loop programming.
 * Native support for tabular data (cubes) and query syntax.
 * Simplified syntax to express async, concurrent and parallel workflows.
 
-RCL is a strong-typed, dynamically-typed, interpreted language which strives to
+RCL is a strong, dynamically-typed, interpreted language which strives to
 continue in the traditions of LISP and APL.
 
 Like LISP, RCL is homoiconic, which means that all RCL programs are also valid
@@ -68,7 +68,7 @@ Code blocks can be eval'd using the eval operator:
     eval {x:1 y:20 z:$x + $y} -> {x:1 y:20 z:21}
 
 The token between the name and the value is called an "Evaluator." Evaluators
-can alter the behavior of the value when the block is evaluated.
+can alter the behavior of a value when the block is evaluated.
 
 Let (:) evaluates the value on the right and places the result in the named
 variable:
@@ -100,6 +100,21 @@ Yield-Eval (&lt-:) evaluates the the value on the right and makes it the
 right-hand value of a Yield expression in the result:
 
     eval {<--20 + 1} -> {<-21}
+
+By default, a block nested within another block will not evaluate automatically
+when its parent is evaluated. When defining an operation to be invoked
+elsewhere, it is not necessary to suppress evaluation using :: or &lt;-: in
+this case.
+
+		RCL>eval {k:{x:1 y:2 <-$x + $y} <-k {}}
+		3
+
+The block `k` must be treated like an operator in order to trigger evaluation.
+In order to trigger evaluation at the point where the block is defined, use
+`eval`.
+
+    RCL>eval {k:eval {x:1 y:2 <-$x + $y} <-$k}
+    3
 
 #### Names defined within blocks
 
@@ -410,17 +425,15 @@ within a block that also contain defined operations.
     RCL>o.f {}
     100
 
-### Cubes
-
-Cubes are RCL's native tabular data structure. Cubes are intended to facilate
-advanced query and data analysis operations within RCL without the assistance
-of additional tools, infrastructure or api's.
+So long as the invocation of the operation contains the name of the block to
+which the operation belongs, all of the variables contained within `o` will be
+visible to the operation.
 
 ### Templates
 
-Templates are a way to compose arbitrary text fragments in RCL. They are
-similar to "here docs" in other languages. Templates are used to produce
-complex, multiline documents.
+Templates are a way to compose arbitrary text fragments in RCL. Similar to
+"here docs" in other languages, templates are used to produce complex,
+multiline documents.
 
 Suppose we have the following content in a file templates.rcl:
 
@@ -434,4 +447,108 @@ At the command line:
     RCL>x:"x is a string"
     RCL>templates.t {}
     "this is where "x is a string" will appear!\n"
+
+The result of evaluating a template is always a string. For a more presentable
+result, convert the string back into a template.
+
+#### Iteration within Templates
+
+RCL's vectorized operators excel at composing more complex text documents.
+Suppose we have following content in templates.rcl:
+
+    multiline:[?
+      <xml>
+        [! "<elem>" + $x + "</elem>\n" !]
+      </xml>
+    ?]
+
+Then, at the RCL command line:
+
+    RCL>templates:parse load "repro.rcl"
+    RCL>x:"elem1" "elem2" "elem3"
+    RCL>templates.multiline {}
+    "<xml>\n  <elem>elem1</elem>\n  <elem>elem2</elem>\n  <elem>elem3</elem>\n</xml>\n"
+    RCL>template templates.multiline {}
+    [?
+      <xml>
+        <elem>elem1</elem>
+        <elem>elem2</elem>
+        <elem>elem3</elem>
+      </xml>
+    ?]
+
+Notice that indentation is always controlled by the placement of the `[!` token
+on the line.
+
+#### Template scoping and evaluation rules
+
+The scoping rules for references found within a template are identical to those
+for blocks.
+
+Evaluation for a template always results in a string that represents the
+composed text. Evaluation can be controlled for templates in the same way as
+for blocks. For example:
+
+    RCL>h:"hello"
+    RCL>w:"world"
+    RCL>eval [?--[! $h !] [! $w !]--?]
+    "--hello world--"
+
+Alternatively, a template can behave like an operation.
+
+    RCL>h:"hello"
+    RCL>w:"world"
+    RCL>t:[?--[! $h !] [! $w !]--?]
+    RCL>t {}
+    "--hello world--"
+
+Like all operations, operations implemented as templates can utilize the
+special variables $R and $L to access left and right operands:
+
+    RCL>t:[?--[! $R !] [! $L !]--?]
+    RCL>"hello" t "world"
+    "--world hello--"
+
+#### Template escaping rules
+
+Sometimes it is useful to use a template to generate rcl syntax which might
+include an escaped template.
+
+    RCL>t:[??[?--[!! $L !!] [!! $R !!]--?]??]
+    RCL>"hello" t "world"
+    "[?--hello world--?]"
+
+Notice the resulting template is valid RCL synax and can be parsed and eval'd like any rcl value.
+
+    RCL>parse "hello" t "world"
+    [?--hello world--?]
+    RCL>eval parse "hello" t "world"
+    "--hello world--"
+
+### Cubes
+
+Cubes are RCL's native tabular data structure. Cubes are intended to facilate
+advanced query and data analysis operations within RCL without the assistance
+of additional tools, infrastructure or api's.
+
+Simple cubes can function like a multidimensinal array:
+
+    RCL>[x y z 1 2 3 4 5 6 7 8 9]
+    [
+       x  y  z
+       1  2  3
+       4  5  6
+       7  8  9
+    ]
+
+Operators can be applied to the columns of a cube:
+
+    RCL>u:[x y z 1 2 3 4 5 6 7 8 9]
+    RCL>$u.x + $u.y
+    [
+       x
+       3
+       9
+      15
+    ]
 
