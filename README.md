@@ -22,7 +22,7 @@ Like APL, RCL encourages iteration abstraction, which spares the programmer
 from tedious and error-prone loop coding. In fact, there are no scalar types at
 all in RCL. Data values are always held in a vector. RCL uses APL-style
 "right-to-left" operator evaluation, with no precedence among operators to
-provide a consistent coding experience across all operators.
+provide a consistent coding experience across the entire language.
 
     :3 * 9 - 2
     21 (not 25)
@@ -75,7 +75,8 @@ variable:
 
     eval {z:1 + 20} -> {z:21}
 
-Yield (&lt;-) evaluates the value on the right and makes it the result of evaluation:
+Yield (&lt;-) evaluates the value on the right and makes it the result of
+evaluation for the block:
 
     eval {<-1 + 20} -> 21
 
@@ -96,7 +97,7 @@ right-hand value of a Yield expression in the result:
 
     eval {x:1 y:20 <-:$x + $y} -> {x:1 y:20 <-$x + $y}
 
-Yield-Eval (&lt-:) evaluates the the value on the right and makes it the
+Yield-Eval (&lt;-:) evaluates the the value on the right and makes it the
 right-hand value of a Yield expression in the result:
 
     eval {<--20 + 1} -> {<-21}
@@ -109,9 +110,9 @@ this case.
 		RCL>eval {k:{x:1 y:2 <-$x + $y} <-k {}}
 		3
 
-The block `k` must be treated like an operator in order to trigger evaluation.
-In order to trigger evaluation at the point where the block is defined, use
-`eval`.
+In the previous case, the block `k` must be treated like an operator in order
+to trigger evaluation. In order to trigger evaluation at the point where the
+block is defined, use `eval`.
 
     RCL>eval {k:eval {x:1 y:2 <-$x + $y} <-$k}
     3
@@ -126,6 +127,13 @@ can be single-quoted:
     {'name with spaces':1}
 
     {'-name#with#special#chars':1}
+
+If you must, the single quote can also be escaped:
+
+    RCL>{'\'name with single quotes\'':1}
+    {
+      '\'name with single quotes\'':1
+    }
 
 ### References
 
@@ -274,7 +282,7 @@ Time scalars in RCL consist of both an integer-based time value (number of
 ticks) and a "TimeType", which is one of Date, Daytime, Datetime, Timestamp or
 Timespan. The TimeType determines how the time value appears in output as well
 as its interpretation in various operators that manipulate time values. The
-operators `date`, `daytime`, `datetime`, `timestamp` and `timepspan` convert
+operators `date`, `daytime`, `datetime`, `timestamp` and `timespan` convert
 time scalars to the chosen TimeType.
 
     RCL>dt:now {}
@@ -541,14 +549,103 @@ Simple cubes can function like a multidimensinal array:
        7  8  9
     ]
 
-Operators can be applied to the columns of a cube:
+Operators can be applied to the columns of a cube, to produce a new cube with a
+column of results:
 
-    RCL>u:[x y z 1 2 3 4 5 6 7 8 9]
-    RCL>$u.x + $u.y
+    RCL>u:[a b c 1 2 3 4 5 6 7 8 9]
+    RCL>$u.a + $u.b
     [
        x
        3
        9
       15
+    ]
+
+The first column of the resulting cube is always named `x`.
+
+Use the operator `cube` to construct a new cube with control over the column
+names, order and content. In this case it is necessary to explicitly evaluate
+the block containing the column info.
+
+    RCL>u:[a b c 1 2 3 4 5 6 7 8 9]
+    RCL>$u
+    [
+       a  b  c
+       1  2  3
+       4  5  6
+       7  8  9
+    ]
+    RCL>cube eval {d:$u.a + $u.b e:$u.b * $u.c}
+    [
+       d  e
+       3  6
+       9 30
+      15 72
+    ]
+
+In contrast to vectors, cubes allow for missing data values.
+
+    RCL>u:[x y z 1 -- -- -- 1 -- -- -- 1]
+    RCL>$u
+    [
+       x  y  z
+       1 -- --
+      --  1 --
+      -- --  1
+    ]
+
+Missing data values can be replaced with a default value using the plug
+operator:
+
+    RCL>0 plug $u
+    [
+       x  y  z
+       1  0  0
+       0  1  0
+       0  0  1
+    ]
+
+And default values can be removed using the unplug operator:
+
+		RCL>u:[x y z 1 0 0 0 1 0 0 0 1]
+		RCL>$u
+		[
+			 x  y  z
+			 1  0  0
+			 0  1  0
+			 0  0  1
+		]
+		RCL>0 unplug $u
+		[
+			 x  y  z
+			 1 -- --
+			--  1 --
+			-- --  1
+		]
+
+The rows of a cube can be indexed using special column `S` which contains a
+symbol for every row.
+
+		RCL>u:[S|price #abc 10.00 #def 100.00 #ghi 35.00]
+		RCL>$u
+		[
+			S   |price
+			#abc  10.0
+			#def 100.0
+			#ghi  35.0
+		]
+
+Using the `S` column simplifies the process of combining data sets into a
+single cube:
+
+    RCL>u:[S|price #abc 10.00 #def 100.00 #ghi 35.00]
+    RCL>v:[S|volume #ghi 10000 #abc 200000 #def 25000 #klm 30000]
+    RCL>$u ! $v
+    [
+      S   |price volume
+      #abc  10.0 200000
+      #def 100.0  25000
+      #ghi  35.0  10000
+      #klm    --  30000
     ]
 
