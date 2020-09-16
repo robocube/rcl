@@ -24,8 +24,8 @@ all in RCL. Data values are always held in a vector. RCL uses APL-style
 "right-to-left" operator evaluation, with no precedence among operators to
 provide a consistent coding experience across the entire language.
 
-    :3 * 9 - 2
-    21 (not 25)
+    RCL>3 * 9 - 2
+    21
 
 Unlike both LISP and APL, RCL provides a modern, JSON-like syntax, free of any
 nested parentheses or obscure mathematical symbols.
@@ -39,11 +39,11 @@ asyncronously without programmer intervention.
 
 Syntactically, it is as simple to make an http request and wait for the response...
 
-    response:getw "https://mycompany.com/api/v1/mythings"
+    RCL>response:getw "https://mycompany.com/api/v1/mythings"
 
 as it is to take the sum of a vector:
 
-    result:sum 1 2 3 4 5
+    RCL>result:sum 1 2 3 4 5
 
 ## Syntax
 
@@ -51,21 +51,41 @@ as it is to take the sum of a vector:
 
 A block is an ordered collection of names and values.
 
-    {x:1 y:20 z:300}
+    RCL>{x:1 y:20 z:300}
+    {
+      x:1
+      y:20
+      z:300
+    }
 
 Blocks are used to represent data records:
 
-    {first_name:"brian" last_name:"programmer" url:"https://twitch.tv/brianprogrammer"}
+    RCL>{first_name:"brian" last_name:"programmer" url:"https://twitch.tv/brianprogrammer"}
+    {
+      first_name:"brian"
+      last_name:"programmer"
+      url:"https://twitch.tv/brianprogrammer"
+    }
 
 Blocks are also used to represent code blocks:
 
-    {x:1 y:20 z:$x + $y}
+    RCL>{x:1 y:20 z:$x + $y}
+    {
+      x:1
+      y:20
+      z:21
+    }
 
 #### Evaluation of Blocks
 
 Code blocks can be eval'd using the eval operator:
 
-    eval {x:1 y:20 z:$x + $y} -> {x:1 y:20 z:21}
+    RCL>eval {x:1 y:20 z:$x + $y}
+    {
+      x:1
+      y:20
+      z:21
+    }
 
 The token between the name and the value is called an "Evaluator." Evaluators
 can alter the behavior of a value when the block is evaluated.
@@ -73,17 +93,24 @@ can alter the behavior of a value when the block is evaluated.
 Let (:) evaluates the value on the right and places the result in the named
 variable:
 
-    eval {z:1 + 20} -> {z:21}
+    RCL>eval {z:1 + 20}
+    {
+      z:21
+    }
 
 Yield (&lt;-) evaluates the value on the right and makes it the result of
 evaluation for the block:
 
-    eval {<-1 + 20} -> 21
+    RCL>eval {<-1 + 20}
+    21
 
 Quote (::) skips evaluation of the value on the right and places the value in
 the named variable:
 
-    eval {x::$y + $z} -> {x:$y + $z}
+    RCL>eval {x::$y + $z}
+    {
+      x:$y + $z
+    }
 
 This feature is useful for writing macros that combine dynamically and
 statically generated operator expressions.
@@ -95,12 +122,20 @@ of let and quote respectively:
 Yield-Quote (&lt;-:) skips evaluation of the value on the right and makes it the
 right-hand value of a Yield expression in the result:
 
-    eval {x:1 y:20 <-:$x + $y} -> {x:1 y:20 <-$x + $y}
+    RCL>eval {x:1 y:20 <-:$x + $y}
+    {
+      x:1
+      y:20
+      <-$x + $y
+    }
 
 Yield-Eval (&lt;-:) evaluates the the value on the right and makes it the
 right-hand value of a Yield expression in the result:
 
-    eval {<--20 + 1} -> {<-21}
+    RCL>eval {<--20 + 1}
+    {
+      <-21
+    }
 
 By default, a block nested within another block will not evaluate automatically
 when its parent is evaluated. When defining an operation to be invoked
@@ -124,9 +159,15 @@ should begin with a letter or underscore and contain only letters, numbers, or
 underscores. When it is not possible to use valid c-style identifiers, names
 can be single-quoted:
 
-    {'name with spaces':1}
+    RCL>{'name with spaces':1}
+    {
+      'name with spaces':1
+    }
 
-    {'-name#with#special#chars':1}
+    RCL>{'-name#with#special#chars':1}
+    {
+      '-name#with#special#chars':1
+    }
 
 If you must, the single quote can also be escaped:
 
