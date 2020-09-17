@@ -715,33 +715,33 @@ operator:
 
 And default values can be removed using the unplug operator:
 
-		RCL>u:[x y z 1 0 0 0 1 0 0 0 1]
-		RCL>$u
-		[
-			 x  y  z
-			 1  0  0
-			 0  1  0
-			 0  0  1
-		]
-		RCL>0 unplug $u
-		[
-			 x  y  z
-			 1 -- --
-			--  1 --
-			-- --  1
-		]
+    RCL>u:[x y z 1 0 0 0 1 0 0 0 1]
+    RCL>$u
+    [
+       x  y  z
+       1  0  0
+       0  1  0
+       0  0  1
+    ]
+    RCL>0 unplug $u
+    [
+       x  y  z
+       1 -- --
+      --  1 --
+      -- --  1
+    ]
 
 The rows of a cube can be indexed using special column `S` which contains a
 symbol for every row.
 
-		RCL>u:[S|price #abc 10.00 #def 100.00 #ghi 35.00]
-		RCL>$u
-		[
-			S   |price
-			#abc  10.0
-			#def 100.0
-			#ghi  35.0
-		]
+    RCL>u:[S|price #abc 10.00 #def 100.00 #ghi 35.00]
+    RCL>$u
+    [
+      S   |price
+      #abc  10.0
+      #def 100.0
+      #ghi  35.0
+    ]
 
 Using the `S` column simplifies the process of combining data sets into a
 single cube:
