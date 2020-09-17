@@ -34,7 +34,7 @@ RCL was developed in a world of asynchronous applications and workflows.
 As a result, the approach to asynchrony in RCL is unique to RCL. In most
 programming languages, subroutines execute syncronously by default, and async
 execution has to be explicitly requested by the developer using specialized
-syntax. In contrast, RCL enables any operator to complete evaluation
+syntax. By contrast, RCL enables any operator to complete evaluation
 asyncronously without programmer intervention.
 
 Syntactically, it is as simple to make an http request and wait for the response...
@@ -76,9 +76,10 @@ Blocks are also used to represent code blocks:
       z:21
     }
 
-#### Evaluation of Blocks
+#### Evaluation of blocks
 
-Code blocks can be eval'd using the eval operator:
+Code blocks are blocks that contain operators. Code blocks can be eval'd using
+the eval operator:
 
     RCL>eval {x:1 y:20 z:$x + $y}
     {
@@ -88,7 +89,7 @@ Code blocks can be eval'd using the eval operator:
     }
 
 The token between the name and the value is called an "Evaluator." Evaluators
-can alter the behavior of a value when the block is evaluated.
+can alter the process of evaluation.
 
 Let (:) evaluates the value on the right and places the result in the named
 variable:
@@ -113,11 +114,29 @@ the named variable:
     }
 
 This feature is useful for writing macros that combine dynamically and
-statically generated operator expressions.
+statically generated operator expressions. In the next example, the expression
+`0 to 10` is implemented statically, and evaluation is suppressed using Quote
+(::). The expression `$x + 1` is implemented dynamically using the `dyad`
+operator, which can instantiate any operator with two operands.
+
+    RCL>eval {x::0 to 10 y:"+" dyad {l:$x r:1}}
+    {
+      x:0 to 10
+      y:$x + 1
+    }
+
+Evaluating the code block that results from the first eval produces a pair of
+vectors.
+
+    RCL>eval eval {x::0 to 10 y:"+" dyad {l:$x r:1}}
+    {
+      x:0 1 2 3 4 5 6 7 8 9 10
+      y:1 2 3 4 5 6 7 8 9 10 11
+    }
 
 For complete control of the body of generated code blocks, two more evaluators
-are provided; these evalutors combine the behavior of yield with the behavior
-of let and quote respectively:
+are provided; these evalutors combine the behavior of Yield with the behavior
+of Let and Quote respectively:
 
 Yield-Quote (&lt;-:) skips evaluation of the value on the right and makes it the
 right-hand value of a Yield expression in the result:
@@ -220,7 +239,7 @@ References can also point to a column within a cube:
 
 References are only dereferenced when they are evaluated.
 
-#### Reference Scope
+#### Reference scope
 
 RCL uses lexical scoping to evaluate references. Wherever there is a block,
 there is a scope.
@@ -248,6 +267,35 @@ The referenced value is nested within a block found in an enclosing scope.
     RCL>eval {numbers:{one:1 two:2 three:3} <-$numbers.one + $numbers.three}
     4
 
+#### Instantiating and evaluating references
+
+Like operators, references are automatically evaluated by Let (:). To "save" a
+reference for later evaluation use Quote (::) or Yield-Quote (&lt;-:).
+
+    RCL>eval {x::$y}
+    {
+      x:$y
+    }
+
+Alternatively, The `reference` operator can be used to instantiate the
+reference dynamically, producing an equivalent result.
+
+    RCL>eval {x:reference "y"}
+    {
+      x:$y
+    }
+
+Putting it all together now:
+
+    RCL>eval {x:"to" dyad {l:0 r:10} y:"+" dyad {l:$x r:1} <--"sum" monad reference "x"}
+    {
+      x:0 to 10
+      y:$x + 1
+      <-sum $x
+    }
+    RCL>eval eval {x:"to" dyad {l:0 r:10} y:"+" dyad {l:$x r:1} <--"sum" monad reference "x"}
+    55
+
 #### Overriding the root scope with eval
 
 By default, RCL will search for a value in every enclosing scope until it gets
@@ -267,8 +315,8 @@ defined by passing a block into the left operand of `eval`.
       Unable to resolve name x
       --------------------------------------------------------------------------------
 
-The variable `$x` will only resolve successfully if it is explicitly defined in
-the scope passed to eval.
+The variable `$x` will only resolve if it is explicitly defined in the scope
+passed to eval.
 
     RCL>x:10
     RCL>{x:100} eval {<-$x + $x}
@@ -276,18 +324,21 @@ the scope passed to eval.
 
 ### Vectors
 
-In RCL all concrete data types are always contained within a vector which is an
-unnamed, ordered list of values of one of the following scalar types. In
-general, the syntax and behavior of the scalar types is similar to C#, the
-implementation language of RCL.
+In RCL scalar data values are always contained within a vector. A vector is an
+ordered list of values having one of the following scalar types.
 
 In a vector, the scalar values are simply separated by spaces with no
 additional adornments or enclosures. For example:
 
     double_vector:1.0 2.0 3.0
     long_vector:1 2 3
+    decimal_vector:1.0 2.0 3.0m
     date_vector:2020.09.13 2020.09.14 2020.09.15
     symbol_vector:#x #y #z
+    boolean_vector:true false true true false
+    byte_vector:\x0A \x0B \x0C \x0D \x0E \x0F
+    string_vector:"a" "b" "c" "d"
+    incr_vector:++ +- ++ +-
 
 Mixing different types of scalars within a single vector will generate an
 error.
@@ -304,6 +355,22 @@ interpreted as an integer value by default.
 
 Longs are 64-bit integer values. Any numeric value without a decimal point will
 be interpreted as a long.
+
+##### Decimal
+
+Decimals are an additional numeric type which can be useful for high precision
+calculations. Decimals can also be used to represent extrordinarily large or
+small numbers. Other numeric types can be converted to decimals using
+`decimal`:
+
+    RCL>decimal 0 to 15
+    0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15m
+
+Decimals can be identified by the "m" suffix on the final number in the vector.
+Decimals can be expressed in text using the same syntax:
+
+    RCL>typename 1 2 3m
+    "decimal"
 
 ##### Boolean
 
@@ -465,7 +532,7 @@ In general, scoping and access rules for operations are identical to those for
 references. Syntactically, references to operations are identical to variable
 references without the $-prefix.
 
-#### Object-based Operations
+#### Object-based operations
 
 It is possible to implement primitive objects by enclosing "member" variables
 within a block that also contain defined operations.
@@ -500,7 +567,7 @@ At the command line:
 The result of evaluating a template is always a string. For a more presentable
 result, convert the string back into a template.
 
-#### Iteration within Templates
+#### Iteration within templates
 
 RCL's vectorized operators excel at composing more complex text documents.
 Suppose we have following content in templates.rcl:
@@ -689,4 +756,81 @@ single cube:
       #ghi  35.0  10000
       #klm    --  30000
     ]
+
+Cube data can be additionally adorned with time data as follows:
+
+    RCL>u:[T S|price 2020.09.17 #abc 10.00 2020.09.17 #def 100.00 2020.09.17 #ghi 35.00]
+    RCL>$u
+    [
+               T|S   |price
+      2020.09.17 #abc  10.0
+      2020.09.17 #def 100.0
+      2020.09.17 #ghi  35.0
+    ]
+    RCL>v:[T S|volume 2020.09.17 #ghi 10000 2020.09.17 #abc 200000 2020.09.17 #def 25000 2020.09.17 #klm 30000]
+    RCL>$v
+    [
+               T|S   |volume
+      2020.09.17 #ghi  10000
+      2020.09.17 #abc 200000
+      2020.09.17 #def  25000
+      2020.09.17 #klm  30000
+    ]
+    RCL>$u ! $v
+    [
+               T|S   |price volume
+      2020.09.17 #abc  10.0 200000
+      2020.09.17 #def 100.0  25000
+      2020.09.17 #ghi  35.0  10000
+      2020.09.17 #klm    --  30000
+    ]
+
+Operators like `!` will not comingle data from differing timestamps.
+
+    RCL>u:[T S|price 2020.09.17 #abc 10.00 2020.09.17 #def 100.00 2020.09.17 #ghi 35.00]
+    RCL>$u
+    [
+               T|S   |price
+      2020.09.17 #abc  10.0
+      2020.09.17 #def 100.0
+      2020.09.17 #ghi  35.0
+    ]
+    RCL>v:[T S|volume 2020.09.18 #ghi 10000 2020.09.18 #abc 200000 2020.09.18 #def 25000 2020.09.18 #klm 30000]
+    RCL>$v
+    [
+               T|S   |volume
+      2020.09.18 #ghi  10000
+      2020.09.18 #abc 200000
+      2020.09.18 #def  25000
+      2020.09.18 #klm  30000
+    ]
+    RCL>$u ! $v
+    [
+               T|S   |price volume
+      2020.09.17 #abc  10.0     --
+      2020.09.17 #def 100.0     --
+      2020.09.17 #ghi  35.0     --
+      2020.09.18 #abc    -- 200000
+      2020.09.18 #def    --  25000
+      2020.09.18 #ghi    --  10000
+      2020.09.18 #klm    --  30000
+    ]
+
+It is possible to fill prior values through using `fill`, for example:
+
+    RCL>fill $u ! $v
+    [
+               T|S   |price volume
+      2020.09.17 #abc  10.0     --
+      2020.09.17 #def 100.0     --
+      2020.09.17 #ghi  35.0     --
+      2020.09.18 #abc  10.0 200000
+      2020.09.18 #def 100.0  25000
+      2020.09.18 #ghi  35.0  10000
+      2020.09.18 #klm    --  30000
+    ]
+
+RCL includes hundreds of operators to assist in processing financial
+information and making better financial decisions. For complete documentation
+see the Robocube Book of Operations (Coming Soon).
 
