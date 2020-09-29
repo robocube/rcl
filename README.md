@@ -45,6 +45,11 @@ as it is to take the sum of a vector:
 
     RCL>result:sum 1 2 3 4 5
 
+
+## Compiling
+
+
+
 ## Syntax
 
 ### Blocks
@@ -551,7 +556,7 @@ Templates are a way to compose arbitrary text fragments in RCL. Similar to
 "here docs" in other languages, templates are used to produce complex,
 multiline documents.
 
-Suppose we have the following content in a file templates.rcl:
+Suppose we have the following content in a file `templates.rcl`:
 
     t:[?
       this is where "[! $x !]" will appear!
