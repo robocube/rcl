@@ -1338,3 +1338,70 @@ hide_option:{
   ?]
 }
 
+TestExitFromScript:{
+  src:{
+    rcldir:codebase {}
+    tmpdir:(getenv "RCL_HOME") + "/tmp"
+    Test:& compile eval [?
+      using System;
+      using System.Threading;
+      using RCL.Kernel;
+      public class TestClass
+      {
+        [RCVerb ("TestExitFromScript")]
+        public void EvalTest (RCRunner runner, RCClosure closure, RCBlock right)
+        {
+          RCRunner testRunner = new RCRunner ();
+          for (int i = 0; i < 5; ++i)
+          {
+            testRunner.Rep ("\"[! $tmpdir !]/exit.o2\" save #pretty format {:exit 0}");
+            if (RCSystem.IsMono ())
+            {
+              testRunner.Rep ("p:startx \"mono [! $rcldir !]/rcl.exe --output=clean --nokeys --program=[! $tmpdir !]/exit.o2\"");
+            }
+            else
+            {
+              testRunner.Rep ("p:startx \"[! $rcldir !]/rcl.exe --output=clean --nokeys --program=[! $tmpdir !]/exit.o2\"");
+            }
+            testRunner.Rep ("waitx $p");
+            testRunner.Rep ("rm \"[! $tmpdir !]/exit.o2\"");
+          }
+          runner.Yield (closure, RCBlock.Empty);
+        }
+      }
+    ?]
+    :Test.TestExitFromScript {}
+  }
+}
+
+TestExecError:{
+  src:{
+    rcldir:codebase {}
+    tmpdir:(getenv "RCL_HOME") + "/tmp"
+    Test:& compile eval [??
+      using System;
+      using System.Threading;
+      using RCL.Kernel;
+      public class TestClass
+      {
+        [RCVerb ("TestExecError")]
+        public void EvalTest (RCRunner runner, RCClosure closure, RCBlock right)
+        {
+          RCRunner testRunner = new RCRunner ();
+          testRunner.Rep ("\"[!! $tmpdir !!]/exit.o2\" save #pretty format {:exit 1}");
+          if (RCSystem.IsMono ())
+          {
+            testRunner.Rep ("p:startx \"mono [!! $rcldir !!]/rcl.exe --output=clean --show=print --nokeys --program=[!! $tmpdir !!]/exit.o2\"");
+          }
+          else
+          {
+            testRunner.Rep ("p:startx \"[!! $rcldir !!]/rcl.exe --output=clean --show=print --nokeys --program=[!! $tmpdir !!]/exit.o2\"");
+          }
+          Assert.AreEqual ("{status:1 data:[?\n    <<Exec,exit status 1>>\n  ?]}", testRunner.Rep ("#status #data from try {<-waitx $p}").ToString ());
+          runner.Yield (closure, RCBlock.Empty);
+        }
+      }
+    ??]
+    :Test.TestExecError {}
+  }
+}

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27428.2015
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30503.244
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RCL.Test", "RCL.Test\RCL.Test.csproj", "{8DD89C65-7F37-4851-BB76-A23856BDDC72}"
 EndProject
@@ -11,10 +11,16 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RCL.Core", "RCL.Core\RCL.Co
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RCL.Exe", "RCL.Exe\RCL.Exe.csproj", "{CFBD55C8-3D47-4442-B2CC-9203C321BBA0}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{495E3742-1EDA-4319-92A1-DBB0EC786F3B}"
+	ProjectSection(SolutionItems) = preProject
+		build.bat = build.bat
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		DebugTest|Any CPU = DebugTest|Any CPU
+		FastTest|Any CPU = FastTest|Any CPU
 		Release|Any CPU = Release|Any CPU
 		Test|Any CPU = Test|Any CPU
 	EndGlobalSection
@@ -23,6 +29,8 @@ Global
 		{8DD89C65-7F37-4851-BB76-A23856BDDC72}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8DD89C65-7F37-4851-BB76-A23856BDDC72}.DebugTest|Any CPU.ActiveCfg = DebugTest|Any CPU
 		{8DD89C65-7F37-4851-BB76-A23856BDDC72}.DebugTest|Any CPU.Build.0 = DebugTest|Any CPU
+		{8DD89C65-7F37-4851-BB76-A23856BDDC72}.FastTest|Any CPU.ActiveCfg = FastTest|Any CPU
+		{8DD89C65-7F37-4851-BB76-A23856BDDC72}.FastTest|Any CPU.Build.0 = FastTest|Any CPU
 		{8DD89C65-7F37-4851-BB76-A23856BDDC72}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8DD89C65-7F37-4851-BB76-A23856BDDC72}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8DD89C65-7F37-4851-BB76-A23856BDDC72}.Test|Any CPU.ActiveCfg = Test|Any CPU
@@ -31,6 +39,8 @@ Global
 		{747944E4-26ED-4A68-BDEF-E35550E67530}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{747944E4-26ED-4A68-BDEF-E35550E67530}.DebugTest|Any CPU.ActiveCfg = DebugTest|Any CPU
 		{747944E4-26ED-4A68-BDEF-E35550E67530}.DebugTest|Any CPU.Build.0 = DebugTest|Any CPU
+		{747944E4-26ED-4A68-BDEF-E35550E67530}.FastTest|Any CPU.ActiveCfg = FastTest|Any CPU
+		{747944E4-26ED-4A68-BDEF-E35550E67530}.FastTest|Any CPU.Build.0 = FastTest|Any CPU
 		{747944E4-26ED-4A68-BDEF-E35550E67530}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{747944E4-26ED-4A68-BDEF-E35550E67530}.Release|Any CPU.Build.0 = Release|Any CPU
 		{747944E4-26ED-4A68-BDEF-E35550E67530}.Test|Any CPU.ActiveCfg = Test|Any CPU
@@ -39,6 +49,8 @@ Global
 		{ABD50D14-336F-4445-90E4-E5FA65209E01}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ABD50D14-336F-4445-90E4-E5FA65209E01}.DebugTest|Any CPU.ActiveCfg = DebugTest|Any CPU
 		{ABD50D14-336F-4445-90E4-E5FA65209E01}.DebugTest|Any CPU.Build.0 = DebugTest|Any CPU
+		{ABD50D14-336F-4445-90E4-E5FA65209E01}.FastTest|Any CPU.ActiveCfg = FastTest|Any CPU
+		{ABD50D14-336F-4445-90E4-E5FA65209E01}.FastTest|Any CPU.Build.0 = FastTest|Any CPU
 		{ABD50D14-336F-4445-90E4-E5FA65209E01}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ABD50D14-336F-4445-90E4-E5FA65209E01}.Release|Any CPU.Build.0 = Release|Any CPU
 		{ABD50D14-336F-4445-90E4-E5FA65209E01}.Test|Any CPU.ActiveCfg = Test|Any CPU
@@ -47,6 +59,8 @@ Global
 		{CFBD55C8-3D47-4442-B2CC-9203C321BBA0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CFBD55C8-3D47-4442-B2CC-9203C321BBA0}.DebugTest|Any CPU.ActiveCfg = DebugTest|Any CPU
 		{CFBD55C8-3D47-4442-B2CC-9203C321BBA0}.DebugTest|Any CPU.Build.0 = DebugTest|Any CPU
+		{CFBD55C8-3D47-4442-B2CC-9203C321BBA0}.FastTest|Any CPU.ActiveCfg = FastTest|Any CPU
+		{CFBD55C8-3D47-4442-B2CC-9203C321BBA0}.FastTest|Any CPU.Build.0 = FastTest|Any CPU
 		{CFBD55C8-3D47-4442-B2CC-9203C321BBA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CFBD55C8-3D47-4442-B2CC-9203C321BBA0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CFBD55C8-3D47-4442-B2CC-9203C321BBA0}.Test|Any CPU.ActiveCfg = Test|Any CPU
@@ -54,6 +68,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {11172ADA-9951-4897-A93C-0BFE38941D2A}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		Policies = $0
