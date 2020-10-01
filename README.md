@@ -852,3 +852,117 @@ RCL includes hundreds of operators to assist in processing financial
 information and making better financial decisions. For complete documentation
 see the Robocube Book of Operations (Coming Soon).
 
+## Extending RCL using C# operators
+
+It is easy to extend RCL using C#. With the following code in a file MyOrg.cs:
+
+    using System;
+    using RCL.Kernel;
+    
+    namespace MyOrg
+    {
+      public class MyOps
+      {
+        [RCVerb ("myops.addPrefix")]
+        public void EvalTest (RCRunner runner, RCClosure closure, RCString left, RCBlock right)
+        {
+          RCBlock result = RCBlock.Empty;
+          string prefix = left[0];
+          for (int i = 0; i < right.Count; ++i) {
+            RCBlock name = right.GetName (i);
+            result = new RCBlock (result, prefix + name.Name, name.Evaluator.Symbol, name.Value);
+          }
+          runner.Yield (closure, result);
+        }
+      }
+    }
+
+Simply place a dll containing the compiled c# code into the same directory as
+rcl.exe. For example:
+
+    mcs /target:library /out:RCL.Exe/bin/Debug/MyOrg.dll MyOperators.cs /reference:RCL.Exe/bin/Debug/RCL.Kernel.dll
+
+After launching rcl your custom operator can be used like any other:
+
+    mono RCL.Exe/bin/Debug/rcl.exe --output=clean
+    RCL>"_" myops.addPrefix {a:1 b:2 c:3}
+    {
+      _a:1
+      _b:2
+      _c:3
+    }
+
+### Ad-hoc C# operators using `compile`
+
+It is also possible to compile adhoc C# operators within RCL. With the following code in a file `myprogram.rcl`
+
+    myops:& compile eval [?
+      using System;
+      using RCL.Kernel;
+      public class AdHoc
+      {
+        [RCVerb ("addPrefix")]
+        public void EvalAddPrefix (RCRunner runner, RCClosure closure, RCString left, RCBlock right)
+        {
+          RCBlock result = RCBlock.Empty;
+          string prefix = left[0];
+          for (int i = 0; i < right.Count; ++i) {
+            RCBlock name = right.GetName (i);
+            result = new RCBlock (result, prefix + name.Name, name.Evaluator.Symbol, name.Value);
+          }
+          runner.Yield (closure, result);
+        }
+     
+        [RCVerb ("addSuffix")]
+        public void EvalAddSuffix (RCRunner runner, RCClosure closure, RCString left, RCBlock right)
+        {
+          RCBlock result = RCBlock.Empty;
+          string suffix = left[0];
+          for (int i = 0; i < right.Count; ++i) {
+            RCBlock name = right.GetName (i);
+            result = new RCBlock (result, name.Name + suffix, name.Evaluator.Symbol, name.Value);
+          }
+          runner.Yield (closure, result);
+        }
+      }
+    ?]
+    
+    main:{
+      with_prefix:"_" myops.addPrefix {a:1 b:2 c:3}
+      with_suffix:"_" myops.addSuffix {a:1 b:2 c:3}
+    }
+
+Then run the program as follows to compile and execute the C# code and RCL:
+
+    [brian ind robocube.tech rcl] mono RCL.Exe/bin/Debug/rcl.exe --program=myprogram.rcl --action=main --hide=compile --exit
+    Robocube Language 0.0.0.0
+    Copyright (C) 2020 Robocube Corporation
+    
+    {
+      program:"myprogram.rcl"
+      action:"main"
+      output:"full"
+      show:"*"
+      hide:"compile"
+      batch:false
+      nokeys:false
+      noread:false
+      noresult:false
+      exit:true
+      version:false
+      fullstack:false
+    }
+    
+    {
+      with_prefix:{
+        _a:1
+        _b:2
+        _c:3
+      }
+      with_suffix:{
+        a_:1
+        b_:2
+        c_:3
+      }
+    }
+
