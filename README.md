@@ -48,7 +48,20 @@ as it is to take the sum of a vector:
 
 ## Compiling
 
+RCL runs on Windows using .NET Framework and in Unix-like environments using
+Mono. Support for .NET Core and .NET 5 are on the way.
 
+### Windows (.NET)
+
+With Visual Studio installed:
+
+    build.bat
+
+### Linux/OS X/WSL
+
+With mono installed:
+
+    ./build.sh
 
 ## Syntax
 
