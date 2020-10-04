@@ -136,11 +136,10 @@
     <Compile Include="misc\Text.cs" />
     <Compile Include="vector\Inter.cs" />
     <Compile Include="vector\Range.cs" />
-    <Compile Include="net\HttpClientAsync.cs" />
     <Compile Include="vector\Reverse.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>

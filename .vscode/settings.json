@@ -1,0 +1,5 @@
+{
+	"settings": {
+		"terminal.integrated.shell.osx": "/bin/bash"
+	}
+}

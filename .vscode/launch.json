@@ -1,0 +1,35 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch",
+            "type": "mono",
+            "request": "launch",
+            "program": "${workspaceRoot}/RCL.Exe/bin/Debug/rcl.exe",
+            "cwd": "${workspaceRoot}",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Test",
+            "type": "mono",
+            "request": "launch",
+            "program": "${workspaceRoot}/RCL.Exe/bin/Debug/rcl.exe",
+            "args": ["--program=RCL.Test/rclkit/rcl/rclt.rcl",
+                     "--action=main", "--rclt-display-status=F,K,P",
+                     "RCL.Test/rclkit/tests/CoreTest1.rclt",
+                     "RCL.Test/rclkit/tests/CoreTest2.rclt",
+                     "RCL.Test/rclkit/tests/CoreTest3.rclt",
+                     "RCL.Test/rclkit/tests/EvalTest.rclt",
+                     "RCL.Test/rclkit/tests/CubeTest.rclt",
+                     "RCL.Test/rclkit/tests/LexerTest.rclt",
+                     "RCL.Test/rclkit/tests/ParserTest.rclt",
+                     "RCL.Test/rclkit/tests/rcl.log_parse.rclt",
+                     "RCL.Test/rclkit/tests/rcl.md_parse.rclt"],
+            "cwd": "${workspaceRoot}",
+            "console": "integratedTerminal"
+        }
+    ]
+}
