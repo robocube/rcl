@@ -13,7 +13,7 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "Test",
+            "name": "FastTest",
             "type": "mono",
             "request": "launch",
             "program": "${workspaceRoot}/RCL.Exe/bin/Debug/rcl.exe",
@@ -28,6 +28,17 @@
                      "RCL.Test/rclkit/tests/ParserTest.rclt",
                      "RCL.Test/rclkit/tests/rcl.log_parse.rclt",
                      "RCL.Test/rclkit/tests/rcl.md_parse.rclt"],
+            "cwd": "${workspaceRoot}",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "DebugTest",
+            "type": "mono",
+            "request": "launch",
+            "program": "${workspaceRoot}/RCL.Exe/bin/Debug/rcl.exe",
+            "args": ["--program=RCL.Test/rclkit/rcl/rclt.rcl",
+                     "--action=main", "--rclt-display-status=F",
+                     "RCL.Test/rclkit/tests/CubeTest.rclt"],
             "cwd": "${workspaceRoot}",
             "console": "integratedTerminal"
         }
