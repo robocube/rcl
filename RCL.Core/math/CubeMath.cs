@@ -336,10 +336,8 @@ namespace RCL.Core
         data = new RCArray<O> ();
         timeline = left.Axis.Match ();
         index = new RCArray<int> ();
-        Column<R> rcolumn = (Column<R>)right.GetColumn (0);
-        Column<L> lcolumn = (Column<L>)left.GetColumn (0);
-        // Dictionary<RCSymbolScalar, R> rlast = right.GetLast<R> (0);
-        // Dictionary<RCSymbolScalar, L> llast = left.GetLast<L> (0);
+        Column<R> rcolumn = (Column<R>) right.GetColumn (0);
+        Column<L> lcolumn = (Column<L>) left.GetColumn (0);
         EvalColumnarObject<L, R, O> (ltimeline,
                                      lcolumn,
                                      rtimeline,
@@ -357,17 +355,16 @@ namespace RCL.Core
         data = new RCArray<O> ();
         timeline = left.Axis.Match ();
         index = new RCArray<int> ();
-        EvalColumnarMulti<L, R, O> (
-          ltimeline,
-          lindex,
-          ldata,
-          rtimeline,
-          rindex,
-          rdata,
-          timeline,
-          index,
-          data,
-          op);
+        EvalColumnarMulti<L, R, O> (ltimeline,
+                                    lindex,
+                                    ldata,
+                                    rtimeline,
+                                    rindex,
+                                    rdata,
+                                    timeline,
+                                    index,
+                                    data,
+                                    op);
       }
       else { // if (left.Timeline == right.Timeline)
         // If both vectors are on the same, single timeline
@@ -377,15 +374,14 @@ namespace RCL.Core
         data = new RCArray<O> ();
         index = new RCArray<int> ();
         timeline = left.Axis;
-        EvalColumnarSingle<L, R, O> (
-          ltimeline,
-          lindex,
-          ldata,
-          rindex,
-          rdata,
-          index,
-          data,
-          op);
+        EvalColumnarSingle<L, R, O> (ltimeline,
+                                     lindex,
+                                     ldata,
+                                     rindex,
+                                     rdata,
+                                     index,
+                                     data,
+                                     op);
       }
 
       // The only way I could find to eliminate this cast was unnacceptable
@@ -406,8 +402,7 @@ namespace RCL.Core
 
     public static RCValue DyadicOpLeftScalar <L, R, O> (RCVector<L> left,
                                                         RCCube right,
-                                                        ScalarOp<L,
-                                                                 R, O> op)
+                                                        ScalarOp<L, R, O> op)
         where O : IComparable
     {
       // This is an easier way to write this because the cube already
@@ -416,14 +411,14 @@ namespace RCL.Core
       Timeline rtimeline = right.Axis;
       RCArray<int> rindex = right.GetIndex<R> (0);
       RCArray<R> rdata = right.GetData<R> (0);
-      RCCube result = new RCCube (
-        rtimeline,
-        new RCArray<string> (),
-        new RCArray<ColumnBase> ());
+      RCCube result = new RCCube (rtimeline,
+                                  new RCArray<string> (),
+                                  new RCArray<ColumnBase> ());
       for (int i = 0; i < rdata.Count; ++i)
       {
+        RCSymbolScalar sym = right.SymbolAt (rindex[i]);
         O val = op (left[0], rdata[i]);
-        result.WriteCell ("x", right.SymbolAt (i), val, rindex[i], false, false);
+        result.WriteCell ("x", sym, val, rindex[i], false, false);
       }
       return result;
     }
@@ -439,14 +434,14 @@ namespace RCL.Core
       Timeline ltimeline = left.Axis;
       RCArray<int> lindex = left.GetIndex<L> (0);
       RCArray<L> ldata = left.GetData<L> (0);
-      RCCube result = new RCCube (
-        ltimeline,
-        new RCArray<string> (),
-        new RCArray<ColumnBase> ());
+      RCCube result = new RCCube (ltimeline,
+                                  new RCArray<string> (),
+                                  new RCArray<ColumnBase> ());
       for (int i = 0; i < ldata.Count; ++i)
       {
+        RCSymbolScalar sym = left.SymbolAt (lindex[i]);
         O val = op (ldata[i], right[0]);
-        result.WriteCell ("x", left.SymbolAt (i), val, lindex[i], false, false);
+        result.WriteCell ("x", sym, val, lindex[i], false, false);
       }
       return result;
     }
@@ -640,7 +635,8 @@ namespace RCL.Core
         if (llast.Last (s, out l)) {
           if (rlast.Last (s, out r)) {
             oindex.Write (i);
-            odata.Write (op (l, r));
+            O o = op (l, r);
+            odata.Write (o);
           }
         }
       }

@@ -67,6 +67,7 @@ namespace RCL.Kernel
     public abstract object BoxCell (int vrow);
     public abstract bool BoxLast (RCSymbolScalar key, out object box);
     public abstract bool Delete (RCSymbolScalar key);
+    public abstract RCBlock Flatpack ();
 
     public int CountBefore (int tlcount)
     {

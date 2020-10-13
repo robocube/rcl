@@ -4542,6 +4542,50 @@
        3 #a    --
     ]
   }
+  TestAnd4:{
+    skip:false
+    src:{
+      p:[
+        S   | x y
+        #A   -- --
+        #A,1 -2 "PUT"
+        #B   -- --
+        #B,1  0 "PUT"
+      ]
+      a:$p.y == "PUT"
+      b:$p.x < 0.0
+      <-$a and $b
+    }
+    bin:[
+      S   |    x
+      #A      --
+      #A,1  true
+      #B      --
+      #B,1 false
+    ]
+  }
+  TestAnd5:{
+    skip:false
+    src:{
+      p:[
+        S   | x y
+        #A   -- --
+        #A,1 -2 "PUT"
+        #B   -- --
+        #B,1  0 "PUT"
+      ]
+      a:"PUT" == $p.y
+      b:0.0 > $p.x
+      <-$a and $b
+    }
+    bin:[
+      S   |    x
+      #A      --
+      #A,1  true
+      #B      --
+      #B,1 false
+    ]
+  }
   TestOr1:{
     skip:false
     src:[

@@ -117,9 +117,7 @@ namespace RCL.Kernel
       }
       for (int i = 0; i < _columns.Count; ++i)
       {
-        RCBlock column = RCBlock.Empty;
-        column = new RCBlock (column, "index", ":", RCVectorBase.FromArray (_columns[i].Index));
-        column = new RCBlock (column, "array", ":", RCVectorBase.FromArray (_columns[i].Array));
+        RCBlock column = _columns[i].Flatpack ();
         result = new RCBlock (result, _names[i], ":", column);
       }
       return result;
