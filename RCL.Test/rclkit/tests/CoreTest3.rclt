@@ -51,7 +51,7 @@
       :delete "file"
       <-$text
     }
-    bin:"line0\nline1\nline2"
+    bin:"line0\nline1\nline2\n"
   }
   TestSaveLoadUnderline:{
     skip:false
@@ -62,7 +62,7 @@
       :delete "file"
       <-$text
     }
-    bin:"line0\nline1"
+    bin:"line0\nline1\n"
   }
   TestSavebinLoadbinDelete:{
     skip:false

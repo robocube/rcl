@@ -307,6 +307,7 @@ namespace RCL.Core
             }
             writer.Write (lines[lines.Length - 1]);
           }
+          writer.WriteLine ();
         }
       }
     }
