@@ -405,20 +405,24 @@ namespace RCL.Core
                                                         ScalarOp<L, R, O> op)
         where O : IComparable
     {
-      // This is an easier way to write this because the cube already
-      // handles duplicate values for you.  I think this whole thing should
-      // use WriteCell instead of manipulating the underlying vectors directly.
-      Timeline rtimeline = right.Axis;
-      RCArray<int> rindex = right.GetIndex<R> (0);
-      RCArray<R> rdata = right.GetData<R> (0);
-      RCCube result = new RCCube (rtimeline,
+      RCCube result = new RCCube (right.Axis,
                                   new RCArray<string> (),
                                   new RCArray<ColumnBase> ());
-      for (int i = 0; i < rdata.Count; ++i)
+      for (int col = 0; col < right.Cols; ++col)
       {
-        RCSymbolScalar sym = right.SymbolAt (rindex[i]);
-        O val = op (left[0], rdata[i]);
-        result.WriteCell ("x", sym, val, rindex[i], false, false);
+        RCArray<int> index = right.GetIndex<R> (col);
+        RCArray<R> data = right.GetData<R> (col);
+        if (index != null) {
+          for (int vrow = 0; vrow < data.Count; ++vrow)
+          {
+            RCSymbolScalar sym = right.SymbolAt (index[vrow]);
+            O val = op (left[0], data[vrow]);
+            result.WriteCell (right.NameAt (col), sym, val, index[vrow], false, false);
+          }
+        }
+        else {
+          result.ReserveColumn (right.NameAt (col));
+        }
       }
       return result;
     }
@@ -428,20 +432,24 @@ namespace RCL.Core
                                                          ScalarOp<L, R, O> op)
         where O : IComparable
     {
-      // This is an easier way to write this because the cube already
-      // handles duplicate values for you.  I think this whole thing should
-      // use WriteCell instead of manipulating the underlying vectors directly.
-      Timeline ltimeline = left.Axis;
-      RCArray<int> lindex = left.GetIndex<L> (0);
-      RCArray<L> ldata = left.GetData<L> (0);
-      RCCube result = new RCCube (ltimeline,
+      RCCube result = new RCCube (left.Axis,
                                   new RCArray<string> (),
                                   new RCArray<ColumnBase> ());
-      for (int i = 0; i < ldata.Count; ++i)
+      for (int col = 0; col < left.Cols; ++col)
       {
-        RCSymbolScalar sym = left.SymbolAt (lindex[i]);
-        O val = op (ldata[i], right[0]);
-        result.WriteCell ("x", sym, val, lindex[i], false, false);
+        RCArray<int> index = left.GetIndex<L> (col);
+        RCArray<L> data = left.GetData<L> (col);
+        if (index != null) {
+          for (int vrow = 0; vrow < data.Count; ++vrow)
+          {
+            RCSymbolScalar sym = left.SymbolAt (index[vrow]);
+            O val = op (data[vrow], right[0]);
+            result.WriteCell (left.NameAt (col), sym, val, index[vrow], false, false);
+          }
+        }
+        else {
+          result.ReserveColumn (left.NameAt (col));
+        }
       }
       return result;
     }
@@ -1195,9 +1203,7 @@ namespace RCL.Core
         runner.Yield (closure, new RCCube ());
       }
       else {
-        runner.Yield (
-          closure,
-          Invoke (closure, op.Name, left, (RCVectorBase) right));
+        runner.Yield (closure, Invoke (closure, op.Name, left, (RCVectorBase) right));
       }
     }
 

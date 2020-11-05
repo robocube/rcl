@@ -3707,7 +3707,7 @@
       #x 12
     ] - 1
     bin:[
-      S | x
+      S | a
       #x  9
       #x 10
       #x 11
@@ -3722,7 +3722,7 @@
       #x 12
     ] + 1
     bin:[
-      S | x
+      S | a
       #x 11
       #x 12
       #x 13
@@ -3737,7 +3737,7 @@
       #x 30
     ] / 2
     bin:[
-      S | x
+      S | a
       #x  5
       #x 10
       #x 15
@@ -3752,10 +3752,55 @@
       #x 15
     ] * 2
     bin:[
-      S | x
+      S | a
       #x 10
       #x 20
       #x 30
+    ]
+  }
+  TestCubeArgumentsUL5:{
+    skip:false
+    src:[
+      S | a   b
+      #x  5  50
+      #x 10 100
+      #x 15 150
+    ] * 2
+    bin:[
+      S | a   b
+      #x 10 100
+      #x 20 200
+      #x 30 300
+    ]
+  }
+  TestCubeArgumentsUL6:{
+    skip:false
+    src:[
+      S | a  b
+      #x  5 --
+      #x 10 --
+      #x 15 --
+    ] * 2
+    bin:[
+      S | a  b
+      #x 10 --
+      #x 20 --
+      #x 30 --
+    ]
+  }
+  TestCubeArgumentsUL7:{
+    skip:false
+    src:[
+      S | a   b
+      #x  5  50
+      #x 10 100
+      #x 15  --
+    ] * 2
+    bin:[
+      S | a   b
+      #x 10 100
+      #x 20 200
+      #x 30  --
     ]
   }
   TestCubeArgumentsLU1:{
@@ -3767,7 +3812,7 @@
       #x 12
     ]
     bin:[
-      S |  x
+      S |  a
       #x  -9
       #x -10
       #x -11
@@ -3782,7 +3827,7 @@
       #x 12
     ]
     bin:[
-      S | x
+      S | a
       #x 11
       #x 12
       #x 13
@@ -3797,7 +3842,7 @@
       #x  3
     ]
     bin:[
-      S | x
+      S | a
       #x 12
       #x  6
       #x  4
@@ -3812,10 +3857,55 @@
       #x 15
     ]
     bin:[
-      S | x
+      S | a
       #x 10
       #x 20
       #x 30
+    ]
+  }
+  TestCubeArgumentsLU5:{
+    skip:false
+    src:2 * [
+      S | a   b
+      #x  5  50
+      #x 10 100
+      #x 15 150
+    ]
+    bin:[
+      S | a   b
+      #x 10 100
+      #x 20 200
+      #x 30 300
+    ]
+  }
+  TestCubeArgumentsLU6:{
+    skip:false
+    src:2 * [
+      S | a  b
+      #x  5 --
+      #x 10 --
+      #x 15 --
+    ]
+    bin:[
+      S | a  b
+      #x 10 --
+      #x 20 --
+      #x 30 --
+    ]
+  }
+  TestCubeArgumentsLU7:{
+    skip:false
+    src:2 * [
+      S | a   b
+      #x  5  50
+      #x 10 100
+      #x 15  --
+    ]
+    bin:[
+      S | a   b
+      #x 10 100
+      #x 20 200
+      #x 30  --
     ]
   }
   TestCubeOpWithNoResult1:{

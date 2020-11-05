@@ -123,6 +123,49 @@ namespace RCL.Kernel
       return result;
     }
 
+    public T[][] ToArray<T> (T def)
+    {
+      T[][] array = new T[Columns.Count][];
+      for (int col = 0; col < _columns.Count; ++col)
+      {
+        array[col] = new T[Axis.Count];
+        int row = 0, vrow = 0;
+        while (row < Axis.Count)
+        {
+          while (row < _columns[col].Index[vrow])
+          {
+            array[col][row] = def;
+            ++row;
+          }
+          array[col][row] = (T) _columns[col].BoxCell (vrow);
+          ++row;
+          ++vrow;
+        }
+      }
+      return array;
+    }
+
+    public T[,] To2DArray<T> (T def)
+    {
+      T[,] array = new T[Axis.Count, Columns.Count];
+      for (int col = 0; col < _columns.Count; ++col)
+      {
+        int row = 0, vrow = 0;
+        while (row < Axis.Count)
+        {
+          while (row < _columns[col].Index[vrow])
+          {
+            array[row, col] = def;
+            ++row;
+          }
+          array[row, col] = (T) _columns[col].BoxCell (vrow);
+          ++row;
+          ++vrow;
+        }
+      }
+      return array;
+    }
+
     public int FirstRow
     {
       get
@@ -771,7 +814,15 @@ namespace RCL.Kernel
 
     public RCArray<int> GetIndex<T> (int index)
     {
-      return ((Column<T>)_columns[index]).Index;
+      ColumnBase column = _columns[index];
+      if (column.Count == 0)
+      {
+        return null;
+      }
+      else
+      {
+        return ((Column<T>) column).Index;
+      }
     }
 
     /// <summary>
@@ -781,9 +832,15 @@ namespace RCL.Kernel
     /// </summary>
     public RCArray<T> GetData<T> (int index)
     {
-      // Twould be cool if I could get rid of this cast.
-      // But don't know how.
-      return ((Column<T>)_columns[index]).Data;
+      ColumnBase column = _columns[index];
+      if (column.Count == 0)
+      {
+        return null;
+      }
+      else
+      {
+        return ((Column<T>) column).Data;
+      }
     }
 
     public char GetTypeCode (string name)

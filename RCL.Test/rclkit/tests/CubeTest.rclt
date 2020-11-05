@@ -2291,7 +2291,7 @@
     skip:false
     src:(#n from tree 1 1) * 2.0
     bin:[
-      S |  x
+      S |  n
       #  4.0
       #0 2.0
       #1 2.0
@@ -5009,7 +5009,7 @@
       <-$u.y == 20
     }
     bin:[
-         x
+         y
         --
       true
     ]
