@@ -204,6 +204,18 @@ namespace RCL.Kernel
       }
     }
 
+    public bool IsHomogenous ()
+    {
+      char firsttype = GetColumn (0).TypeCode;
+      for (int i = 1; i < Cols; ++i)
+      {
+        if (GetColumn (i).TypeCode != firsttype) {
+          return false;
+        }
+      }
+      return true;
+    }
+
     public void Write (RCSymbolScalar s)
     {
       Axis.Write (s);

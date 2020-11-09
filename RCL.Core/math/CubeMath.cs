@@ -1039,6 +1039,9 @@ namespace RCL.Core
       if (right.GetColumn (0).TypeCode == '0') {
         return right;
       }
+      if (!right.IsHomogenous ()) {
+        throw new RCException (closure, RCErrors.Type, "The cube on the right is not homogenous");
+      }
       // Here BaseType is always RCVector<T>.
       // This is a bit fragile.
       RCActivator.OverloadKey key = new RCActivator.OverloadKey (name,
@@ -1059,6 +1062,9 @@ namespace RCL.Core
     {
       if (left.GetColumn (0).TypeCode == '0') {
         return left;
+      }
+      if (!left.IsHomogenous ()) {
+        throw new RCException (closure, RCErrors.Type, "The cube on the left is not homogenous");
       }
       // RCVectorBase lvector = left.GetVector (0);
       // Here BaseType is always RCVector<T>.
