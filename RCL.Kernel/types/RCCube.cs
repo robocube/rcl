@@ -204,12 +204,21 @@ namespace RCL.Kernel
       }
     }
 
-    public bool IsHomogenous ()
+    public bool IsHomogenous (out Type type)
     {
-      char firsttype = GetColumn (0).TypeCode;
-      for (int i = 1; i < Cols; ++i)
+      type = null;
+      bool typeIsKnown = false;
+      char typeCode = '-';
+      for (int i = 0; i < Cols; ++i)
       {
-        if (GetColumn (i).TypeCode != firsttype) {
+        ColumnBase column = GetColumn (i);
+        char coltype = column.TypeCode;
+        if (coltype != '0' && !typeIsKnown) {
+          typeCode = coltype;
+          typeIsKnown = true;
+          type = GetType (i);
+        }
+        if (typeIsKnown && coltype != typeCode && coltype != '0') {
           return false;
         }
       }

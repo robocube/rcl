@@ -1036,18 +1036,19 @@ namespace RCL.Core
 
     public static RCValue Invoke (RCClosure closure, string name, RCVectorBase left, RCCube right)
     {
-      if (right.GetColumn (0).TypeCode == '0') {
-        return right;
-      }
-      if (!right.IsHomogenous ()) {
+      Type htype;
+      if (!right.IsHomogenous (out htype)) {
         throw new RCException (closure, RCErrors.Type, "The cube on the right is not homogenous");
+      }
+      if (right.Count == 0 || htype == null) {
+        return right;
       }
       // Here BaseType is always RCVector<T>.
       // This is a bit fragile.
       RCActivator.OverloadKey key = new RCActivator.OverloadKey (name,
                                                                  typeof (RCCube),
                                                                  left.GetType ().BaseType,
-                                                                 right.GetType (0));
+                                                                 htype);
       Overload overload;
       if (!_overloads.TryGetValue (key, out overload)) {
         throw RCException.Overload (closure, name, left, right);
@@ -1060,18 +1061,19 @@ namespace RCL.Core
 
     public static RCValue Invoke (RCClosure closure, string name, RCCube left, RCVectorBase right)
     {
-      if (left.GetColumn (0).TypeCode == '0') {
-        return left;
-      }
-      if (!left.IsHomogenous ()) {
+      Type htype;
+      if (!left.IsHomogenous (out htype)) {
         throw new RCException (closure, RCErrors.Type, "The cube on the left is not homogenous");
+      }
+      if (left.Count == 0 || htype == null) {
+        return left;
       }
       // RCVectorBase lvector = left.GetVector (0);
       // Here BaseType is always RCVector<T>.
       // This is a bit fragile.
       RCActivator.OverloadKey key = new RCActivator.OverloadKey (name,
                                                                  typeof (RCCube),
-                                                                 left.GetType (0),
+                                                                 htype,
                                                                  right.GetType ().BaseType);
       Overload overload;
       if (!_overloads.TryGetValue (key, out overload)) {
@@ -1462,7 +1464,6 @@ namespace RCL.Core
         RCIncrScalar x = (RCIncrScalar) xobj;
         RCIncrScalar y = (RCIncrScalar) yobj;
         int result = x.CompareTo (y);
-        Console.WriteLine ("PlugIncrComparer x:{0}, y:{1}, result:{2}", x, y, result);
         return result;
       }
     }

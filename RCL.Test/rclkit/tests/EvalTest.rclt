@@ -3803,6 +3803,21 @@
       #x 30  --
     ]
   }
+  TestCubeArgumentsUL8:{
+    skip:false
+    src:[
+      S |  a  b
+      #x  --  5
+      #x  -- 10
+      #x  -- 15
+    ] * 2
+    bin:[
+      S | a  b
+      #x -- 10
+      #x -- 20
+      #x -- 30
+    ]
+  }
   TestCubeArgumentsLU1:{
     skip:false
     src:1 - [
@@ -3906,6 +3921,21 @@
       #x 10 100
       #x 20 200
       #x 30  --
+    ]
+  }
+  TestCubeArgumentsLU8:{
+    skip:false
+    src:2 * [
+      S |  a  b
+      #x  --  5
+      #x  -- 10
+      #x  -- 15
+    ]
+    bin:[
+      S | a  b
+      #x -- 10
+      #x -- 20
+      #x -- 30
     ]
   }
   TestCubeOpWithNoResult1:{
