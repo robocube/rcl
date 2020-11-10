@@ -141,9 +141,11 @@ namespace RCL.Kernel
       column = new RCBlock (column, "array", ":", RCVectorBase.FromArray (Array));
       RCArray<RCSymbolScalar> keys = new RCArray<RCSymbolScalar> ();
       RCArray<T> vals = new RCArray<T> ();
-      foreach (KeyValuePair<RCSymbolScalar, T> kv in _last) {
-        keys.Write (kv.Key);
-        vals.Write (kv.Value);
+      if (_last != null) {
+        foreach (KeyValuePair<RCSymbolScalar, T> kv in _last) {
+          keys.Write (kv.Key);
+          vals.Write (kv.Value);
+        }
       }
       column = new RCBlock (column, "keys", ":", RCVectorBase.FromArray (keys));
       column = new RCBlock (column, "vals", ":", RCVectorBase.FromArray (vals));
