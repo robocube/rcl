@@ -1715,6 +1715,18 @@ namespace RCL.Core
       runner.Yield (closure, Key (newKey, cube));
     }
 
+    [RCVerb ("dot")]
+    public void EvalDot (RCRunner runner, RCClosure closure, RCCube left, RCCube right)
+    {
+      throw new NotImplementedException ();
+    }
+
+    [RCVerb ("flip")]
+    public void EvalFlip (RCRunner runner, RCClosure closure, RCCube right)
+    {
+      throw new NotImplementedException ();
+    }
+
     [RCVerb ("key")]
     public void EvalKey (RCRunner runner, RCClosure closure, RCSymbol key, RCCube cube)
     {
