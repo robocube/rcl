@@ -2594,4 +2594,28 @@
     }
     bin:1
   }
+  TestPowLL:{
+    src:10^4
+    bin:10000
+  }
+  TestPowDD:{
+    src:10.6^4.5
+    bin:41103.2718770987
+  }
+  TestPowLD:{
+    src:10^4.5
+    bin:31622.7766016838
+  }
+  TestPowDL:{
+    src:10.6^4
+    bin:12624.7696
+  }
+  TestSqrtL:{
+    src:sqrt 13
+    bin:3.60555127546399
+  }
+  TestSqrtD:{
+    src:sqrt 13.0
+    bin:3.60555127546399
+  }
 }

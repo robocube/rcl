@@ -940,6 +940,26 @@ namespace RCL.Core
       return Math.Max (l, r);
     }
 
+    [Primitive ("^")]
+    public static double Pow (double l, double r) {
+      return Math.Pow (l, r);
+    }
+
+    [Primitive ("^")]
+    public static double Pow (long l, double r) {
+      return Math.Pow (l, r);
+    }
+
+    [Primitive ("^")]
+    public static double Pow (double l, long r) {
+      return Math.Pow (l, r);
+    }
+
+    [Primitive ("^")]
+    public static long Pow (long l, long r) {
+      return (long) Math.Pow (l, r);
+    }
+
     // t total
     public struct PlusState<T> { public T t; }
 
@@ -1616,6 +1636,11 @@ namespace RCL.Core
 
     [Primitive ("sqrt", Profile.Monadic)]
     public static double Sqrt (double r) {
+      return Math.Sqrt (r);
+    }
+
+    [Primitive ("sqrt", Profile.Monadic)]
+    public static double Sqrt (long r) {
       return Math.Sqrt (r);
     }
 

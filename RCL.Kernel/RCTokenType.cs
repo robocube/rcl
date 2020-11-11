@@ -14,7 +14,7 @@ namespace RCL.Kernel
     internal static readonly char[] TypeChars = new char[] { 'd', 'l', 'm', 'y', 'i', 'f', 's', 'c',
                                                              't', 'z', 'n', 'b', 'x' };
     internal static string[] SpecialOperators = { "-", "+", "*", "/", "%", "&", "<=", ">=", "<",
-                                                  ">", "==", "!=", "=", "!" };
+                                                  ">", "==", "!=", "=", "!", "^" };
     // The order of tests matters here.
     internal static string[] Evaluators = { "::", ":", "<-:", "<--", "<-" };
 
