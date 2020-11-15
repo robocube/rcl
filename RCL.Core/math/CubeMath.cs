@@ -1718,7 +1718,107 @@ namespace RCL.Core
     [RCVerb ("dot")]
     public void EvalDot (RCRunner runner, RCClosure closure, RCCube left, RCCube right)
     {
-      throw new NotImplementedException ();
+      Type leftType;
+      if (!left.IsHomogenous (out leftType)) {
+        throw new Exception ("Left hand cube is not homogenous");
+      }
+      Type rightType;
+      if (!right.IsHomogenous (out rightType)) {
+        throw new Exception ("Right-hand cube is not homogenous");
+      }
+      if (leftType != rightType) {
+        throw new Exception ("Left and right cubes do not have the same homogenous type");
+      }
+      long leftRows = left.Axis.Count;
+      long rightRows = right.Axis.Count;
+      long leftCols = left.Cols;
+      long rightCols = right.Cols;
+      if (leftCols != rightRows) {
+        throw new Exception ("The number of columns in the left cube must equal the number of rows in the right cube.");
+      }
+      RCCube result = new RCCube (left.Axis.Match ());
+
+      // No generics for arithmetic operations in C#
+      if (leftType == typeof (double)) {
+        for (int leftRow = 0; leftRow < leftRows; ++leftRow)
+        {
+          RCSymbolScalar sym = left.SymbolAt (leftRow);
+          for (int rightCol = 0; rightCol < rightCols; ++rightCol)
+          {
+            ColumnBase rightColColumn = right.GetColumn (rightCol);
+            string rightColName = right.NameAt (rightCol);
+            double resultValue = 0.0;
+            for (int rightRow = 0; rightRow < right.Count; ++rightRow)
+            {
+              ColumnBase leftRowColumn = left.GetColumn (rightRow);
+              double leftRowValue = (double) leftRowColumn.BoxCell (leftRow);
+              double rightColValue = (double) rightColColumn.BoxCell (rightRow);
+              double resultProduct = leftRowValue * rightColValue;
+              resultValue += resultProduct;
+            }
+            result.WriteCell (rightColName, sym, resultValue);
+          }
+          result.Axis.Write (sym);
+        }
+      }
+      else if (leftType == typeof (long)) {
+        for (int leftRow = 0; leftRow < leftRows; ++leftRow)
+        {
+          RCSymbolScalar sym = left.SymbolAt (leftRow);
+          for (int rightCol = 0; rightCol < rightCols; ++rightCol)
+          {
+            ColumnBase rightColColumn = right.GetColumn (rightCol);
+            string rightColName = right.NameAt (rightCol);
+            long resultValue = 0;
+            for (int rightRow = 0; rightRow < right.Count; ++rightRow)
+            {
+              ColumnBase leftRowColumn = left.GetColumn (rightRow);
+              long leftRowValue = (long) leftRowColumn.BoxCell (leftRow);
+              long rightColValue = (long) rightColColumn.BoxCell (rightRow);
+              long resultProduct = leftRowValue * rightColValue;
+              resultValue += resultProduct;
+            }
+            result.WriteCell (rightColName, sym, resultValue);
+          }
+          result.Axis.Write (sym);
+        }
+      }
+      else if (leftType == typeof (decimal)) {
+        for (int leftRow = 0; leftRow < leftRows; ++leftRow)
+        {
+          RCSymbolScalar sym = left.SymbolAt (leftRow);
+          for (int rightCol = 0; rightCol < rightCols; ++rightCol)
+          {
+            ColumnBase rightColColumn = right.GetColumn (rightCol);
+            string rightColName = right.NameAt (rightCol);
+            decimal resultValue = 0;
+            for (int rightRow = 0; rightRow < right.Count; ++rightRow)
+            {
+              ColumnBase leftRowColumn = left.GetColumn (rightRow);
+              decimal leftRowValue = (decimal) leftRowColumn.BoxCell (leftRow);
+              decimal rightColValue = (decimal) rightColColumn.BoxCell (rightRow);
+              decimal resultProduct = leftRowValue * rightColValue;
+              resultValue += resultProduct;
+            }
+            result.WriteCell (rightColName, sym, resultValue);
+          }
+          result.Axis.Write (sym);
+        }
+      }
+
+      long resultRows = leftRows;
+      long resultCols = rightCols;
+      if (result.Count != resultRows) {
+        throw new Exception (string.Format ("The result has the wrong number of rows: {0} found, {1} expected", result.Count, resultRows));
+      }
+      if (result.Cols != resultCols) {
+        throw new Exception (string.Format ("The result has the wrong number of columns: {0} found, {1} expected", result.Cols, resultCols));
+      }
+      runner.Yield (closure, result);
+    }
+
+    protected void DoDot<T> (RCCube left, RCCube right)
+    {
     }
 
     [RCVerb ("flip")]

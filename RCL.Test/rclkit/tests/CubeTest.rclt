@@ -8730,8 +8730,108 @@
     }
     bin:0
   }
-  TestDot:{
-    skip:true
+  TestDotDD1:{
+    skip:false
+    src:{
+      m1:[
+          x   y   z
+        1.0 2.0 3.0
+        4.0 5.0 6.0
+      ]
+      m2:[
+           a    b
+         7.0  8.0
+         9.0 10.0
+        11.0 12.0
+      ]
+      <-$m1 dot $m2
+    }
+    bin:[
+          a     b
+       58.0  64.0
+      139.0 154.0
+    ]
+  }
+  TestDotDD2:{
+    skip:false
+    src:[
+        x   y   z
+      1.0 2.0 3.0
+    ] dot [
+         a
+       7.0
+       9.0
+      11.0
+    ]
+    bin:[
+         a
+      58.0
+    ]
+  }
+  TestDotDD3:{
+    skip:false
+    src:{
+      m1:[
+          x   y   z
+        3.0 4.0 2.0
+      ]
+      m2:[
+           a   b   c    d
+        13.0 9.0 7.0 15.0
+         8.0 7.0 4.0  6.0
+         6.0 4.0 0.0  3.0
+      ]
+      <-$m1 dot $m2
+    }
+    bin:[
+         a    b    c    d
+      83.0 63.0 37.0 75.0
+    ]
+  }
+  TestDotDD4:{
+    skip:false
+    src:{
+      m1:[
+          x   y   z
+        1.0 2.0 3.0
+      ]
+      m2:[
+          a
+        4.0
+        5.0
+        6.0
+      ]
+      <-$m1 dot $m2
+    }
+    bin:[
+         a
+      32.0
+    ]
+  }
+  TestDotDD5:{
+    skip:false
+    src:{
+      m1:[
+          x
+        4.0
+        5.0
+        6.0
+      ]
+      m2:[
+          a   b   c
+        1.0 2.0 3.0
+      ]
+      <-$m1 dot $m2
+    }
+    bin:[
+        a    b    c
+      4.0  8.0 12.0
+      5.0 10.0 15.0
+      6.0 12.0 18.0
+    ]
+  }
+  TestDotLL:{
+    skip:false
     src:{
       m1:[
          x  y  z
@@ -8750,6 +8850,50 @@
         a   b
        58  64
       139 154
+    ]
+  }
+  TestDotMM:{
+    skip:false
+    src:{
+      m1:[
+         x  y  z
+         1m 2m 3m
+         4m 5m 6m
+      ]
+      m2:[
+         a   b
+         7m  8m
+         9m 10m
+        11m 12m
+      ]
+      <-$m1 dot $m2
+    }
+    bin:[
+        a   b
+       58m  64m
+      139m 154m
+    ]
+  }
+  TestDotLLS:{
+    skip:false
+    src:{
+      m1:[
+        S | x  y  z
+        #i  1  2  3
+        #j  4  5  6
+      ]
+      m2:[
+         a  b
+         7  8
+         9 10
+        11 12
+      ]
+      <-$m1 dot $m2
+    }
+    bin:[
+      S |  a   b
+      #i  58  64
+      #j 139 154
     ]
   }
 }
