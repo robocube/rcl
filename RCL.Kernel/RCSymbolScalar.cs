@@ -103,7 +103,22 @@ namespace RCL.Kernel
         if (str.Length > 0) {
           if (str[0] == '\'') {
             if (str[str.Length - 1] == '\'') {
-              key = str.Substring (1, str.Length - 2);
+              string keyString = str.Substring (1, str.Length - 2);
+              if (keyString[0] >= '0' && keyString[0] <= '9') {
+                bool makeNumber = true;
+                for (int i = 0; i < keyString.Length; ++i)
+                {
+                  makeNumber = keyString[i] >= '0' && keyString[i] <= '9';
+                  if (!makeNumber) break;
+                }
+                if (makeNumber) {
+                  key = (long) long.Parse (keyString);
+                }
+                else {
+                  key = keyString;
+                }
+              }
+              else key = keyString;
             }
             else {
               throw new Exception ("Invalid symbol part: " + str);

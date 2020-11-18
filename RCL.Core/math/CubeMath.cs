@@ -1817,14 +1817,67 @@ namespace RCL.Core
       runner.Yield (closure, result);
     }
 
-    protected void DoDot<T> (RCCube left, RCCube right)
-    {
-    }
-
     [RCVerb ("flip")]
     public void EvalFlip (RCRunner runner, RCClosure closure, RCCube right)
     {
-      throw new NotImplementedException ();
+      Type rightType;
+      if (!right.IsHomogenous (out rightType)) {
+        throw new Exception ("Right-hand cube is not homogenous");
+      }
+      // if (!right.IsUnique) {
+      //   throw new Exception ("Right-hand cube is not unique");
+      // }
+
+      RCCube result = new RCCube ("S");
+      RCArray<string> resultColNames = new RCArray<string> (right.Count);
+      if (right.Axis.Symbol != null) {
+        for (int rightRow = 0; rightRow < right.Count; ++rightRow)
+        {
+          RCSymbolScalar sym = right.Axis.Symbol[rightRow];
+          RCName name = RCName.GetName (sym.ToCsvString ());
+          resultColNames.Write (name.Text);
+        }
+      }
+      else {
+        for (int rightRow = 0; rightRow < right.Count; ++rightRow)
+        {
+          string resultColName = RCName.GetName (rightRow.ToString ()).Text;
+          resultColNames.Write (resultColName);
+          result.ReserveColumn (resultColName);
+        }
+      }
+
+      RCArray<RCSymbolScalar> resultSymbols = new RCArray<RCSymbolScalar> ((int) right.Cols);
+      for (int rightCol = 0; rightCol < right.Cols; ++rightCol)
+      {
+        string rawName;
+        string[] parts;
+        RCName name = RCName.GetName (right.NameAt (rightCol));
+        if (name.Escaped) {
+          rawName = RCName.RawName (name.Text);
+          parts = RCName.MultipartName (rawName, ',').ToArray ();
+          RCSymbolScalar sym = RCSymbolScalar.From (parts);
+          resultSymbols.Write (sym);
+        }
+        else {
+          resultSymbols.Write (new RCSymbolScalar (null, name.Text));
+        }
+      }
+
+      for (int rightCol = 0; rightCol < right.Cols; ++rightCol)
+      {
+        ColumnBase column = right.GetColumn (rightCol);
+        RCSymbolScalar sym = resultSymbols[rightCol];
+        for (int vrow = 0; vrow < column.Index.Count; ++vrow)
+        {
+          string resultColName = resultColNames[column.Index[vrow]];
+          object resultValue = column.BoxCell (vrow);
+          result.WriteCell (resultColName, sym, resultValue);
+        }
+        result.Axis.Write (sym);
+      }
+
+      runner.Yield (closure, result);
     }
 
     [RCVerb ("key")]
