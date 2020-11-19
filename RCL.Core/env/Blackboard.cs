@@ -163,6 +163,9 @@ namespace RCL.Core
       }
     }
 
+    /// <summary>
+    /// To be the general purpose row selector.
+    /// </summary>
     [RCVerb ("select")]
     public void EvalSelect (RCRunner runner, RCClosure closure, RCSymbol left, RCCube right)
     {
@@ -171,6 +174,12 @@ namespace RCL.Core
       ReadSpec spec = new ReadSpec (counter, left, args, 0, false, false, true, false);
       RCCube result = right.Read (spec, counter, true, right.Count);
       runner.Yield (closure, result);
+    }
+
+    [RCVerb ("remove")]
+    public void EvalRemove (RCRunner runner, RCClosure closure, RCCube right)
+    {
+      throw new NotImplementedException ();
     }
 
     public void Read (RCRunner runner, RCClosure closure, RCSymbol symbol, ReadSpec spec)

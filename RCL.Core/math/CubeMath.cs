@@ -1880,6 +1880,54 @@ namespace RCL.Core
       runner.Yield (closure, result);
     }
 
+    [RCVerb ("ident")]
+    public void EvalIdent (RCRunner runner, RCClosure closure, RCLong right)
+    {
+      long n = right[0];
+      RCArray<string> resultColNames = new RCArray<string> ((int) n);
+      for (long resultCol = 0; resultCol < n; ++resultCol)
+      {
+        resultColNames.Write (RCName.GetName (resultCol.ToString ()).Text);
+      }
+
+      RCCube result = new RCCube (new string[] {});
+      for (int row = 0; row < n; ++row)
+      {
+        for (int col = 0; col < n; ++col)
+        {
+          string resultColName = resultColNames[col];
+          long resultValue = row == col ? 1 : 0;
+          result.WriteCell (resultColName, resultValue);
+        }
+        result.Axis.Write ();
+      }
+      runner.Yield (closure, result);
+    }
+
+    [RCVerb ("ident")]
+    public void EvalIdent (RCRunner runner, RCClosure closure, RCDouble right)
+    {
+      long n = (long) right[0];
+      RCArray<string> resultColNames = new RCArray<string> ((int) n);
+      for (long resultCol = 0; resultCol < n; ++resultCol)
+      {
+        resultColNames.Write (RCName.GetName (resultCol.ToString ()).Text);
+      }
+
+      RCCube result = new RCCube (new string[] {});
+      for (int row = 0; row < n; ++row)
+      {
+        for (int col = 0; col < n; ++col)
+        {
+          string resultColName = resultColNames[col];
+          double resultValue = row == col ? 1.0 : 0.0;
+          result.WriteCell (resultColName, resultValue);
+        }
+        result.Axis.Write ();
+      }
+      runner.Yield (closure, result);
+    }
+
     [RCVerb ("key")]
     public void EvalKey (RCRunner runner, RCClosure closure, RCSymbol key, RCCube cube)
     {
@@ -3050,7 +3098,12 @@ namespace RCL.Core
     [RCVerb ("rename")]
     public void RenameOp (RCRunner runner, RCClosure closure, RCString left, RCCube right)
     {
-      RCCube result = new RCCube (right.Axis, left.Data, right.Columns);
+      RCArray<string> resultNames = new RCArray<string> (left.Count);
+      for (int i = 0; i < left.Count; ++i)
+      {
+        resultNames.Write (RCName.GetName (left[i]).Text);
+      }
+      RCCube result = new RCCube (right.Axis, resultNames, right.Columns);
       runner.Yield (closure, result);
     }
 
@@ -3076,6 +3129,36 @@ namespace RCL.Core
       runner.Yield (closure, new RCBoolean (result));
     }
 
+    [RCVerb ("at")]
+    public void EvalAt (RCRunner runner, RCClosure closure, RCCube left, RCSymbol right)
+    {
+      // TODO change to operate on rows
+      EvalFrom (runner, closure, right, left);
+    }
+
+    [RCVerb ("at")]
+    public void EvalAt (RCRunner runner, RCClosure closure, RCCube left, RCString right)
+    {
+      // TODO change to take a symbol and do the same thing as select
+      // Also make this method take a long instead of a string
+      EvalFrom (runner, closure, right, left);
+    }
+
+    [RCVerb ("exat")]
+    public void EvalExat (RCRunner runner, RCClosure closure, RCCube left, RCSymbol right)
+    {
+      // TODO change to operate on rows
+      throw new NotImplementedException ();
+    }
+
+    [RCVerb ("exat")]
+    public void EvalExat (RCRunner runner, RCClosure closure, RCCube left, RCLong right)
+    {
+      // TODO change to take a symbol and do the same thing as select
+      // Also make this method take a long instead of a string
+      throw new NotImplementedException ();
+    }
+
     [RCVerb ("from")]
     public void EvalFrom (RCRunner runner, RCClosure closure, RCSymbol left, RCCube right)
     {
@@ -3085,7 +3168,7 @@ namespace RCL.Core
         string name = (string) left[i].Part (0);
         if (right.Has (name)) {
           ColumnBase column = right.GetColumn (name);
-          result.Names.Write (name);
+          result.Names.Write (RCName.GetName (name).Text);
           result.Columns.Write (column);
         }
       }
@@ -3101,9 +3184,27 @@ namespace RCL.Core
         string name = left[i];
         if (right.Has (name)) {
           ColumnBase column = right.GetColumn (name);
-          result.Names.Write (name);
+          result.Names.Write (RCName.GetName (name).Text);
           result.Columns.Write (column);
         }
+      }
+      runner.Yield (closure, result);
+    }
+
+    [RCVerb ("from")]
+    public void EvalFrom (RCRunner runner, RCClosure closure, RCLong left, RCCube right)
+    {
+      RCCube result = new RCCube (right.Axis);
+      for (int i = 0; i < left.Count; ++i)
+      {
+        long index = left[i];
+        if (index < 0 || index > right.Cols - 1) {
+          throw new RCException (closure, RCErrors.Range, "Column index out of range");
+        }
+        ColumnBase column = right.GetColumn ((int) index);
+        string name = right.NameAt ((int) index);
+        result.Names.Write (RCName.GetName (name).Text);
+        result.Columns.Write (column);
       }
       runner.Yield (closure, result);
     }
@@ -3111,20 +3212,25 @@ namespace RCL.Core
     [RCVerb ("except")]
     public void EvalExcept (RCRunner runner, RCClosure closure, RCCube left, RCString right)
     {
+      RCArray<string> exceptNames = new RCArray<string> (right.Count);
+      for (int i = 0; i < right.Count; ++i)
+      {
+        exceptNames.Write (RCName.GetName (right[i]).Text);
+      }
       RCArray<long> g = null;
       RCArray<long> e = null;
       RCArray<RCTimeScalar> t = null;
       RCArray<RCSymbolScalar> s = null;
-      if (!right.Data.Contains ("G")) {
+      if (!exceptNames.Contains ("G")) {
         g = left.Axis.Global;
       }
-      if (!right.Data.Contains ("E")) {
+      if (!exceptNames.Contains ("E")) {
         e = left.Axis.Event;
       }
-      if (!right.Data.Contains ("T")) {
+      if (!exceptNames.Contains ("T")) {
         t = left.Axis.Time;
       }
-      if (!right.Data.Contains ("S")) {
+      if (!exceptNames.Contains ("S")) {
         s = left.Axis.Symbol;
       }
       Timeline axis = new Timeline (g, e, t, s);
@@ -3133,25 +3239,13 @@ namespace RCL.Core
       for (int i = 0; i < left.Names.Count; ++i)
       {
         string name = left.Names[i];
-        if (!right.Data.Contains (name)) {
+        if (!exceptNames.Contains (name)) {
           ColumnBase column = left.GetColumn (name);
-          result.Names.Write (name);
+          result.Names.Write (RCName.GetName (name).Text);
           result.Columns.Write (column);
         }
       }
       runner.Yield (closure, result);
-    }
-
-    [RCVerb ("at")]
-    public void EvalAt (RCRunner runner, RCClosure closure, RCCube left, RCSymbol right)
-    {
-      EvalFrom (runner, closure, right, left);
-    }
-
-    [RCVerb ("at")]
-    public void EvalAt (RCRunner runner, RCClosure closure, RCCube left, RCString right)
-    {
-      EvalFrom (runner, closure, right, left);
     }
 
     [RCVerb ("empty")]

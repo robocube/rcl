@@ -89,6 +89,11 @@ namespace RCL.Kernel
       }
       Axis = timeline;
       _names = names;
+      //_names = new RCArray<string> (names.Count);
+      //for (int i = 0; i < _names.Count; ++i)
+      //{
+      //  _names.Write (RCName.GetName (names[i]).Text);
+      //}
       _columns = columns;
     }
 
@@ -866,6 +871,7 @@ namespace RCL.Kernel
 
     public char GetTypeCode (string name)
     {
+      name = RCName.GetName (name).Text;
       int column = _names.IndexOf (name);
       if (_columns.Count < 0) {
         if (name == "G") {
@@ -884,7 +890,7 @@ namespace RCL.Kernel
           throw new Exception ("Unknown column \"" + name + "\"");
         }
       }
-      if (column >= _columns.Count) {
+      if (column < 0 || column >= _columns.Count) {
         throw new Exception (string.Format ("Column with name {0} not found in cube.", name));
       }
       else {
@@ -899,11 +905,13 @@ namespace RCL.Kernel
 
     public int FindColumn (string name)
     {
+      name = RCName.GetName (name).Text;
       return _names.IndexOf (name);
     }
 
     public bool Has (string name)
     {
+      name = RCName.GetName (name).Text;
       if (Axis.Has (name)) {
         return true;
       }
@@ -1101,6 +1109,7 @@ namespace RCL.Kernel
 
     public void UnreserveColumn (string name)
     {
+      name = RCName.GetName (name).Text;
       int index = _names.IndexOf (name);
       if (_names.IndexOf (name) < 0) {
         throw new Exception (string.Format ("Unknown column name: {0}", name));
@@ -1112,6 +1121,7 @@ namespace RCL.Kernel
     // for a column whose first row is null.
     public void ReserveColumn (string name, bool canonical)
     {
+      name = RCName.GetName (name).Text;
       if (_names.IndexOf (name) < 0) {
         _names.Write (name);
         if (canonical) {
@@ -1172,6 +1182,7 @@ namespace RCL.Kernel
       }
       ColumnBase old = null;
       delete = false;
+      name = RCName.GetName (name).Text;
       int col = _names.IndexOf (name);
       if (col > -1) {
         old = _columns[col];
@@ -1294,6 +1305,7 @@ namespace RCL.Kernel
         else {
           _columns.Write (column);
           _names.Write (name);
+
           // the Name would have been populated by ReserveColumn in this case.
           // _names.Write (index, name);
         }
