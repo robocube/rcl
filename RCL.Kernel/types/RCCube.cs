@@ -70,7 +70,7 @@ namespace RCL.Kernel
                                                   oldcol.Index,
                                                   oldcol.Array);
         _columns.Write (newcol);
-        _names.Write (cube.NameAt (i));
+        _names.Write (RCName.GetName (cube.NameAt (i)).Text);
       }
     }
 
@@ -88,12 +88,12 @@ namespace RCL.Kernel
         throw new ArgumentNullException ("columns");
       }
       Axis = timeline;
-      _names = names;
-      //_names = new RCArray<string> (names.Count);
-      //for (int i = 0; i < _names.Count; ++i)
-      //{
-      //  _names.Write (RCName.GetName (names[i]).Text);
-      //}
+      //_names = names;
+      _names = new RCArray<string> (names.Count);
+      for (int i = 0; i < names.Count; ++i)
+      {
+        _names.Write (RCName.GetName (names[i]).Text);
+      }
       _columns = columns;
     }
 
@@ -958,6 +958,21 @@ namespace RCL.Kernel
       get { return _names; }
     }
 
+    public HashSet<string> GetColNames ()
+    {
+      return new HashSet<string> (_names);
+    }
+
+    public void WriteName (int index, string name)
+    {
+      _names.Write (index, RCName.GetName (name).Text);
+    }
+
+    public void WriteName (string name)
+    {
+      _names.Write (RCName.GetName (name).Text);
+    }
+
     public RCArray<ColumnBase> Columns
     {
       get { return _columns; }
@@ -1305,9 +1320,6 @@ namespace RCL.Kernel
         else {
           _columns.Write (column);
           _names.Write (name);
-
-          // the Name would have been populated by ReserveColumn in this case.
-          // _names.Write (index, name);
         }
         return column.Write (symbol, index >= 0 ? index : Axis.Count, box, force) ? symbol : null;
       }

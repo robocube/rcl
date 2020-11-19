@@ -2182,8 +2182,11 @@ namespace RCL.Core
     [RCVerb ("join")]
     public void EvalJoin (RCRunner runner, RCClosure closure, RCCube left, RCCube right)
     {
-      HashSet<string> leftCols = new HashSet<string> (left.Names);
-      HashSet<string> rightCols = new HashSet<string> (right.Names);
+      //HashSet<string> leftCols = new HashSet<string> (left.Names);
+      //HashSet<string> rightCols = new HashSet<string> (right.Names);
+
+      HashSet<string> leftCols = left.GetColNames ();
+      HashSet<string> rightCols = right.GetColNames ();
       HashSet<string> joinCols = new HashSet<string> (leftCols);
       joinCols.IntersectWith (rightCols);
       string[] joinColsArray = new string[joinCols.Count];
@@ -2506,7 +2509,7 @@ namespace RCL.Core
       if (left == null) {
         if (colname != null && right.Cols > 0) {
           right = new RCCube (right);
-          right.Names.Write (0, colname);
+          right.WriteName (0, colname);
         }
         return right;
       }
