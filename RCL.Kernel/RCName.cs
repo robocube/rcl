@@ -97,8 +97,11 @@ namespace RCL.Kernel
             }
             // Remove quotes if not necessary
             // They are necessary when the name begins with a number
-            if (text.Length > 1 && text[1] >= '0' && text[1] <= '9')
-            {
+            if (text.Length > 1 && text[1] >= '0' && text[1] <= '9') {
+              name = text;
+              escaped = true;
+            }
+            else if (text.Length == 3 && RCTokenType.IsMagicSingleLetter (text[1])) {
               name = text;
               escaped = true;
             }
@@ -120,6 +123,10 @@ namespace RCL.Kernel
           {
             name = "'" + text + "'";
             escaped = true;
+          }
+          else if (text.Length == 1 && RCTokenType.IsMagicSingleLetter (text[0])) {
+            name = text;
+            escaped = false;
           }
           else
           {

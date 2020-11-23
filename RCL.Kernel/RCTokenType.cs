@@ -205,6 +205,21 @@ namespace RCL.Kernel
       }
     }
 
+    public static bool IsMagicSingleLetter (char character)
+    {
+      if (character == 'G' ||
+          character == 'E' ||
+          character == 'T' ||
+          character == 'S' ||
+          character == 'R' ||
+          character == 'L') {
+        return true;
+      }
+      else {
+        return false;
+      }
+    }
+
     public static int LengthOfDelimitedName (string text, int start, char delimiter)
     {
       // Check for one of the special ops like + - * etc...

@@ -2494,6 +2494,45 @@ namespace RCL.Core
       runner.Yield (closure, result);
     }
 
+    [RCVerb ("except")]
+    public void EvalExcept (RCRunner runner, RCClosure closure, RCCube left, RCString right)
+    {
+      RCArray<string> exceptNames = new RCArray<string> (right.Count);
+      for (int i = 0; i < right.Count; ++i)
+      {
+        exceptNames.Write (RCName.GetName (right[i]).Text);
+      }
+      RCArray<long> g = null;
+      RCArray<long> e = null;
+      RCArray<RCTimeScalar> t = null;
+      RCArray<RCSymbolScalar> s = null;
+      if (!exceptNames.Contains ("G")) {
+        g = left.Axis.Global;
+      }
+      if (!exceptNames.Contains ("E")) {
+        e = left.Axis.Event;
+      }
+      if (!exceptNames.Contains ("T")) {
+        t = left.Axis.Time;
+      }
+      if (!exceptNames.Contains ("S")) {
+        s = left.Axis.Symbol;
+      }
+      Timeline axis = new Timeline (g, e, t, s);
+      axis.Count = left.Count;
+      RCCube result = new RCCube (axis);
+      for (int i = 0; i < left.Names.Count; ++i)
+      {
+        string name = left.Names[i];
+        if (!exceptNames.Contains (name)) {
+          ColumnBase column = left.GetColumn (name);
+          result.Names.Write (RCName.GetName (name).Text);
+          result.Columns.Write (column);
+        }
+      }
+      runner.Yield (closure, result);
+    }
+
     ///insert    - result will contain symbols from right that were missing from left
     ///dedup     - only one row per symbol
     ///force     - create new symbol row
@@ -3187,6 +3226,9 @@ namespace RCL.Core
         string name = left[i];
         if (right.Has (name)) {
           ColumnBase column = right.GetColumn (name);
+          if (name.Length == 1 && RCTokenType.IsMagicSingleLetter (name[0])) {
+            name = "'" + name + "'";
+          }
           result.Names.Write (RCName.GetName (name).Text);
           result.Columns.Write (column);
         }
@@ -3201,52 +3243,16 @@ namespace RCL.Core
       for (int i = 0; i < left.Count; ++i)
       {
         long index = left[i];
+        if (index < 0) {
+          index = right.Cols + index;
+        }
         if (index < 0 || index > right.Cols - 1) {
-          throw new RCException (closure, RCErrors.Range, "Column index out of range");
+          throw new RCException (closure, RCErrors.Range, string.Format ("Column index out of range: {0}", index));
         }
         ColumnBase column = right.GetColumn ((int) index);
         string name = right.NameAt ((int) index);
         result.Names.Write (RCName.GetName (name).Text);
         result.Columns.Write (column);
-      }
-      runner.Yield (closure, result);
-    }
-
-    [RCVerb ("except")]
-    public void EvalExcept (RCRunner runner, RCClosure closure, RCCube left, RCString right)
-    {
-      RCArray<string> exceptNames = new RCArray<string> (right.Count);
-      for (int i = 0; i < right.Count; ++i)
-      {
-        exceptNames.Write (RCName.GetName (right[i]).Text);
-      }
-      RCArray<long> g = null;
-      RCArray<long> e = null;
-      RCArray<RCTimeScalar> t = null;
-      RCArray<RCSymbolScalar> s = null;
-      if (!exceptNames.Contains ("G")) {
-        g = left.Axis.Global;
-      }
-      if (!exceptNames.Contains ("E")) {
-        e = left.Axis.Event;
-      }
-      if (!exceptNames.Contains ("T")) {
-        t = left.Axis.Time;
-      }
-      if (!exceptNames.Contains ("S")) {
-        s = left.Axis.Symbol;
-      }
-      Timeline axis = new Timeline (g, e, t, s);
-      axis.Count = left.Count;
-      RCCube result = new RCCube (axis);
-      for (int i = 0; i < left.Names.Count; ++i)
-      {
-        string name = left.Names[i];
-        if (!exceptNames.Contains (name)) {
-          ColumnBase column = left.GetColumn (name);
-          result.Names.Write (RCName.GetName (name).Text);
-          result.Columns.Write (column);
-        }
       }
       runner.Yield (closure, result);
     }

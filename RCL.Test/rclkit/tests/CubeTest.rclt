@@ -6054,36 +6054,48 @@
     bin:[]
   }
   TestFromTimelineG:{
-    skip:true
-    src:#G from [
+    skip:false
+    src:"G" from [
        G| E|       T|S | x
        1  2 08:00:00 #a  3
     ]
-    bin:1
+    bin:[
+       G| E|       T|S |'G'
+       1  2 08:00:00 #a   1
+    ]
   }
   TestFromTimelineE:{
-    skip:true
-    src:#E from [
+    skip:false
+    src:"E" from [
        G| E|       T|S | x
        1  2 08:00:00 #a  3
     ]
-    bin:2
+    bin:[
+       G| E|       T|S |'E'
+       1  2 08:00:00 #a   2
+    ]
   }
   TestFromTimelineT:{
-    skip:true
-    src:#T from [
+    skip:false
+    src:"T" from [
        G| E|       T|S | x
        1  2 08:00:00 #a  3
     ]
-    bin:08:00:00
+    bin:[
+       G| E|       T|S |     'T'
+       1  2 08:00:00 #a 08:00:00
+    ]
   }
   TestFromTimelineS:{
-    skip:true
-    src:#S from [
+    skip:false
+    src:"S" from [
        G| E|       T|S | x
        1  2 08:00:00 #a  3
     ]
-    bin:#a
+    bin:[
+       G| E|       T|S | 'S'
+       1  2 08:00:00 #a   #a
+    ]
   }
   TestFromNumericColNames:{
     src:"3" "7" from ident 10
@@ -8722,6 +8734,21 @@
     bin:[
        G|S | x
        0 #a  0
+    ]
+  }
+  TestRetl6:{
+    skip:false
+    src:retl [
+             'T' 'S'  x
+      2020.11.01 #a   1
+      2020.11.02 #b   2
+      2020.11.03 #c   3
+    ]
+    bin:[
+               T|S | x
+      2020.11.01 #a  1
+      2020.11.02 #b  2
+      2020.11.03 #c  3
     ]
   }
   TestSortWithNoTimelineButBigger:{

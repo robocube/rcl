@@ -764,7 +764,24 @@ namespace RCL.Kernel
     {
       int column = _names.IndexOf (RCName.Get (name));
       if (column < 0) {
-        return null;
+        RCArray<int> index = new RCArray<int> (Count);
+        for (int i = 0; i < Count; ++i)
+        {
+          index.Write (i);
+        }
+        if (name == "G") {
+          return new ColumnOfLong (Axis, index, Axis.Global);
+        }
+        else if (name == "E") {
+          return new ColumnOfLong (Axis, index, Axis.Event);
+        }
+        else if (name == "T") {
+          return new ColumnOfTime (Axis, index, Axis.Time);
+        }
+        else if (name == "S") {
+          return new ColumnOfSymbol (Axis, index, Axis.Symbol);
+        }
+        else return null;
       }
       return _columns[column];
     }
@@ -777,6 +794,7 @@ namespace RCL.Kernel
 
     public ColumnBase GetColumn (int index)
     {
+      // Note the index passed must be positive
       if (index < 0 || index >= _columns.Count) {
         return null;
       }
@@ -1019,28 +1037,28 @@ namespace RCL.Kernel
       RCArray<RCSymbolScalar> S = cols.Contains ("S") ? Axis.Symbol : null;
       for (int i = 0; i < _columns.Count; ++i)
       {
-        if (_names[i] == "G" && cols.Contains ("G")) {
-          G = (RCArray<long>)_columns[i].Array;
+        if ((_names[i] == "G" || _names[i] == "'G'") && cols.Contains ("G")) {
+          G = (RCArray<long>) _columns[i].Array;
         }
-        else if (_names[i] == "E" && cols.Contains ("E")) {
-          E = (RCArray<long>)_columns[i].Array;
+        else if ((_names[i] == "E" || _names[i] == "'E'") && cols.Contains ("E")) {
+          E = (RCArray<long>) _columns[i].Array;
         }
-        else if (_names[i] == "T" && cols.Contains ("T")) {
-          T = (RCArray<RCTimeScalar>)_columns[i].Array;
+        else if ((_names[i] == "T" || _names[i] == "'T'")  && cols.Contains ("T")) {
+          T = (RCArray<RCTimeScalar>) _columns[i].Array;
         }
-        else if (_names[i] == "S" && cols.Contains ("S")) {
-          S = (RCArray<RCSymbolScalar>)_columns[i].Array;
+        else if ((_names[i] == "S" || _names[i] == "'S'") && cols.Contains ("S")) {
+          S = (RCArray<RCSymbolScalar>) _columns[i].Array;
+        }
+        else {
+          names.Write (_names[i]);
         }
       }
       Timeline axis = new Timeline (G, E, T, S);
-      for (int i = 0; i < _columns.Count; ++i)
+      for (int i = 0; i < names.Count; ++i)
       {
-        if (!tlcols.Contains (_names[i])) {
-          ColumnBase oldcol = _columns[i];
-          ColumnBase newcol = ColumnBase.FromArray (axis, oldcol.Index, oldcol.Array);
-          columns.Write (newcol);
-          names.Write (_names[i]);
-        }
+        ColumnBase oldcol = GetColumn (names[i]);
+        ColumnBase newcol = ColumnBase.FromArray (axis, oldcol.Index, oldcol.Array);
+        columns.Write (newcol);
       }
       return new RCCube (axis, names, columns);
     }
