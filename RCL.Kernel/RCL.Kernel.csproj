@@ -1,4 +1,4 @@
-﻿<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -204,6 +204,7 @@
     <Compile Include="parser\MarkdownParser.cs" />
     <Compile Include="cube\Deltafier.cs" />
     <Compile Include="types\RCUserOperator.cs" />
+    <Compile Include="cube\TCubeProto.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

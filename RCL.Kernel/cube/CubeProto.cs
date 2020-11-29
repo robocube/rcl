@@ -13,26 +13,23 @@ namespace RCL.Kernel
   {
     public static CubeProto Create (Timeline axis)
     {
-      if (axis.Symbol != null)
-      {
-        if (axis.Time != null)
-        {
-          if (axis.Event != null)
-          {
+      if (axis.Symbol != null) {
+        if (axis.Time != null) {
+          if (axis.Event != null) {
             return new ETSCubeProto (axis);
           }
-          else
-          {
+          else {
             return new TSCubeProto (axis);
           }
         }
-        else
-        {
+        else {
           return new SCubeProto (axis);
         }
       }
-      else
-      {
+      else if (axis.Time != null) {
+        return new TCubeProto (axis);
+      }
+      else {
         return new RectCubeProto (axis);
       }
     }

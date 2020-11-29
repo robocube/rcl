@@ -197,7 +197,6 @@ namespace RCL.Kernel
       return actual;
     }
 
-
     public RCBlock GetName (long index)
     {
       RCBlock current = this;

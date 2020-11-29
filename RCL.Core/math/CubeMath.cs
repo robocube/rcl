@@ -3040,7 +3040,7 @@ namespace RCL.Core
       for (int i = 0; i < data.Count; ++i)
       {
         RCBlock block = data.GetName (i);
-        if (block.Name == "G") {
+        if (block.Name == "G" || block.Name == "'G'") {
           if (block.Value is RCLong) {
             G = ((RCLong) block.Value).Data;
           }
@@ -3050,7 +3050,7 @@ namespace RCL.Core
           isAllCubes = false;
           count = G.Count;
         }
-        else if (block.Name == "E") {
+        else if (block.Name == "E" || block.Name == "'E'") {
           if (block.Value is RCLong) {
             E = ((RCLong) block.Value).Data;
           }
@@ -3060,7 +3060,7 @@ namespace RCL.Core
           isAllCubes = false;
           count = E.Count;
         }
-        else if (block.Name == "T") {
+        else if (block.Name == "T" || block.Name == "'T'") {
           if (block.Value is RCTime) {
             T = ((RCTime) block.Value).Data;
           }
@@ -3070,7 +3070,7 @@ namespace RCL.Core
           isAllCubes = false;
           count = T.Count;
         }
-        else if (block.Name == "S") {
+        else if (block.Name == "S" || block.Name == "'S'") {
           if (block.Value is RCSymbol) {
             S = ((RCSymbol) block.Value).Data;
           }

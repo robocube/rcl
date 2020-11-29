@@ -1501,6 +1501,10 @@ LOOP:
               time = timeline.Time[symbolIndex];
             }
           }
+          else if (timeline.Time != null) {
+            time = timeline.Time[destTlRow];
+            symbol = null;
+          }
           else {
             symbol = null;
           }
