@@ -3067,6 +3067,9 @@ namespace RCL.Core
           else if (block.Value is RCCube) {
             T = ((RCTime) ((RCCube) block.Value).GetSimpleVector (0)).Data;
           }
+          if (T == null) {
+            throw new Exception ("T must be a time column.");
+          }
           isAllCubes = false;
           count = T.Count;
         }
@@ -3076,6 +3079,9 @@ namespace RCL.Core
           }
           else if (block.Value is RCCube) {
             S = ((RCSymbol) ((RCCube) block.Value).GetSimpleVector (0)).Data;
+          }
+          if (S == null) {
+            throw new Exception ("S must be a time column.");
           }
           isAllCubes = false;
           count = S.Count;
@@ -3171,11 +3177,103 @@ namespace RCL.Core
       runner.Yield (closure, new RCBoolean (result));
     }
 
+    /// <summary>
+    /// Random access cube rows. Negative rows supported.
+    /// </summary>
+    [RCVerb ("at")]
+    public void EvalAt (RCRunner runner, RCClosure closure, RCCube left, RCLong right)
+    {
+      // Random access for cube rows.
+      RCCube result = new RCCube (left.Axis.Match ());
+      for (int resultCol = 0; resultCol < left.Cols; ++resultCol)
+      {
+        result.ReserveColumn (left.NameAt (resultCol));
+      }
+      for (int resultRow = 0; resultRow < right.Count; ++resultRow)
+      {
+        int sourceRow = (int) right[resultRow];
+        if (sourceRow < 0) {
+          sourceRow = left.Count + sourceRow;
+        }
+        RCSymbolScalar resultSym = left.SymbolAt (sourceRow);
+        for (int resultCol = 0; resultCol < left.Cols; ++resultCol)
+        {
+          bool found;
+          ColumnBase column = left.GetColumn (resultCol);
+          string resultColName = left.NameAt (resultCol);
+          int vrow = column.Index.BinarySearch (sourceRow, out found);
+          if (found) {
+            object box = column.BoxCell (vrow);
+            result.WriteCell (resultColName, resultSym, box);
+          }
+        }
+        result.Axis.Write (left.Axis, sourceRow);
+      }
+      runner.Yield (closure, result);
+    }
+
+    /// <summary>
+    /// Random access cube rows by Symbol axis.
+    /// </summary>
     [RCVerb ("at")]
     public void EvalAt (RCRunner runner, RCClosure closure, RCCube left, RCSymbol right)
     {
-      // TODO change to operate on rows
-      EvalFrom (runner, closure, right, left);
+      // Random access for cube rows.
+      if (!left.Has ("S")) {
+        throw new Exception ("The cube on the left must have column S");
+      }
+      RCCube result = new RCCube (left.Axis.Match ());
+      for (int resultCol = 0; resultCol < left.Cols; ++resultCol)
+      {
+        result.ReserveColumn (left.NameAt (resultCol));
+      }
+      for (int symbolRow = 0; symbolRow < right.Count; ++symbolRow)
+      {
+        RCSymbolScalar resultSym = right[symbolRow];
+        int sourceRow = -1;
+        if (resultSym.HasWildcard) {
+          for (int axisRow = 0; axisRow < left.Count; ++axisRow)
+          {
+            if (left.Axis.Symbol[axisRow].IsConcreteOf (resultSym)) {
+              sourceRow = axisRow;
+              for (int resultCol = 0; resultCol < left.Cols; ++resultCol)
+              {
+                bool found;
+                ColumnBase column = left.GetColumn (resultCol);
+                string resultColName = left.NameAt (resultCol);
+                int vrow = column.Index.BinarySearch (sourceRow, out found);
+                if (found) {
+                  object box = column.BoxCell (vrow);
+                  result.WriteCell (resultColName, resultSym, box);
+                }
+              }
+              result.Axis.Write (left.Axis, sourceRow);
+            }
+          }
+          if (sourceRow < 0) {
+            throw new Exception ("No rows in cube matching symbol: " + resultSym.ToString ());
+          }
+        }
+        else {
+          sourceRow = left.Axis.Symbol.IndexOf (resultSym);
+          if (sourceRow < 0) {
+            throw new Exception ("No rows in cube matching symbol: " + resultSym.ToString ());
+          }
+          for (int resultCol = 0; resultCol < left.Cols; ++resultCol)
+          {
+            bool found;
+            ColumnBase column = left.GetColumn (resultCol);
+            string resultColName = left.NameAt (resultCol);
+            int vrow = column.Index.BinarySearch (sourceRow, out found);
+            if (found) {
+              object box = column.BoxCell (vrow);
+              result.WriteCell (resultColName, resultSym, box);
+            }
+          }
+          result.Axis.Write (left.Axis, sourceRow);
+        }
+      }
+      runner.Yield (closure, result);
     }
 
     [RCVerb ("at")]

@@ -20,7 +20,8 @@ namespace RCL.Kernel
     public readonly object Key;
     public readonly long Length;
     protected readonly string _string;
-    protected readonly bool _leadingStar = false;
+    //protected readonly bool _leadingStar = false;
+    protected readonly bool _hasWildcard = false;
 
     protected RCSymbolScalar ()
     {
@@ -142,9 +143,16 @@ namespace RCL.Kernel
         _string = previous.ToString () + "," +
                    Type.IdShorthand (Key) + Type.Suffix;
       }
-      if (Previous.Key.Equals ("*")) {
-        _leadingStar = true;
+      if (Previous.HasWildcard ||
+          Key.Equals ("*") ||
+          Key.Equals ("'*'")) {
+        _hasWildcard = true;
       }
+    }
+
+    public bool HasWildcard
+    {
+      get { return _hasWildcard; }
     }
 
     public object[] ToArray ()

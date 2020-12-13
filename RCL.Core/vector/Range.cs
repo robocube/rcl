@@ -57,13 +57,21 @@ namespace RCL.Core
     public static RCVector<L> DoRange<L> (RCVector<long> left, RCVector<L> right)
     {
       if (left.Count == 0) {
-        return (RCVector<L>)RCVectorBase.FromArray (new RCArray<L> ());
+        return (RCVector<L>) RCVectorBase.FromArray (new RCArray<L> ());
       }
       else if (left.Count == 1) {
         RCArray<L> result = new RCArray<L> ();
-        for (int i = (int) left[0]; i < right.Count; ++i)
-        {
-          result.Write (right[i]);
+        if (left[0] < 0) {
+          for (int i = right.Count + (int) left[0]; i < right.Count; ++i)
+          {
+            result.Write (right[i]);
+          }
+        }
+        else {
+          for (int i = (int) left[0]; i < right.Count; ++i)
+          {
+            result.Write (right[i]);
+          }
         }
         return (RCVector<L>)RCVectorBase.FromArray (new RCArray<L> (result));
       }
@@ -74,6 +82,12 @@ namespace RCL.Core
         {
           int i = (int) left[2 * pair];
           int j = (int) left[2 * pair + 1];
+          if (i < 0) {
+            i = right.Count + i;
+          }
+          if (j < 0) {
+            j = right.Count + j;
+          }
           while (i <= j)
           {
             result.Write (right[i]);

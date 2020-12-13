@@ -2798,6 +2798,26 @@
     src:0 1 2 5 range 00:01:00 00:02:00 00:03:00 00:04:00 00:05:00 00:06:00
     bin:00:01:00 00:02:00 00:03:00 00:04:00 00:05:00 00:06:00
   }
+  TestRangeNeg1:{
+    skip:false
+    src:-5 range 1 2 3 4 5
+    bin:1 2 3 4 5
+  }
+  TestRangeNeg2:{
+    skip:false
+    src:-3 range 1 2 3 4 5
+    bin:3 4 5
+  }
+  TestRangeNeg3:{
+    skip:false
+    src:-3 -1 range 1 2 3 4 5
+    bin:3 4 5
+  }
+  TestRangeNeg4:{
+    skip:false
+    src:-3 -2 range 1 2 3 4 5
+    bin:3 4
+  }
   TestDelimit:{
     skip:false
     src:"," delimit "x" "y" "z"
