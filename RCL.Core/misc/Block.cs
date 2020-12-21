@@ -91,14 +91,14 @@ namespace RCL.Core
         for (int i = 0; i < right.Count; ++i)
         {
           RCBlock name = right.GetName (i);
-          result = new RCBlock (result, left[0], name.Evaluator, name.Value);
+          result = new RCBlock (result, RCName.GetName (left[0], escapeMSL:true).Text, name.Evaluator, name.Value);
         }
       }
       else {
         for (int i = 0; i < left.Count; ++i)
         {
           RCBlock name = right.GetName (i);
-          result = new RCBlock (result, left[i], name.Evaluator, name.Value);
+          result = new RCBlock (result, RCName.GetName (left[i], escapeMSL:true).Text, name.Evaluator, name.Value);
         }
       }
       runner.Yield (closure, result);

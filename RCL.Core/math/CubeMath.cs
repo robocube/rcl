@@ -412,11 +412,18 @@ namespace RCL.Core
       {
         RCArray<int> index = right.GetIndex<R> (col);
         RCArray<R> data = right.GetData<R> (col);
+        L leftVal;
+        if (left.Count > 1) {
+          leftVal = left[col];
+        }
+        else {
+          leftVal = left[0];
+        }
         if (index != null) {
           for (int vrow = 0; vrow < data.Count; ++vrow)
           {
             RCSymbolScalar sym = right.SymbolAt (index[vrow]);
-            O val = op (left[0], data[vrow]);
+            O val = op (leftVal, data[vrow]);
             result.WriteCell (right.NameAt (col), sym, val, index[vrow], false, false);
           }
         }
@@ -439,11 +446,18 @@ namespace RCL.Core
       {
         RCArray<int> index = left.GetIndex<L> (col);
         RCArray<L> data = left.GetData<L> (col);
+        R rightVal;
+        if (right.Count > 1) {
+          rightVal = right[col];
+        }
+        else {
+          rightVal = right[0];
+        }
         if (index != null) {
           for (int vrow = 0; vrow < data.Count; ++vrow)
           {
             RCSymbolScalar sym = left.SymbolAt (index[vrow]);
-            O val = op (data[vrow], right[0]);
+            O val = op (data[vrow], rightVal);
             result.WriteCell (left.NameAt (col), sym, val, index[vrow], false, false);
           }
         }
@@ -3040,7 +3054,7 @@ namespace RCL.Core
       for (int i = 0; i < data.Count; ++i)
       {
         RCBlock block = data.GetName (i);
-        if (block.Name == "G" || block.Name == "'G'") {
+        if (block.Name == "G") {
           if (block.Value is RCLong) {
             G = ((RCLong) block.Value).Data;
           }
@@ -3050,7 +3064,7 @@ namespace RCL.Core
           isAllCubes = false;
           count = G.Count;
         }
-        else if (block.Name == "E" || block.Name == "'E'") {
+        else if (block.Name == "E") {
           if (block.Value is RCLong) {
             E = ((RCLong) block.Value).Data;
           }
@@ -3060,7 +3074,7 @@ namespace RCL.Core
           isAllCubes = false;
           count = E.Count;
         }
-        else if (block.Name == "T" || block.Name == "'T'") {
+        else if (block.Name == "T") {
           if (block.Value is RCTime) {
             T = ((RCTime) block.Value).Data;
           }
@@ -3073,7 +3087,7 @@ namespace RCL.Core
           isAllCubes = false;
           count = T.Count;
         }
-        else if (block.Name == "S" || block.Name == "'S'") {
+        else if (block.Name == "S") {
           if (block.Value is RCSymbol) {
             S = ((RCSymbol) block.Value).Data;
           }
@@ -3127,7 +3141,10 @@ namespace RCL.Core
           vector = vectors[i] as RCVectorBase;
           if (vector != null) {
             if (name == "") {
-              throw new Exception ("vector values must have names assigned");
+              throw new Exception ("Vector values must have names assigned.");
+            }
+            if (result != null && result.Has (name)) {
+              throw new Exception (string.Format ("A column named '{0}' has already been defined.", name));
             }
             result = Bang (result, vector, name, true, true);
             continue;

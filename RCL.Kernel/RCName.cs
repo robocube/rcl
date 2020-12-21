@@ -21,6 +21,31 @@ namespace RCL.Kernel
       RCName falseLiteral = new RCName ("'false'", 2, true);
       _names.Add ("false", falseLiteral);
       _index.Write (falseLiteral);
+      //Timeline literal names
+      RCName GLiteral = new RCName ("'G'", 3, true, isMSL:true);
+      _names.Add ("'G'", GLiteral);
+      _index.Write (GLiteral);
+      RCName ELiteral = new RCName ("'E'", 4, true, isMSL:true);
+      _names.Add ("'E'", ELiteral);
+      _index.Write (ELiteral);
+      RCName TLiteral = new RCName ("'T'", 5, true, isMSL:true);
+      _names.Add ("'T'", TLiteral);
+      _index.Write (TLiteral);
+      RCName SLiteral = new RCName ("'S'", 6, true, isMSL:true);
+      _names.Add ("'S'", SLiteral);
+      _index.Write (SLiteral);
+      RCName GLiteralRaw = new RCName ("G", 7, false, isMSL:true);
+      _names.Add ("G", GLiteralRaw);
+      _index.Write (GLiteralRaw);
+      RCName ELiteralRaw = new RCName ("E", 8, false, isMSL:true);
+      _names.Add ("E", ELiteralRaw);
+      _index.Write (ELiteralRaw);
+      RCName TLiteralRaw = new RCName ("T", 9, false, isMSL:true);
+      _names.Add ("T", TLiteralRaw);
+      _index.Write (TLiteralRaw);
+      RCName SLiteralRaw = new RCName ("S", 10, false, isMSL:true);
+      _names.Add ("S", SLiteralRaw);
+      _index.Write (SLiteralRaw);
     }
 
     public static RCArray<string> MultipartName (string text, char delimeter)
@@ -76,7 +101,7 @@ namespace RCL.Kernel
       return result;
     }
 
-    public static RCName GetName (string text)
+    public static RCName GetName (string text, bool escapeMSL = false)
     {
       if (text == null)
       {
@@ -125,8 +150,14 @@ namespace RCL.Kernel
             escaped = true;
           }
           else if (text.Length == 1 && RCTokenType.IsMagicSingleLetter (text[0])) {
-            name = text;
-            escaped = false;
+            if (escapeMSL) {
+              name = "'" + text + "'";
+              escaped = true;
+            }
+            else {
+              name = text;
+              escaped = false;
+            }
           }
           else
           {
@@ -158,6 +189,21 @@ namespace RCL.Kernel
             _index.Write (result);
             return result;
           }
+        }
+        else if (result.IsMagicSingleLetter && !result.Escaped && escapeMSL) {
+          if (result.Text == "G") {
+            return _names["'G'"];
+          }
+          else if (result.Text == "E") {
+            return _names["'E'"];
+          }
+          else if (result.Text == "T") {
+            return _names["'T'"];
+          }
+          if (result.Text == "S") {
+            return _names["'S'"];
+          }
+          return result;
         }
         else
         {
@@ -195,11 +241,14 @@ namespace RCL.Kernel
     public readonly string Text;
     public readonly long Index;
     public readonly bool Escaped;
-    public RCName (string text, long index, bool escaped)
+    public readonly bool IsMagicSingleLetter;
+
+    public RCName (string text, long index, bool escaped, bool isMSL = false)
     {
       Text = text;
       Index = index;
       Escaped = escaped;
+      IsMagicSingleLetter = isMSL;
     }
   }
 }

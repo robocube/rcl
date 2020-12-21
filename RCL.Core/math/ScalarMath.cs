@@ -983,6 +983,47 @@ namespace RCL.Core
       s.t += r; return s.t;
     }
 
+    public struct MultState<T> where T: struct, IConvertible {
+      public bool init;
+      public T t;
+    }
+
+    [Primitive ("*", Profile.Cumulative)]
+    public static byte Mult (ref MultState<byte> s, byte r) {
+      if (!s.init) {
+        s.t = 1;
+        s.init = true;
+      }
+      s.t *= r; return s.t;
+    }
+
+    [Primitive ("*", Profile.Cumulative)]
+    public static long Mult (ref MultState<long> s, long r) {
+      if (!s.init) {
+        s.t = 1;
+        s.init = true;
+      }
+      s.t *= r; return s.t;
+    }
+
+    [Primitive ("*", Profile.Cumulative)]
+    public static double Mult (ref MultState<double> s, double r) {
+      if (!s.init) {
+        s.t = 1;
+        s.init = true;
+      }
+      s.t *= r; return s.t;
+    }
+
+    [Primitive ("*", Profile.Cumulative)]
+    public static decimal Mult (ref MultState<decimal> s, decimal r) {
+      if (!s.init) {
+        s.t = 1;
+        s.init = true;
+      }
+      s.t *= r; return s.t;
+    }
+
     [Primitive ("-", Profile.Cumulative)]
     public static byte Minus (ref PlusState<byte> s, byte r) {
       byte o = (byte) (r - s.t); s.t = r; return o;

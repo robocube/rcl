@@ -3314,7 +3314,7 @@
     }
     bin:"abc" "name-with-hyphens" "2" "true" "1-2-3"
   }
-  TestRenameS:{
+  TestRenameSK:{
     skip:false
     src:"x" "y" "z" rename {
       a:1
@@ -3327,7 +3327,7 @@
       z:3
     }
   }
-  TestRenameY:{
+  TestRenameYK:{
     skip:false
     src:#x #y #z rename {
       a:1
@@ -3340,7 +3340,7 @@
       z:3
     }
   }
-  TestRenameS1:{
+  TestRenameSK1:{
     skip:false
     src:"x" rename {
       a:1
@@ -3353,7 +3353,7 @@
       x:3
     }
   }
-  TestRenameY1:{
+  TestRenameYK1:{
     skip:false
     src:#x rename {
       a:1
@@ -3364,6 +3364,30 @@
       x:1
       x:2
       x:3
+    }
+  }
+  TestRenameWithSpecialNames:{
+    src:"G" "E" "T" "S" "R" "L" "X" rename {:1 :2 :3 :4 :5 :6 :7}
+    bin:{
+      'G':1
+      'E':2
+      'T':3
+      'S':4
+      R:5
+      L:6
+      X:7
+    }
+  }
+  TestRenameWithQuotedNames:{
+    src:"'G'" "'E'" "'T'" "'S'" "'R'" "'L'" "'X'" rename {'G':1 'E':2 'T':3 'S':4 'R':5 'L':6 'X':7}
+    bin:{
+      'G':1
+      'E':2
+      'T':3
+      'S':4
+      'R':5
+      'L':6
+      X:7
     }
   }
   TestNameKSS:{

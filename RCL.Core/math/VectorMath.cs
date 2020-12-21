@@ -333,9 +333,10 @@ namespace RCL.Core
       runner.Yield (closure, VectorMath.InvokeDyadic (closure, op.Name, leftVector, rightVector));
     }
 
-    [RCVerb ("+")][RCVerb ("-")]
+    [RCVerb ("+")][RCVerb ("-")][RCVerb ("*")]
     public void EvalCumulative (RCRunner runner, RCClosure closure, object right)
     {
+      //TODO: if right is a cube it should apply column-wise - returning a single column
       RCOperator op = (RCOperator) closure.Code;
       runner.Yield (closure,
                     VectorMath.InvokeMonadic (

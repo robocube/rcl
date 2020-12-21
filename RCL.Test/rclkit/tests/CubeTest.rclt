@@ -807,6 +807,10 @@
       #vars,a 11
     ]
   }
+  TestCubeKDupNames:{
+    src:"status" get try {<-cube {a:1 2 3 b:4 5 6 a:7 8 9}}
+    bin:1
+  }
   TestKeyWithPart1:{
     skip:false
     src:-1 -2 -3 key [
@@ -1073,6 +1077,42 @@
        2 10:00:00 #x 30
     ]
   }
+  TestCubeColumnsT1:{
+    src:cube {'T':1 2 3 U:4 5 6 V:7 8 9}
+    bin:[
+      'T' U V
+        1 4 7
+        2 5 8
+        3 6 9
+    ]
+  }
+  TestCubeColumnsT2:{
+    src:cube {T:2021.12.20 2022.12.20 2023.12.20 U:4 5 6 V:7 8 9}
+    bin:[
+               T| U  V
+      2021.12.20  4  7
+      2022.12.20  5  8
+      2023.12.20  6  9
+    ]
+  }
+  TestCubeColumnsS1:{
+    src:cube {'S':1 2 3 U:4 5 6 V:7 8 9}
+    bin:[
+      'S'  U  V
+        1  4  7
+        2  5  8
+        3  6  9
+    ]
+  }
+  TestCubeColumnsS2:{
+    src:cube {S:#1 #2 #3 U:4 5 6 V:7 8 9}
+    bin:[
+      S | U  V
+      #1  4  7
+      #2  5  8
+      #3  6  9
+    ]
+  }
   TestCubeNoTimeline:{
     skip:false
     src:cube {
@@ -1201,8 +1241,8 @@
       2020.11.03  3
     ]
   }
-  TestCubeEscapedTlNames:{
-    src:cube {'T':2020.11.01 2020.11.02 2020.11.03 'S':#a #b #c x:1 2 3}
+  TestCubeNonEscapedTlNames:{
+    src:cube {T:2020.11.01 2020.11.02 2020.11.03 S:#a #b #c x:1 2 3}
     bin:[
                T|S | x
       2020.11.01 #a  1
@@ -2809,6 +2849,34 @@
        2
        4
        6
+    ]
+  }
+  TestPlusWithLeftRowVector:{
+    src:1 2 3 + [
+       x  y  z
+       1  2  3
+       4  5  6
+       7  8  9
+    ]
+    bin:[
+       x  y  z
+       2  4  6
+       5  7  9
+       8 10 12
+    ]
+  }
+  TestPlusWithRightRowVector:{
+    src:[
+       x  y  z
+       1  2  3
+       4  5  6
+       7  8  9
+    ] + 1 2 3
+    bin:[
+       x  y  z
+       2  4  6
+       5  7  9
+       8 10 12
     ]
   }
   TestSortWithNoTimeline1:{

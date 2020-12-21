@@ -40,7 +40,7 @@ namespace RCL.Kernel
         throw new ArgumentNullException ("value");
       }
       Previous = previous != null ? previous : Empty;
-      RCName nameInfo = RCName.GetName (name);
+      RCName nameInfo = RCName.GetName (name, escapeMSL:false);
       Name = nameInfo.Text;
       EscapeName = nameInfo.Escaped;
       Evaluator = evaluator;
