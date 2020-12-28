@@ -3293,14 +3293,6 @@ namespace RCL.Core
       runner.Yield (closure, result);
     }
 
-    [RCVerb ("at")]
-    public void EvalAt (RCRunner runner, RCClosure closure, RCCube left, RCString right)
-    {
-      // TODO change to take a symbol and do the same thing as select
-      // Also make this method take a long instead of a string
-      EvalFrom (runner, closure, right, left);
-    }
-
     [RCVerb ("exat")]
     public void EvalExat (RCRunner runner, RCClosure closure, RCCube left, RCSymbol right)
     {
