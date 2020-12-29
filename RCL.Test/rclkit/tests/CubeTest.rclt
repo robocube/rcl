@@ -6291,6 +6291,70 @@
       #a    1
     ]
   }
+  TestExatUL1:{
+    src:[
+       x
+       1
+       2
+       3
+       4
+       5
+    ] exat 1 4
+    bin:[
+       x
+       1
+       3
+       4
+    ]
+  }
+  TestExatUL2:{
+    src:[
+       x
+       1
+      --
+       3
+      --
+       5
+    ] exat 1 4
+    bin:[
+       x
+       1
+       3
+      --
+    ]
+  }
+  TestExatUL3:{
+    src:[
+      S | x
+      #a  1
+      #b  2
+      #c  3
+      #d  4
+      #e  5
+    ] exat 1 4
+    bin:[
+      S | x
+      #a  1
+      #c  3
+      #d  4
+    ]
+  }
+  TestExatUL4:{
+    src:[
+      S | x
+      #a  1
+      #b  2
+      #c  3
+      #d  4
+      #e  5
+    ] exat -1 -2
+    bin:[
+      S | x
+      #a  1
+      #b  2
+      #c  3
+    ]
+  }
   TestFromYU:{
     skip:false
     src:#z #x from [
@@ -7384,57 +7448,6 @@
       #a  1
     ]
   }
-  TestExcept6:{
-    skip:false
-    src:[
-       x
-       1
-       2
-       3
-       4
-       5
-    ] except 1 4
-    bin:[
-       x
-       1
-       3
-       4
-    ]
-  }
-  TestExcept7:{
-    skip:false
-    src:[
-       x
-       1
-      --
-       3
-      --
-       5
-    ] except 1 4
-    bin:[
-       x
-       1
-       3
-      --
-    ]
-  }
-  TestExcept8:{
-    skip:false
-    src:[
-      S | x
-      #a  1
-      #b  2
-      #c  3
-      #d  4
-      #e  5
-    ] except 1 4
-    bin:[
-      S | x
-      #a  1
-      #c  3
-      #d  4
-    ]
-  }
   TestExcept9:{
     skip:false
     src:[
@@ -7519,6 +7532,36 @@
     bin:[
       S | x
       #0  1
+    ]
+  }
+  TestExcept14:{
+    skip:false
+    src:[
+      S | x  y  z
+      #a  1  4  7
+      #b  2  5  8
+      #c  3  6  9
+    ] except -2
+    bin:[
+      S | x  z
+      #a  1  7
+      #b  2  8
+      #c  3  9
+    ]
+  }
+  TestExcept15:{
+    skip:false
+    src:[
+      S | x  y  z
+      #a  1  4  7
+      #b  2  5  8
+      #c  3  6  9
+    ] except 0 2
+    bin:[
+      S | y
+      #a  4
+      #b  5
+      #c  6
     ]
   }
   TestInter:{

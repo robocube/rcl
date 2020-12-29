@@ -2480,35 +2480,6 @@ namespace RCL.Core
     }
 
     [RCVerb ("except")]
-    public void Except (RCRunner runner, RCClosure closure, RCCube left, RCLong right)
-    {
-      RCCube result = new RCCube (left.Axis.Match ());
-      HashSet<long> exceptRows = new HashSet<long> (right);
-      for (int i = 0; i < left.Axis.Count; ++i)
-      {
-        if (!exceptRows.Contains (i)) {
-          for (int j = 0; j < left.Cols; ++j)
-          {
-            RCSymbolScalar sym = left.Axis.SymbolAt (i);
-            ColumnBase column = left.GetColumn (j);
-            if (column == null) {
-              continue;
-            }
-            bool found;
-            int index = column.Index.BinarySearch (i, out found);
-            if (found) {
-              string name = left.NameAt (j);
-              object box = column.BoxCell (index);
-              result.WriteCell (name, sym, box);
-            }
-          }
-          result.Axis.Write (left.Axis, i);
-        }
-      }
-      runner.Yield (closure, result);
-    }
-
-    [RCVerb ("except")]
     public void EvalExcept (RCRunner runner, RCClosure closure, RCCube left, RCString right)
     {
       RCArray<string> exceptNames = new RCArray<string> (right.Count);
@@ -3303,9 +3274,38 @@ namespace RCL.Core
     [RCVerb ("exat")]
     public void EvalExat (RCRunner runner, RCClosure closure, RCCube left, RCLong right)
     {
-      // TODO change to take a symbol and do the same thing as select
-      // Also make this method take a long instead of a string
-      throw new NotImplementedException ();
+      RCCube result = new RCCube (left.Axis.Match ());
+      HashSet<int> exceptRows = new HashSet<int> ();
+      for (int i = 0; i < right.Count; ++i)
+      {
+        int sourceRow = (int) right[i];
+        if (sourceRow < 0) {
+          sourceRow = left.Count + sourceRow;
+        }
+        exceptRows.Add (sourceRow);
+      }
+      for (int i = 0; i < left.Axis.Count; ++i)
+      {
+        if (!exceptRows.Contains (i)) {
+          for (int j = 0; j < left.Cols; ++j)
+          {
+            RCSymbolScalar sym = left.Axis.SymbolAt (i);
+            ColumnBase column = left.GetColumn (j);
+            if (column == null) {
+              continue;
+            }
+            bool found;
+            int index = column.Index.BinarySearch (i, out found);
+            if (found) {
+              string name = left.NameAt (j);
+              object box = column.BoxCell (index);
+              result.WriteCell (name, sym, box);
+            }
+          }
+          result.Axis.Write (left.Axis, i);
+        }
+      }
+      runner.Yield (closure, result);
     }
 
     [RCVerb ("from")]
@@ -3360,6 +3360,34 @@ namespace RCL.Core
         string name = right.NameAt ((int) index);
         result.Names.Write (RCName.GetName (name).Text);
         result.Columns.Write (column);
+      }
+      runner.Yield (closure, result);
+    }
+
+    [RCVerb ("except")]
+    public void EvalExcept (RCRunner runner, RCClosure closure, RCCube left, RCLong right)
+    {
+      RCCube result = new RCCube (left.Axis);
+      HashSet<long> exceptCols = new HashSet<long> ();
+      for (int i = 0; i < right.Count; ++i)
+      {
+        long index = right[i];
+        if (index < 0) {
+          index = left.Cols + index;
+        }
+        if (index < 0 || index > left.Cols - 1) {
+          throw new RCException (closure, RCErrors.Range, string.Format ("Column index out of range: {0}", index));
+        }
+        exceptCols.Add (index);
+      }
+      for (int i = 0; i < left.Cols; ++i)
+      {
+        if (!exceptCols.Contains (i)) {
+          ColumnBase column = left.GetColumn (i);
+          string name = left.NameAt (i);
+          result.Names.Write (RCName.GetName (name).Text);
+          result.Columns.Write (column);
+        }
       }
       runner.Yield (closure, result);
     }
