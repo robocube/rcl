@@ -246,50 +246,61 @@ namespace RCL.Core
       Comparer<O> c = Comparer<O>.Default;
       Dictionary<RCSymbolScalar, IndexPair<O>> map = new Dictionary<RCSymbolScalar,
                                                                     IndexPair<O>> ();
-      RCArray<int> rindex = right.GetIndex<R> (0);
-      RCArray<R> rdata = right.GetData<R> (0);
-      RCArray<O> data = new RCArray<O> ();
-      RCArray<int> index = new RCArray<int> ();
+      RCArray<ColumnBase> columns = new RCArray<ColumnBase> ((int) right.Cols);
+      RCArray<string> names = new RCArray<string> ((int) right.Cols);
 
       if (right.Axis.ColCount == 0) {
-        for (int i = 0; i < rdata.Count; ++i)
+        for (int col = 0; col < right.Cols; ++col)
         {
-          O value = op (rdata[i]);
-          index.Write (rindex[i]);
-          data.Write (value);
+          RCArray<int> rindex = right.GetIndex<R> (col);
+          RCArray<R> rdata = right.GetData<R> (col);
+          RCArray<O> data = new RCArray<O> ();
+          RCArray<int> index = new RCArray<int> ();
+
+          for (int i = 0; i < rdata.Count; ++i)
+          {
+            O value = op (rdata[i]);
+            index.Write (rindex[i]);
+            data.Write (value);
+          }
+          ColumnBase column = ColumnBase.FromArray (right.Axis, index, data);
+          columns.Write (column);
+          names.Write (right.NameAt (col));
         }
       }
       else {
-        for (int i = 0; i < rdata.Count; ++i)
+        for (int col = 0; col < right.Cols; ++col)
         {
-          IndexPair<O> pair;
-          RCSymbolScalar symbol = right.SymbolAt (i);
-          int rt = rindex[i];
-          map.TryGetValue (symbol, out pair);
-          bool first;
-          if (first = pair == null) {
-            pair = new IndexPair<O> (-1, i);
-            map.Add (symbol, pair);
+          RCArray<int> rindex = right.GetIndex<R> (col);
+          RCArray<R> rdata = right.GetData<R> (col);
+          RCArray<O> data = new RCArray<O> ();
+          RCArray<int> index = new RCArray<int> ();
+
+          for (int i = 0; i < rdata.Count; ++i)
+          {
+            IndexPair<O> pair;
+            RCSymbolScalar symbol = right.SymbolAt (i);
+            int rt = rindex[i];
+            map.TryGetValue (symbol, out pair);
+            bool first;
+            if (first = pair == null) {
+              pair = new IndexPair<O> (-1, i);
+              map.Add (symbol, pair);
+            }
+            pair.RI = i;
+            O value = op (rdata[pair.RI]);
+            if (first || c.Compare (value, pair.Result) != 0) {
+              pair.Result = value;
+              index.Write (rt);
+              data.Write (pair.Result);
+            }
           }
-          pair.RI = i;
-          O value = op (rdata[pair.RI]);
-          if (first || c.Compare (value, pair.Result) != 0) {
-            pair.Result = value;
-            index.Write (rt);
-            data.Write (pair.Result);
-          }
+          ColumnBase column = ColumnBase.FromArray (right.Axis, index, data);
+          columns.Write (column);
+          names.Write (right.NameAt (col));
         }
       }
-      if (data.Count > 0) {
-        ColumnBase column = ColumnBase.FromArray (right.Axis, index, data);
-        return new RCCube (
-          right.Axis,
-          new RCArray<string> ("x"),
-          new RCArray<ColumnBase> (column));
-      }
-      else {
-        return new RCCube ();
-      }
+      return new RCCube (right.Axis, names, columns);
     }
 
     public static RCValue ContextualOp <C, L, R, O> (RCVector<L> left,

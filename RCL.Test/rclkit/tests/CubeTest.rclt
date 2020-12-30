@@ -281,11 +281,47 @@
       <-not $u.signal
     }
     bin:[
-       E|S |    x
-       0 #y false
-       1 #x false
-       2 #x    --
-       3 #y  true
+       E|S |signal
+       0 #y  false
+       1 #x  false
+       2 #x     --
+       3 #y   true
+    ]
+  }
+  TestCubeMathMonadicMultiCol:{
+    skip:false
+    src:{
+      u:[
+        S | x  y  z
+        #a  1  2  3
+        #b  4  5  6
+        #c  7 --  9
+      ]
+      <-double $u
+    }
+    bin:[
+      S |  x   y   z
+      #a 1.0 2.0 3.0
+      #b 4.0 5.0 6.0
+      #c 7.0  -- 9.0
+    ]
+  }
+  TestCubeMathMonadicMultiCol1:{
+    skip:false
+    src:{
+      u:[
+        x  y  z
+        1  2  3
+        4  5  6
+        7 --  9
+      ]
+      <-double $u
+    }
+    bin:[
+        x   y   z
+      1.0 2.0 3.0
+      4.0 5.0 6.0
+      7.0  -- 9.0
     ]
   }
   TestCubeMathMonadicWithDups:{
@@ -301,11 +337,11 @@
       <-long $t.signal
     }
     bin:[
-       E|S | x
-       0 #y  1
-       1 #x  2
-       2 #x --
-       3 #y  2
+       E|S |signal
+       0 #y      1
+       1 #x      2
+       2 #x     --
+       3 #y      2
     ]
   }
   TestCubeMathObject:{
@@ -5194,7 +5230,7 @@
       #a "xyz"
     ]
     bin:[
-      S | x
+      S | y
       #a  3
     ]
   }
